@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/upbcuk/upb.crypto.math.svg?branch=master)](https://travis-ci.com/upbcuk/upb.crypto.math)
 ## upb.crypto.math
 
 upb.crypto.math is a library providing a number of mathematical tools needed in many cryptographic applications.
