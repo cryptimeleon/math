@@ -75,6 +75,16 @@ task packageTests(type: Jar) {
     from sourceSets.test.output+sourceSets.test.allSource
 }
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
 //packageTests.dependsOn 'test'
 
 configurations {
@@ -89,6 +99,8 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
             artifact packageTests
+            artifact sourcesJar
+            artifact javadocJar
         }
 
     }

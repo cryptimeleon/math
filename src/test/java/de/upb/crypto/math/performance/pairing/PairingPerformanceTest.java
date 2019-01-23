@@ -81,9 +81,14 @@ public class PairingPerformanceTest {
     @Test
     public void evaluatePairing() {
         long referenceTime = System.nanoTime();
-
-        GroupElement result = pairing.evaluate(expression);
-
+        GroupElement result = pairing.evaluate(this.expression);
         System.out.println("Time to evaluate: " + (System.nanoTime() - referenceTime) / 1e6 + " ms");
+
+        referenceTime = System.nanoTime();
+        for (int i = 0; i < numberOfElements*10; i++) {
+            pairing.apply(this.g1Elements.get(0), this.g2Elements.get(0));
+        }
+        System.out.println("Time to evaluate: " + (System.nanoTime() - referenceTime) / 1e6 / (numberOfElements * 10)  + " ms");
+
     }
 }

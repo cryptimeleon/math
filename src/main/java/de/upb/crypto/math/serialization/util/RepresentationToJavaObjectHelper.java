@@ -41,9 +41,7 @@ public class RepresentationToJavaObjectHelper {
                             throw e;
                     }
                 } catch (ClassNotFoundException e) {
-                    throw new IllegalArgumentException("Cannot find class " + representedTypeName + ". This may be because it is not in the upb_pbc plugin. In that case, add \"Eclipse-RegisterBuddy: de.upb.crypto.pbc\" to your manifest.", e);
-                    //Eclipse-RegisterBuddy: de.upb.crypto.pbc (together with Eclipse-BuddyPolicy: registered in this plugin)
-                    //allows the upb_pbc project to ask the class loader of the requiring project for the class.
+                    throw new IllegalArgumentException("Cannot find class " + representedTypeName, e);
                 } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     throw new IllegalArgumentException("Don't know how to handle Representable type '" + representedTypeName + "'", e);
                 }
