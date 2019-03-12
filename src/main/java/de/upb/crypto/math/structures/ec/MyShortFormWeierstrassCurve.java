@@ -1,4 +1,4 @@
-package de.upb.crypto.math.swante;
+package de.upb.crypto.math.structures.ec;
 
 import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
 import de.upb.crypto.math.interfaces.structures.Field;
@@ -15,8 +15,8 @@ import java.util.Optional;
 public class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     
     private Zp field;
-    private final FieldElement a;
-    private final FieldElement b;
+    final FieldElement a;
+    final FieldElement b;
     
     public MyShortFormWeierstrassCurve(Zp field, FieldElement a, FieldElement b) {
         this.field = field;
