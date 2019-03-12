@@ -2,22 +2,22 @@ package de.upb.crypto.math.structures.ec;
 
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.structures.Element;
-import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
-import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.zn.Zp;
 
 // a point on a short form weierstrass curve, in affince coordinates
-public class MyAffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
-    
-    private MyShortFormWeierstrassCurve curve;
+public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
     
     public MyAffineEllipticCurvePoint(MyShortFormWeierstrassCurve curve,
-                                      FieldElement x, FieldElement y) {
-        super(curve, x, y,
-                curve.getFieldOfDefinition().getOneElement());
-        this.curve = curve;
+                                      Zp.ZpElement x, Zp.ZpElement y) {
+        super(curve, x, y, curve.field.getOneElement());
+    }
+    
+    @Override
+    public MyAffineEllipticCurvePoint createNewPoint(FieldElement x, FieldElement y) {
+        return new MyAffineEllipticCurvePoint(curve, (Zp.ZpElement)x, (Zp.ZpElement)y);
     }
     
     @Override
@@ -25,6 +25,11 @@ public class MyAffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
         return this;
     }
     
+    
+    @Override
+    public Group getStructure() {
+        return null;
+    }
     
     @Override
     public GroupElement op(Element e) throws IllegalArgumentException {
@@ -44,7 +49,7 @@ public class MyAffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement s = y.sub(Q.y).div(x.sub(Q.x));
         FieldElement rx = s.square().sub(x).sub(Q.x);
         FieldElement ry = s.mul(x.sub(rx)).sub(y);
-        return new MyAffineEllipticCurvePoint(curve, rx, ry);
+        return createNewPoint(rx, ry);
     }
     
     // returns this+this
@@ -57,52 +62,34 @@ public class MyAffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
         s = s.add(s).add(s).add(curve.a).div(tmp);
         FieldElement rx = s.square().sub(x.add(x));
         FieldElement ry = s.mul(x.sub(rx)).sub(y);
-        return new MyAffineEllipticCurvePoint(curve, rx, ry);
+        return createNewPoint(rx, ry);
     }
     
     @Override
-    public GroupElement inv() {
+    public MyAbstractEllipticCurvePoint getPointAtInfinity() {
+        return null;
+    }
+    
+    @Override
+    public MyAffineEllipticCurvePoint invert() {
         if (this.isNeutralElement())
             return this;
         
-        FieldElement newY = this.getY().neg();
-        return this.getStructure().getElement(this.getX(), newY);
+        Zp.ZpElement newY = y.neg();
+        return new MyAffineEllipticCurvePoint(curve, x, newY);
     }
     
     
     @Override
-    public MyAffineEllipticCurvePoint add(EllipticCurvePoint P, FieldElement[] line) {
+    public MyAbstractEllipticCurvePoint add(MyAbstractEllipticCurvePoint Q) {
         throw new UnsupportedOperationException();
     }
+    
+
     
     @Override
-    public FieldElement[] computeLine(EllipticCurvePoint Q) {
-        throw new UnsupportedOperationException();
-    }
-    
     public String toString() {
         return "(" + x.toString() + "," + y.toString() + ")";
-    }
-    
-    @Override
-    public boolean equals(Object element) {
-        if (element == this)
-            return true;
-        
-        if (!(element instanceof MyAffineEllipticCurvePoint))
-            return false;
-        
-        MyAffineEllipticCurvePoint p = (MyAffineEllipticCurvePoint) element;
-        if (this.isNeutralElement() && p.isNeutralElement())
-            return true;
-        
-        if (this.isNeutralElement() || p.isNeutralElement())
-            return false;
-        
-        if (!this.getX().equals(p.getX()))
-            return false;
-    
-        return this.getY().equals(p.getY());
     }
     
     @Override
@@ -111,8 +98,18 @@ public class MyAffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
     }
     
     @Override
+    public Field getFieldOfDefinition() {
+        return null;
+    }
+    
+    @Override
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Representation getRepresentation() {
+        return null;
     }
 }
 

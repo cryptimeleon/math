@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-interface Foo {
+interface IFoo {
     String foo();
 }
 
-class Fooa implements Foo {
+class Fooa implements IFoo {
     int i = 42;
     String s = "foobar";
     
@@ -26,7 +26,7 @@ class Fooa implements Foo {
     }
 }
 
-class Foob implements Foo {
+class Foob implements IFoo {
     int i = 42;
     String s = "foobar";
     
@@ -39,9 +39,9 @@ class Foob implements Foo {
 @RunWith(value = Parameterized.class)
 public class FooTest {
     
-    private Foo foo;
+    private IFoo foo;
     
-    public FooTest(Foo foo) {
+    public FooTest(IFoo foo) {
         this.foo = foo;
     }
     
@@ -58,8 +58,8 @@ public class FooTest {
     }
     
     @Parameterized.Parameters(name = "{index}: {0}")
-    public static Collection<Foo> getParams() {
-        ArrayList<Foo> list = new ArrayList<Foo>();
+    public static Collection<IFoo> getParams() {
+        ArrayList<IFoo> list = new ArrayList<>();
         list.add(new Fooa());
         list.add(new Foob());
         return list;
