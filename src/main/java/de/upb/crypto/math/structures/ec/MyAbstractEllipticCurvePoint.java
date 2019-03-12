@@ -8,7 +8,9 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.structures.zn.Zp;
 
+// abstract superclass for affine, projective and jacobian points
 // children should override invert and add. compute line is not used.
+// createPoint should return an instance of the concrete point type used
 abstract public class MyAbstractEllipticCurvePoint implements EllipticCurvePoint {
     
     
