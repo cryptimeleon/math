@@ -15,6 +15,12 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
         super(curve, x, y, curve.field.getOneElement());
     }
     
+    // returns point at infinity (neutral point)
+    private MyAffineEllipticCurvePoint(MyShortFormWeierstrassCurve curve) {
+        super(curve, curve.field.getZeroElement(),
+                curve.field.getOneElement(), curve.field.getZeroElement());
+    }
+    
     @Override
     public MyAffineEllipticCurvePoint createNewPoint(FieldElement x, FieldElement y) {
         return new MyAffineEllipticCurvePoint(curve, (Zp.ZpElement)x, (Zp.ZpElement)y);
@@ -27,12 +33,7 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
     
     
     @Override
-    public Group getStructure() {
-        return null;
-    }
-    
-    @Override
-    public GroupElement op(Element e) throws IllegalArgumentException {
+    public MyAffineEllipticCurvePoint op(Element e) throws IllegalArgumentException {
         MyAffineEllipticCurvePoint Q = (MyAffineEllipticCurvePoint) e;
         if (Q.isNeutralElement()) {
             return this;
@@ -44,7 +45,7 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
             if (y.equals(Q.y)) {
                 return this.times2();
             }
-            return curve.getNeutralElement();
+            return getPointAtInfinity();
         }
         FieldElement s = y.sub(Q.y).div(x.sub(Q.x));
         FieldElement rx = s.square().sub(x).sub(Q.x);
@@ -53,9 +54,9 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
     }
     
     // returns this+this
-    private GroupElement times2() {
+    private MyAffineEllipticCurvePoint times2() {
         if (this.isNeutralElement() || y.isZero()) {
-            return curve.getNeutralElement();
+            return getPointAtInfinity();
         }
         FieldElement s = x.mul(x);
         FieldElement tmp = y.add(y);
@@ -66,8 +67,8 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
     }
     
     @Override
-    public MyAbstractEllipticCurvePoint getPointAtInfinity() {
-        return null;
+    public MyAffineEllipticCurvePoint getPointAtInfinity() {
+        return new MyAffineEllipticCurvePoint(curve);
     }
     
     @Override
@@ -82,7 +83,7 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
     
     @Override
     public MyAbstractEllipticCurvePoint add(MyAbstractEllipticCurvePoint Q) {
-        throw new UnsupportedOperationException();
+        return this.op(Q);
     }
     
 
@@ -97,19 +98,5 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
         return true;
     }
     
-    @Override
-    public Field getFieldOfDefinition() {
-        return null;
-    }
-    
-    @Override
-    public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public Representation getRepresentation() {
-        return null;
-    }
 }
 

@@ -21,12 +21,12 @@ import java.util.Optional;
 
 public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     
-    final Zp field;
-    final Zp.ZpElement a;
-    final Zp.ZpElement b;
-    final Zp.ZpElement n;
-    final Zp.ZpElement h;
-    final MyAbstractEllipticCurvePoint generator;
+    public final Zp field;
+    public final Zp.ZpElement a;
+    public final Zp.ZpElement b;
+    public final Zp.ZpElement n;
+    public final Zp.ZpElement h;
+    public final MyAbstractEllipticCurvePoint generator;
     
     public MyShortFormWeierstrassCurve(MyShortFormWeierstrassCurveParameters parameters) {
         Zp zp = new Zp(parameters.p);
@@ -39,6 +39,11 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     }
     
     abstract MyAbstractEllipticCurvePoint createPoint(Zp.ZpElement x, Zp.ZpElement y);
+    
+    @Override
+    public MyAbstractEllipticCurvePoint getGenerator() {
+        return generator;
+    }
     
     @Override
     public FieldElement getA6() {

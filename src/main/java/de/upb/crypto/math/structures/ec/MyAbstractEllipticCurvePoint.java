@@ -1,11 +1,9 @@
 package de.upb.crypto.math.structures.ec;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.structures.Element;
-import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
-import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.zn.Zp;
 
 // abstract superclass for affine, projective and jacobian points
@@ -14,10 +12,10 @@ import de.upb.crypto.math.structures.zn.Zp;
 abstract public class MyAbstractEllipticCurvePoint implements EllipticCurvePoint {
     
     
-    final MyShortFormWeierstrassCurve curve;
-    final Zp.ZpElement x;
-    final Zp.ZpElement y;
-    final Zp.ZpElement z;
+    public final MyShortFormWeierstrassCurve curve;
+    public final Zp.ZpElement x;
+    public final Zp.ZpElement y;
+    public final Zp.ZpElement z;
     
     public MyAbstractEllipticCurvePoint(MyShortFormWeierstrassCurve curve, Zp.ZpElement x, Zp.ZpElement y, Zp.ZpElement z) {
         
@@ -36,6 +34,21 @@ abstract public class MyAbstractEllipticCurvePoint implements EllipticCurvePoint
     public GroupElement op(Element e) throws IllegalArgumentException {
         MyAbstractEllipticCurvePoint Q = (MyAbstractEllipticCurvePoint) e;
         return this.add(Q);
+    }
+    
+    @Override
+    public Group getStructure() {
+        return curve;
+    }
+    
+    @Override
+    public Field getFieldOfDefinition() {
+        return curve.field;
+    }
+    
+    @Override
+    public Representation getRepresentation() {
+        return null;
     }
     
     @Override
