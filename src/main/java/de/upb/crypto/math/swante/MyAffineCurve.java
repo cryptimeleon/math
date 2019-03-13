@@ -14,6 +14,6 @@ public class MyAffineCurve extends MyShortFormWeierstrassCurve {
     
     @Override
     public String toString() {
-        return String.format("AffineCurve with parameters:\np=%s\na=%s\nb=%s", field.size(), a, b);
+        return String.format("AffineCurve with parameters:\n%s", super.parametersToString());
     }
 }

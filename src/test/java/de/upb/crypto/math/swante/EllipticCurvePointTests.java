@@ -30,6 +30,7 @@ public class EllipticCurvePointTests {
     
     @Test
     public void testSpeed() {
+        pln("=========================");
         pln("Running performance tests for curve: " + curve.toString());
         MyAbstractEllipticCurvePoint g = curve.generator;
         int numIterations = 10000;
@@ -40,7 +41,7 @@ public class EllipticCurvePointTests {
         }
         tmp = tmp.normalize();
         double elapsed = misc.tick();
-        pln(String.format("time for %d point doubles: %.1f ms", numIterations, elapsed));
+        pln(String.format("time for %d point doubles (and one final normalization): %.1f ms", numIterations, elapsed));
         misc.tick();
         tmp = g;
         for (int i = 0; i < numIterations; i++) {
@@ -48,7 +49,7 @@ public class EllipticCurvePointTests {
         }
         tmp = tmp.normalize();
         elapsed = misc.tick();
-        pln(String.format("time for %d point additions: %.1f ms", numIterations, elapsed));
+        pln(String.format("time for %d point additions (and one final normalization): %.1f ms", numIterations, elapsed));
         tmp = g;
         Zp.ZpElement power = g.x;
         misc.tick();
@@ -58,7 +59,7 @@ public class EllipticCurvePointTests {
         }
         tmp = tmp.normalize();
         elapsed = misc.tick();
-        pln(String.format("time for %d pow G.x computations: %.1f ms", numPowerIterations, elapsed));
+        pln(String.format("time for %d pow G.x computations (and one final normalization): %.1f ms", numPowerIterations, elapsed));
     }
     
     @Parameterized.Parameters(name = "{index}: {0}")

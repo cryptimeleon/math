@@ -121,4 +121,7 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     }
     
     
+    protected String parametersToString() {
+        return String.format("p=%s\na=%s\nb=%s\nG.x=%s\nG.y=%s\nn=%s\nh=%s", field.size(), a, b, generator.x, generator.y, n, h);
+    }
 }
