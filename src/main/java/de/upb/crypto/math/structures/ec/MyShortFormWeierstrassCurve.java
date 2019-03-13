@@ -27,10 +27,14 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     public final Zp.ZpElement n;
     public final Zp.ZpElement h;
     public final MyAbstractEllipticCurvePoint generator;
+    public final Zp.ZpElement two;
+    public final Zp.ZpElement three;
     
     public MyShortFormWeierstrassCurve(MyShortFormWeierstrassCurveParameters parameters) {
         Zp zp = new Zp(parameters.p);
         field = zp;
+        two = zp.new ZpElement(BigInteger.valueOf(2));
+        three = zp.new ZpElement(BigInteger.valueOf(3));
         a = zp.new ZpElement(parameters.a);
         b = zp.new ZpElement(parameters.b);
         n = zp.new ZpElement(parameters.n);

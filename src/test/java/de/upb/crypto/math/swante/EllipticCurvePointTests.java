@@ -31,8 +31,8 @@ public class EllipticCurvePointTests {
     @Test
     public void testCorrectness() {
         MyAbstractEllipticCurvePoint g = curve.generator;
-        Assert.assertEquals(g.add(g).x.getInteger(), new BigInteger("56515219790691171413109057904011688695424810155802929973526481321309856242040"));
-        Assert.assertEquals(((MyAbstractEllipticCurvePoint)g.pow(101)).x.getInteger(), new BigInteger("93980847734016439027508041847036757272229093243964019053297849828346202436527"));
+        Assert.assertEquals(g.add(g).normalize().x.getInteger(), new BigInteger("56515219790691171413109057904011688695424810155802929973526481321309856242040"));
+        Assert.assertEquals(((MyAbstractEllipticCurvePoint)g.pow(101)).normalize().x.getInteger(), new BigInteger("93980847734016439027508041847036757272229093243964019053297849828346202436527"));
     }
     
     @Test
@@ -44,6 +44,7 @@ public class EllipticCurvePointTests {
         for (int i = 0; i < numIterations; i++) {
             tmp = tmp.add(tmp);
         }
+        tmp = tmp.normalize();
         double elapsed = misc.tick();
         pln(String.format("time for %d point doubles: %.1f ms", numIterations, elapsed));
         misc.tick();
@@ -51,6 +52,7 @@ public class EllipticCurvePointTests {
         for (int i = 0; i < numIterations; i++) {
             tmp = tmp.add(g);
         }
+        tmp = tmp.normalize();
         elapsed = misc.tick();
         pln(String.format("time for %d point additions: %.1f ms", numIterations, elapsed));
         tmp = g;
@@ -60,6 +62,7 @@ public class EllipticCurvePointTests {
         for (int i = 0; i < numPowerIterations; i++) {
             tmp = (MyAbstractEllipticCurvePoint)tmp.pow(power);
         }
+        tmp = tmp.normalize();
         elapsed = misc.tick();
         pln(String.format("time for %d pow G.x computations: %.1f ms", numPowerIterations, elapsed));
     }
@@ -69,6 +72,7 @@ public class EllipticCurvePointTests {
         ArrayList<MyShortFormWeierstrassCurve> list = new ArrayList<>();
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         list.add(new MyAffineCurve(parameters));
+        list.add(new MyProjectiveCurve(parameters));
         return list;
     }
     

@@ -29,6 +29,8 @@ abstract public class MyAbstractEllipticCurvePoint implements EllipticCurvePoint
     public abstract MyAbstractEllipticCurvePoint getPointAtInfinity();
     public abstract MyAbstractEllipticCurvePoint invert();
     public abstract MyAbstractEllipticCurvePoint add(MyAbstractEllipticCurvePoint Q);
+    @Override
+    public abstract MyAbstractEllipticCurvePoint normalize();
     
     @Override
     public GroupElement op(Element e) throws IllegalArgumentException {

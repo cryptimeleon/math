@@ -16,7 +16,7 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
     }
     
     // returns point at infinity (neutral point)
-    private MyAffineEllipticCurvePoint(MyShortFormWeierstrassCurve curve) {
+    public MyAffineEllipticCurvePoint(MyShortFormWeierstrassCurve curve) {
         super(curve, curve.field.getZeroElement(),
                 curve.field.getOneElement(), curve.field.getZeroElement());
     }
@@ -58,10 +58,8 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
         if (this.isNeutralElement() || y.isZero()) {
             return getPointAtInfinity();
         }
-        FieldElement s = x.mul(x);
-        FieldElement tmp = y.add(y);
-        s = s.add(s).add(s).add(curve.a).div(tmp);
-        FieldElement rx = s.square().sub(x.add(x));
+        FieldElement s = x.square().mul(curve.three).add(curve.a).div(y.mul(curve.two));
+        FieldElement rx = s.square().sub(x.mul(curve.two));
         FieldElement ry = s.mul(x.sub(rx)).sub(y);
         return createNewPoint(rx, ry);
     }
@@ -82,7 +80,7 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
     
     
     @Override
-    public MyAbstractEllipticCurvePoint add(MyAbstractEllipticCurvePoint Q) {
+    public MyAffineEllipticCurvePoint add(MyAbstractEllipticCurvePoint Q) {
         return this.op(Q);
     }
     
