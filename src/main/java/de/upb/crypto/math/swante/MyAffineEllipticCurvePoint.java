@@ -1,10 +1,7 @@
-package de.upb.crypto.math.structures.ec;
+package de.upb.crypto.math.swante;
 
 
-import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.structures.*;
-import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
-import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.zn.Zp;
 
 // a point on a short form weierstrass curve, in affince coordinates

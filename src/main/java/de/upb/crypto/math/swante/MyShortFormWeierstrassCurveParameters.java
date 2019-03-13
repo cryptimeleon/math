@@ -1,4 +1,4 @@
-package de.upb.crypto.math.structures.ec;
+package de.upb.crypto.math.swante;
 
 import java.math.BigInteger;
 

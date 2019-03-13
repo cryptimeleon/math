@@ -1,4 +1,4 @@
-package de.upb.crypto.math.structures.ec;
+package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.structures.zn.Zp;
 
@@ -10,5 +10,10 @@ public class MyAffineCurve extends MyShortFormWeierstrassCurve {
     @Override
     MyAbstractEllipticCurvePoint createPoint(Zp.ZpElement x, Zp.ZpElement y) {
         return new MyAffineEllipticCurvePoint(this, x, y);
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("AffineCurve with parameters:\np=%s\na=%s\nb=%s", field.size(), a, b);
     }
 }

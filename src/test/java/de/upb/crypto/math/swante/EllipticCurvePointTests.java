@@ -1,13 +1,6 @@
 package de.upb.crypto.math.swante;
 
-import com.google.common.base.Strings;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.generic.PairingSourceGroup;
-import de.upb.crypto.math.structures.ec.*;
 import de.upb.crypto.math.structures.zn.Zp;
-import de.upb.crypto.math.swante.Foo;
-import de.upb.crypto.math.swante.Fooa;
-import de.upb.crypto.math.swante.Foob;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +30,7 @@ public class EllipticCurvePointTests {
     
     @Test
     public void testSpeed() {
+        pln("Running performance tests for curve: " + curve.toString());
         MyAbstractEllipticCurvePoint g = curve.generator;
         int numIterations = 10000;
         misc.tick();
