@@ -4,7 +4,7 @@ package de.upb.crypto.math.swante;
 import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.structures.zn.Zp;
 
-// a point on a short form weierstrass curve, in affince coordinates
+// a point on a short form weierstrass curve, in projective coordinates
 public class MyProjectiveEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
     
     public MyProjectiveEllipticCurvePoint(MyShortFormWeierstrassCurve curve,

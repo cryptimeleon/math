@@ -2,7 +2,11 @@ package de.upb.crypto.math.performance.group;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.structures.test.GroupTests;
 import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.swante.MyAffineCurve;
+import de.upb.crypto.math.swante.MyProjectiveCurve;
+import de.upb.crypto.math.swante.MyShortFormWeierstrassCurveParameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -52,13 +56,14 @@ public class GroupPerformanceTest {
         group2ExpTime /= testRepetitions;
 
         System.out.println("In " + testRepetitions + " runs exponentiation in " + group1.getClass().getSimpleName() + " (on avg) in time " + group1ExpTime / 1e6
-                + "ms and in " + group2.getClass().getSimpleName() + " (on avg) in time " + group2ExpTime / 1e6 + ".\nSpeedup: " + ((double) group1ExpTime) / group2ExpTime);
+                + " ms and in " + group2.getClass().getSimpleName() + " (on avg) in time " + group2ExpTime / 1e6 + " ms.\nSpeedup: " + ((double) group1ExpTime) / group2ExpTime);
     }
 
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection<GroupPerformanceTestParams> data() {
         ArrayList<GroupPerformanceTestParams> schemes = new ArrayList<>();
-
+        MyShortFormWeierstrassCurveParameters mySecp256r1Parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
+        schemes.add(new GroupPerformanceTestParams(new MyAffineCurve(mySecp256r1Parameters), new MyProjectiveCurve(mySecp256r1Parameters), 100));
         return schemes;
     }
 }
