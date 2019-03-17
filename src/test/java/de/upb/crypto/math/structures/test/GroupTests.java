@@ -16,6 +16,9 @@ import de.upb.crypto.math.structures.integers.IntegerRing;
 import de.upb.crypto.math.structures.sn.Sn;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.swante.MyAffineCurve;
+import de.upb.crypto.math.swante.MyProjectiveCurve;
+import de.upb.crypto.math.swante.MyShortFormWeierstrassCurveParameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -60,11 +63,11 @@ public class GroupTests extends StructureTests {
         c = elementSupplier.get();
 
         // a/a = 1
-        assertTrue(a.inv().op(a).equals(group.getNeutralElement()));
-        assertTrue(a.op(a.inv()).equals(group.getNeutralElement()));
+        assertEquals(a.inv().op(a), group.getNeutralElement());
+        assertEquals(a.op(a.inv()), group.getNeutralElement());
 
         // Associativity
-        assertTrue(a.op(b).op(c).equals(a.op(b.op(c))));
+        assertEquals(a.op(b).op(c), a.op(b.op(c)));
 
         // Commutativity
         if (group.isCommutative())
@@ -76,8 +79,8 @@ public class GroupTests extends StructureTests {
             assertEquals("Exponentiation+Commutativity", a.op(b).pow(exponent), a.pow(exponent).op(b.pow(exponent)));
 
         // Neutral element
-        assertTrue(a.op(group.getNeutralElement()).equals(a));
-        assertTrue(group.getNeutralElement().op(a).equals(a));
+        assertEquals(a.op(group.getNeutralElement()), a);
+        assertEquals(group.getNeutralElement().op(a), a);
 
         //Exponentiation
         GroupElement aToTheFifth = a.op(a).op(a).op(a).op(a);
@@ -209,13 +212,18 @@ public class GroupTests extends StructureTests {
         LazyGroup lazyGroup = new LazyGroup(bnGT);
 
         // Collect parameters
+//        TestParams params[][] = new TestParams[][]{
+//                {new TestParams(ringUnitGroup)}, {new TestParams(ringAddGroup)},
+//                {new TestParams(ringAddGroupInt, () -> ringAddGroupInt.new RingAdditiveGroupElement(new IntegerElement(RandomGeneratorSupplier.getRnd().getRandomElement(BigInteger.valueOf(100000)))))}, {new TestParams(sn)},
+//                {new TestParams(debugGroup)},
+//                {new TestParams(supsingG1)}, {new TestParams(supsingGT)},
+//                {new TestParams(bnG1)}, {new TestParams(bnG2)}, {new TestParams(bnGT)},
+//                {new TestParams(lazyGroup)}
+//        };
+        MyShortFormWeierstrassCurveParameters mySecp256r1Parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         TestParams params[][] = new TestParams[][]{
-                {new TestParams(ringUnitGroup)}, {new TestParams(ringAddGroup)},
-                {new TestParams(ringAddGroupInt, () -> ringAddGroupInt.new RingAdditiveGroupElement(new IntegerElement(RandomGeneratorSupplier.getRnd().getRandomElement(BigInteger.valueOf(100000)))))}, {new TestParams(sn)},
-                {new TestParams(debugGroup)},
-                {new TestParams(supsingG1)}, {new TestParams(supsingGT)},
-                {new TestParams(bnG1)}, {new TestParams(bnG2)}, {new TestParams(bnGT)},
-                {new TestParams(lazyGroup)}
+                {new TestParams(new MyAffineCurve(mySecp256r1Parameters))},
+                {new TestParams(new MyProjectiveCurve(mySecp256r1Parameters))}
         };
         return Arrays.asList(params);
     }

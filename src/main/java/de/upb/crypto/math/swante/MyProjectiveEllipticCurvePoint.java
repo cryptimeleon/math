@@ -104,7 +104,7 @@ public class MyProjectiveEllipticCurvePoint extends MyAbstractEllipticCurvePoint
             return this;
         
         Zp.ZpElement newY = y.neg();
-        return new MyProjectiveEllipticCurvePoint(curve, x, newY);
+        return new MyProjectiveEllipticCurvePoint(curve, x, newY, z);
     }
     
     
