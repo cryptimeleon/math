@@ -5,7 +5,6 @@ import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.swante.MyAbstractEllipticCurvePoint;
 
 public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
     protected FieldElement x, y, z;

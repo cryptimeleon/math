@@ -2,13 +2,9 @@ package de.upb.crypto.math.structures.ec;
 
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
-import de.upb.crypto.math.structures.zn.Zp;
-import de.upb.crypto.math.swante.MyAffineEllipticCurvePoint;
 
 public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
 

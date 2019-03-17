@@ -16,7 +16,7 @@ public class MyProjectiveCurve extends MyShortFormWeierstrassCurve {
     
     @Override
     public String toString() {
-        return String.format("ProjectiveCurve with parameters:\n%s", super.parametersToString());
+        return "ProjectiveCurve";
     }
     
 }

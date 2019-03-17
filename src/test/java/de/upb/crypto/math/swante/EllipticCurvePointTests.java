@@ -32,7 +32,7 @@ public class EllipticCurvePointTests {
     @Test
     public void testSpeed() {
         pln("=========================");
-        pln("Running performance tests for curve: " + curve.toString());
+        pln("Running performance tests for curve: " + curve.toString() + " with parameters:\n" + curve.parametersToString());
         AbstractEllipticCurvePoint g = curve.generator;
         int numIterations = 100000;
         misc.tick();
@@ -52,7 +52,7 @@ public class EllipticCurvePointTests {
         elapsed = misc.tick();
         pln(String.format("time for %d point additions (and one final normalization): %.1f ms", numIterations, elapsed));
         tmp = g;
-        Zp.ZpElement power = g.x;
+        Zp.ZpElement power = (Zp.ZpElement) g.getX();
         misc.tick();
         int numPowerIterations = 1000;
         for (int i = 0; i < numPowerIterations; i++) {
