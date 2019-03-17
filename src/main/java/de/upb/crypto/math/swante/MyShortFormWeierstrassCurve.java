@@ -7,6 +7,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
+import de.upb.crypto.math.structures.ec.AffineEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 
 import java.math.BigInteger;
@@ -39,10 +40,14 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
         b = field.new ZpElement(parameters.b);
         n = field.new ZpElement(parameters.n);
         h = field.new ZpElement(parameters.h);
-        generator = this.createPoint(field.new ZpElement(parameters.gx), field.new ZpElement(parameters.gy));
+        generator = this.getElement(field.new ZpElement(parameters.gx), field.new ZpElement(parameters.gy));
     }
     
-    abstract AbstractEllipticCurvePoint createPoint(Zp.ZpElement x, Zp.ZpElement y);
+    @Override
+    public abstract AbstractEllipticCurvePoint getNeutralElement();
+    
+    @Override
+    public abstract AbstractEllipticCurvePoint getElement(FieldElement x, FieldElement y);
     
     @Override
     public AbstractEllipticCurvePoint getGenerator() {
@@ -75,18 +80,8 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     }
     
     @Override
-    public AbstractEllipticCurvePoint getElement(FieldElement x, FieldElement y) {
-        return this.createPoint((Zp.ZpElement)x, (Zp.ZpElement)y);
-    }
-    
-    @Override
     public Field getFieldOfDefinition() {
         return field;
-    }
-    
-    @Override
-    public AbstractEllipticCurvePoint getNeutralElement() {
-        return generator.getPointAtInfinity();
     }
     
     @Override
@@ -100,7 +95,7 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     }
     
     @Override
-    public GroupElement getElement(Representation repr) {
+    public AbstractEllipticCurvePoint getElement(Representation repr) {
         return null;
     }
     

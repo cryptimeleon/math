@@ -18,7 +18,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
     }
     
     // returns point at infinity (neutral point)
-    private MyProjectiveEllipticCurvePoint(WeierstrassCurve curve) {
+    public MyProjectiveEllipticCurvePoint(WeierstrassCurve curve) {
         super(curve, curve.getFieldOfDefinition().getZeroElement(),
                 curve.getFieldOfDefinition().getOneElement(), curve.getFieldOfDefinition().getZeroElement());
     }
@@ -29,11 +29,6 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         }
         FieldElement div = z.inv();
         return new AffineEllipticCurvePoint(structure, x.mul(div), y.mul(div));
-    }
-    
-    @Override
-    public MyProjectiveEllipticCurvePoint createNewPoint(FieldElement x, FieldElement y) {
-        return new MyProjectiveEllipticCurvePoint(structure, x, y);
     }
     
     @Override
@@ -62,7 +57,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
             if (t0.equals(t1)) {
                 return this.times2();
             }
-            return getPointAtInfinity();
+            return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }
         FieldElement t = t0.sub(t1);
         FieldElement u = u0.sub(u1);
@@ -73,13 +68,13 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement rx = u.mul(w);
         FieldElement ry = t.mul(u0.mul(u2).sub(w)).sub(t0.mul(u3));
         FieldElement rz = u3.mul(v);
-        return new MyProjectiveEllipticCurvePoint(structure, rx, ry, rz);
+        return new MyProjectiveEllipticCurvePoint(structure, rx, ry, rz); // todo: return actual type of this instance somehow
     }
     
     // returns this+this
-    private MyProjectiveEllipticCurvePoint times2() {
+    private AbstractEllipticCurvePoint times2() {
         if (this.isNeutralElement() || y.isZero()) {
-            return getPointAtInfinity();
+            return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }
         FieldElement t = x.square().mul(structure.getFieldOfDefinition().getElement(3)).add(z.square().mul(structure.getA4()));
         FieldElement two = structure.getFieldOfDefinition().getElement(2);
@@ -91,11 +86,6 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement ry = t.mul(v.sub(w)).sub(u2.mul(y.square().mul(two)));
         FieldElement rz = u2.mul(u);
         return new MyProjectiveEllipticCurvePoint(structure, rx, ry, rz);
-    }
-    
-    @Override
-    public MyProjectiveEllipticCurvePoint getPointAtInfinity() {
-        return new MyProjectiveEllipticCurvePoint(structure);
     }
     
     @Override

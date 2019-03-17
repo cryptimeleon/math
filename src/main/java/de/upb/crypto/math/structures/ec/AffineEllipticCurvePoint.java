@@ -40,16 +40,6 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
     
     
     @Override
-    public AffineEllipticCurvePoint createNewPoint(FieldElement x, FieldElement y) {
-        return new AffineEllipticCurvePoint(structure, x, y);
-    }
-    
-    @Override
-    public AffineEllipticCurvePoint getPointAtInfinity() {
-        return new AffineEllipticCurvePoint(structure);
-    }
-    
-    @Override
     public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q) {
         if (Q.isNeutralElement()) {
             return this;
@@ -61,24 +51,24 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
             if (y.equals(Q.y)) {
                 return this.times2();
             }
-            return getPointAtInfinity();
+            return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }
         FieldElement s = y.sub(Q.y).div(x.sub(Q.x));
         FieldElement rx = s.square().sub(x).sub(Q.x);
         FieldElement ry = s.mul(x.sub(rx)).sub(y);
-        return createNewPoint(rx, ry);
+        return (AbstractEllipticCurvePoint)structure.getElement(rx, ry);
     }
     
     // returns this+this
-    private AffineEllipticCurvePoint times2() {
+    private AbstractEllipticCurvePoint times2() {
         if (this.isNeutralElement() || y.isZero()) {
-            return getPointAtInfinity();
+            return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }
         FieldElement two = structure.getFieldOfDefinition().getElement(2);
         FieldElement s = x.square().mul(structure.getFieldOfDefinition().getElement(3)).add(structure.getA4()).div(y.mul(two));
         FieldElement rx = s.square().sub(x.mul(two));
         FieldElement ry = s.mul(x.sub(rx)).sub(y);
-        return createNewPoint(rx, ry);
+        return (AbstractEllipticCurvePoint)structure.getElement(rx, ry);
     }
     
     @Override

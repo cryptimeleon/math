@@ -18,8 +18,6 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
         this.z = z;
     }
     
-    public abstract AbstractEllipticCurvePoint createNewPoint(FieldElement x, FieldElement y);
-    public abstract AbstractEllipticCurvePoint getPointAtInfinity();
     public abstract AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q);
     
     @Override

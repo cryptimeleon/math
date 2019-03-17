@@ -1,5 +1,6 @@
 package de.upb.crypto.math.swante;
 
+import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.ec.AffineEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
@@ -10,7 +11,12 @@ public class MyAffineCurve extends MyShortFormWeierstrassCurve {
     }
     
     @Override
-    AbstractEllipticCurvePoint createPoint(Zp.ZpElement x, Zp.ZpElement y) {
+    public AffineEllipticCurvePoint getNeutralElement() {
+        return new AffineEllipticCurvePoint(this);
+    }
+    
+    @Override
+    public AffineEllipticCurvePoint getElement(FieldElement x, FieldElement y) {
         return new AffineEllipticCurvePoint(this, x, y);
     }
     
