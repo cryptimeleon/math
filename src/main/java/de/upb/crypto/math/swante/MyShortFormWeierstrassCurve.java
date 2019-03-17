@@ -95,8 +95,8 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     }
     
     @Override
-    public MyAbstractEllipticCurvePoint getUniformlyRandomElement() throws UnsupportedOperationException {
-        return (MyAbstractEllipticCurvePoint) this.getGenerator().pow(field.getUniformlyRandomElement().getInteger());
+    public AbstractEllipticCurvePoint getUniformlyRandomElement() throws UnsupportedOperationException {
+        return (AbstractEllipticCurvePoint) this.getGenerator().pow(field.getUniformlyRandomElement().getInteger());
     }
     
     @Override
