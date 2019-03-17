@@ -125,5 +125,27 @@ public class MyProjectiveEllipticCurvePoint extends MyAbstractEllipticCurvePoint
         return z.isOne();
     }
     
+    @Override
+    public boolean equals(Object element) {
+        if (element == this)
+            return true;
+        
+        if (!(element instanceof MyProjectiveEllipticCurvePoint))
+            return false;
+        
+        MyProjectiveEllipticCurvePoint p = (MyProjectiveEllipticCurvePoint) element;
+        if (this.isNeutralElement() && p.isNeutralElement())
+            return true;
+        
+        if (this.isNeutralElement() || p.isNeutralElement())
+            return false;
+        
+        if (!this.x.mul(p.z).equals(p.x.mul(z)))
+            return false;
+        
+        return this.y.mul(p.z).equals(p.y.mul(z))
+                ;
+    }
+    
 }
 

@@ -2,6 +2,7 @@ package de.upb.crypto.math.swante;
 
 
 import de.upb.crypto.math.interfaces.structures.*;
+import de.upb.crypto.math.structures.ec.AffineEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 
 // a point on a short form weierstrass curve, in affince coordinates
@@ -59,6 +60,27 @@ public class MyAffineEllipticCurvePoint extends MyAbstractEllipticCurvePoint {
         FieldElement rx = s.square().sub(x.mul(curve.two));
         FieldElement ry = s.mul(x.sub(rx)).sub(y);
         return createNewPoint(rx, ry);
+    }
+    
+    @Override
+    public boolean equals(Object element) {
+        if (element == this)
+            return true;
+        
+        if (!(element instanceof MyAffineEllipticCurvePoint))
+            return false;
+        
+        MyAffineEllipticCurvePoint p = (MyAffineEllipticCurvePoint) element;
+        if (this.isNeutralElement() && p.isNeutralElement())
+            return true;
+        
+        if (this.isNeutralElement() || p.isNeutralElement())
+            return false;
+        
+        if (!this.x.equals(p.x))
+            return false;
+    
+        return this.y.equals(p.y);
     }
     
     @Override
