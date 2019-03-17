@@ -137,10 +137,10 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         if (this.isNeutralElement() || p.isNeutralElement())
             return false;
         
-        if (!this.x.mul(p.z).equals(p.x.mul(z)))
+        if (!this.x.mul(p.z.square()).equals(p.x.mul(z.square())))
             return false;
         
-        return this.y.mul(p.z).equals(p.y.mul(z));
+        return this.y.mul(p.z.square().mul(p.z)).equals(p.y.mul(z.square().mul(z)));
     }
     
 }
