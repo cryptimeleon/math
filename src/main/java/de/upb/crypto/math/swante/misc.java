@@ -13,13 +13,25 @@ class misc {
         myAssert(1<0, () -> "fail");
     }
     
-    class Pair<A, B> {
+    static class Pair<A, B> {
         public final A a;
         public final B b;
         
         public Pair(A a, B b) {
             this.a = a;
             this.b = b;
+        }
+    }
+    
+    static class Triple<A, B, C> {
+        public final A a;
+        public final B b;
+        public final C c;
+        
+        public Triple(A a, B b, C c) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
         }
     }
     
