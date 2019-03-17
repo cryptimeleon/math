@@ -1,5 +1,6 @@
 package de.upb.crypto.math.structures.ec;
 
+import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
@@ -7,9 +8,9 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.swante.MyAbstractEllipticCurvePoint;
 
 public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
-    FieldElement x, y, z;
-
-    WeierstrassCurve structure;
+    protected FieldElement x, y, z;
+    
+    protected WeierstrassCurve structure;
 
     public AbstractEllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y, FieldElement z) {
         this.structure = curve;
@@ -82,5 +83,20 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
     @Override
     public boolean isNeutralElement() {
         return z.isZero();
+    }
+    
+    @Override
+    public FieldElement[] computeLine(EllipticCurvePoint Q) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public EllipticCurvePoint add(EllipticCurvePoint P, FieldElement[] line) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
+        throw new UnsupportedOperationException();
     }
 }
