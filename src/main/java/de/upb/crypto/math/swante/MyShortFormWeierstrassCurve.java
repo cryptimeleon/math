@@ -27,26 +27,25 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     public final Zp.ZpElement b;
     public final Zp.ZpElement n;
     public final Zp.ZpElement h;
-    public final MyAbstractEllipticCurvePoint generator;
+    public final AbstractEllipticCurvePoint generator;
     public final Zp.ZpElement two;
     public final Zp.ZpElement three;
     
     public MyShortFormWeierstrassCurve(MyShortFormWeierstrassCurveParameters parameters) {
-        Zp zp = new Zp(parameters.p);
-        field = zp;
-        two = zp.new ZpElement(BigInteger.valueOf(2));
-        three = zp.new ZpElement(BigInteger.valueOf(3));
-        a = zp.new ZpElement(parameters.a);
-        b = zp.new ZpElement(parameters.b);
-        n = zp.new ZpElement(parameters.n);
-        h = zp.new ZpElement(parameters.h);
-        generator = this.createPoint(zp.new ZpElement(parameters.gx), zp.new ZpElement(parameters.gy));
+        field = new Zp(parameters.p);
+        two = field.new ZpElement(BigInteger.valueOf(2));
+        three = field.new ZpElement(BigInteger.valueOf(3));
+        a = field.new ZpElement(parameters.a);
+        b = field.new ZpElement(parameters.b);
+        n = field.new ZpElement(parameters.n);
+        h = field.new ZpElement(parameters.h);
+        generator = this.createPoint(field.new ZpElement(parameters.gx), field.new ZpElement(parameters.gy));
     }
     
-    abstract MyAbstractEllipticCurvePoint createPoint(Zp.ZpElement x, Zp.ZpElement y);
+    abstract AbstractEllipticCurvePoint createPoint(Zp.ZpElement x, Zp.ZpElement y);
     
     @Override
-    public MyAbstractEllipticCurvePoint getGenerator() {
+    public AbstractEllipticCurvePoint getGenerator() {
         return generator;
     }
     
@@ -76,8 +75,8 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     }
     
     @Override
-    public EllipticCurvePoint getElement(FieldElement x, FieldElement y) {
-        return generator.createNewPoint(x, y);
+    public AbstractEllipticCurvePoint getElement(FieldElement x, FieldElement y) {
+        return this.createPoint((Zp.ZpElement)x, (Zp.ZpElement)y);
     }
     
     @Override
@@ -86,7 +85,7 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     }
     
     @Override
-    public GroupElement getNeutralElement() {
+    public AbstractEllipticCurvePoint getNeutralElement() {
         return generator.getPointAtInfinity();
     }
     
@@ -122,6 +121,6 @@ public abstract class MyShortFormWeierstrassCurve implements WeierstrassCurve {
     
     
     protected String parametersToString() {
-        return String.format("p=%s\na=%s\nb=%s\nG.x=%s\nG.y=%s\nn=%s\nh=%s", field.size(), a, b, generator.x, generator.y, n, h);
+        return String.format("p=%s\na=%s\nb=%s\nG.x=%s\nG.y=%s\nn=%s\nh=%s", field.size(), a, b, generator.getX(), generator.getY(), n, h);
     }
 }

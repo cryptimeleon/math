@@ -1,11 +1,10 @@
 package de.upb.crypto.math.structures.ec;
 
-import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
-import de.upb.crypto.math.interfaces.structures.Field;
-import de.upb.crypto.math.interfaces.structures.FieldElement;
+import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.swante.MyAbstractEllipticCurvePoint;
 
 public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
     FieldElement x, y, z;
@@ -17,6 +16,22 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+    
+    public abstract AbstractEllipticCurvePoint createNewPoint(FieldElement x, FieldElement y);
+    public abstract AbstractEllipticCurvePoint getPointAtInfinity();
+    public abstract AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q);
+    
+    @Override
+    public abstract AbstractEllipticCurvePoint inv();
+    
+    @Override
+    public abstract AbstractEllipticCurvePoint normalize();
+    
+    @Override
+    public AbstractEllipticCurvePoint op(Element e) throws IllegalArgumentException {
+        AbstractEllipticCurvePoint Q = (AbstractEllipticCurvePoint) e;
+        return this.add(Q);
     }
 
     public Field getFieldOfDefinition() {
