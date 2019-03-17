@@ -82,7 +82,7 @@ public class mymath {
                 return this;
             }
             BigInteger div = z.modInverse(p);
-            return new ProjectiveTriple(x.multiply(div), y.multiply(div), one);
+            return new ProjectiveTriple(x.multiply(div).mod(p), y.multiply(div).mod(p), one);
         }
     
         public ProjectiveTriple pow(BigInteger p, BigInteger a, BigInteger power) {
