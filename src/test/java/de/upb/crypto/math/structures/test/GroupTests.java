@@ -174,7 +174,7 @@ public class GroupTests extends StructureTests {
     }
 
     @Parameters(name = "Test: {0}") // add (name="Test: {0}") for jUnit 4.12+ to print group's name to test
-    public static Collection<TestParams[]> data() {
+    public static Collection<TestParams> data() {
         // Some setup
         // Unit group of a ring
         RingUnitGroup ringUnitGroup = new RingUnitGroup(new Zp(BigInteger.valueOf(13)));
@@ -221,9 +221,9 @@ public class GroupTests extends StructureTests {
 //                {new TestParams(lazyGroup)}
 //        };
         MyShortFormWeierstrassCurveParameters mySecp256r1Parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
-        TestParams params[][] = new TestParams[][]{
-                {new TestParams(new MyAffineCurve(mySecp256r1Parameters))},
-                {new TestParams(new MyProjectiveCurve(mySecp256r1Parameters))}
+        TestParams params[] = new TestParams[]{
+                new TestParams(new MyAffineCurve(mySecp256r1Parameters)),
+                new TestParams(new MyProjectiveCurve(mySecp256r1Parameters))
         };
         return Arrays.asList(params);
     }

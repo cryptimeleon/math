@@ -3,6 +3,7 @@ package de.upb.crypto.math.swante;
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 
 // abstract superclass for affine, projective and jacobian points
@@ -75,5 +76,13 @@ abstract public class MyAbstractEllipticCurvePoint implements EllipticCurvePoint
     @Override
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public int hashCode() {
+        if (isNormalized())
+            return x.hashCode();
+        else
+            return ((MyAbstractEllipticCurvePoint) normalize()).x.hashCode(); //todo do something more efficient
     }
 }
