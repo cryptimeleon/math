@@ -58,7 +58,7 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement z2Sq = Q.z.square();
         FieldElement U1 = x.mul(z2Sq);
         FieldElement U2 = Q.x.mul(z1Sq);
-        FieldElement S1 = y.mul(Q.z.mul(z2Sq);
+        FieldElement S1 = y.mul(Q.z).mul(z2Sq);
         FieldElement S2 = Q.y.mul(z).mul(z1Sq);
         FieldElement H = U2.sub(U1);
         FieldElement sDiff = S2.sub(S1);
@@ -73,7 +73,7 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement hDoubled = H.mul(two);
         FieldElement I = hDoubled.square();
         FieldElement J = H.mul(I);
-        FieldElement r = sDiff.mul(two));
+        FieldElement r = sDiff.mul(two);
         FieldElement V = U1.mul(I);
         FieldElement rx = r.square().sub(J).sub(V.mul(two));
         FieldElement ry = r.mul(V.sub(rx)).sub(S1.mul(J).mul(two));
@@ -96,7 +96,7 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement two = field.getElement(2);
         FieldElement S = x1PlusYy.square().sub(xSq).sub(yPow4).mul(two);
         FieldElement M = xSq.mul(field.getElement(3)).add(structure.getA4().mul(zSq.square()));
-        FieldElement rx = M.square().sub(S.mul(2));
+        FieldElement rx = M.square().sub(S.mul(two));
         FieldElement ry = M.mul(S.sub(rx)).sub(yPow4.mul(field.getElement(8)));
         FieldElement y1PlusZ1 = y.add(z);
         FieldElement rz = y1PlusZ1.square().sub(ySq).sub(zSq);
