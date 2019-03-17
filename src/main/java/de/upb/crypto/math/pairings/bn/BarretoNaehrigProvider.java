@@ -212,7 +212,7 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
                 continue;
 
             /* map b to extension field */
-            FieldElement bInExt = extField1.lift(b);
+            FieldElement bInExt = extField1.lift(b); // todo: fix deprecated call
 
             /*
              * iterate through degree 6 twists of E until we find correct order by iterating through powers coprime to

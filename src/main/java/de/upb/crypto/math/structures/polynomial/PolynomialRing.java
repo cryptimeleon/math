@@ -141,6 +141,7 @@ public class PolynomialRing implements Ring {
          *
          * @param coefficients the coefficients in descending order (!)
          */
+        // todo: fix javadoc
         public Polynomial(Seed seed) {
             if (!baseRing.equals(new Zp(BigInteger.valueOf(2)))) {
                 throw new IllegalArgumentException(

@@ -151,6 +151,7 @@ public interface Ring extends Structure {
      * @param b
      * @returns an array with coefficients and the gcd: [x[0], x[1], ..., x[n-1], gcd(elements)]
      */
+    // todo: fix javadoc
     public default ArrayList<RingElement> extendedEuclideanAlgorithm(List<RingElement> elements) {
         if (elements == null || elements.size() == 0)
             return new ArrayList<>(Collections.singleton(getOneElement()));

@@ -144,7 +144,7 @@ public class GroupTests extends StructureTests {
         if (a == b)
             System.out.println("Warning: could not test hash code implementation for " + group); // if a == b, the default "Object" hashCode implementation will simply work just like that
 
-        assertTrue(a.equals(b) && b.equals(b));
+        assertTrue(a.equals(b) && b.equals(b)); // todo: b.equals(a)??
         assertTrue("Equal elements should have the same hashCode", a.hashCode() == b.hashCode());
     }
 

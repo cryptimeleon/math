@@ -38,6 +38,7 @@ public class VariableOutputLengthHashFunction implements HashFunction, Standalon
      *
      * @param length desired output length of this hash function in byte
      */
+    // todo: fix javadoc
     public VariableOutputLengthHashFunction(int outputLength) {
         this(new SHA256HashFunction(), outputLength);
     }
@@ -52,6 +53,7 @@ public class VariableOutputLengthHashFunction implements HashFunction, Standalon
      * @param hashFunction a base hash function
      * @param length       desired output length of this hash function in byte
      */
+    // todo: fix javadoc
     public VariableOutputLengthHashFunction(HashFunction hashFunction, int outputLength) {
         innerFunction = hashFunction;
         this.outputLength = outputLength;
