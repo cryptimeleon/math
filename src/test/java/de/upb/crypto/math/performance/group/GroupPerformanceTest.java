@@ -5,6 +5,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.test.GroupTests;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.MyAffineCurve;
+import de.upb.crypto.math.swante.MyJacobiCurve;
 import de.upb.crypto.math.swante.MyProjectiveCurve;
 import de.upb.crypto.math.swante.MyShortFormWeierstrassCurveParameters;
 import org.junit.Test;
@@ -64,6 +65,7 @@ public class GroupPerformanceTest {
         ArrayList<GroupPerformanceTestParams> schemes = new ArrayList<>();
         MyShortFormWeierstrassCurveParameters mySecp256r1Parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         schemes.add(new GroupPerformanceTestParams(new MyAffineCurve(mySecp256r1Parameters), new MyProjectiveCurve(mySecp256r1Parameters), 100));
+        schemes.add(new GroupPerformanceTestParams(new MyProjectiveCurve(mySecp256r1Parameters), new MyJacobiCurve(mySecp256r1Parameters), 100));
         return schemes;
     }
 }

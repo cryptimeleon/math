@@ -17,6 +17,7 @@ import de.upb.crypto.math.structures.sn.Sn;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.MyAffineCurve;
+import de.upb.crypto.math.swante.MyJacobiCurve;
 import de.upb.crypto.math.swante.MyProjectiveCurve;
 import de.upb.crypto.math.swante.MyShortFormWeierstrassCurveParameters;
 import org.junit.Test;
@@ -223,7 +224,8 @@ public class GroupTests extends StructureTests {
         MyShortFormWeierstrassCurveParameters mySecp256r1Parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         TestParams params[] = new TestParams[]{
                 new TestParams(new MyAffineCurve(mySecp256r1Parameters)),
-                new TestParams(new MyProjectiveCurve(mySecp256r1Parameters))
+                new TestParams(new MyProjectiveCurve(mySecp256r1Parameters)),
+                new TestParams(new MyJacobiCurve(mySecp256r1Parameters))
         };
         return Arrays.asList(params);
     }

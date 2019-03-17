@@ -69,6 +69,7 @@ public class EllipticCurvePointTests {
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         list.add(new MyAffineCurve(parameters));
         list.add(new MyProjectiveCurve(parameters));
+        list.add(new MyJacobiCurve(parameters));
         return list;
     }
     
