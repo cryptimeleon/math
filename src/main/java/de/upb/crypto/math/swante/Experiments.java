@@ -2,6 +2,8 @@ package de.upb.crypto.math.swante;
 
 import java.math.BigInteger;
 
+import static de.upb.crypto.math.swante.misc.myAssert;
+
 interface Element<E extends Element> {
     Structure<E> getStructure();
     
@@ -204,23 +206,31 @@ class ZpElement implements FieldElement<ZpElement> {
     @Override
     public ZpElement mul(ZpElement other) {
         return new ZpElement(field, value.multiply(other.value));
-        ;
     }
     
     @Override
     public ZpElement inv() {
-        return null;
+        return new ZpElement(field, new de.upb.crypto.math.structures.zn.Zp(field.p).new ZpElement(value).inv().getInteger());
     }
     
     @Override
     public Field<ZpElement> getStructure() {
         return field;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ZpElement))
+            return false;
+        
+        ZpElement e = (ZpElement) obj;
+        return value.equals(e.value);
+    }
 }
 
 class Zp implements Field<ZpElement> {
     
-    private final BigInteger p;
+    public final BigInteger p;
     
     public Zp(BigInteger p) {
         this.p = p;
@@ -243,7 +253,7 @@ class Zp implements Field<ZpElement> {
     
     @Override
     public ZpElement getElement(BigInteger i) {
-        return new ZpElement(this, BigInteger.valueOf(i));
+        return new ZpElement(this, i);
     }
 }
 
@@ -270,9 +280,11 @@ interface WeierstrassCurve<G extends EllipticCurvePoint<G>> extends EllipticCurv
 }
 
 abstract class AbstractEllipticCurvePoint<G extends AbstractEllipticCurvePoint<G>> implements EllipticCurvePoint<G> {
-    protected ZpElement x, y, z;
+    protected final ZpElement x;
+    protected final ZpElement y;
+    protected final ZpElement z;
     
-    protected WeierstrassCurve<G> structure;
+    protected final WeierstrassCurve<G> structure;
     
     public AbstractEllipticCurvePoint(WeierstrassCurve<G> curve, ZpElement x,
                                       ZpElement y, ZpElement z) {
@@ -402,7 +414,7 @@ class ExampleProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint<Exa
     public ExampleProjectiveEllipticCurvePoint inv() {
         if (this.isNeutralElement())
             return this;
-    
+        
         ZpElement newY = y.neg();
         return new ExampleProjectiveEllipticCurvePoint(structure, x, newY, z);
     }
@@ -519,19 +531,19 @@ abstract class ExampleShortFormWeierstrassCurve<G extends AbstractEllipticCurveP
     }
 }
 
-class ExampleProjectiveCurve extends ExampleShortFormWeierstrassCurve {
+class ExampleProjectiveCurve extends ExampleShortFormWeierstrassCurve<ExampleProjectiveEllipticCurvePoint> {
     public ExampleProjectiveCurve(MyShortFormWeierstrassCurveParameters parameters) {
         super(parameters);
     }
     
     @Override
-    public MyProjectiveEllipticCurvePoint getNeutralElement() {
-        return new MyProjectiveEllipticCurvePoint(this);
+    public ExampleProjectiveEllipticCurvePoint getNeutralElement() {
+        return new ExampleProjectiveEllipticCurvePoint(this);
     }
     
     @Override
-    public MyProjectiveEllipticCurvePoint getElement(FieldElement x, FieldElement y) {
-        return new MyProjectiveEllipticCurvePoint(this, x, y, getFieldOfDefinition().getOneElement());
+    public ExampleProjectiveEllipticCurvePoint getElement(ZpElement x, ZpElement y) {
+        return new ExampleProjectiveEllipticCurvePoint(this, x, y, getFieldOfDefinition().getOneElement());
     }
     
     @Override
@@ -543,7 +555,11 @@ class ExampleProjectiveCurve extends ExampleShortFormWeierstrassCurve {
 
 public class Experiments {
     public static void main(String[] args) {
-        A a = new A(3);
-        pln(a.pow(4));
+        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
+        ExampleProjectiveCurve curve = new ExampleProjectiveCurve(parameters);
+        ExampleProjectiveEllipticCurvePoint g = curve.generator;
+        ExampleProjectiveEllipticCurvePoint gg = g.op(g);
+        myAssert(gg.normalize().getX().value.equals(new BigInteger("56515219790691171413109057904011688695424810155802929973526481321309856242040")));
+        myAssert(g.pow(101).normalize().getX().value.equals(new BigInteger("93980847734016439027508041847036757272229093243964019053297849828346202436527")));
     }
 }
