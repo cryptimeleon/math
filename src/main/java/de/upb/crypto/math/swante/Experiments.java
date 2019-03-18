@@ -1,7 +1,5 @@
 package de.upb.crypto.math.swante;
 
-import de.upb.crypto.math.serialization.Representation;
-
 import java.math.BigInteger;
 
 import static de.upb.crypto.math.swante.misc.pln;
@@ -150,11 +148,32 @@ interface FieldElement<E extends FieldElement<E>> extends RingElement<E> {
     @Override
     Field<E> getStructure();
     
+    default boolean isZero() {
+        return equals(getStructure().getZeroElement());
+    }
+    
 }
 
 interface Field<E extends FieldElement<E>> extends Ring<E> {
     
-    E getPrimitiveElement() throws UnsupportedOperationException;
+    @Override
+    default boolean isCommutative() {
+        return true;
+    }
+}
+
+interface EllipticCurvePoint<G extends EllipticCurvePoint<G>> extends GroupElement<G> {
+    G normalize();
+    
+    default boolean isNormalized() {return true;}
+}
+
+// G: usually the elliptic curve point type
+// F; usually ZpElement
+interface EllipticCurve<G extends GroupElement<G>,
+        F extends FieldElement<F>> extends Group<G> {
+    
+    Field<F> getFieldOfDefinition();
     
     @Override
     default boolean isCommutative() {
@@ -162,15 +181,77 @@ interface Field<E extends FieldElement<E>> extends Ring<E> {
     }
 }
 
-interface EllipticCurve<E,F> extends Group {
+interface WeierstrassCurve<G extends EllipticCurvePoint<G>, F extends FieldElement<F>> extends EllipticCurve<G,F> {
+    F getA6();
     
-    Field getFieldOfDefinition();
+    F getA4();
+    
+    F getA3();
+    
+    F getA2();
+    
+    F getA1();
+    
+    G getElement(F x, F y);
+    
+    default boolean isShortForm() {
+        return getA3().isZero() && getA2().isZero() && getA1().isZero();
+    }
+    
+}
+
+abstract class AbstractEllipticCurvePoint<G extends AbstractEllipticCurvePoint<G,F>, F extends FieldElement<F>> implements EllipticCurvePoint<G> {
+    protected F x, y, z;
+    
+    protected WeierstrassCurve<G, F> structure;
+    
+    public AbstractEllipticCurvePoint(WeierstrassCurve<G, F> curve, F x, F y, F z) {
+        this.structure = curve;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+    
+    public Field<F> getFieldOfDefinition() {
+        return structure.getFieldOfDefinition();
+    }
+    
+    public F getX() {
+        return x;
+    }
+    
+    public F getY() {
+        return y;
+    }
+    
+    public F getZ() {
+        return z;
+    }
+    
+    public WeierstrassCurve<G, F> getStructure() {
+        return structure;
+    }
+    
+    
+    public String toString() {
+        return "(" + x.toString() + ":" + y.toString() + ":" + z.toString() + ")";
+    }
     
     @Override
-    default boolean isCommutative() {
-        return true;
+    public int hashCode() {
+        if (isNormalized())
+            return getX().hashCode();
+        else
+            return normalize().getX().hashCode(); //todo do something more efficient
     }
+    
+    @Override
+    public boolean isNeutralElement() {
+        return z.isZero();
+    }
+    
 }
+
 
 class A implements GroupElement<A> {
     
