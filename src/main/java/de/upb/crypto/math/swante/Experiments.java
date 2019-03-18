@@ -519,6 +519,28 @@ abstract class ExampleShortFormWeierstrassCurve<G extends AbstractEllipticCurveP
     }
 }
 
+class ExampleProjectiveCurve extends ExampleShortFormWeierstrassCurve {
+    public ExampleProjectiveCurve(MyShortFormWeierstrassCurveParameters parameters) {
+        super(parameters);
+    }
+    
+    @Override
+    public MyProjectiveEllipticCurvePoint getNeutralElement() {
+        return new MyProjectiveEllipticCurvePoint(this);
+    }
+    
+    @Override
+    public MyProjectiveEllipticCurvePoint getElement(FieldElement x, FieldElement y) {
+        return new MyProjectiveEllipticCurvePoint(this, x, y, getFieldOfDefinition().getOneElement());
+    }
+    
+    @Override
+    public String toString() {
+        return "ProjectiveCurve";
+    }
+    
+}
+
 public class Experiments {
     public static void main(String[] args) {
         A a = new A(3);

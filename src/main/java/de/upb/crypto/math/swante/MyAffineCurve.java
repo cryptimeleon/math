@@ -3,7 +3,7 @@ package de.upb.crypto.math.swante;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.structures.ec.AffineEllipticCurvePoint;
 
-public class MyAffineCurve extends ExampleShortFormWeierstrassCurve {
+public class MyAffineCurve extends MyShortFormWeierstrassCurve {
     public MyAffineCurve(MyShortFormWeierstrassCurveParameters parameters) {
         super(parameters);
     }
