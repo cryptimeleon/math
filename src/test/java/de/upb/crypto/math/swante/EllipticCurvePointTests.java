@@ -16,9 +16,9 @@ import static de.upb.crypto.math.swante.misc.pln;
 @RunWith(value = Parameterized.class)
 public class EllipticCurvePointTests {
     
-    private MyShortFormWeierstrassCurve curve;
+    private ExampleShortFormWeierstrassCurve curve;
     
-    public EllipticCurvePointTests(MyShortFormWeierstrassCurve curve) {
+    public EllipticCurvePointTests(ExampleShortFormWeierstrassCurve curve) {
         this.curve = curve;
     }
     
@@ -64,8 +64,8 @@ public class EllipticCurvePointTests {
     }
     
     @Parameterized.Parameters(name = "{index}: {0}")
-    public static Collection<MyShortFormWeierstrassCurve> getParams() {
-        ArrayList<MyShortFormWeierstrassCurve> list = new ArrayList<>();
+    public static Collection<ExampleShortFormWeierstrassCurve> getParams() {
+        ArrayList<ExampleShortFormWeierstrassCurve> list = new ArrayList<>();
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         list.add(new MyAffineCurve(parameters));
         list.add(new MyProjectiveCurve(parameters));

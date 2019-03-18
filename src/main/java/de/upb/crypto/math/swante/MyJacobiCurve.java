@@ -2,9 +2,8 @@ package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.structures.ec.MyJacobiEllipticCurvePoint;
-import de.upb.crypto.math.structures.ec.MyProjectiveEllipticCurvePoint;
 
-public class MyJacobiCurve extends MyShortFormWeierstrassCurve {
+public class MyJacobiCurve extends ExampleShortFormWeierstrassCurve {
     
     public MyJacobiCurve(MyShortFormWeierstrassCurveParameters parameters) {
         super(parameters);
