@@ -1,5 +1,7 @@
 package de.upb.crypto.math.swante;
 
+import de.upb.crypto.math.serialization.Representation;
+
 import java.math.BigInteger;
 
 import static de.upb.crypto.math.swante.misc.pln;
@@ -68,7 +70,7 @@ interface GroupElement<E extends GroupElement<E>> extends Element<E> {
     default E pow(BigInteger k) { //default implementation: square&multiply algorithm
         if (k.signum() < 0)
             return pow(k.negate()).inv();
-        E operand = (E)this;
+        E operand = (E) this;
         
         E result = getStructure().getNeutralElement();
         for (int i = k.bitLength() - 1; i >= 0; i--) {
@@ -79,12 +81,94 @@ interface GroupElement<E extends GroupElement<E>> extends Element<E> {
         return result;
     }
     
-    default GroupElement pow(long k) {
+    default E pow(long k) {
         return pow(BigInteger.valueOf(k));
     }
     
     default boolean isNeutralElement() {
         return this.equals(getStructure().getNeutralElement());
+    }
+}
+
+interface RingElement<E extends RingElement<E>> extends Element<E> {
+    @Override
+    Ring<E> getStructure();
+    
+    E add(E e);
+    
+    E neg();
+    
+    default E sub(E e) {
+        return add(e.neg());
+    }
+    
+    E mul(E e);
+    
+    default E pow(BigInteger k) { //default implementation: square&multiply algorithm
+        if (k.signum() < 0)
+            return pow(k.negate()).inv();
+        E result = getStructure().getOneElement();
+        for (int i = k.bitLength() - 1; i >= 0; i--) {
+            result = result.mul(result);
+            if (k.testBit(i))
+                result = this.mul(result);
+        }
+        return result;
+    }
+    
+    E inv();
+    
+    default E div(E e) {
+        return mul(e.inv());
+    }
+    
+    default E square() {
+        return this.mul((E) this);
+    }
+}
+
+
+interface Ring<E extends RingElement<E>> extends Structure<E> {
+    
+    BigInteger sizeUnitGroup();
+    
+    E getZeroElement();
+    
+    E getOneElement();
+    
+    E getElement(BigInteger i);
+    
+    default E getElement(long i) {
+        return getElement(BigInteger.valueOf(i));
+    }
+    
+    boolean isCommutative();
+}
+
+interface FieldElement<E extends FieldElement<E>> extends RingElement<E> {
+    
+    @Override
+    Field<E> getStructure();
+    
+}
+
+interface Field<E extends FieldElement<E>> extends Ring<E> {
+    
+    E getPrimitiveElement() throws UnsupportedOperationException;
+    
+    @Override
+    default boolean isCommutative() {
+        return true;
+    }
+}
+
+interface EllipticCurve<E,F> extends Group {
+    
+    Field getFieldOfDefinition();
+    
+    @Override
+    default boolean isCommutative() {
+        return true;
     }
 }
 
