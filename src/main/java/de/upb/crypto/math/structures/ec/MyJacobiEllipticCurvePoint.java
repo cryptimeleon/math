@@ -49,7 +49,7 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
     @Override
     public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q) throws IllegalArgumentException {
         if (Q == this) {
-            return times2();
+            return square();
         }
         if (Q.isNeutralElement()) {
             return this;
@@ -67,7 +67,7 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement sDiff = S2.sub(S1);
         if (H.isZero()) {
             if (sDiff.isZero()) {
-                return this.times2();
+                return this.square();
             }
             return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }
@@ -86,7 +86,8 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
     }
     
     // returns this+this
-    private AbstractEllipticCurvePoint times2() {
+    @Override
+    public AbstractEllipticCurvePoint square() {
         if (this.isNeutralElement() || y.isZero()) {
             return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }

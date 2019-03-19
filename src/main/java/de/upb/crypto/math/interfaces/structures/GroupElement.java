@@ -54,11 +54,19 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
         
         GroupElement result = getStructure().getNeutralElement();
         for (int i = k.bitLength() - 1; i >= 0; i--) {
-            result = result.op(result);
+            result = result.square();
             if (k.testBit(i))
                 result = result.op(operand);
         }
         return result;
+    }
+    
+    /**
+     * @return this element "squared" (if op is an multiplication), or "doubled" (if op is an addition)
+     * If there is a more efficient algorithm for squaring (e.g. for elliptic curve points), these classes should override this method.
+     */
+    default GroupElement square() {
+        return this.op(this);
     }
     
     /**

@@ -42,7 +42,7 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
     @Override
     public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q) {
         if (Q == this) {
-            return times2();
+            return square();
         }
         if (Q.isNeutralElement()) {
             return this;
@@ -52,7 +52,7 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
         }
         if (x.equals(Q.x)) {
             if (y.equals(Q.y)) {
-                return this.times2();
+                return this.square();
             }
             return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }
@@ -63,7 +63,8 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
     }
     
     // returns this+this
-    private AbstractEllipticCurvePoint times2() {
+    @Override
+    public AbstractEllipticCurvePoint square() {
         if (this.isNeutralElement() || y.isZero()) {
             return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }
