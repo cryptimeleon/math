@@ -94,4 +94,33 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     default PowProductExpression asPowProductExpression() {
         return getStructure().powProductExpression().op(this);
     }
+    
+    /**
+     * Precomputes the small powers of this element. Should ideally not be called twice
+     * on the same instance. You should cache the result.
+     * You can also override this method to accomplish that caching
+     * @param windowSize
+     * @return array with x^1,x^3,x^5,...,x^(2^windowSize-1)
+     */
+    default GroupElement[] precomputePowersForSlidingWindow(int windowSize) {
+        GroupElement[] res = new GroupElement[(1 << windowSize-1)];
+        GroupElement xx = this.op(this);
+        GroupElement xPower = this;
+        for (int i = 0; i < res.length; i++) {
+            res[i] = xPower;
+            xPower = xPower.op(xx);
+        }
+        return res;
+    }
+    
+    /**
+     *
+     * @param exponent
+     * @param windowSize
+     * @param smallPowersOfThis: the result of above method
+     * @return this^exponent (assuming op is a multiplication), or this*exponent (if op is a addition), using the efficient sliding window technique
+     */
+    default GroupElement powUsingSlidingWindow(BigInteger exponent, int windowSize, GroupElement[] smallPowersOfThis) {
+        return null;
+    }
 }

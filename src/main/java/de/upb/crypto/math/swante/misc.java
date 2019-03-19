@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
-class misc {
+public class misc {
     
     public static void main(String[] args) {
         pln(randInts(15,3,9).toString());

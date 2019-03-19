@@ -4,13 +4,13 @@ import java.math.BigInteger;
 
 public class MyShortFormWeierstrassCurveParameters {
     
-    final BigInteger p;
-    final BigInteger a;
-    final BigInteger b;
-    final BigInteger gx;
-    final BigInteger gy;
-    final BigInteger n;
-    final BigInteger h;
+    public final BigInteger p;
+    public final BigInteger a;
+    public final BigInteger b;
+    public final BigInteger gx;
+    public final BigInteger gy;
+    public final BigInteger n;
+    public final BigInteger h;
     
     public MyShortFormWeierstrassCurveParameters(BigInteger p, BigInteger a, BigInteger b, BigInteger gx, BigInteger gy, BigInteger n, BigInteger h) {
         
