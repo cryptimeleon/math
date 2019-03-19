@@ -1,4 +1,6 @@
-package de.upb.crypto.math.swante;
+package de.upb.crypto.math.swante.experiments;
+
+import de.upb.crypto.math.swante.MyShortFormWeierstrassCurveParameters;
 
 import java.math.BigInteger;
 
