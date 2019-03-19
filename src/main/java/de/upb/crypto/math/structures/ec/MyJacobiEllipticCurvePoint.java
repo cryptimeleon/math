@@ -48,6 +48,9 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
     
     @Override
     public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q) throws IllegalArgumentException {
+//        if (Q == this) {
+//            return times2();
+//        }
         if (Q.isNeutralElement()) {
             return this;
         }

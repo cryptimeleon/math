@@ -14,7 +14,7 @@ import static de.upb.crypto.math.swante.misc.pln;
 
 
 
-public class MyTests {
+public class SimpleImplementationTests {
     
     MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
     
@@ -33,7 +33,8 @@ public class MyTests {
         mymath.ProjectiveTriple g = new mymath.ProjectiveTriple(parameters.gx, parameters.gy);
         BigInteger p = parameters.p;
         BigInteger a = parameters.a;
-        int numIterations = 100000;
+        int numIterations = 500000;
+        int numPowerIterations = 2000;
         misc.tick();
         mymath.ProjectiveTriple tmp = g;
         for (int i = 0; i < numIterations; i++) {
@@ -53,7 +54,6 @@ public class MyTests {
         tmp = g;
         BigInteger power = parameters.gx;
         misc.tick();
-        int numPowerIterations = 1000;
         for (int i = 0; i < numPowerIterations; i++) {
             tmp = tmp.pow(p, a, power);
             tmp = tmp.normalize(p);

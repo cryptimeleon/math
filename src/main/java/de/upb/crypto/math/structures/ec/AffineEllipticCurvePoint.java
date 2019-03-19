@@ -41,6 +41,9 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
     
     @Override
     public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q) {
+//        if (Q == this) {
+//            return times2();
+//        }
         if (Q.isNeutralElement()) {
             return this;
         }

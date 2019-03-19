@@ -44,6 +44,9 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
     
     @Override
     public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q) throws IllegalArgumentException {
+//        if (Q == this) {
+//            return this.times2();
+//        }
         if (Q.isNeutralElement()) {
             return this;
         }
@@ -73,7 +76,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
     }
     
     // returns this+this
-    private AbstractEllipticCurvePoint times2() {
+    public AbstractEllipticCurvePoint times2() {
         if (this.isNeutralElement() || y.isZero()) {
             return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }

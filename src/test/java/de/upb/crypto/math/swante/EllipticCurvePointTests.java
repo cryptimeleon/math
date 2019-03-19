@@ -32,9 +32,10 @@ public class EllipticCurvePointTests {
     @Test
     public void testSpeed() {
         pln("=========================");
-        pln("Running performance tests for curve: " + curve.toString() + " with parameters:\n" + curve.parametersToString());
+        pln("Running performance tests for curve: " + curve.toString());
         AbstractEllipticCurvePoint g = curve.generator;
-        int numIterations = 100000;
+        int numIterations = 500000;
+        int numPowerIterations = 2000;
         misc.tick();
         AbstractEllipticCurvePoint tmp = g;
         for (int i = 0; i < numIterations; i++) {
@@ -54,7 +55,6 @@ public class EllipticCurvePointTests {
         tmp = g;
         Zp.ZpElement power = (Zp.ZpElement) g.getX();
         misc.tick();
-        int numPowerIterations = 1000;
         for (int i = 0; i < numPowerIterations; i++) {
             tmp = (AbstractEllipticCurvePoint)tmp.pow(power);
             tmp = tmp.normalize();
