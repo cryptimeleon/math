@@ -64,7 +64,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement u = u0.sub(u1);
         FieldElement u2 = u.square();
         FieldElement v = z.mul(Q.z);
-        FieldElement w = t.mul(t).mul(v).sub(u2.mul(u0.add(u1)));
+        FieldElement w = t.square().mul(v).sub(u2.mul(u0.add(u1)));
         FieldElement u3 = u.mul(u2);
         FieldElement rx = u.mul(w);
         FieldElement ry = t.mul(u0.mul(u2).sub(w)).sub(t0.mul(u3));
