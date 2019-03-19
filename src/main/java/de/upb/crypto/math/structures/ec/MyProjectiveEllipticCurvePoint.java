@@ -43,20 +43,20 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
     
     
     @Override
-    public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint q) throws IllegalArgumentException {
-//        if (Q == this) {
-//            return this.times2();
-//        }
-        if (q.isNeutralElement()) {
+    public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q) throws IllegalArgumentException {
+        if (Q == this) {
+            return this.times2();
+        }
+        if (Q.isNeutralElement()) {
             return this;
         }
         if (this.isNeutralElement()) {
-            return q;
+            return Q;
         }
-        FieldElement x1z2 = x.mul(q.z);
-        FieldElement v = q.x.mul(z).sub(x1z2);
-        FieldElement y1z2 = y.mul(q.z);
-        FieldElement u = q.y.mul(z).sub(y1z2);
+        FieldElement x1z2 = x.mul(Q.z);
+        FieldElement v = Q.x.mul(z).sub(x1z2);
+        FieldElement y1z2 = y.mul(Q.z);
+        FieldElement u = Q.y.mul(z).sub(y1z2);
         if (v.isZero()) {
             if (u.isZero()) {
                 return this.times2();
@@ -67,7 +67,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement vv = v.square();
         FieldElement vvv = v.mul(vv);
         FieldElement r = vv.mul(x1z2);
-        FieldElement z1z2 = z.mul(q.z);
+        FieldElement z1z2 = z.mul(Q.z);
         FieldElement two = structure.getFieldOfDefinition().getElement(2);
         FieldElement a = uu.mul(z1z2).sub(vvv).sub(r.mul(two));
         FieldElement rx = v.mul(a);
