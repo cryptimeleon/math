@@ -33,6 +33,9 @@ public class mymath {
         }
         
         public ProjectiveTriple add(BigInteger p, BigInteger a, ProjectiveTriple q) {
+            if (q == this) {
+                return times2(p, a);
+            }
             if (q.z.signum() == 0) {
                 return this;
             }
