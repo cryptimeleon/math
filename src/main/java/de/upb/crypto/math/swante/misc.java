@@ -1,5 +1,6 @@
 package de.upb.crypto.math.swante;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -98,6 +99,14 @@ public class misc {
             res.add(i);
         }
         return res;
+    }
+    
+    public static BigInteger randBig(BigInteger maxExcluding) {
+        BigInteger result = new BigInteger(maxExcluding.bitLength(), rand);
+        while( result.compareTo(maxExcluding) >= 0 ) {
+            result = new BigInteger(maxExcluding.bitLength(), rand);
+        }
+        return result;
     }
     
     public static ArrayList<Integer> randInts(int count, int min, int maxExclusive) {
