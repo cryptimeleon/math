@@ -31,8 +31,8 @@ public class SlidingWindowTests {
     
     @Test
     public void testPerformance() {
-        int numBases = 10;
-        int numExponents = 20;
+        int numBases = 2;
+        int numExponents = 200;
         List<AbstractEllipticCurvePoint> bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).collect(Collectors.toList());
         List<BigInteger> exponents = IntStream.range(0, numExponents).mapToObj(it -> misc.randBig(parameters.p)).collect(Collectors.toList());
         for (int windowSize = 1; windowSize < 12; windowSize++) {
