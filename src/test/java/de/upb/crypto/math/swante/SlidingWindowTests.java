@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.powUsingSlidingWindow;
+import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.precomputePowersForSlidingWindow;
 import static de.upb.crypto.math.swante.misc.pln;
 
 public class SlidingWindowTests {
@@ -23,10 +25,10 @@ public class SlidingWindowTests {
         AbstractEllipticCurvePoint g = curve.getGenerator();
         GroupElement[] expected = {g.pow(1), g.pow(3), g.pow(5), g.pow(7)};
         int windowSize = 3;
-        GroupElement[] smallPowersOfG = g.precomputePowersForSlidingWindow(windowSize);
+        GroupElement[] smallPowersOfG = precomputePowersForSlidingWindow(g, windowSize);
         Assert.assertArrayEquals(expected,smallPowersOfG);
         BigInteger exponent = BigInteger.valueOf(1000001);
-        Assert.assertEquals(g.pow(exponent), g.powUsingSlidingWindow(exponent, windowSize, smallPowersOfG));
+        Assert.assertEquals(g.pow(exponent), powUsingSlidingWindow(g, exponent, windowSize, smallPowersOfG));
     }
     
     @Test
@@ -50,17 +52,17 @@ public class SlidingWindowTests {
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
                 for (int j = 0; j < numExponents; j++) {
-                    GroupElement[] smallPowers = base.precomputePowersForSlidingWindow(windowSize);
-                    base.powUsingSlidingWindow(exponents.get(j), windowSize, smallPowers);
+                    GroupElement[] smallPowers = precomputePowersForSlidingWindow(base, windowSize);
+                    powUsingSlidingWindow(base, exponents.get(j), windowSize, smallPowers);
                 }
             }
             pln(String.format("simple sliding window pow -> %.2f ms", misc.tick()));
             misc.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
-                GroupElement[] smallPowers = base.precomputePowersForSlidingWindow(windowSize);
+                GroupElement[] smallPowers = precomputePowersForSlidingWindow(base, windowSize);
                 for (int j = 0; j < numExponents; j++) {
-                    base.powUsingSlidingWindow(exponents.get(j), windowSize, smallPowers);
+                    powUsingSlidingWindow(base, exponents.get(j), windowSize, smallPowers);
                 }
             }
             pln(String.format("sliding window pow (with caching) -> %.2f ms", misc.tick()));

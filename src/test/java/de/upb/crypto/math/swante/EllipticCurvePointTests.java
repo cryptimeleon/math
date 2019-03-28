@@ -12,6 +12,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.powUsingSlidingWindow;
+import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.precomputePowersForSlidingWindow;
 import static de.upb.crypto.math.swante.misc.pln;
 
 @RunWith(value = Parameterized.class)
@@ -58,8 +60,8 @@ public class EllipticCurvePointTests {
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
             int windowSize = 3;
-            GroupElement[] precomputedPowers = tmp.precomputePowersForSlidingWindow(windowSize);
-            tmp = (AbstractEllipticCurvePoint)tmp.powUsingSlidingWindow(power.getInteger(), windowSize, precomputedPowers);
+            GroupElement[] precomputedPowers = precomputePowersForSlidingWindow(tmp, windowSize);
+            tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, power.getInteger(), windowSize, precomputedPowers);
             tmp = tmp.normalize();
         }
         elapsed = misc.tick();
