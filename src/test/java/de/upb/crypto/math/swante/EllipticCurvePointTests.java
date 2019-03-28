@@ -1,5 +1,6 @@
 package de.upb.crypto.math.swante;
 
+import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Assert;
@@ -56,7 +57,9 @@ public class EllipticCurvePointTests {
         Zp.ZpElement power = (Zp.ZpElement) g.getX();
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
-            tmp = (AbstractEllipticCurvePoint)tmp.pow(power);
+            int windowSize = 3;
+            GroupElement[] precomputedPowers = tmp.precomputePowersForSlidingWindow(windowSize);
+            tmp = (AbstractEllipticCurvePoint)tmp.powUsingSlidingWindow(power.getInteger(), windowSize, precomputedPowers);
             tmp = tmp.normalize();
         }
         elapsed = misc.tick();
@@ -68,8 +71,8 @@ public class EllipticCurvePointTests {
         ArrayList<MyShortFormWeierstrassCurve> list = new ArrayList<>();
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
 //        list.add(new MyAffineCurve(parameters));
-        list.add(new MyProjectiveCurve(parameters));
         list.add(new MyJacobiCurve(parameters));
+        list.add(new MyProjectiveCurve(parameters));
         return list;
     }
     
