@@ -34,16 +34,15 @@ public class MyExponentiationAlgorithms {
      * on the same instance. You should cache the result instead.
      *
      * @param base
-     * @param windowSize
-     * @return array with x^1,x^3,x^5,...,x^(2^windowSize-1), assuming op is a multiplication
+     * @param m odd integer, should not be too large
+     * @return array with x^1,x^3,x^5,...,x^m
      */
-    public static GroupElement[] precomputePowersForSlidingWindow(GroupElement base, int windowSize) {
-        GroupElement[] res = new GroupElement[(1 << windowSize - 1)];
+    public static GroupElement[] precomputeSmallOddPowers(GroupElement base, int m) {
+        GroupElement[] res = new GroupElement[(m+1)/2];
         GroupElement xx = base.square();
-        GroupElement xPower = base;
-        for (int i = 0; i < res.length; i++) {
-            res[i] = xPower;
-            xPower = xPower.op(xx);
+        res[0] = base;
+        for (int i = 1; i < res.length; i++) {
+            res[i] = res[i-1].op(xx);
         }
         return res;
     }
@@ -52,7 +51,7 @@ public class MyExponentiationAlgorithms {
      * @param base
      * @param exponent
      * @param windowSize
-     * @param smallPowersOfBase: the result of above method
+     * @param smallPowersOfBase: the result of above method when called with m=(1<<windowSize)-1
      * @return base^exponent using the efficient sliding window technique
      */
     public static GroupElement powUsingSlidingWindow(GroupElement base, BigInteger exponent, int windowSize, GroupElement[] smallPowersOfBase) {
@@ -84,6 +83,17 @@ public class MyExponentiationAlgorithms {
             }
         }
         return y;
+    }
+    
+    public static int[] precomputeExponentTransformationForLrSfwMethod(BigInteger exponent, int m) {
+        if (m > 1000) {
+            throw new IllegalArgumentException("too large m");
+        }
+    }
+
+    public static GroupElement powUsingLrSfwMethod(GroupElement base, int[] exponentDigits) {
+        GroupElement A = base.square();
+        
     }
 
 }

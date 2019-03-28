@@ -2,7 +2,6 @@ package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
-import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.powUsingSlidingWindow;
-import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.precomputePowersForSlidingWindow;
+import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.precomputeSmallOddPowers;
 import static de.upb.crypto.math.swante.misc.pln;
 
 public class SlidingWindowTests {
@@ -25,7 +24,7 @@ public class SlidingWindowTests {
         AbstractEllipticCurvePoint g = curve.getGenerator();
         GroupElement[] expected = {g.pow(1), g.pow(3), g.pow(5), g.pow(7)};
         int windowSize = 3;
-        GroupElement[] smallPowersOfG = precomputePowersForSlidingWindow(g, windowSize);
+        GroupElement[] smallPowersOfG = precomputeSmallOddPowers(g, windowSize);
         Assert.assertArrayEquals(expected,smallPowersOfG);
         BigInteger exponent = BigInteger.valueOf(1000001);
         Assert.assertEquals(g.pow(exponent), powUsingSlidingWindow(g, exponent, windowSize, smallPowersOfG));
@@ -38,6 +37,7 @@ public class SlidingWindowTests {
         List<AbstractEllipticCurvePoint> bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).collect(Collectors.toList());
         List<BigInteger> exponents = IntStream.range(0, numExponents).mapToObj(it -> misc.randBig(parameters.p)).collect(Collectors.toList());
         for (int windowSize = 1; windowSize < 12; windowSize++) {
+            int m = (1 << windowSize)-1;
             pln("==========================");
             pln(String.format("wsize=%d, #bases=%d, #exponents=%d", windowSize, numBases, numExponents));
             misc.tick();
@@ -52,7 +52,7 @@ public class SlidingWindowTests {
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
                 for (int j = 0; j < numExponents; j++) {
-                    GroupElement[] smallPowers = precomputePowersForSlidingWindow(base, windowSize);
+                    GroupElement[] smallPowers = precomputeSmallOddPowers(base, m);
                     powUsingSlidingWindow(base, exponents.get(j), windowSize, smallPowers);
                 }
             }
@@ -60,7 +60,7 @@ public class SlidingWindowTests {
             misc.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
-                GroupElement[] smallPowers = precomputePowersForSlidingWindow(base, windowSize);
+                GroupElement[] smallPowers = precomputeSmallOddPowers(base, m);
                 for (int j = 0; j < numExponents; j++) {
                     powUsingSlidingWindow(base, exponents.get(j), windowSize, smallPowers);
                 }

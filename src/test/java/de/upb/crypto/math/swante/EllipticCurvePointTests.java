@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.powUsingSlidingWindow;
-import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.precomputePowersForSlidingWindow;
+import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.precomputeSmallOddPowers;
 import static de.upb.crypto.math.swante.misc.pln;
 
 @RunWith(value = Parameterized.class)
@@ -60,7 +60,8 @@ public class EllipticCurvePointTests {
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
             int windowSize = 3;
-            GroupElement[] precomputedPowers = precomputePowersForSlidingWindow(tmp, windowSize);
+            int m = (1 << windowSize)-1;
+            GroupElement[] precomputedPowers = precomputeSmallOddPowers(tmp, m);
             tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, power.getInteger(), windowSize, precomputedPowers);
             tmp = tmp.normalize();
         }
