@@ -48,6 +48,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * For negative exponents k, computes this.inv().pow(-k)
      */
     default GroupElement pow(BigInteger k) { //default implementation: square&multiply algorithm
+        // Todo: switch according to most efficient expo algo (cost of invert)
         if (k.signum() < 0)
             return pow(k.negate()).inv();
         GroupElement operand = this;
