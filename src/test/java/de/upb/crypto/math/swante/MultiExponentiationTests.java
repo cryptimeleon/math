@@ -31,6 +31,8 @@ public class MultiExponentiationTests {
         int numBases = 2;
         GroupElement[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(GroupElement[]::new);
         BigInteger[] exponents = IntStream.range(0, numBases).mapToObj(it -> misc.randBig(p)).toArray(BigInteger[]::new);
+        exponents[0] = BigInteger.valueOf(2);
+        exponents[1] = BigInteger.valueOf(3);
         PowProductExpression originalPowProductExpression = new PowProductExpression(curve);
         pln(bases);
         pln(exponents);
@@ -48,8 +50,8 @@ public class MultiExponentiationTests {
     
     @Test
     public void testPerformance() {
-        int numIterations = 20;
-        int numBases = 2;
+        int numIterations = 200;
+        int numBases = 10;
         GroupElement[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(GroupElement[]::new);
         BigInteger[] exponents = IntStream.range(0, numBases).mapToObj(it -> misc.randBig(p)).toArray(BigInteger[]::new);
         PowProductExpression originalPowProductExpression = new PowProductExpression(curve);

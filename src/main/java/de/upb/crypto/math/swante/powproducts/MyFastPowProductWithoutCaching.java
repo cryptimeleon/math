@@ -23,7 +23,7 @@ public class MyFastPowProductWithoutCaching extends MyArrayPowProductWithFixedBa
         for (int i = 0; i < numBases; i++) {
             longestExponentBitLength = Math.max(longestExponentBitLength, exponents[i].bitLength());
         }
-        for (int e = longestExponentBitLength-1; e > 0; e--) {
+        for (int e = longestExponentBitLength-1; e >= 0; e--) {
             if (e != longestExponentBitLength-1) {
                 res = res.square();
             }
