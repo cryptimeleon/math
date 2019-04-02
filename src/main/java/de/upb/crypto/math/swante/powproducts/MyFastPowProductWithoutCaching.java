@@ -19,8 +19,8 @@ public class MyFastPowProductWithoutCaching extends MyArrayPowProductWithFixedBa
     public GroupElement evaluate(BigInteger[] exponents) {
         GroupElement res = group.getNeutralElement();
         int longestExponentBitLength = getLongestExponentBitLength(exponents);
-        for (int e = longestExponentBitLength-1; e >= 0; e--) {
-            if (e != longestExponentBitLength-1) {
+        for (int e = longestExponentBitLength - 1; e >= 0; e--) {
+            if (e != longestExponentBitLength - 1) {
                 res = res.square();
             }
             for (int b = 0; b < numBases; b++) {

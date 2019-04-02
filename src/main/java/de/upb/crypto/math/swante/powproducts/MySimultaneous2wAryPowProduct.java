@@ -1,7 +1,6 @@
 package de.upb.crypto.math.swante.powproducts;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
 
 import java.math.BigInteger;
 
@@ -30,19 +29,19 @@ public class MySimultaneous2wAryPowProduct extends MyArrayPowProductWithFixedBas
         int l = getLongestExponentBitLength(exponents);
         int[] e = new int[numBases];
         int mask = (1 << windowSize) - 1;
-        for (int eIndex = (l-1)/windowSize*windowSize; eIndex >= 0; eIndex -= windowSize) {
-            for (int i = windowSize-1; i >= 0; i--) {
+        for (int eIndex = (l - 1) / windowSize * windowSize; eIndex >= 0; eIndex -= windowSize) {
+            for (int i = windowSize - 1; i >= 0; i--) {
                 res = res.square();
                 for (int b = 0; b < numBases; b++) {
                     e[b] &= mask;
                     e[b] <<= 1;
-                    if (exponents[b].testBit(eIndex+i)) {
+                    if (exponents[b].testBit(eIndex + i)) {
                         e[b]++;
                     }
                 }
             }
             int eBitsConcatinated = 0;
-            for (int b = numBases-1; b >= 0; b--) {
+            for (int b = numBases - 1; b >= 0; b--) {
                 eBitsConcatinated <<= windowSize;
                 eBitsConcatinated |= e[b];
             }
@@ -50,7 +49,6 @@ public class MySimultaneous2wAryPowProduct extends MyArrayPowProductWithFixedBas
         }
         return res;
     }
-    
     
     
 }

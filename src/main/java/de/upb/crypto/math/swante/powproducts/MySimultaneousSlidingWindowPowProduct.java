@@ -1,7 +1,6 @@
 package de.upb.crypto.math.swante.powproducts;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
 
 import java.math.BigInteger;
 import java.util.stream.IntStream;
@@ -27,7 +26,7 @@ public class MySimultaneousSlidingWindowPowProduct extends MyArrayPowProductWith
     @Override
     public GroupElement evaluate(BigInteger[] exponents) {
         GroupElement A = group.getNeutralElement();
-        int j = getLongestExponentBitLength(exponents)-1;
+        int j = getLongestExponentBitLength(exponents) - 1;
         while (j >= 0) {
             final int finalj = j;
             if (IntStream.range(0, numBases).allMatch(it -> !exponents[it].testBit(finalj))) {
@@ -41,7 +40,7 @@ public class MySimultaneousSlidingWindowPowProduct extends MyArrayPowProductWith
                     J++;
                 }
                 int e = 0;
-                for (int i = numBases-1; i >= 0; i--) {
+                for (int i = numBases - 1; i >= 0; i--) {
                     int ePart = 0;
                     for (int k = j; k >= J; k--) {
                         ePart <<= 1;
@@ -65,7 +64,6 @@ public class MySimultaneousSlidingWindowPowProduct extends MyArrayPowProductWith
         }
         return A;
     }
-    
     
     
 }

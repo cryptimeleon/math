@@ -26,6 +26,7 @@ public class MyArrayPowProductWithFixedBases {
      * Very simple implementation without any caching, simply doing the exponentiation
      * seperately for each base.
      * Child classes should override this with something more elaborate.
+     *
      * @return bases[0]^exponents[0]*bases[1]^exponents[1]*...
      */
     public GroupElement evaluate(BigInteger[] exponents) {
@@ -57,14 +58,14 @@ public class MyArrayPowProductWithFixedBases {
         int numPrecomputedPowers = 1 << (windowSize * numBases);
         GroupElement[] smallPowers = new GroupElement[numPrecomputedPowers];
         smallPowers[0] = group.getNeutralElement();
-        for (int i = 1; i < (1<<windowSize); i++) {
-            smallPowers[i] = smallPowers[i-1].op(bases[0]);
+        for (int i = 1; i < (1 << windowSize); i++) {
+            smallPowers[i] = smallPowers[i - 1].op(bases[0]);
         }
         for (int b = 1; b < numBases; b++) {
             int shift = windowSize * b;
             for (int e = 1; e < (1 << windowSize); e++) {
                 int eShifted = e << shift;
-                int previousEShifted = (e-1) << shift;
+                int previousEShifted = (e - 1) << shift;
                 for (int i = 0; i < (1 << shift); i++) {
                     smallPowers[eShifted + i] = smallPowers[previousEShifted + i].op(bases[b]);
                 }

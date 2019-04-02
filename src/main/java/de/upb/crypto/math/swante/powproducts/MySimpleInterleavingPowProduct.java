@@ -35,13 +35,13 @@ public class MySimpleInterleavingPowProduct extends MyArrayPowProductWithFixedBa
         for (int i = 0; i < numBases; i++) {
             wh[i] = -1;
         }
-        for (int j = longestExponentBitLength-1; j >= 0; j--) {
-            if (j != longestExponentBitLength-1) {
+        for (int j = longestExponentBitLength - 1; j >= 0; j--) {
+            if (j != longestExponentBitLength - 1) {
                 A = A.square();
             }
             for (int i = 0; i < numBases; i++) {
                 if (wh[i] == -1 && exponents[i].testBit(j)) {
-                    int J = j-windowSize+1;
+                    int J = j - windowSize + 1;
                     while (!exponents[i].testBit(J)) {
                         J++;
                     }
@@ -55,14 +55,13 @@ public class MySimpleInterleavingPowProduct extends MyArrayPowProductWithFixedBa
                     }
                 }
                 if (wh[i] == j) {
-                    A = A.op(smallOddPowers[i][e[i]/2]);
+                    A = A.op(smallOddPowers[i][e[i] / 2]);
                     wh[i] = -1;
                 }
             }
         }
         return A;
     }
-    
     
     
 }
