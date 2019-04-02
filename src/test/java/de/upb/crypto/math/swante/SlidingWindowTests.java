@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.powUsingSlidingWindow;
-import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.precomputeSmallOddPowers;
+import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.*;
 import static de.upb.crypto.math.swante.misc.pln;
 
 public class SlidingWindowTests {
@@ -24,10 +23,13 @@ public class SlidingWindowTests {
         AbstractEllipticCurvePoint g = curve.getGenerator();
         GroupElement[] expected = {g.pow(1), g.pow(3), g.pow(5), g.pow(7)};
         int windowSize = 3;
+        int m = (1 << windowSize)-1;
         GroupElement[] smallPowersOfG = precomputeSmallOddPowers(g, windowSize);
         Assert.assertArrayEquals(expected,smallPowersOfG);
         BigInteger exponent = BigInteger.valueOf(1000001);
-        Assert.assertEquals(g.pow(exponent), powUsingSlidingWindow(g, exponent, windowSize, smallPowersOfG));
+        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingSlidingWindow(g, exponent, windowSize, smallPowersOfG));
+        int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponent, m);
+        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingLrSfwMethod(g, expDigits, smallPowersOfG));
     }
     
     @Test
@@ -39,7 +41,7 @@ public class SlidingWindowTests {
         for (int windowSize = 1; windowSize < 12; windowSize++) {
             int m = (1 << windowSize)-1;
             pln("==========================");
-            pln(String.format("wsize=%d, #bases=%d, #exponents=%d", windowSize, numBases, numExponents));
+            pln(String.format("wsize=%d (m=%d), #bases=%d, #exponents=%d", windowSize, m, numBases, numExponents));
             misc.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
@@ -56,7 +58,7 @@ public class SlidingWindowTests {
                     powUsingSlidingWindow(base, exponents.get(j), windowSize, smallPowers);
                 }
             }
-            pln(String.format("simple sliding window pow -> %.2f ms", misc.tick()));
+            pln(String.format("sliding window pow (without caching) -> %.2f ms", misc.tick()));
             misc.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
@@ -65,7 +67,17 @@ public class SlidingWindowTests {
                     powUsingSlidingWindow(base, exponents.get(j), windowSize, smallPowers);
                 }
             }
-            pln(String.format("sliding window pow (with caching) -> %.2f ms", misc.tick()));
+            pln(String.format("sliding window pow (with caching of small base powers) -> %.2f ms", misc.tick()));
+            misc.tick();
+            for (int i = 0; i < numBases; i++) {
+                AbstractEllipticCurvePoint base = bases.get(i);
+                GroupElement[] smallPowers = precomputeSmallOddPowers(base, m);
+                for (int j = 0; j < numExponents; j++) {
+                    int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponents.get(j), m);
+                    powUsingLrSfwMethod(base, expDigits, smallPowers);
+                }
+            }
+            pln(String.format("sliding window pow (with caching of small base powers) -> %.2f ms", misc.tick()));
         }
     }
 }

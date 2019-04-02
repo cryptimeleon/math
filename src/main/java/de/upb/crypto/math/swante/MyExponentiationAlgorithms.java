@@ -85,15 +85,85 @@ public class MyExponentiationAlgorithms {
         return y;
     }
     
+    /**
+     * Algorithm based on the following paper:
+     * Möller, Bodo. "Fractional windows revisited: Improved signed-digit representations for efficient exponentiation." International Conference on Information Security and Cryptology. Springer, Berlin, Heidelberg, 2004.
+     * @param exponent
+     * @param m odd positive integer
+     * @return int array for the left-to-right signed-fractional-window exponent, each element being zero or odd and in [-m,...,m]
+     */
     public static int[] precomputeExponentTransformationForLrSfwMethod(BigInteger exponent, int m) {
         if (m > 1000) {
             throw new IllegalArgumentException("too large m");
         }
+        int lambda =  exponent.bitLength()-1;
+        byte[] beta = new byte[lambda + 1];
+        int[] b = new int[lambda + 1];
+        for (int i = 0; i <= lambda; i++) {
+            if (exponent.testBit(i)) {
+                beta[i] = 1;
+            }
+        }
+        int i = lambda +1;
+        int l = 0;
+        int wm = 1+(int)(Math.log(m)/Math.log(2.0));
+        while (i >= 0) {
+            if (beta[i] == beta[i-1]) {
+                i--;
+            }  else {
+                int W = wm+1;
+                int d = -beta[i];
+                for (int j = i-1; j >= i-W+1; j--) {
+                    d *= 2;
+                    d += beta[j];
+                }
+                d += beta[i-W];
+                if (d %2==1 && Math.abs(d) > m) {
+                    d -= beta[i-W] + beta[i-W+1];
+                    d /= 2;
+                    W = wm;
+                    d += beta[i-W];
+                }
+                int next_i = i - W;
+                i = next_i + 1;
+                while (d %2==0) {
+                    i++;
+                    d /= 2;
+                }
+                b[i] = d;
+                if (i > l) {
+                    l = i;
+                }
+                i = next_i;
+            }
+        }
+        return b;
     }
-
-    public static GroupElement powUsingLrSfwMethod(GroupElement base, int[] exponentDigits) {
-        GroupElement A = base.square();
-        
+    
+    /**
+     * Efficient exponentiation algorithm that should be used when inversion is cheap.
+     * It uses the Left-2-Right signed digit transformation of the exponent, in order
+     * to reduce the number of non-zero digits in the exponent.
+     * @param base
+     * @param exponentDigits odd signed digits of exponent with abs value <= m, can also be equal to zero
+     * @param smallPowersOfBase odd powers up to m
+     * @return
+     */
+    public static GroupElement powUsingLrSfwMethod(GroupElement base, int[] exponentDigits, GroupElement[] smallPowersOfBase) {
+        int l = exponentDigits.length - 1;
+        GroupElement A = smallPowersOfBase[exponentDigits[l]];
+        if (exponentDigits[l] < 0) {
+            A = A.inv();
+        }
+        for (int i = l-1; i >= 0; i--) {
+            A = A.square();
+            GroupElement smallPower = smallPowersOfBase[exponentDigits[i]/2];
+            if (exponentDigits[i] < 0) {
+                smallPower = smallPower.inv();
+            }
+            A = A.op(smallPower);
+        }
+        return A;
     }
 
 }
