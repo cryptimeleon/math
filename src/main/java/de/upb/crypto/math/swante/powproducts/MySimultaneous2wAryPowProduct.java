@@ -21,22 +21,7 @@ public class MySimultaneous2wAryPowProduct extends MyArrayPowProductWithFixedBas
             throw new IllegalArgumentException("Not enough space for so many precomputations. Reduce either the windowSize or split the bases into multiple PowProducts.");
         }
         this.windowSize = windowSize;
-        int numPrecomputedPowers = 1 << (windowSize * numBases);
-        this.smallPowers = new GroupElement[numPrecomputedPowers];
-        this.smallPowers[0] = group.getNeutralElement();
-        for (int i = 1; i < (1<<windowSize); i++) {
-            this.smallPowers[i] = this.smallPowers[i-1].op(bases[0]);
-        }
-        for (int b = 1; b < numBases; b++) {
-            int shift = windowSize * b;
-            for (int e = 1; e < (1 << windowSize); e++) {
-                int eShifted = e << shift;
-                int previousEShifted = (e-1) << shift;
-                for (int i = 0; i < (1 << shift); i++) {
-                    this.smallPowers[eShifted + i] = this.smallPowers[previousEShifted + i].op(bases[b]);
-                }
-            }
-        }
+        this.smallPowers = computeAllSmallPowerProducts(windowSize);
     }
     
     @Override

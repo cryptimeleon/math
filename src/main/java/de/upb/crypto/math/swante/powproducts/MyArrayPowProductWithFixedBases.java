@@ -2,8 +2,6 @@ package de.upb.crypto.math.swante.powproducts;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
-import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
 
 import java.math.BigInteger;
 
@@ -53,6 +51,26 @@ public class MyArrayPowProductWithFixedBases {
             longestExponentBitLength = Math.max(longestExponentBitLength, exponents[i].bitLength());
         }
         return longestExponentBitLength;
+    }
+    
+    protected GroupElement[] computeAllSmallPowerProducts(int windowSize) {
+        int numPrecomputedPowers = 1 << (windowSize * numBases);
+        GroupElement[] smallPowers = new GroupElement[numPrecomputedPowers];
+        smallPowers[0] = group.getNeutralElement();
+        for (int i = 1; i < (1<<windowSize); i++) {
+            smallPowers[i] = smallPowers[i-1].op(bases[0]);
+        }
+        for (int b = 1; b < numBases; b++) {
+            int shift = windowSize * b;
+            for (int e = 1; e < (1 << windowSize); e++) {
+                int eShifted = e << shift;
+                int previousEShifted = (e-1) << shift;
+                for (int i = 0; i < (1 << shift); i++) {
+                    smallPowers[eShifted + i] = smallPowers[previousEShifted + i].op(bases[b]);
+                }
+            }
+        }
+        return smallPowers;
     }
     
 }
