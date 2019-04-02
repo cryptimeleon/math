@@ -154,7 +154,7 @@ public class MyExponentiationAlgorithms {
      * @param base
      * @param exponentDigits odd signed digits of exponent with abs value <= m, can also be equal to zero
      * @param smallPowersOfBase odd powers up to m
-     * @return
+     * @return base powered by the exponent given by the exponent digits
      */
     public static GroupElement powUsingLrSfwMethod(GroupElement base, int[] exponentDigits, GroupElement[] smallPowersOfBase) {
         int l = exponentDigits.length - 1;
@@ -165,6 +165,9 @@ public class MyExponentiationAlgorithms {
         for (int i = l-1; i >= 0; i--) {
             A = A.square();
             int exponentDigit = exponentDigits[i];
+            if (exponentDigit == 0) {
+                continue;
+            }
             GroupElement smallPower = smallPowersOfBase[Math.abs(exponentDigit)/2];
             if (exponentDigit < 0) {
                 smallPower = smallPower.inv();
