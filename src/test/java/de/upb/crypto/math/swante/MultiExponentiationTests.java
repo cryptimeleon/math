@@ -7,6 +7,7 @@ import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.powproducts.MyArrayPowProductWithFixedBases;
 import de.upb.crypto.math.swante.powproducts.MyFastPowProductWithoutCaching;
+import de.upb.crypto.math.swante.powproducts.MySimultaneous2wAryPowProduct;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +47,7 @@ public class MultiExponentiationTests {
         Assert.assertEquals(expected, curve.evaluate(originalPowProductExpression));
         Assert.assertEquals(expected, new MyArrayPowProductWithFixedBases(bases).evaluate(exponents));
         Assert.assertEquals(expected, new MyFastPowProductWithoutCaching(bases).evaluate(exponents));
+        Assert.assertEquals(expected, new MySimultaneous2wAryPowProduct(bases, 3).evaluate(exponents));
     }
     
     @Test
