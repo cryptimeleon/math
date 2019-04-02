@@ -8,6 +8,7 @@ import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.swante.misc;
 
 import java.math.BigInteger;
 import java.util.Optional;
@@ -70,7 +71,8 @@ public class Zn implements Ring {
 
     @Override
     public ZnElement getUniformlyRandomElement() throws UnsupportedOperationException {
-        return createZnElement(RandomGeneratorSupplier.getRnd().getRandomElement(n));
+//        return createZnElement(RandomGeneratorSupplier.getRnd().getRandomElement(n));
+        return createZnElement(misc.randBig(n)); // TODO: switch back to old implementation
     }
 
     @Override

@@ -2,6 +2,8 @@ package de.upb.crypto.math.random.interfaces;
 
 import de.upb.crypto.math.random.SimpleRandomGenerator.SimpleRandomGenerator;
 
+import java.math.BigInteger;
+
 /**
  * A static way to obtain random generators.
  * Usage: RandomSupplier.getRnd() or RandomSupplier.instance().get()
@@ -31,6 +33,7 @@ public class RandomGeneratorSupplier {
 
     private RandomGeneratorSupplier() {
         this.rnd = new SimpleRandomGenerator();
+        this.rnd.setSeed(BigInteger.ONE); // TODO: switch back to old implementation (delete this line)
     }
 
     public RandomGenerator get() {
