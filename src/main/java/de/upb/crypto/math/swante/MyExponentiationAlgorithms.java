@@ -69,7 +69,7 @@ public class MyExponentiationAlgorithms {
                     s++;
                 }
                 for (int h = s; h <= i; h++) {
-                    y = y.op(y);
+                    y = y.square();
                     if (exponent.testBit(h)) {
                         smallExponent += 1 << h - s;
                     }

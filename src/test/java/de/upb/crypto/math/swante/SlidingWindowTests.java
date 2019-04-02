@@ -78,7 +78,7 @@ public class SlidingWindowTests {
                     powUsingLrSfwMethod(base, expDigits, smallPowers);
                 }
             }
-            pln(String.format("sliding window pow (with caching of small base powers) -> %.2f ms", misc.tick()));
+            pln(String.format("signed digit fractional window pow (with caching of small base powers) -> %.2f ms", misc.tick()));
         }
     }
 }
