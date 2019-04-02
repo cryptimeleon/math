@@ -1,6 +1,7 @@
 package de.upb.crypto.math.swante.powproducts;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
 
 import java.math.BigInteger;
 
@@ -11,7 +12,7 @@ import java.math.BigInteger;
  */
 public class MySimpleInterleavingPowProduct extends MyArrayPowProductWithFixedBases {
     
-    private final GroupElement[][] smallPowers;
+    private final GroupElement[][] smallOddPowers;
     private final int windowSize;
     
     public MySimpleInterleavingPowProduct(GroupElement[] bases, int windowSize) {
@@ -19,41 +20,47 @@ public class MySimpleInterleavingPowProduct extends MyArrayPowProductWithFixedBa
         
         this.windowSize = windowSize;
         int m = (1 << windowSize) - 1;
-        this.smallPowers = new GroupElement[numBases][];
+        this.smallOddPowers = new GroupElement[numBases][];
         for (int i = 0; i < numBases; i++) {
-            this.smallPowers[i] = new GroupElement[m+1];
-            GroupElement base = bases[i];
-            this.smallPowers[i][0] = base;
-            for (int j = 1; j <= m; j++) {
-                this.smallPowers[i][j] = this.smallPowers[i][j-1].op(base);
-            }
+            this.smallOddPowers[i] = MyExponentiationAlgorithms.precomputeSmallOddPowers(bases[i], m);
         }
     }
     
     @Override
     public GroupElement evaluate(BigInteger[] exponents) {
-        GroupElement res = group.getNeutralElement();
-        int l = getLongestExponentBitLength(exponents);
+        GroupElement A = group.getNeutralElement();
+        int longestExponentBitLength = getLongestExponentBitLength(exponents);
+        int[] wh = new int[numBases];
         int[] e = new int[numBases];
-        int mask = (1 << windowSize) - 1;
-        for (int eIndex = (l-1)/windowSize*windowSize; eIndex >= 0; eIndex -= windowSize) {
-            for (int i = windowSize-1; i >= 0; i++) {
-                res = res.square();
-                for (int b = 0; b < numBases; b++) {
-                    e[b] &= mask;
-                    e[b] <<= 1;
-                    if (exponents[b].testBit(eIndex+i)) {
-                        e[b]++;
+        for (int i = 0; i < numBases; i++) {
+            wh[i] = -1;
+        }
+        for (int j = longestExponentBitLength-1; j >= 0; j--) {
+            if (j != longestExponentBitLength-1) {
+                A = A.square();
+            }
+            for (int i = 0; i < numBases; i++) {
+                if (wh[i] == -1 && exponents[i].testBit(j)) {
+                    int J = j-windowSize+1;
+                    while (!exponents[i].testBit(J)) {
+                        J++;
+                    }
+                    wh[i] = J;
+                    e[i] = 0;
+                    for (int k = J; k <= j; k++) {
+                        e[i] <<= 1;
+                        if (exponents[i].testBit(k)) {
+                            e[i]++;
+                        }
                     }
                 }
-            }
-            for (int b = 0; b < numBases; b++) {
-                if (exponents[b].testBit(eIndex)) {
-                    res = res.op(bases[b]);
+                if (wh[i] == j) {
+                    A = A.op(smallOddPowers[i][e[i]/2]);
+                    wh[i] = -1;
                 }
             }
         }
-        return res;
+        return A;
     }
     
     
