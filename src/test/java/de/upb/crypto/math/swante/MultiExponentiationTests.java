@@ -22,16 +22,18 @@ public class MultiExponentiationTests {
 //    MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
 //    MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
 //    BigInteger p = parameters.p;
-    BigInteger p = BigInteger.valueOf(101);
-    Group curve = new Zp(p).asAdditiveGroup();
+    BigInteger p = BigInteger.valueOf(11);
+    Group curve = new Zp(p).asUnitGroup();
     
     
     @Test
     public void testCorrectness() {
-        int numBases = 10;
+        int numBases = 2;
         GroupElement[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(GroupElement[]::new);
         BigInteger[] exponents = IntStream.range(0, numBases).mapToObj(it -> misc.randBig(p)).toArray(BigInteger[]::new);
         PowProductExpression originalPowProductExpression = new PowProductExpression(curve);
+        pln(bases);
+        pln(exponents);
         GroupElement expected = curve.getNeutralElement();
         for (int i = 0; i < numBases; i++) {
             GroupElement base = bases[i];
@@ -47,13 +49,13 @@ public class MultiExponentiationTests {
     @Test
     public void testPerformance() {
         int numIterations = 20;
-        int numBases = 10;
-        AbstractEllipticCurvePoint[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(AbstractEllipticCurvePoint[]::new);
+        int numBases = 2;
+        GroupElement[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(GroupElement[]::new);
         BigInteger[] exponents = IntStream.range(0, numBases).mapToObj(it -> misc.randBig(p)).toArray(BigInteger[]::new);
         PowProductExpression originalPowProductExpression = new PowProductExpression(curve);
-    
+        pln(bases);
         for (int i = 0; i < numBases; i++) {
-            AbstractEllipticCurvePoint base = bases[i];
+            GroupElement base = bases[i];
             BigInteger e = exponents[i];
             originalPowProductExpression.op(base, e);
         }
