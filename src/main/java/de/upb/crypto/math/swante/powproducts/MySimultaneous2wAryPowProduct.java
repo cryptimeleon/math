@@ -29,10 +29,11 @@ public class MySimultaneous2wAryPowProduct extends MyArrayPowProductWithFixedBas
         }
         for (int b = 1; b < numBases; b++) {
             int shift = windowSize * b;
-            for (int e = 0; e < (1 << windowSize); e++) {
+            for (int e = 1; e < (1 << windowSize); e++) {
                 int eShifted = e << shift;
+                int previousEShifted = (e-1) << shift;
                 for (int i = 0; i < (1 << shift); i++) {
-                    this.smallPowers[eShifted + i] = this.smallPowers[i].op(bases[b]);
+                    this.smallPowers[eShifted + i] = this.smallPowers[previousEShifted + i].op(bases[b]);
                 }
             }
         }
@@ -56,9 +57,9 @@ public class MySimultaneous2wAryPowProduct extends MyArrayPowProductWithFixedBas
                 }
             }
             int eBitsConcatinated = 0;
-            for (int b = 0; b < numBases; b++) {
+            for (int b = numBases-1; b >= 0; b--) {
                 eBitsConcatinated <<= windowSize;
-                eBitsConcatinated &= e[b];
+                eBitsConcatinated |= e[b];
             }
             res = res.op(smallPowers[eBitsConcatinated]);
         }
