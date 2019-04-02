@@ -78,7 +78,7 @@ public class MyExponentiationAlgorithms {
                 y = y.op(smallPowersOfBase[smallExponent / 2]);
                 i = s - 1;
             } else {
-                y = y.op(y);
+                y = y.square();
                 i--;
             }
         }
@@ -93,7 +93,7 @@ public class MyExponentiationAlgorithms {
      * @return int array for the left-to-right signed-fractional-window exponent, each element being zero or odd and in [-m,...,m]
      */
     public static int[] precomputeExponentTransformationForLrSfwMethod(BigInteger exponent, int m) {
-        if (m > 1000) {
+        if (m > 10000) {
             throw new IllegalArgumentException("too large m");
         }
         int lambda =  exponent.bitLength()-1;
