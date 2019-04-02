@@ -64,7 +64,7 @@ public interface Group extends Structure {
         GroupElement result = getNeutralElement();
         Map<GroupElement, BigInteger> factors = expr.getExpression();
         for (int i = largestExponentBitLength; i >= 0; i--) {
-            result = result.op(result); //shared among all group elements of this product
+            result = result.square(); //shared among all group elements of this product
             for (Map.Entry<? extends GroupElement, BigInteger> entry : factors.entrySet()) {
                 if (entry.getValue().testBit(i)) {
                     result = result.op(entry.getKey());
