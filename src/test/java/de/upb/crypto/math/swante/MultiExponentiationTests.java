@@ -3,22 +3,19 @@ package de.upb.crypto.math.swante;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.PowProductExpression;
-import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.powproducts.*;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static de.upb.crypto.math.swante.misc.pln;
 
 public class MultiExponentiationTests {
     
-//    MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
+    //    MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
 //    MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
 //    BigInteger p = parameters.p;
     BigInteger p = BigInteger.valueOf(11);
@@ -89,12 +86,18 @@ public class MultiExponentiationTests {
         for (int i = 0; i < numIterations; i++) {
             my3.evaluate(exponents);
         }
-        pln(String.format("simultaneous 2w-ary -> %.2f ms",misc.tick()));
+        pln(String.format("simultaneous 2w-ary -> %.2f ms", misc.tick()));
         misc.tick();
         MyArrayPowProductWithFixedBases my4 = new MySimultaneousSlidingWindowPowProduct(bases, windowSize);
         for (int i = 0; i < numIterations; i++) {
             my4.evaluate(exponents);
         }
-        pln(String.format("simultaneous sliding-window cached -> %.2f ms",misc.tick()));
+        pln(String.format("simultaneous sliding-window -> %.2f ms", misc.tick()));
+        misc.tick();
+        MyArrayPowProductWithFixedBases my5 = new MySimpleInterleavingPowProduct(bases, windowSize);
+        for (int i = 0; i < numIterations; i++) {
+            my5.evaluate(exponents);
+        }
+        pln(String.format("interleaving sliding-window -> %.2f ms", misc.tick()));
     }
 }
