@@ -4,6 +4,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
 
 import java.math.BigInteger;
+import java.util.stream.IntStream;
 
 /**
  * Class for a pow product algorithm where windowSize many bits of each exponent
@@ -11,35 +12,58 @@ import java.math.BigInteger;
  */
 public class MySimultaneousSlidingWindowPowProduct extends MyArrayPowProductWithFixedBases {
     
-    private final GroupElement[][] smallPowers;
+    private final GroupElement[] smallPowers;
+    private final int windowSize;
     
     public MySimultaneousSlidingWindowPowProduct(GroupElement[] bases, int windowSize) {
         super(bases);
         if (windowSize * numBases > 16) {
             throw new IllegalArgumentException("Not enough space for so many precomputations. Reduce either the windowSize or split the bases into multiple PowProducts.");
         }
-        int m = (1 << windowSize) - 1;
-        this.smallPowers = new GroupElement[numBases][];
-        for (int i = 0; i < numBases; i++) {
-            this.smallPowers[i] = MyExponentiationAlgorithms.precomputeSmallOddPowers(bases[i], m);
-        }
+        this.windowSize = windowSize;
+        this.smallPowers = computeAllSmallPowerProducts(windowSize);
     }
     
     @Override
     public GroupElement evaluate(BigInteger[] exponents) {
-        GroupElement res = group.getNeutralElement();
-        int longestExponentBitLength = getLongestExponentBitLength(exponents);
-        for (int e = longestExponentBitLength-1; e >= 0; e--) {
-            if (e != longestExponentBitLength-1) {
-                res = res.square();
-            }
-            for (int b = 0; b < numBases; b++) {
-                if (exponents[b].testBit(e)) {
-                    res = res.op(bases[b]);
+        GroupElement A = group.getNeutralElement();
+        int j = getLongestExponentBitLength(exponents)-1;
+        while (j >= 0) {
+            final int finalj = j;
+            if (IntStream.range(0, numBases).allMatch(it -> !exponents[it].testBit(finalj))) {
+                A = A.square();
+                j--;
+            } else {
+                int jNew = Math.max(j - windowSize, -1);
+                int J = jNew + 1;
+                final int finalJ = J;
+                while (IntStream.range(0, numBases).allMatch(it -> !exponents[it].testBit(finalJ))) {
+                    J++;
+                }
+                int e = 0;
+                for (int i = numBases-1; i >= 0; i--) {
+                    int ePart = 0;
+                    for (int k = j; k >= J; k--) {
+                        ePart <<= 1;
+                        if (exponents[i].testBit(k)) {
+                            ePart++;
+                        }
+                    }
+                    e <<= windowSize;
+                    e |= ePart;
+                }
+                while (j >= J) {
+                    A = A.square();
+                    j--;
+                }
+                A = A.op(smallPowers[e]);
+                while (j > jNew) {
+                    A = A.square();
+                    j--;
                 }
             }
         }
-        return res;
+        return A;
     }
     
     
