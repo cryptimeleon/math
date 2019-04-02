@@ -1,20 +1,27 @@
 package de.upb.crypto.math.swante.powproducts;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
 
 import java.math.BigInteger;
 
-public class MyFastPowProductWithoutCaching extends MyArrayPowProductWithFixedBases {
+/**
+ * Class for a pow product algorithm where windowSize many bits of each exponent
+ * are looked at simultaneously. These low powers are precomputed and cached
+ */
+public class MySimultaneous2wAryPowProduct extends MyArrayPowProductWithFixedBases {
     
-    public MyFastPowProductWithoutCaching(GroupElement[] bases) {
+    private final GroupElement[][] smallPowers;
+    
+    public MySimultaneous2wAryPowProduct(GroupElement[] bases, int windowSize) {
         super(bases);
+        int m = (1 << windowSize) - 1;
+        this.smallPowers = new GroupElement[numBases][];
+        for (int i = 0; i < numBases; i++) {
+            this.smallPowers[i] = MyExponentiationAlgorithms.precomputeSmallOddPowers(bases[i], m);
+        }
     }
     
-    /**
-     * A rather simple implementation without any caching,
-     * but at least processing the bases in parallel.
-     * E.g. a^3*b^2 -> (a*b)^2*a
-     */
     @Override
     public GroupElement evaluate(BigInteger[] exponents) {
         GroupElement res = group.getNeutralElement();
@@ -31,5 +38,7 @@ public class MyFastPowProductWithoutCaching extends MyArrayPowProductWithFixedBa
         }
         return res;
     }
+    
+    
     
 }

@@ -46,4 +46,13 @@ public class MyArrayPowProductWithFixedBases {
         return group;
     }
     
+    protected int getLongestExponentBitLength(BigInteger[] exponents) {
+        int longestExponentBitLength = 0;
+        
+        for (int i = 0; i < numBases; i++) {
+            longestExponentBitLength = Math.max(longestExponentBitLength, exponents[i].bitLength());
+        }
+        return longestExponentBitLength;
+    }
+    
 }
