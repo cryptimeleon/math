@@ -53,7 +53,8 @@ public class MultiExponentiationTests {
     @Test
     public void testPerformance() {
         int numIterations = 200;
-        int numBases = 10;
+        int numBases = 5;
+        int windowSize = 3;
         GroupElement[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(GroupElement[]::new);
         BigInteger[] exponents = IntStream.range(0, numBases).mapToObj(it -> misc.randBig(p)).toArray(BigInteger[]::new);
         PowProductExpression originalPowProductExpression = new PowProductExpression(curve);
@@ -65,7 +66,7 @@ public class MultiExponentiationTests {
         }
         
         pln("==========================");
-        pln(String.format("#iterations=%d, #bases=%d", numIterations, numBases));
+        pln(String.format("#iterations=%d, #bases=%d, windowSize=%d", numIterations, numBases, windowSize));
         misc.tick();
         for (int i = 0; i < numIterations; i++) {
             curve.evaluate(originalPowProductExpression);
@@ -83,5 +84,11 @@ public class MultiExponentiationTests {
             my2.evaluate(exponents);
         }
         pln(String.format("fast multi exponentiation without caching -> %.2f ms", misc.tick()));
+        misc.tick();
+        MyArrayPowProductWithFixedBases my3 = new MySimultaneous2wAryPowProduct(bases, windowSize);
+        for (int i = 0; i < numIterations; i++) {
+            my3.evaluate(exponents);
+        }
+        pln(String.format("2w-ary cached -> %.2f ms",misc.tick()));
     }
 }
