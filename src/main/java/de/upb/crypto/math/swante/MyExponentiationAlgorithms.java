@@ -108,7 +108,7 @@ public class MyExponentiationAlgorithms {
         int l = 0;
         int wm = 1+(int)(Math.log(m)/Math.log(2.0));
         while (i >= 0) {
-            if (beta[i] == beta[i-1]) {
+            if (beta[i] == (i==0 ? 0 : beta[i-1])) {
                 i--;
             }  else {
                 int W = wm+1;
@@ -137,7 +137,9 @@ public class MyExponentiationAlgorithms {
                 i = next_i;
             }
         }
-        return b;
+        int[] bWithoutLeadingZeros = new int[l+1];
+        System.arraycopy(b, 0, bWithoutLeadingZeros, 0, l + 1);
+        return bWithoutLeadingZeros;
     }
     
     /**

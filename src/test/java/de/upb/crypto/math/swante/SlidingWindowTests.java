@@ -28,6 +28,7 @@ public class SlidingWindowTests {
         Assert.assertArrayEquals(expected, smallPowersOfG);
         BigInteger exponent = BigInteger.valueOf(1000001);
         Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingSlidingWindow(g, exponent, windowSize, smallPowersOfG));
+        Assert.assertArrayEquals(new int[]{1,0,0,0,0,-5,0,0,0,0,0,1,5}, MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(BigInteger.valueOf(22369), m));
         int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponent, m);
         Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingLrSfwMethod(g, expDigits, smallPowersOfG));
     }
