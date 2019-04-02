@@ -158,7 +158,7 @@ public class MyExponentiationAlgorithms {
      */
     public static GroupElement powUsingLrSfwMethod(GroupElement base, int[] exponentDigits, GroupElement[] smallPowersOfBase) {
         int l = exponentDigits.length - 1;
-        GroupElement A = smallPowersOfBase[exponentDigits[l]];
+        GroupElement A = smallPowersOfBase[Math.abs(exponentDigits[l])/2];
         if (exponentDigits[l] < 0) {
             A = A.inv();
         }
