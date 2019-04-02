@@ -97,8 +97,8 @@ public class MyExponentiationAlgorithms {
             throw new IllegalArgumentException("too large m");
         }
         int lambda =  exponent.bitLength()-1;
-        byte[] beta = new byte[lambda + 1];
-        int[] b = new int[lambda + 1];
+        byte[] beta = new byte[lambda + 2];
+        int[] b = new int[lambda + 2];
         for (int i = 0; i <= lambda; i++) {
             if (exponent.testBit(i)) {
                 beta[i] = 1;
@@ -115,14 +115,19 @@ public class MyExponentiationAlgorithms {
                 int d = -beta[i];
                 for (int j = i-1; j >= i-W+1; j--) {
                     d *= 2;
-                    d += beta[j];
+                    d += j < 0 ? 0 : beta[j];
                 }
-                d += beta[i-W];
+                d += (i-W) < 0 ? 0 : beta[i-W];
                 if (d %2==1 && Math.abs(d) > m) {
-                    d -= beta[i-W] + beta[i-W+1];
+                    if (i-W >= 0) {
+                        d -= beta[i-W];
+                    }
+                    if (i-W+1 >= 0) {
+                        d -= beta[i - W + 1];
+                    }
                     d /= 2;
                     W = wm;
-                    d += beta[i-W];
+                    d += (i-W) < 0 ? 0 : beta[i-W];
                 }
                 int next_i = i - W;
                 i = next_i + 1;
@@ -159,8 +164,9 @@ public class MyExponentiationAlgorithms {
         }
         for (int i = l-1; i >= 0; i--) {
             A = A.square();
-            GroupElement smallPower = smallPowersOfBase[exponentDigits[i]/2];
-            if (exponentDigits[i] < 0) {
+            int exponentDigit = exponentDigits[i];
+            GroupElement smallPower = smallPowersOfBase[Math.abs(exponentDigit)/2];
+            if (exponentDigit < 0) {
                 smallPower = smallPower.inv();
             }
             A = A.op(smallPower);
