@@ -23,9 +23,9 @@ public class SlidingWindowTests {
         AbstractEllipticCurvePoint g = curve.getGenerator();
         GroupElement[] expected = {g.pow(1), g.pow(3), g.pow(5), g.pow(7)};
         int windowSize = 3;
-        int m = (1 << windowSize)-1;
-        GroupElement[] smallPowersOfG = precomputeSmallOddPowers(g, windowSize);
-        Assert.assertArrayEquals(expected,smallPowersOfG);
+        int m = (1 << windowSize) - 1;
+        GroupElement[] smallPowersOfG = precomputeSmallOddPowers(g, m);
+        Assert.assertArrayEquals(expected, smallPowersOfG);
         BigInteger exponent = BigInteger.valueOf(1000001);
         Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingSlidingWindow(g, exponent, windowSize, smallPowersOfG));
         int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponent, m);
@@ -39,7 +39,7 @@ public class SlidingWindowTests {
         List<AbstractEllipticCurvePoint> bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).collect(Collectors.toList());
         List<BigInteger> exponents = IntStream.range(0, numExponents).mapToObj(it -> misc.randBig(parameters.p)).collect(Collectors.toList());
         for (int windowSize = 1; windowSize < 12; windowSize++) {
-            int m = (1 << windowSize)-1;
+            int m = (1 << windowSize) - 1;
             pln("==========================");
             pln(String.format("wsize=%d (m=%d), #bases=%d, #exponents=%d", windowSize, m, numBases, numExponents));
             misc.tick();
