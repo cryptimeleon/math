@@ -91,6 +91,12 @@ public class MultiExponentiationTests {
         for (int i = 0; i < numIterations; i++) {
             my3.evaluate(exponents);
         }
-        pln(String.format("2w-ary cached -> %.2f ms",misc.tick()));
+        pln(String.format("simultaneous 2w-ary -> %.2f ms",misc.tick()));
+        misc.tick();
+        MyArrayPowProductWithFixedBases my4 = new MySimultaneousSlidingWindowPowProduct(bases, windowSize);
+        for (int i = 0; i < numIterations; i++) {
+            my4.evaluate(exponents);
+        }
+        pln(String.format("simultaneous sliding-window cached -> %.2f ms",misc.tick()));
     }
 }
