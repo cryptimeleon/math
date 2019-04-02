@@ -74,4 +74,11 @@ public class MyArrayPowProductWithFixedBases {
         return smallPowers;
     }
     
+    protected boolean testBit(BigInteger exponent, int index) {
+        if (index < 0) {
+            return false;
+        }
+        return exponent.testBit(index);
+    }
+    
 }

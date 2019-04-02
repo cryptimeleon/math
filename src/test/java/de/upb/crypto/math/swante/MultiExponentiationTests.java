@@ -5,10 +5,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.PowProductExpression;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
-import de.upb.crypto.math.swante.powproducts.MyArrayPowProductWithFixedBases;
-import de.upb.crypto.math.swante.powproducts.MyFastPowProductWithoutCaching;
-import de.upb.crypto.math.swante.powproducts.MySimultaneous2wAryPowProduct;
-import de.upb.crypto.math.swante.powproducts.MySimultaneousSlidingWindowPowProduct;
+import de.upb.crypto.math.swante.powproducts.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +47,7 @@ public class MultiExponentiationTests {
         Assert.assertEquals(expected, new MyFastPowProductWithoutCaching(bases).evaluate(exponents));
         Assert.assertEquals(expected, new MySimultaneous2wAryPowProduct(bases, 3).evaluate(exponents));
         Assert.assertEquals(expected, new MySimultaneousSlidingWindowPowProduct(bases, 3).evaluate(exponents));
+        Assert.assertEquals(expected, new MySimpleInterleavingPowProduct(bases, 3).evaluate(exponents));
     }
     
     @Test
