@@ -18,7 +18,7 @@ public class MultiExponentiationTests {
 //        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
 //    MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
 //    BigInteger p = parameters.p;
-    BigInteger p = BigInteger.valueOf((1<<19)-1);
+    BigInteger p = BigInteger.valueOf(19);
     RingUnitGroup curve = new Zp(p).asUnitGroup();
     
     
@@ -49,58 +49,62 @@ public class MultiExponentiationTests {
     
     @Test
     public void testPerformance() {
-        int numIterations = 100;
-        int numBases = 5;
+        int numIterations = 1;
+        int numBases = 2;
         int simultaneousWindowSize = 1;
         int interleavingWindowSize = 6;
         
         GroupElement[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(GroupElement[]::new);
-        BigInteger[] exponents = IntStream.range(0, numBases).mapToObj(it -> misc.randBig(p)).toArray(BigInteger[]::new);
-        PowProductExpression originalPowProductExpression = new PowProductExpression(curve);
         pln(bases);
-        for (int i = 0; i < numBases; i++) {
-            GroupElement base = bases[i];
-            BigInteger e = exponents[i];
-            originalPowProductExpression.op(base, e);
-            
+        BigInteger[][] exponents = new BigInteger[numIterations][];
+        for (int i = 0; i < numIterations; i++) {
+            exponents[i] = IntStream.range(0, numBases).mapToObj(it -> misc.randBig(p)).toArray(BigInteger[]::new);
+            pln(exponents[i]);
         }
-        GroupElement expected = curve.evaluate(originalPowProductExpression);
+        
+        GroupElement[] expected = new GroupElement[numIterations];
 
         pln("==========================");
         pln(String.format("#iterations=%d, #bases=%d, windowSize=%d", numIterations, numBases, simultaneousWindowSize));
         misc.tick();
         for (int i = 0; i < numIterations; i++) {
-            Assert.assertEquals(expected, curve.evaluate(originalPowProductExpression));
+            PowProductExpression originalPowProductExpression = new PowProductExpression(curve);
+            for (int b = 0; b < numBases; b++) {
+                GroupElement base = bases[b];
+                BigInteger e = exponents[i][b];
+                originalPowProductExpression.op(base, e);
+            }
+            expected[i] = curve.evaluate(originalPowProductExpression);
         }
         pln(String.format("original power product -> %.2f ms", misc.tick()));
         misc.tick();
         MyArrayPowProductWithFixedBases my1 = new MyArrayPowProductWithFixedBases(bases);
         for (int i = 0; i < numIterations; i++) {
-            Assert.assertEquals(expected, my1.evaluate(exponents));
+            Assert.assertEquals(expected[i], my1.evaluate(exponents[i]));
         }
         pln(String.format("simple array multi exponentiation -> %.2f ms", misc.tick()));
         misc.tick();
         MyFastPowProductWithoutCaching my2 = new MyFastPowProductWithoutCaching(bases);
         for (int i = 0; i < numIterations; i++) {
-            Assert.assertEquals(expected, my2.evaluate(exponents));
+            Assert.assertEquals(expected[i], my2.evaluate(exponents[i]));
         }
         pln(String.format("fast multi exponentiation without caching -> %.2f ms", misc.tick()));
         misc.tick();
         MySimultaneous2wAryPowProduct my3 = new MySimultaneous2wAryPowProduct(bases, simultaneousWindowSize);
         for (int i = 0; i < numIterations; i++) {
-            Assert.assertEquals(expected, my3.evaluate(exponents));
+            Assert.assertEquals(expected[i], my3.evaluate(exponents[i]));
         }
         pln(String.format("simultaneous 2w-ary -> %.2f ms", misc.tick()));
         misc.tick();
         MySimultaneousSlidingWindowPowProduct my4 = new MySimultaneousSlidingWindowPowProduct(bases, simultaneousWindowSize);
         for (int i = 0; i < numIterations; i++) {
-            Assert.assertEquals(expected, my4.evaluate(exponents));
+            Assert.assertEquals(expected[i], my4.evaluate(exponents[i]));
         }
         pln(String.format("simultaneous sliding-window -> %.2f ms", misc.tick()));
         misc.tick();
         MySimpleInterleavingPowProduct my5 = new MySimpleInterleavingPowProduct(bases, interleavingWindowSize);
         for (int i = 0; i < numIterations; i++) {
-            Assert.assertEquals(expected, my5.evaluate(exponents));
+            Assert.assertEquals(expected[i], my5.evaluate(exponents[i]));
         }
         pln(String.format("interleaving sliding-window -> %.2f ms", misc.tick()));
     }
