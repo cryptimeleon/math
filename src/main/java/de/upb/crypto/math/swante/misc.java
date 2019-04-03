@@ -14,6 +14,10 @@ public class misc {
         myAssert(1<0, () -> "fail");
     }
     
+    /**
+     * @param i
+     * @return Just like BigInteger.bitLength, but for a simple int.
+     */
     public static int bitLength(int i) {
         int res = 0;
         if (i >= 65536) {
@@ -37,6 +41,13 @@ public class misc {
             res += 1;
         }
         return res + i;
+    }
+    
+    /**
+     * @return Lowest n bits of i. Works for all n < 32.
+     */
+    public static int getNLeastSignificantBits(int i, int numberOfLowBits) {
+        return i & ((1 << numberOfLowBits) - 1);
     }
     
     static class Pair<A, B> {

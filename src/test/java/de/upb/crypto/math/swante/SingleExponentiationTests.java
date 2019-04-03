@@ -19,11 +19,6 @@ public class SingleExponentiationTests {
     MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
     
     @Test
-    public void testWNAF() {
-    
-    }
-    
-    @Test
     public void testCorrectness() {
         AbstractEllipticCurvePoint g = curve.getGenerator();
         GroupElement[] expected = {g.pow(1), g.pow(3), g.pow(5), g.pow(7)};
@@ -33,6 +28,7 @@ public class SingleExponentiationTests {
         Assert.assertArrayEquals(expected, smallPowersOfG);
         BigInteger exponent = BigInteger.valueOf(1000001);
         Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingSlidingWindow(g, exponent, windowSize, smallPowersOfG));
+        Assert.assertArrayEquals(new int[]{-31,0,0,0,0,0,0,-17,0,0,0,0,0,3}, MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(BigInteger.valueOf(22369), 5));
         Assert.assertArrayEquals(new int[]{1,0,0,0,0,-5,0,0,0,0,0,1,5}, MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(BigInteger.valueOf(22369), 5));
         int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponent, m);
         Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingLrSfwMethod(g, expDigits, smallPowersOfG));

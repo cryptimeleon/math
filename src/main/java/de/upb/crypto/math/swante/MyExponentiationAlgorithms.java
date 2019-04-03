@@ -176,5 +176,35 @@ public class MyExponentiationAlgorithms {
         }
         return A;
     }
-
+    
+    /**
+     *
+     * @param exponent
+     * @param windowSize
+     * @return digits for the left-to-right (non-fractional) signed digit exponentiation algorithm
+     */
+    public static int[] precomputeExponentDigitsForWNAF(BigInteger exponent, int windowSize) {
+        if (windowSize > 20) {
+            throw new IllegalArgumentException("too large windowSize");
+        }
+        BigInteger c = exponent;
+        int[] bi = new int[exponent.bitLength()+1];
+        int i = 0;
+        while (c.signum() > 0) {
+            int b = 0;
+            if (c.testBit(0)) {
+                b = misc.getNLeastSignificantBits(c.intValue(), windowSize+1);
+                if (b >= 1 << windowSize) {
+                    b -= 1 << (windowSize+1);
+                }
+                c = c.subtract(BigInteger.valueOf(b));
+            }
+            bi[i] = b;
+            i++;
+            c = c.shiftRight(1);
+        }
+        int[] bWithoutLeadingZeros = new int[i];
+        System.arraycopy(bi, 0, bWithoutLeadingZeros, 0, i);
+        return bWithoutLeadingZeros;
+    }
 }
