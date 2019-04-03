@@ -15,11 +15,11 @@ import static de.upb.crypto.math.swante.misc.pln;
 
 public class MultiExponentiationTests {
     
-    //    MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
-//    MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
-//    BigInteger p = parameters.p;
-    BigInteger p = BigInteger.valueOf(11);
-    Group curve = new Zp(p).asUnitGroup();
+        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
+    MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
+    BigInteger p = parameters.p;
+//    BigInteger p = BigInteger.valueOf(11);
+//    Group curve = new Zp(p).asUnitGroup();
     
     
     @Test
@@ -55,32 +55,32 @@ public class MultiExponentiationTests {
         GroupElement[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(GroupElement[]::new);
         BigInteger[] exponents = IntStream.range(0, numBases).mapToObj(it -> misc.randBig(p)).toArray(BigInteger[]::new);
         PowProductExpression originalPowProductExpression = new PowProductExpression(curve);
-        pln(bases);
-        for (int i = 0; i < numBases; i++) {
-            GroupElement base = bases[i];
-            BigInteger e = exponents[i];
-            originalPowProductExpression.op(base, e);
-        }
-        
-        pln("==========================");
-        pln(String.format("#iterations=%d, #bases=%d, windowSize=%d", numIterations, numBases, windowSize));
-        misc.tick();
-        for (int i = 0; i < numIterations; i++) {
-            curve.evaluate(originalPowProductExpression);
-        }
-        pln(String.format("original power product -> %.2f ms", misc.tick()));
-        misc.tick();
-        MyArrayPowProductWithFixedBases my1 = new MyArrayPowProductWithFixedBases(bases);
-        for (int i = 0; i < numIterations; i++) {
-            my1.evaluate(exponents);
-        }
-        pln(String.format("simple array multi exponentiation -> %.2f ms", misc.tick()));
-        misc.tick();
-        MyArrayPowProductWithFixedBases my2 = new MyFastPowProductWithoutCaching(bases);
-        for (int i = 0; i < numIterations; i++) {
-            my2.evaluate(exponents);
-        }
-        pln(String.format("fast multi exponentiation without caching -> %.2f ms", misc.tick()));
+//        pln(bases);
+//        for (int i = 0; i < numBases; i++) {
+//            GroupElement base = bases[i];
+//            BigInteger e = exponents[i];
+//            originalPowProductExpression.op(base, e);
+//        }
+//
+//        pln("==========================");
+//        pln(String.format("#iterations=%d, #bases=%d, windowSize=%d", numIterations, numBases, windowSize));
+//        misc.tick();
+//        for (int i = 0; i < numIterations; i++) {
+//            curve.evaluate(originalPowProductExpression);
+//        }
+//        pln(String.format("original power product -> %.2f ms", misc.tick()));
+//        misc.tick();
+//        MyArrayPowProductWithFixedBases my1 = new MyArrayPowProductWithFixedBases(bases);
+//        for (int i = 0; i < numIterations; i++) {
+//            my1.evaluate(exponents);
+//        }
+//        pln(String.format("simple array multi exponentiation -> %.2f ms", misc.tick()));
+//        misc.tick();
+//        MyArrayPowProductWithFixedBases my2 = new MyFastPowProductWithoutCaching(bases);
+//        for (int i = 0; i < numIterations; i++) {
+//            my2.evaluate(exponents);
+//        }
+//        pln(String.format("fast multi exponentiation without caching -> %.2f ms", misc.tick()));
         misc.tick();
         MyArrayPowProductWithFixedBases my3 = new MySimultaneous2wAryPowProduct(bases, windowSize);
         for (int i = 0; i < numIterations; i++) {

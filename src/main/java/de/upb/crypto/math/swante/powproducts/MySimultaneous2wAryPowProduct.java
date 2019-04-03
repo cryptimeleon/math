@@ -28,7 +28,7 @@ public class MySimultaneous2wAryPowProduct extends MyArrayPowProductWithFixedBas
         GroupElement res = group.getNeutralElement();
         int l = getLongestExponentBitLength(exponents);
         int[] e = new int[numBases];
-        int mask = (1 << windowSize) - 1;
+        int mask = (1 << (windowSize-1)) - 1;
         for (int eIndex = (l - 1) / windowSize * windowSize; eIndex >= 0; eIndex -= windowSize) {
             for (int i = windowSize - 1; i >= 0; i--) {
                 res = res.square();
