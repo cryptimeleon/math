@@ -42,7 +42,7 @@ public class MySimpleInterleavingPowProduct extends MyArrayPowProductWithFixedBa
                     }
                     wh[i] = J;
                     e[i] = 0;
-                    for (int k = J; k <= j; k++) {
+                    for (int k = j; k >= J; k--) {
                         e[i] <<= 1;
                         if (testBit(exponents[i], k)) {
                             e[i]++;
