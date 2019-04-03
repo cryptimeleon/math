@@ -45,14 +45,15 @@ public class MultiExponentiationTests {
         Assert.assertEquals(expected, new MySimultaneous2wAryPowProduct(bases, 3).evaluate(exponents));
         Assert.assertEquals(expected, new MySimultaneousSlidingWindowPowProduct(bases, 3).evaluate(exponents));
         Assert.assertEquals(expected, new MySimpleInterleavingPowProduct(bases, 3).evaluate(exponents));
+        Assert.assertEquals(expected, new MyInterleavingSignedWindowPowProduct(bases, 3).evaluate(exponents));
     }
     
     @Test
     public void testPerformance() {
         int numIterations = 100;
-        int numBases = 5;
+        int numBases = 10;
         int simultaneousWindowSize = 1;
-        int interleavingWindowSize = 6;
+        int interleavingWindowSize = 2;
         
         GroupElement[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(GroupElement[]::new);
         pln(bases);
@@ -67,6 +68,12 @@ public class MultiExponentiationTests {
         pln("==========================");
         pln(String.format("#iterations=%d, #bases=%d, windowSize=%d", numIterations, numBases, simultaneousWindowSize));
         misc.tick();
+        MyArrayPowProductWithFixedBases my1 = new MyArrayPowProductWithFixedBases(bases);
+        for (int i = 0; i < numIterations; i++) {
+            expected[i] = my1.evaluate(exponents[i]);
+        }
+        pln(String.format("simple array multi exponentiation -> %.2f ms", misc.tick()));
+        misc.tick();
         for (int i = 0; i < numIterations; i++) {
             PowProductExpression originalPowProductExpression = new PowProductExpression(curve);
             for (int b = 0; b < numBases; b++) {
@@ -74,15 +81,9 @@ public class MultiExponentiationTests {
                 BigInteger e = exponents[i][b];
                 originalPowProductExpression.op(base, e);
             }
-            expected[i] = curve.evaluate(originalPowProductExpression);
+            Assert.assertEquals(expected[i],  curve.evaluate(originalPowProductExpression));
         }
         pln(String.format("original power product -> %.2f ms", misc.tick()));
-        misc.tick();
-        MyArrayPowProductWithFixedBases my1 = new MyArrayPowProductWithFixedBases(bases);
-        for (int i = 0; i < numIterations; i++) {
-            Assert.assertEquals(expected[i], my1.evaluate(exponents[i]));
-        }
-        pln(String.format("simple array multi exponentiation -> %.2f ms", misc.tick()));
         misc.tick();
         MyFastPowProductWithoutCaching my2 = new MyFastPowProductWithoutCaching(bases);
         for (int i = 0; i < numIterations; i++) {

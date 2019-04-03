@@ -57,7 +57,7 @@ public interface Group extends Structure {
      * @throws IllegalArgumentException if an element is of the wrong type (e.g., incompatible group elements)
      */
     default GroupElement evaluate(PowProductExpression expr) throws IllegalArgumentException {
-        expr = expr.dynamicOptimization();
+//        expr = expr.dynamicOptimization(); // todo, make this more efficient, then uncomment it again
 
         //Simultaneous exponentiations. Assumes that exponents are nonnegative (ensured by preceeding PowProductExpression.forEach contract)
         int largestExponentBitLength = expr.getLargestExponentBitLength();
