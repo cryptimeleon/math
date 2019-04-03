@@ -5,12 +5,13 @@ import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
 
 import java.math.BigInteger;
 
-public class MySimpleInterleavingPowProduct extends MyArrayPowProductWithFixedBases {
+
+public class MyInterleavingSignedWindowPowProduct extends MyArrayPowProductWithFixedBases {
     
     private final GroupElement[][] smallOddPowers;
     private final int windowSize;
     
-    public MySimpleInterleavingPowProduct(GroupElement[] bases, int windowSize) {
+    public MyInterleavingSignedWindowPowProduct(GroupElement[] bases, int windowSize) {
         super(bases);
         
         this.windowSize = windowSize;

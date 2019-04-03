@@ -5,10 +5,6 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import java.math.BigInteger;
 import java.util.stream.IntStream;
 
-/**
- * Class for a pow product algorithm where windowSize many bits of each exponent
- * are looked at simultaneously. These low powers are precomputed and cached
- */
 public class MySimultaneousSlidingWindowPowProduct extends MyArrayPowProductWithFixedBases {
     
     private final GroupElement[] smallPowers;
