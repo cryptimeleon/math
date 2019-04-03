@@ -50,7 +50,7 @@ public class MultiExponentiationTests {
     
     @Test
     public void testPerformance() {
-        int numIterations = 10;
+        int numIterations = 100;
         int numBases = 10;
         int simultaneousWindowSize = 1;
         int interleavingWindowSize = 2;

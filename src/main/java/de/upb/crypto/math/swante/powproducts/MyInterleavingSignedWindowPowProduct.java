@@ -25,10 +25,10 @@ public class MyInterleavingSignedWindowPowProduct extends MyArrayPowProductWithF
         }
     }
     
-    public GroupElement evaluate(int[][] exponentDigits, int longestExponentBitLength) {
+    public GroupElement evaluate(int[][] exponentDigits, int longestExponentDigitLength) {
         GroupElement A = group.getNeutralElement();
-        for (int j = longestExponentBitLength - 1; j >= 0; j--) {
-            if (j != longestExponentBitLength - 1) {
+        for (int j = longestExponentDigitLength - 1; j >= 0; j--) {
+            if (j != longestExponentDigitLength - 1) {
                 A = A.square();
             }
             for (int i = 0; i < numBases; i++) {
@@ -47,12 +47,19 @@ public class MyInterleavingSignedWindowPowProduct extends MyArrayPowProductWithF
     
     @Override
     public GroupElement evaluate(BigInteger[] exponents) {
-        int longestExponentBitLength = getLongestExponentBitLength(exponents);
+        int longestExponentDigitLength = 0;
         int[][] exponentDigits = new int[numBases][];
         for (int i = 0; i < numBases; i++) {
             exponentDigits[i] = MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents[i], windowSize);
+            longestExponentDigitLength = Math.max(longestExponentDigitLength, exponentDigits[i].length);
         }
-        return evaluate(exponentDigits, longestExponentBitLength);
+        // padding with zeros:
+        for (int i = 0; i < numBases; i++) {
+            int[] paddedArray = new int[longestExponentDigitLength];
+            System.arraycopy(exponentDigits[i], 0, paddedArray, 0, exponentDigits[i].length);
+            exponentDigits[i] = paddedArray;
+        }
+        return evaluate(exponentDigits, longestExponentDigitLength);
     }
     
 }
