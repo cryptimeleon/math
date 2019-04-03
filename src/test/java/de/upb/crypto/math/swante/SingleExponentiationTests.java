@@ -19,6 +19,11 @@ public class SingleExponentiationTests {
     MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
     
     @Test
+    public void testWNAF() {
+    
+    }
+    
+    @Test
     public void testCorrectness() {
         AbstractEllipticCurvePoint g = curve.getGenerator();
         GroupElement[] expected = {g.pow(1), g.pow(3), g.pow(5), g.pow(7)};
@@ -36,7 +41,7 @@ public class SingleExponentiationTests {
     @Test
     public void testPerformance() {
         int numBases = 10;
-        int numExponents = 20;
+        int numExponents = 2;
         List<AbstractEllipticCurvePoint> bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).collect(Collectors.toList());
         List<BigInteger> exponents = IntStream.range(0, numExponents).mapToObj(it -> misc.randBig(parameters.p)).collect(Collectors.toList());
         for (int windowSize = 1; windowSize < 12; windowSize++) {

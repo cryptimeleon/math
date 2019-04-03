@@ -14,6 +14,31 @@ public class misc {
         myAssert(1<0, () -> "fail");
     }
     
+    public static int bitLength(int i) {
+        int res = 0;
+        if (i >= 65536) {
+            i >>= 16;
+            res += 16;
+        }
+        if (i >= 256) {
+            i >>= 8;
+            res += 8;
+        }
+        if (i >= 16) {
+            i >>= 4;
+            res += 4;
+        }
+        if (i >= 4) {
+            i >>= 2;
+            res += 2;
+        }
+        if (i >= 2) {
+            i >>= 1;
+            res += 1;
+        }
+        return res + i;
+    }
+    
     static class Pair<A, B> {
         public final A a;
         public final B b;
