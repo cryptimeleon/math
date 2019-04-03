@@ -25,14 +25,18 @@ public class MySimultaneousSlidingWindowPowProduct extends MyArrayPowProductWith
         int j = getLongestExponentBitLength(exponents) - 1;
         while (j >= 0) {
             final int finalj = j;
-            if (IntStream.range(0, numBases).allMatch(it -> !exponents[it].testBit(finalj))) {
+            if (IntStream.range(0, numBases).noneMatch(it -> exponents[it].testBit(finalj))) {
                 A = A.square();
                 j--;
             } else {
                 int jNew = Math.max(j - windowSize, -1);
                 int J = jNew + 1;
-                final int finalJ = J;
-                while (IntStream.range(0, numBases).allMatch(it -> !exponents[it].testBit(finalJ))) {
+                
+                while (true) {
+                    final int finalJ = J;
+                    if (IntStream.range(0, numBases).anyMatch(it -> exponents[it].testBit(finalJ))) {
+                        break;
+                    }
                     J++;
                 }
                 int e = 0;
