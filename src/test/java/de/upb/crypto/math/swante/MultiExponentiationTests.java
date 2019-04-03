@@ -108,5 +108,10 @@ public class MultiExponentiationTests {
             Assert.assertEquals(expected[i], my5.evaluate(exponents[i]));
         }
         pln(String.format("interleaving sliding-window -> %.2f ms", misc.tick()));
+        MyInterleavingSignedWindowPowProduct my6 = new MyInterleavingSignedWindowPowProduct(bases, interleavingWindowSize);
+        for (int i = 0; i < numIterations; i++) {
+            Assert.assertEquals(expected[i], my6.evaluate(exponents[i]));
+        }
+        pln(String.format("interleaved signed window (wNAF) -> %.2f ms", misc.tick()));
     }
 }

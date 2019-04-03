@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.*;
 import static de.upb.crypto.math.swante.misc.pln;
 
-public class SlidingWindowTests {
+public class SingleExponentiationTests {
     
     MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
     MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
