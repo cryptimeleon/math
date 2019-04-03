@@ -106,7 +106,7 @@ public class MyExponentiationAlgorithms {
         }
         int i = lambda +1;
         int l = 0;
-        int wm = 1+(int)(Math.log(m)/Math.log(2.0));
+        int wm = misc.bitLength(m);
         while (i >= 0) {
             if (beta[i] == (i==0 ? 0 : beta[i-1])) {
                 i--;
