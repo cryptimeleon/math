@@ -6,6 +6,9 @@ import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
 import java.math.BigInteger;
 
 
+/**
+ * Signed-window / wNAF interleaved pow product algorithm.
+ */
 public class MyInterleavingSignedWindowPowProduct extends MyArrayPowProductWithFixedBases {
     
     private final GroupElement[][] smallOddPowers;
@@ -22,41 +25,34 @@ public class MyInterleavingSignedWindowPowProduct extends MyArrayPowProductWithF
         }
     }
     
-    @Override
-    public GroupElement evaluate(BigInteger[] exponents) {
+    public GroupElement evaluate(int[][] exponentDigits, int longestExponentBitLength) {
         GroupElement A = group.getNeutralElement();
-        int longestExponentBitLength = getLongestExponentBitLength(exponents);
-        int[] wh = new int[numBases];
-        int[] e = new int[numBases];
-        for (int i = 0; i < numBases; i++) {
-            wh[i] = -1;
-        }
         for (int j = longestExponentBitLength - 1; j >= 0; j--) {
             if (j != longestExponentBitLength - 1) {
                 A = A.square();
             }
             for (int i = 0; i < numBases; i++) {
-                if (wh[i] == -1 && exponents[i].testBit(j)) {
-                    int J = j - windowSize + 1;
-                    while (!testBit(exponents[i], J)) {
-                        J++;
+                int exponentDigit = exponentDigits[i][j];
+                if (exponentDigit != 0) {
+                    GroupElement power = smallOddPowers[i][Math.abs(exponentDigit) / 2];
+                    if (exponentDigit < 0) {
+                        power = power.inv();
                     }
-                    wh[i] = J;
-                    e[i] = 0;
-                    for (int k = J; k <= j; k++) {
-                        e[i] <<= 1;
-                        if (testBit(exponents[i], k)) {
-                            e[i]++;
-                        }
-                    }
-                }
-                if (wh[i] == j) {
-                    A = A.op(smallOddPowers[i][e[i] / 2]);
-                    wh[i] = -1;
+                    A = A.op(power);
                 }
             }
         }
         return A;
+    }
+    
+    @Override
+    public GroupElement evaluate(BigInteger[] exponents) {
+        int longestExponentBitLength = getLongestExponentBitLength(exponents);
+        int[][] exponentDigits = new int[numBases][];
+        for (int i = 0; i < numBases; i++) {
+            exponentDigits[i] = MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents[i], windowSize);
+        }
+        return evaluate(exponentDigits, longestExponentBitLength);
     }
     
 }

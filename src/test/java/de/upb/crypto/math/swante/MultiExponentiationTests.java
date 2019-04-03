@@ -50,7 +50,7 @@ public class MultiExponentiationTests {
     
     @Test
     public void testPerformance() {
-        int numIterations = 100;
+        int numIterations = 10;
         int numBases = 10;
         int simultaneousWindowSize = 1;
         int interleavingWindowSize = 2;
@@ -66,7 +66,7 @@ public class MultiExponentiationTests {
         GroupElement[] expected = new GroupElement[numIterations];
 
         pln("==========================");
-        pln(String.format("#iterations=%d, #bases=%d, windowSize=%d", numIterations, numBases, simultaneousWindowSize));
+        pln(String.format("#iterations=%d, #bases=%d, simultaneousWindowSize=%d, interleavedWindowSize=%d", numIterations, numBases, simultaneousWindowSize, interleavingWindowSize));
         misc.tick();
         MyArrayPowProductWithFixedBases my1 = new MyArrayPowProductWithFixedBases(bases);
         for (int i = 0; i < numIterations; i++) {
