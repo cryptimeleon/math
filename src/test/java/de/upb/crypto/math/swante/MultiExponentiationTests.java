@@ -15,11 +15,11 @@ import static de.upb.crypto.math.swante.misc.pln;
 
 public class MultiExponentiationTests {
     
-//        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
-//    MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
-//    BigInteger p = parameters.p;
-    BigInteger p = BigInteger.valueOf(19);
-    RingUnitGroup curve = new Zp(p).asUnitGroup();
+        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
+    MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
+    BigInteger p = parameters.p;
+//    BigInteger p = BigInteger.valueOf(19);
+//    RingUnitGroup curve = new Zp(p).asUnitGroup();
     
     
     @Test
@@ -49,8 +49,8 @@ public class MultiExponentiationTests {
     
     @Test
     public void testPerformance() {
-        int numIterations = 1;
-        int numBases = 2;
+        int numIterations = 100;
+        int numBases = 5;
         int simultaneousWindowSize = 1;
         int interleavingWindowSize = 6;
         
@@ -59,7 +59,7 @@ public class MultiExponentiationTests {
         BigInteger[][] exponents = new BigInteger[numIterations][];
         for (int i = 0; i < numIterations; i++) {
             exponents[i] = IntStream.range(0, numBases).mapToObj(it -> misc.randBig(p)).toArray(BigInteger[]::new);
-            pln(exponents[i]);
+//            pln(exponents[i]);
         }
         
         GroupElement[] expected = new GroupElement[numIterations];

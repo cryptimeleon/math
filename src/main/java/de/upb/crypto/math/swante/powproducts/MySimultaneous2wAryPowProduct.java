@@ -16,7 +16,7 @@ public class MySimultaneous2wAryPowProduct extends MyArrayPowProductWithFixedBas
     
     public MySimultaneous2wAryPowProduct(GroupElement[] bases, int windowSize) {
         super(bases);
-        if (windowSize * numBases > 16) {
+        if (windowSize * numBases > 24) {
             throw new IllegalArgumentException("Not enough space for so many precomputations. Reduce either the windowSize or split the bases into multiple PowProducts.");
         }
         this.windowSize = windowSize;
