@@ -25,6 +25,12 @@ public class MyInterleavingSignedWindowPowProduct extends MyArrayPowProductWithF
         }
     }
     
+    /**
+     *
+     * @param exponentDigits array of the wNAF exponent digits (should all have the same length)
+     * @param longestExponentDigitLength number of digits of the largest exponent
+     * @return
+     */
     public GroupElement evaluate(int[][] exponentDigits, int longestExponentDigitLength) {
         GroupElement A = group.getNeutralElement();
         for (int j = longestExponentDigitLength - 1; j >= 0; j--) {

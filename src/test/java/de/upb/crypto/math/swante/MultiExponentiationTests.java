@@ -51,9 +51,9 @@ public class MultiExponentiationTests {
     @Test
     public void testPerformance() {
         int numIterations = 100;
-        int numBases = 10;
+        int numBases = 16;
         int simultaneousWindowSize = 1;
-        int interleavingWindowSize = 2;
+        int interleavingWindowSize = 6;
         
         GroupElement[] bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).toArray(GroupElement[]::new);
         pln(bases);

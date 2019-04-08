@@ -2,6 +2,7 @@ package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 
 import java.math.BigInteger;
 
@@ -206,5 +207,30 @@ public class MyExponentiationAlgorithms {
         int[] bWithoutLeadingZeros = new int[i];
         System.arraycopy(bi, 0, bWithoutLeadingZeros, 0, i);
         return bWithoutLeadingZeros;
+    }
+    
+    /**
+     * evaluate wNAF power
+     * @param base original base
+     * @param exponentDigits wNAF digits of the exponent (precomputed by above method)
+     * @param smallOddPowers small odd powers
+     * @return
+     */
+    public static GroupElement powSingleWNaf(GroupElement base, int[] exponentDigits, GroupElement[] smallOddPowers) {
+        GroupElement A = base.getStructure().getNeutralElement();
+        for (int i = exponentDigits.length-1; i >= 0; i--) {
+            if (i != exponentDigits.length-1) {
+                A = A.square();
+            }
+            int exponentDigit = exponentDigits[i];
+            if (exponentDigit != 0) {
+                GroupElement power = smallOddPowers[Math.abs(exponentDigit) / 2];
+                if (exponentDigit < 0) {
+                    power = power.inv();
+                }
+                A = A.op(power);
+            }
+        }
+        return A;
     }
 }

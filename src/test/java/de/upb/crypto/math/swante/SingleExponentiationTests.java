@@ -73,6 +73,16 @@ public class SingleExponentiationTests {
             misc.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
+                GroupElement[] smallOddPowers = precomputeSmallOddPowers(base, m);
+                for (int j = 0; j < numExponents; j++) {
+                    int[] expDigits = MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents.get(j), windowSize);
+                    MyExponentiationAlgorithms.powSingleWNaf(base, expDigits, smallOddPowers);
+                }
+            }
+            pln(String.format("signed digit / (non-fractional!) wNAF pow (with caching of small base powers) -> %.2f ms", misc.tick()));
+            misc.tick();
+            for (int i = 0; i < numBases; i++) {
+                AbstractEllipticCurvePoint base = bases.get(i);
                 GroupElement[] smallPowers = precomputeSmallOddPowers(base, m);
                 for (int j = 0; j < numExponents; j++) {
                     int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponents.get(j), m);
