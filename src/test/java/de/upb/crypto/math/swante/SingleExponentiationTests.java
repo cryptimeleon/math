@@ -93,8 +93,8 @@ public class SingleExponentiationTests {
             pln(String.format("signed digit fractional window pow (with caching of small base powers) -> %.2f ms", misc.tick()));
             pln("total #M, simple Squre&Multiply: " + powSimpleSquareAndMultiplyOpCounter);
             pln("total #M, simple SlidingWindow: " + powSimpleSlidignWindowOpCounter);
-            pln("total #M, simple wNAF: " + powSingleWNafOpCounter);
-            pln("total #M, simple fractional windows: " + powUsingLrSfwMethodOpCounter);
+            pln("total #M, wNAF: " + powSingleWNafOpCounter);
+            pln("total #M, fractional windows: " + powUsingLrSfwMethodOpCounter);
             powSimpleSquareAndMultiplyOpCounter = 0;
             powSimpleSlidignWindowOpCounter = 0;
             powSingleWNafOpCounter = 0;

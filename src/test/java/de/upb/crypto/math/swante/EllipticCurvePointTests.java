@@ -3,6 +3,7 @@ package de.upb.crypto.math.swante;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
+import jdk.nashorn.internal.objects.Global;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,8 +38,8 @@ public class EllipticCurvePointTests {
         pln("=========================");
         pln("Running performance tests for curve: " + curve.toString());
         AbstractEllipticCurvePoint g = curve.generator;
-        int numIterations = 500000;
-        int numPowerIterations = 2000;
+        int numIterations = 50000;
+        int numPowerIterations = 200;
         misc.tick();
         AbstractEllipticCurvePoint tmp = g;
         for (int i = 0; i < numIterations; i++) {
@@ -57,16 +58,26 @@ public class EllipticCurvePointTests {
         pln(String.format("time for %d point additions (and one final normalization): %.1f ms", numIterations, elapsed));
         tmp = g;
         Zp.ZpElement power = (Zp.ZpElement) g.getX();
+        int windowSize = 3;
+        int m = (1 << windowSize)-1;
+        MyGlobals.useCurvePointNormalizationPowOptimization = false;
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
-            int windowSize = 3;
-            int m = (1 << windowSize)-1;
             GroupElement[] precomputedPowers = precomputeSmallOddPowers(tmp, m);
             tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, power.getInteger(), windowSize, precomputedPowers);
             tmp = tmp.normalize();
         }
         elapsed = misc.tick();
-        pln(String.format("time for %d pow G.x computations (and one normalization after each pow): %.1f ms", numPowerIterations, elapsed));
+        pln(String.format("time for %d pow G.x computations (and one normalization after each pow), without normalization optimization: %.1f ms", numPowerIterations, elapsed));
+        MyGlobals.useCurvePointNormalizationPowOptimization = true;
+        misc.tick();
+        for (int i = 0; i < numPowerIterations; i++) {
+            GroupElement[] precomputedPowers = precomputeSmallOddPowers(tmp, m);
+            tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, power.getInteger(), windowSize, precomputedPowers);
+            tmp = tmp.normalize();
+        }
+        elapsed = misc.tick();
+        pln(String.format("time for %d pow G.x computations (and one normalization after each pow), with normalization optimization: %.1f ms", numPowerIterations, elapsed));
     }
     
     @Parameterized.Parameters(name = "{index}: {0}")

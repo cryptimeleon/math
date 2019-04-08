@@ -1,21 +1,36 @@
 package de.upb.crypto.math.structures.ec;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.structures.*;
+import de.upb.crypto.math.interfaces.structures.Element;
+import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
+import de.upb.crypto.math.interfaces.structures.Field;
+import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.swante.MyGlobals;
+
+import java.math.BigInteger;
 
 public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
     protected FieldElement x, y, z;
     
     protected WeierstrassCurve structure;
-
+    
     public AbstractEllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y, FieldElement z) {
         this.structure = curve;
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+    
+    @Override
+    public void prepareForPow(BigInteger exponent) {
+        if (MyGlobals.useCurvePointNormalizationPowOptimization &&
+                exponent.bitLength() > MyGlobals.curvePointNormalizationOptimizationThreshold &&
+                !isNormalized()) {
+            normalize();
+        }
     }
     
     public abstract AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q);
@@ -31,27 +46,27 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
         AbstractEllipticCurvePoint Q = (AbstractEllipticCurvePoint) e;
         return this.add(Q);
     }
-
+    
     public Field getFieldOfDefinition() {
         return structure.getFieldOfDefinition();
     }
-
+    
     public FieldElement getX() {
         return x;
     }
-
+    
     public FieldElement getY() {
         return y;
     }
-
+    
     public FieldElement getZ() {
         return z;
     }
-
+    
     public WeierstrassCurve getStructure() {
         return structure;
     }
-
+    
     @Override
     public Representation getRepresentation() {
         /*
@@ -64,11 +79,11 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
         r.put("z", normalized.getZ().getRepresentation()); //basically in this to represent the neutral element
         return r;
     }
-
+    
     public String toString() {
         return "(" + x.toString() + ":" + y.toString() + ":" + z.toString() + ")";
     }
-
+    
     @Override
     public int hashCode() {
         if (isNormalized())
@@ -76,7 +91,7 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
         else
             return ((AbstractEllipticCurvePoint) normalize()).getX().hashCode(); //todo do something more efficient
     }
-
+    
     @Override
     public boolean isNeutralElement() {
         return z.isZero();

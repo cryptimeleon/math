@@ -44,6 +44,14 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     }
     
     /**
+     * Should be called once before performing exponentiations with this
+     * variable as base.
+     * Useful for normalizing e.g. CurvePoints, thereby making add operations faster.
+     * @param exponent
+     */
+    default void prepareForPow(BigInteger exponent) {}
+    
+    /**
      * Calculates the result of applying the group operation k times.
      * i.e. it computes k*this (additive group) or this^k (multiplicative group).
      * For negative exponents k, computes this.inv().pow(-k)
