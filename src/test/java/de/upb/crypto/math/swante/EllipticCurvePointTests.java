@@ -61,7 +61,7 @@ public class EllipticCurvePointTests {
         BigInteger exponent = ((Zp.ZpElement) g.getX()).getInteger();
         int windowSize = 3;
         int m = (1 << windowSize)-1;
-        MyGlobals.useCurvePointNormalizationPowOptimization = true;
+        MyGlobals.useCurvePointNormalizationPowOptimization = false;
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
             tmp = tmp.prepareForPow(exponent);
@@ -70,7 +70,7 @@ public class EllipticCurvePointTests {
         }
         elapsed = misc.tick();
         pln(String.format("time for %d pow G.x computations (and one normalization after each pow), without normalization optimization: %.1f ms", numPowerIterations, elapsed));
-        MyGlobals.useCurvePointNormalizationPowOptimization = false;
+        MyGlobals.useCurvePointNormalizationPowOptimization = !MyGlobals.useCurvePointNormalizationPowOptimization;
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
             tmp = tmp.prepareForPow(exponent);
