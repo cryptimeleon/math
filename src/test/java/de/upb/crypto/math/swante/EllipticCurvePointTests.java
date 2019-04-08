@@ -2,6 +2,7 @@ package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
+import de.upb.crypto.math.structures.ec.MyProjectiveEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 import jdk.nashorn.internal.objects.Global;
 import org.junit.Assert;
@@ -60,22 +61,20 @@ public class EllipticCurvePointTests {
         BigInteger exponent = ((Zp.ZpElement) g.getX()).getInteger();
         int windowSize = 3;
         int m = (1 << windowSize)-1;
-        MyGlobals.useCurvePointNormalizationPowOptimization = false;
+        MyGlobals.useCurvePointNormalizationPowOptimization = true;
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
-            tmp.prepareForPow(exponent);
-            GroupElement[] precomputedPowers = precomputeSmallOddPowers(tmp, m);
-            tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, exponent, windowSize, precomputedPowers);
+            tmp = tmp.prepareForPow(exponent);
+            tmp = (AbstractEllipticCurvePoint) MyExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
             tmp = tmp.normalize();
         }
         elapsed = misc.tick();
         pln(String.format("time for %d pow G.x computations (and one normalization after each pow), without normalization optimization: %.1f ms", numPowerIterations, elapsed));
-        MyGlobals.useCurvePointNormalizationPowOptimization = true;
+        MyGlobals.useCurvePointNormalizationPowOptimization = false;
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
-            tmp.prepareForPow(exponent);
-            GroupElement[] precomputedPowers = precomputeSmallOddPowers(tmp, m);
-            tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, exponent, windowSize, precomputedPowers);
+            tmp = tmp.prepareForPow(exponent);
+            tmp = (AbstractEllipticCurvePoint) MyExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
             tmp = tmp.normalize();
         }
         elapsed = misc.tick();
