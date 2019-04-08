@@ -80,7 +80,7 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement t10 = t9.square();
         FieldElement t11 = t10.sub(Z1Z1);
         FieldElement Z3 = t11.sub(HH);
-        return new MyProjectiveEllipticCurvePoint(structure, X3, Y3, Z3);
+        return new MyJacobiEllipticCurvePoint(structure, X3, Y3, Z3);
     }
     
     
