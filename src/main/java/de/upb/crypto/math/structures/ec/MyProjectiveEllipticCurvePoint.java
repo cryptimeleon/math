@@ -4,7 +4,6 @@ package de.upb.crypto.math.structures.ec;
 import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.swante.MyGlobals;
-import jdk.nashorn.internal.objects.Global;
 
 // a point on a short form weierstrass curve, in projective coordinates
 // representing the affine point (x/z, y/z)
@@ -43,7 +42,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         return new MyProjectiveEllipticCurvePoint(structure, x.mul(div), y.mul(div), structure.getFieldOfDefinition().getOneElement());
     }
     
-    private AbstractEllipticCurvePoint addAssumingZ2IsZero(AbstractEllipticCurvePoint Q) {
+    private AbstractEllipticCurvePoint addAssumingZ2IsOne(AbstractEllipticCurvePoint Q) {
         FieldElement t0 = Q.y.mul(z);
         FieldElement u = t0.sub(y);
         FieldElement uu = u.square();
@@ -84,7 +83,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
             return Q;
         }
         if (MyGlobals.useCurvePointNormalizationPowOptimization && Q.isNormalized()) {
-            addAssumingZ2IsZero(Q);
+            return addAssumingZ2IsOne(Q);
         }
         FieldElement x1z2 = x.mul(Q.z);
         FieldElement v = Q.x.mul(z).sub(x1z2);
