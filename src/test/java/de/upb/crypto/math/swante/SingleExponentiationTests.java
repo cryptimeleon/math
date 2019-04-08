@@ -76,7 +76,8 @@ public class SingleExponentiationTests {
                 AbstractEllipticCurvePoint base = bases.get(i);
                 GroupElement[] smallOddPowers = precomputeSmallOddPowers(base, m);
                 for (int j = 0; j < numExponents; j++) {
-                    int[] expDigits = MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents.get(j), windowSize);
+                    BigInteger originalExponent = exponents.get(j);
+                    int[] expDigits = MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(originalExponent, windowSize);
                     MyExponentiationAlgorithms.powSingleWNaf(base, expDigits, smallOddPowers);
                 }
             }
@@ -86,7 +87,8 @@ public class SingleExponentiationTests {
                 AbstractEllipticCurvePoint base = bases.get(i);
                 GroupElement[] smallPowers = precomputeSmallOddPowers(base, m);
                 for (int j = 0; j < numExponents; j++) {
-                    int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponents.get(j), m);
+                    BigInteger originalExponent = exponents.get(j);
+                    int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(originalExponent, m);
                     powUsingLrSfwMethod(base, expDigits, smallPowers);
                 }
             }

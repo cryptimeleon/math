@@ -25,12 +25,13 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
     }
     
     @Override
-    public void prepareForPow(BigInteger exponent) {
+    public AbstractEllipticCurvePoint prepareForPow(BigInteger exponent) {
         if (MyGlobals.useCurvePointNormalizationPowOptimization &&
-                exponent.bitLength() > MyGlobals.curvePointNormalizationOptimizationThreshold &&
+                (exponent == null || exponent.bitLength() > MyGlobals.curvePointNormalizationOptimizationThreshold) &&
                 !isNormalized()) {
-            normalize();
+            return normalize();
         }
+        return this;
     }
     
     public abstract AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q);

@@ -3,6 +3,8 @@ package de.upb.crypto.math.structures.ec;
 
 import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.swante.MyGlobals;
+import jdk.nashorn.internal.objects.Global;
 
 // a point on a short form weierstrass curve, in projective coordinates
 // representing the affine point (x/z, y/z)
@@ -41,6 +43,34 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         return new MyProjectiveEllipticCurvePoint(structure, x.mul(div), y.mul(div), structure.getFieldOfDefinition().getOneElement());
     }
     
+    private AbstractEllipticCurvePoint addAssumingZ2IsZero(AbstractEllipticCurvePoint Q) {
+        FieldElement t0 = Q.y.mul(z);
+        FieldElement u = t0.sub(y);
+        FieldElement uu = u.square();
+        FieldElement t1 = Q.x.mul(z);
+        FieldElement v = t1.sub(x);
+        if (v.isZero()) {
+            if (u.isZero()) {
+                return this.square();
+            }
+            return (AbstractEllipticCurvePoint)structure.getNeutralElement();
+        }
+        FieldElement vv = v.square();
+        FieldElement vvv = v.mul(vv);
+        FieldElement R = vv.mul(x);
+        FieldElement two = structure.getFieldOfDefinition().getElement(2);
+        FieldElement t2 = R.mul(two);
+        FieldElement t3 = uu.mul(z);
+        FieldElement t4 = t3.sub(vvv);
+        FieldElement A = t4.sub(t2);
+        FieldElement X3 = v.mul(A);
+        FieldElement t5 = R.sub(A);
+        FieldElement t6 = vvv.mul(y);
+        FieldElement t7 = u.mul(t5);
+        FieldElement Y3 = t7.sub(t6);
+        FieldElement Z3 = vvv.mul(z);
+        return new MyProjectiveEllipticCurvePoint(structure, X3, Y3, Z3);
+    }
     
     @Override
     public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q) throws IllegalArgumentException {
@@ -52,6 +82,9 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         }
         if (this.isNeutralElement()) {
             return Q;
+        }
+        if (MyGlobals.useCurvePointNormalizationPowOptimization && Q.isNormalized()) {
+            addAssumingZ2IsZero(Q);
         }
         FieldElement x1z2 = x.mul(Q.z);
         FieldElement v = Q.x.mul(z).sub(x1z2);

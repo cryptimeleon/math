@@ -1,6 +1,7 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
 
@@ -47,9 +48,15 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * Should be called once before performing exponentiations with this
      * variable as base.
      * Useful for normalizing e.g. CurvePoints, thereby making add operations faster.
-     * @param exponent
+     * @param exponent the exponent that will be used for pow. Only if it is reasonably
+     *                 large, the precomputations will actually be performed. If you
+     *                 don't know the exact value for the exponent, but would like to
+     *                 perform the precomputations no matter what it will eventually be,
+     *                 you can pass null here.
+     * @return returns the prepared GroupElement (should be reassigned to your local
+     * base variable)
      */
-    default void prepareForPow(BigInteger exponent) {}
+    default GroupElement prepareForPow(BigInteger exponent) {return this;}
     
     /**
      * Calculates the result of applying the group operation k times.
@@ -57,8 +64,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * For negative exponents k, computes this.inv().pow(-k)
      */
     default GroupElement pow(BigInteger k) { //default implementation: square&multiply algorithm
-        // Todo: switch according to most efficient expo algo (cost of invert)
-        return MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(this, k);
+        return MyExponentiationAlgorithms.defaultPowImplementation(this, k);
     }
     
     /**

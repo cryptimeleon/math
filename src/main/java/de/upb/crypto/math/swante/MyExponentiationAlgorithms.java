@@ -10,6 +10,20 @@ import java.math.BigInteger;
 public class MyExponentiationAlgorithms {
     
     /**
+     * This is the method that should be called by default for normal
+     * exponentations
+     * @param base
+     * @param exponent
+     * @return
+     */
+    public static GroupElement defaultPowImplementation(GroupElement base, BigInteger exponent) {
+        // Todo: switch according to most efficient expo algo (e.g. cost of invert)
+        base = base.prepareForPow(exponent); // normalize base (if it is of appropriate type) so that exponentiation will be more efficient
+        return simpleSquareAndMultiplyPow(base, exponent);
+    }
+    
+    
+    /**
      * Very basic square & multiply exponentiation
      * @param base
      * @param exponent
@@ -18,7 +32,6 @@ public class MyExponentiationAlgorithms {
     public static GroupElement simpleSquareAndMultiplyPow(GroupElement base, BigInteger exponent) {
         if (exponent.signum() < 0)
             return simpleSquareAndMultiplyPow(base, exponent.negate()).inv();
-    
         GroupElement result = base.getStructure().getNeutralElement();
         for (int i = exponent.bitLength() - 1; i >= 0; i--) {
             result = result.square();
@@ -241,4 +254,6 @@ public class MyExponentiationAlgorithms {
         }
         return A;
     }
+    
+    
 }

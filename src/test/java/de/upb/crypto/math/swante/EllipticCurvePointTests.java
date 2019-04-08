@@ -39,7 +39,7 @@ public class EllipticCurvePointTests {
         pln("Running performance tests for curve: " + curve.toString());
         AbstractEllipticCurvePoint g = curve.generator;
         int numIterations = 50000;
-        int numPowerIterations = 200;
+        int numPowerIterations = 2000;
         misc.tick();
         AbstractEllipticCurvePoint tmp = g;
         for (int i = 0; i < numIterations; i++) {
@@ -57,14 +57,15 @@ public class EllipticCurvePointTests {
         elapsed = misc.tick();
         pln(String.format("time for %d point additions (and one final normalization): %.1f ms", numIterations, elapsed));
         tmp = g;
-        Zp.ZpElement power = (Zp.ZpElement) g.getX();
+        BigInteger exponent = ((Zp.ZpElement) g.getX()).getInteger();
         int windowSize = 3;
         int m = (1 << windowSize)-1;
         MyGlobals.useCurvePointNormalizationPowOptimization = false;
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
+            tmp.prepareForPow(exponent);
             GroupElement[] precomputedPowers = precomputeSmallOddPowers(tmp, m);
-            tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, power.getInteger(), windowSize, precomputedPowers);
+            tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, exponent, windowSize, precomputedPowers);
             tmp = tmp.normalize();
         }
         elapsed = misc.tick();
@@ -72,8 +73,9 @@ public class EllipticCurvePointTests {
         MyGlobals.useCurvePointNormalizationPowOptimization = true;
         misc.tick();
         for (int i = 0; i < numPowerIterations; i++) {
+            tmp.prepareForPow(exponent);
             GroupElement[] precomputedPowers = precomputeSmallOddPowers(tmp, m);
-            tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, power.getInteger(), windowSize, precomputedPowers);
+            tmp = (AbstractEllipticCurvePoint)powUsingSlidingWindow(tmp, exponent, windowSize, precomputedPowers);
             tmp = tmp.normalize();
         }
         elapsed = misc.tick();
@@ -85,7 +87,7 @@ public class EllipticCurvePointTests {
         ArrayList<MyShortFormWeierstrassCurve> list = new ArrayList<>();
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
 //        list.add(new MyAffineCurve(parameters));
-        list.add(new MyJacobiCurve(parameters));
+//        list.add(new MyJacobiCurve(parameters));
         list.add(new MyProjectiveCurve(parameters));
         return list;
     }
