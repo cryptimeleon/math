@@ -61,6 +61,7 @@ public class SingleExponentiationTests {
                 }
             }
             pln(String.format("sliding window pow (without caching) -> %.2f ms", misc.tick()));
+            powSimpleSlidignWindowOpCounter = 0;
             misc.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
@@ -90,6 +91,15 @@ public class SingleExponentiationTests {
                 }
             }
             pln(String.format("signed digit fractional window pow (with caching of small base powers) -> %.2f ms", misc.tick()));
+            pln("total #M, simple Squre&Multiply: " + powSimpleSquareAndMultiplyOpCounter);
+            pln("total #M, simple SlidingWindow: " + powSimpleSlidignWindowOpCounter);
+            pln("total #M, simple wNAF: " + powSingleWNafOpCounter);
+            pln("total #M, simple fractional windows: " + powUsingLrSfwMethodOpCounter);
+            powSimpleSquareAndMultiplyOpCounter = 0;
+            powSimpleSlidignWindowOpCounter = 0;
+            powSingleWNafOpCounter = 0;
+            powUsingLrSfwMethodOpCounter = 0;
         }
+        
     }
 }

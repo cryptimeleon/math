@@ -1,8 +1,6 @@
 package de.upb.crypto.math.swante;
 
-import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 
 import java.math.BigInteger;
 
@@ -24,8 +22,10 @@ public class MyExponentiationAlgorithms {
         GroupElement result = base.getStructure().getNeutralElement();
         for (int i = exponent.bitLength() - 1; i >= 0; i--) {
             result = result.square();
-            if (exponent.testBit(i))
+            if (exponent.testBit(i)) {
                 result = result.op(base);
+                powSimpleSquareAndMultiplyOpCounter++;
+            }
         }
         return result;
     }
@@ -77,6 +77,7 @@ public class MyExponentiationAlgorithms {
                 }
                 
                 y = y.op(smallPowersOfBase[smallExponent / 2]);
+                powSimpleSlidignWindowOpCounter++;
                 i = s - 1;
             } else {
                 y = y.square();
@@ -174,6 +175,7 @@ public class MyExponentiationAlgorithms {
                 smallPower = smallPower.inv();
             }
             A = A.op(smallPower);
+            powUsingLrSfwMethodOpCounter++;
         }
         return A;
     }
@@ -209,6 +211,11 @@ public class MyExponentiationAlgorithms {
         return bWithoutLeadingZeros;
     }
     
+    public static int powSimpleSquareAndMultiplyOpCounter = 0;
+    public static int powSimpleSlidignWindowOpCounter = 0;
+    public static int powSingleWNafOpCounter = 0;
+    public static int powUsingLrSfwMethodOpCounter = 0;
+    
     /**
      * evaluate wNAF power
      * @param base original base
@@ -229,6 +236,7 @@ public class MyExponentiationAlgorithms {
                     power = power.inv();
                 }
                 A = A.op(power);
+                powSingleWNafOpCounter++;
             }
         }
         return A;
