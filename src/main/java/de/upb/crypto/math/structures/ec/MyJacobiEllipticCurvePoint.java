@@ -3,6 +3,7 @@ package de.upb.crypto.math.structures.ec;
 
 import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.swante.MyGlobals;
 
 // a point on a short form weierstrass curve, in Jacobian coordinates
 // representing the affine point (x/z^2, y/z^3)
@@ -45,6 +46,43 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         return new MyJacobiEllipticCurvePoint(structure, x.mul(div2), y.mul(div3), structure.getFieldOfDefinition().getOneElement());
     }
     
+    private AbstractEllipticCurvePoint addAssumingZ2IsOne(AbstractEllipticCurvePoint Q) {
+        FieldElement Z1Z1 = z.square();
+        FieldElement U2 = Q.x.mul(Z1Z1);
+        FieldElement t0 = z.mul(Z1Z1);
+        FieldElement S2 = Q.y.mul(t0);
+        FieldElement H = U2.sub(x);
+        FieldElement t1 = S2.sub(y);
+        if (H.isZero()) {
+            if (t1.isZero()) {
+                return this.square();
+            }
+            return (AbstractEllipticCurvePoint)structure.getNeutralElement();
+        }
+        FieldElement HH = H.square();
+        Field field = structure.getFieldOfDefinition();
+        FieldElement two = field.getElement(2);
+        FieldElement four = field.getElement(4);
+        FieldElement I = HH.mul(four);
+        FieldElement J = H.mul(I);
+        FieldElement r = t1.mul(two);
+        FieldElement V = x.mul(I);
+        FieldElement t2 = r.square();
+        FieldElement t3 = V.mul(two);
+        FieldElement t4 = t2.sub(J);
+        FieldElement X3 = t4.sub(t3);
+        FieldElement t5 = V.sub(X3);
+        FieldElement t6 = y.mul(J);
+        FieldElement t7 = t6.mul(two);
+        FieldElement t8 = r.mul(t5);
+        FieldElement Y3 = t8.sub(t7);
+        FieldElement t9 = z.add(H);
+        FieldElement t10 = t9.square();
+        FieldElement t11 = t10.sub(Z1Z1);
+        FieldElement Z3 = t11.sub(HH);
+        return new MyProjectiveEllipticCurvePoint(structure, X3, Y3, Z3);
+    }
+    
     
     @Override
     public AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q) throws IllegalArgumentException {
@@ -56,6 +94,9 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         }
         if (this.isNeutralElement()) {
             return Q;
+        }
+        if (MyGlobals.useCurvePointNormalizationPowOptimization && Q.isNormalized()) {
+            return addAssumingZ2IsOne(Q);
         }
         FieldElement z1Sq = z.square();
         FieldElement z2Sq = Q.z.square();

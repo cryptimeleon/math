@@ -45,7 +45,6 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
     private AbstractEllipticCurvePoint addAssumingZ2IsOne(AbstractEllipticCurvePoint Q) {
         FieldElement t0 = Q.y.mul(z);
         FieldElement u = t0.sub(y);
-        FieldElement uu = u.square();
         FieldElement t1 = Q.x.mul(z);
         FieldElement v = t1.sub(x);
         if (v.isZero()) {
@@ -54,6 +53,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
             }
             return (AbstractEllipticCurvePoint)structure.getNeutralElement();
         }
+        FieldElement uu = u.square();
         FieldElement vv = v.square();
         FieldElement vvv = v.mul(vv);
         FieldElement R = vv.mul(x);
