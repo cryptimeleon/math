@@ -125,6 +125,14 @@ public class misc {
         return deltaTimeInMillis;
     }
     
+    public static void sleep(double seconds) {
+        try {
+            Thread.sleep((long) (seconds*1000.0));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    
     public static ArrayList<Integer> arange(int maxExclusive) {
         return arange(0, maxExclusive);
     }
