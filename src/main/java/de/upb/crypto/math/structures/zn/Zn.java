@@ -127,6 +127,11 @@ public class Zn implements Ring {
         public ZnElement neg() {
             return createZnElement(v.negate());
         }
+    
+        @Override
+        public ZnElement sub(Element e) {
+            return createZnElement(v.subtract(((ZnElement)e).v));
+        }
 
         @Override
         public ZnElement mul(Element e) {

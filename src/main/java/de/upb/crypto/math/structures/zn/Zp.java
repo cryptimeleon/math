@@ -95,6 +95,11 @@ public class Zp extends Zn implements Field {
         public ZpElement add(Element e) {
             return (ZpElement) super.add(e);
         }
+    
+        @Override
+        public ZpElement sub(Element e) {
+            return (ZpElement) super.sub(e);
+        }
 
         @Override
         public ZpElement neg() {
