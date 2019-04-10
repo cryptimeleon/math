@@ -16,6 +16,7 @@ public class MyMetricTests {
         assertEquals(20.0, a.sum());
         assertEquals(3.5, a.computeMedian());
         assertEquals(5.0, a.computeAverage());
+        System.out.println(a);
     }
     
 }
