@@ -10,9 +10,9 @@ public class MyMetricTests {
     public void testMetric() {
         MyMetric a = new MyMetric();
         a.add(2.0);
+        a.add(11.0);
         a.add(3.0);
         a.add(4.0);
-        a.add(11.0);
         assertEquals(20.0, a.sum());
         assertEquals(3.5, a.computeMedian());
         assertEquals(5.0, a.computeAverage());
