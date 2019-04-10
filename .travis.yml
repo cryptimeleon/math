@@ -18,6 +18,8 @@ stages:
   if: branch = release
 jobs:
   include:
+  - stage: test
+    script: "./gradlew test"
   - stage: build
     script: "./gradlew build -x test"
   - stage: snapshot
