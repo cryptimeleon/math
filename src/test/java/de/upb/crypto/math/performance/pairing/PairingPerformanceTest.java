@@ -27,7 +27,7 @@ public class PairingPerformanceTest {
     private ArrayList<BigInteger> exponents;
     PairingProductExpression expression;
 
-    final int numberOfElements = 10;
+    final int numberOfElements = 1;
 
     public PairingPerformanceTest(BilinearMap pairing) {
         this.pairing = pairing;
