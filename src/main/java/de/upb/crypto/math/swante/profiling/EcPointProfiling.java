@@ -29,7 +29,7 @@ public class EcPointProfiling {
             BigInteger exponent = ((Zp.ZpElement) g.getX()).getInteger();
             int windowSize = 3;
             int m = (1 << windowSize) - 1;
-            MyGlobals.useCurvePointNormalizationPowOptimization = true;
+            MyGlobals.useCurvePointNormalizationPowOptimization = false;
             misc.tick();
             for (int i = 0; i < numPowerIterations; i++) {
                 tmp = tmp.prepareForPow(exponent);
