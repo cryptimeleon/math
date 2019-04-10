@@ -20,6 +20,7 @@ public class MyMetric {
     
     public void add(double newMeasurement) {
         measurements.add(newMeasurement);
+        measurements.sort(Double::compareTo);
     }
     
     
