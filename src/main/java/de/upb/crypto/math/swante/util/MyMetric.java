@@ -1,9 +1,6 @@
 package de.upb.crypto.math.swante.util;
 
-import com.google.common.base.Strings;
-
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class MyMetric {
     
@@ -26,27 +23,50 @@ public class MyMetric {
     
     public double computeAverage() {
         checkSizeNonZero();
-        return sum() / measurements.size();
+        return sum() / size();
     }
     
     private void checkSizeNonZero() {
-        if (measurements.size() == 0) {
+        if (size() == 0) {
             throw new RuntimeException("size cannot be zero");
         }
     }
     
     public double sum() {
-        return measurements.stream().mapToDouble(it->it).sum();
+        return measurements.stream().mapToDouble(it -> it).sum();
     }
     
     public double computeMedian() {
         checkSizeNonZero();
-        int size = measurements.size();
-        return 0.5 * (measurements.get((size-1)/2)+measurements.get(size/2));
+        int size = size();
+        return 0.5 * (measurements.get((size - 1) / 2) + measurements.get(size / 2));
+    }
+    
+    double computeVariance() {
+        double mean = computeAverage();
+        double variance = 0;
+        for (double a : measurements) {
+            variance += (a - mean) * (a - mean);
+        }
+        return variance / (size());
+    }
+    
+    double computeStdDev() {
+        return Math.sqrt(computeVariance());
     }
     
     @Override
     public String toString() {
-        return String.format("=== %s ===\nTotal : %.1f\nMean  : %.1f\nMedian: %.1f", metricName, sum(), computeAverage(), computeMedian());
+        String res = "=== " + metricName + " ===\n";
+        res += String.format("Size    : %d\n", size());
+        res += String.format("Sum     : %.1f\n", sum());
+        res += String.format("Average : %.1f\n", computeAverage());
+        res += String.format("Std-Dev : %.1f\n", computeStdDev());
+        res += String.format("Median  : %.1f", computeMedian());
+        return res;
+    }
+    
+    public int size() {
+        return measurements.size();
     }
 }
