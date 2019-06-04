@@ -32,6 +32,7 @@ public class EcPointProfiling {
             MyGlobals.useCurvePointNormalizationPowOptimization = false;
             misc.tick();
             for (int i = 0; i < numPowerIterations; i++) {
+                tmp = curve.getUniformlyRandomElement();
                 tmp = tmp.prepareForPow(exponent);
                 tmp = (AbstractEllipticCurvePoint) MyExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
                 tmp = tmp.normalize();
@@ -42,6 +43,7 @@ public class EcPointProfiling {
             MyGlobals.useCurvePointNormalizationPowOptimization = !MyGlobals.useCurvePointNormalizationPowOptimization;
             misc.tick();
             for (int i = 0; i < numPowerIterations; i++) {
+                tmp = curve.getUniformlyRandomElement();
                 tmp = tmp.prepareForPow(exponent);
                 tmp = (AbstractEllipticCurvePoint) MyExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
                 tmp = tmp.normalize();
