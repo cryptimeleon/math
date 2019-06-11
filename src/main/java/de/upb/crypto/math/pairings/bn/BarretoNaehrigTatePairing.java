@@ -46,6 +46,7 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
          * Here, non-vertical lines are parameterize by [a_0,a_1]=[1,lambda_P] where lambda_P is the slope through P and
          * vertical lines are parameterized by [a_0,a_1]=[0,1].
          */
+        // swante: xi = z (im BN paper)
         if (!P.isNormalized() || !Q.isNormalized()) {
             throw new IllegalArgumentException("Currently, only affine points are supported.");
         }

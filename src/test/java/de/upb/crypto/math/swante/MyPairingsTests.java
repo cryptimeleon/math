@@ -30,6 +30,13 @@ public class MyPairingsTests {
     BilinearMap pairing = bnGroup.getBilinearMap();
     
     @Test
+    public void testLittleThings() {
+        GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
+        GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
+        GroupElement res = pairing.apply(p1, p2);
+    }
+    
+    @Test
     public void testBasicProperties() {
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
         GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();

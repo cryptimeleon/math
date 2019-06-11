@@ -101,7 +101,7 @@ public abstract class AbstractPairing implements BilinearMap {
     @Override
     public PairingTargetGroupElement apply(GroupElement g, GroupElement h, BigInteger exponent) {
         return exponentiate(pair((PairingSourceGroupElement) g.pow(exponent), (PairingSourceGroupElement) h));
-    }
+    } // swante: why g immediately power by exponent? (exponent is equal to 1)
 
     /**
      * Implements final exponentiation.
