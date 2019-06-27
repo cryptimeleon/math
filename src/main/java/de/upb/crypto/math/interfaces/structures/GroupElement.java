@@ -1,5 +1,6 @@
 package de.upb.crypto.math.interfaces.structures;
 
+import de.upb.crypto.math.expressions.PowProductExpression;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 

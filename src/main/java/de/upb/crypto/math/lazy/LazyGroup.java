@@ -2,7 +2,7 @@ package de.upb.crypto.math.lazy;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.PowProductExpression;
+import de.upb.crypto.math.expressions.PowProductExpression;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.AnnotatedRepresentationUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;

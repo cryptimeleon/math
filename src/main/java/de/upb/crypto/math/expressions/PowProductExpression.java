@@ -1,6 +1,10 @@
-package de.upb.crypto.math.interfaces.structures;
+package de.upb.crypto.math.expressions;
 
 
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.interfaces.structures.FutureGroupElement;
+import de.upb.crypto.math.interfaces.structures.Group;
+import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -16,6 +20,7 @@ import java.util.stream.Stream;
  * Such an expression can be evaluated in a fast way
  * using Group::evaluate().
  */
+@Deprecated
 public class PowProductExpression implements GroupElementExpression {
     protected final Group group;
     /**
@@ -174,7 +179,6 @@ public class PowProductExpression implements GroupElementExpression {
         return pow(BigInteger.ONE.negate());
     }
 
-    @Override
     public PowProductExpression staticOptimization() {
         return new PowProductExpression(this);
     }
@@ -272,7 +276,6 @@ public class PowProductExpression implements GroupElementExpression {
         return optimized;
     }
 
-    @Override
     public PowProductExpression dynamicOptimization() {
         PowProductExpression result = chooseInversionOverExponentiation(this);
         result = groupByExponents(result);

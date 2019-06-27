@@ -1,8 +1,7 @@
 package de.upb.crypto.math.pairings.debug;
 
 import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
-import de.upb.crypto.math.interfaces.structures.GroupElementMixedExpression;
-import de.upb.crypto.math.interfaces.structures.PowProductExpression;
+import de.upb.crypto.math.expressions.PowProductExpression;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;

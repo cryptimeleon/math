@@ -2,7 +2,7 @@ package de.upb.crypto.math.lazy;
 
 import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.PowProductExpression;
+import de.upb.crypto.math.expressions.PowProductExpression;
 
 import javax.annotation.Nonnull;
 

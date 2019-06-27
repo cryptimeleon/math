@@ -1,7 +1,7 @@
 package de.upb.crypto.math.lazy;
 
 import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
-import de.upb.crypto.math.interfaces.structures.PowProductExpression;
+import de.upb.crypto.math.expressions.PowProductExpression;
 
 public class BatchOpGroupElement extends LazyGroupElement {
     /**

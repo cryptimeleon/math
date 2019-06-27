@@ -1,5 +1,6 @@
 package de.upb.crypto.math.factory;
 
+import de.upb.crypto.math.expressions.group.PairingExpr;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
@@ -48,4 +49,5 @@ public interface BilinearGroup extends StandaloneRepresentable {
      *                                       have the same group exponent
      */
     HashIntoStructure getHashIntoZGroupExponent() throws UnsupportedOperationException;
+
 }

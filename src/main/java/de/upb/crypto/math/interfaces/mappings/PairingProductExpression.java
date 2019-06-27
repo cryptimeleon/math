@@ -2,8 +2,8 @@ package de.upb.crypto.math.interfaces.mappings;
 
 import de.upb.crypto.math.interfaces.structures.FutureGroupElement;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.GroupElementExpression;
-import de.upb.crypto.math.interfaces.structures.PowProductExpression;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.PowProductExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;

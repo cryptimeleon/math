@@ -1,5 +1,7 @@
 package de.upb.crypto.math.interfaces.structures;
 
+import de.upb.crypto.math.expressions.PowProductExpression;
+import de.upb.crypto.math.expressions.group.GroupPowProdExpr;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 
@@ -66,7 +68,7 @@ public interface Group extends Structure, RepresentationRestorer {
         GroupElement result = getNeutralElement();
         Map<GroupElement, BigInteger> factors = expr.getExpression();
         for (int i = largestExponentBitLength; i >= 0; i--) {
-            result = result.op(result); //shared among all group elements of this product
+            result = result.op(result); //square step shared among all group elements of this product
             for (Map.Entry<? extends GroupElement, BigInteger> entry : factors.entrySet()) {
                 if (entry.getValue().testBit(i)) {
                     result = result.op(entry.getKey());
@@ -74,6 +76,44 @@ public interface Group extends Structure, RepresentationRestorer {
             }
         }
         return result;
+    }
+
+    /**
+     * Computes the value of the GroupPowProdExpr
+     * This will usually be more efficient than
+     * naively computing that product.
+     *
+     * @param expr a PowProductExpression without any variables
+     * @throws IllegalArgumentException if an element is of the wrong type (e.g., incompatible group elements)
+     */
+    default GroupElement evaluate(GroupPowProdExpr expr) throws IllegalArgumentException {
+        if (this.isCommutative()) {
+            //Simultaneous exponentiations. Assumes that exponents are nonnegative (ensured by preceeding PowProductExpression.forEach contract)
+            int largestExponentBitLength = 0;
+            if (size() != null) { //finite group of known order
+                largestExponentBitLength = size().bitLength();
+            } else {
+                for (GroupPowProdExpr e : expr)
+                    largestExponentBitLength = Math.max(largestExponentBitLength, e.getExponent().evaluate().bitLength());
+            }
+
+
+            GroupElement result = getNeutralElement();
+            for (int i = largestExponentBitLength; i >= 0; i--) {
+                result = result.op(result); //square step shared among all group elements of this product
+                for (GroupPowProdExpr factor : expr) {
+                    if (factor.getExponent().evaluate().testBit(i)) {
+                        result = result.op(factor.getBase().evaluate());
+                    }
+                }
+            }
+            return result;
+        } else {
+            GroupElement result = getNeutralElement();
+            for (GroupPowProdExpr e : expr)
+                result = e.getBase().evaluate().pow(e.getExponent().evaluate()).op(result);
+            return result;
+        }
     }
 
     /**

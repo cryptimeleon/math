@@ -4,7 +4,7 @@ import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.PowProductExpression;
+import de.upb.crypto.math.expressions.PowProductExpression;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.zn.Zn;
 
