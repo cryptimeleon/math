@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import static de.upb.crypto.math.swante.misc.pln;
 
-public class MyBasicTests {
+public class CoordinateTypeTests {
     
     int numSuperIterations = 5;
     int numWarmUpIterations = 5;
@@ -41,7 +41,7 @@ public class MyBasicTests {
 //                    A[i].sub(B[i]);
 //                    A[i].square();
 //                    A[i].mul(B[i]);
-                    A[i].inv();
+                        A[i].inv();
                     }
                     double elapsedMillis = System.nanoTime() / 1.0e6 - startMillis;
                     if (iter >= 0) {

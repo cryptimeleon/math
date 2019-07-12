@@ -24,7 +24,20 @@ public class MyShortFormWeierstrassCurveParameters {
     }
     
     /**
-     * creates parameters for a secure weierstrass short form curve
+     * creates parameters for a secure 192bit weierstrass short form curve
+     */
+    public static MyShortFormWeierstrassCurveParameters createSecp192r1CurveParameters() {
+        BigInteger p=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFF", 16);
+        BigInteger a=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFC", 16);
+        BigInteger b=new BigInteger("64210519E59C80E70FA7E9AB72243049FEB8DEECC146B9B1", 16);
+        BigInteger Gx=new BigInteger("188DA80EB03090F67CBF20EB43A18800F4FF0AFD82FF1012", 16);
+        BigInteger Gy=new BigInteger("07192B95FFC8DA78631011ED6B24CDD573F977A11E794811", 16);
+        BigInteger n=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFF99DEF836146BC9B1B4D22831", 16);
+        BigInteger h=new BigInteger("01", 16);
+        return new MyShortFormWeierstrassCurveParameters(p,a,b,Gx,Gy,n,h);
+    }
+    /**
+     * creates parameters for a secure 256bit weierstrass short form curve
      */
     public static MyShortFormWeierstrassCurveParameters createSecp256r1CurveParameters() {
         BigInteger p=new BigInteger("FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF", 16);
@@ -35,6 +48,5 @@ public class MyShortFormWeierstrassCurveParameters {
         BigInteger n=new BigInteger("FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551", 16);
         BigInteger h=new BigInteger("01", 16);
         return new MyShortFormWeierstrassCurveParameters(p,a,b,Gx,Gy,n,h);
-        
     }
 }

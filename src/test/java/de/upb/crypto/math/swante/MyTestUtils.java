@@ -25,7 +25,7 @@ public class MyTestUtils {
     public static Zp.ZpElement[] createRandomZpValues(Zp zp, int count) {
         Zp.ZpElement[] result = new Zp.ZpElement[count];
         for (int i = 0; i < count; i++) {
-            result[i] = zp.getUniformlyRandomElement();
+            result[i] = zp.getUniformlyRandomUnit();
         }
         return result;
     }
