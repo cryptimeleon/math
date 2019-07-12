@@ -17,7 +17,6 @@ public class MyMetric {
     
     public void add(double newMeasurement) {
         measurements.add(newMeasurement);
-        measurements.sort(Double::compareTo);
     }
     
     
@@ -38,6 +37,7 @@ public class MyMetric {
     
     public double computeMedian() {
         checkSizeNonZero();
+        measurements.sort(Double::compareTo);
         int size = size();
         return 0.5 * (measurements.get((size - 1) / 2) + measurements.get(size / 2));
     }

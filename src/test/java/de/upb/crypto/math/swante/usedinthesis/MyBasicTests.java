@@ -1,8 +1,7 @@
 package de.upb.crypto.math.swante.usedinthesis;
 
-import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
-import de.upb.crypto.math.swante.*;
+import de.upb.crypto.math.swante.MyTestUtils;
 import de.upb.crypto.math.swante.util.MyMetric;
 import org.junit.Test;
 
@@ -12,44 +11,38 @@ import static de.upb.crypto.math.swante.misc.pln;
 
 public class MyBasicTests {
     
+    int numSuperIterations = 5;
+    int numWarmUpIterations = 2;
+    int[] bitLengths = new int[]{32, 64, 128, 256, 512, 1024};
+    int numValues = 1000 * 1000;
+    
     @Test
-    public void testFieldSquarings() {
-        misc.sleep(1.0);
+    public void testFieldOperations() {
         pln("=========================");
         pln("Running field squaring performance tests");
-        int numSuperIterations = 5;
-        MyMetric normalMetric = new MyMetric("Without pre-normalization");
-        MyMetric optimizedMetric = new MyMetric("With pre-normalization");
-        for (int superIt = 0; superIt < numSuperIterations; superIt++) {
-            int numPowerIterations = 2000;
-            AbstractEllipticCurvePoint tmp = g;
-            BigInteger exponent = ((Zp.ZpElement) g.getX()).getInteger();
-            int windowSize = 3;
-            int m = (1 << windowSize) - 1;
-            MyGlobals.useCurvePointNormalizationPowOptimization = false;
-            misc.tick();
-            for (int i = 0; i < numPowerIterations; i++) {
-                tmp = curve.getUniformlyRandomElement();
-                tmp = tmp.prepareForPow(exponent);
-                tmp = (AbstractEllipticCurvePoint) MyExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
-                tmp = tmp.normalize();
+        MyMetric metric = new MyMetric("basic field operation costs");
+        for (int bitLength : bitLengths) {
+            BigInteger p = MyTestUtils.createPrimeWithGivenBitLength(bitLength);
+            Zp zp = new Zp(p);
+            for (int iter = -numWarmUpIterations; iter < numSuperIterations; iter++) {
+                Zp.ZpElement[] A = MyTestUtils.createRandomZpValues(zp, numValues);
+                Zp.ZpElement[] B = MyTestUtils.createRandomZpValues(zp, numValues);
+                double startMillis = System.nanoTime() / 1.0e6;
+                for (int i = 0; i < numValues; i++) {
+                    A[i].add(B[i]);
+//                    A[i].sub(B[i]);
+//                    A[i].square();
+//                    A[i].mul(B[i]);
+//                    A[i].inv();
+                }
+                double elapsedMillis = System.nanoTime() / 1.0e6 - startMillis;
+                if (iter >= 0) {
+                    metric.add(elapsedMillis);
+                }
+                pln(String.format("bitLength=%d, iteration=%d, #values=%d, time=%.1f ms", bitLength, iter, numValues, elapsedMillis));
             }
-            double elapsed = misc.tick();
-            normalMetric.add(elapsed);
-            pln(String.format("time for %d pow G.x computations (and one normalization after each pow), without normalization optimization: %.1f ms", numPowerIterations, elapsed));
-            MyGlobals.useCurvePointNormalizationPowOptimization = !MyGlobals.useCurvePointNormalizationPowOptimization;
-            misc.tick();
-            for (int i = 0; i < numPowerIterations; i++) {
-                tmp = curve.getUniformlyRandomElement();
-                tmp = tmp.prepareForPow(exponent);
-                tmp = (AbstractEllipticCurvePoint) MyExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
-                tmp = tmp.normalize();
-            }
-            elapsed = misc.tick();
-            optimizedMetric.add(elapsed);
-            pln(String.format("time for %d pow G.x computations (and one normalization after each pow), with normalization optimization: %.1f ms", numPowerIterations, elapsed));
+            pln(metric);
         }
-        pln(normalMetric);
-        pln(optimizedMetric);
     }
+    
 }
