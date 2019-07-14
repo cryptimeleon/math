@@ -42,7 +42,8 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         return new MyProjectiveEllipticCurvePoint(structure, x.mul(div), y.mul(div), structure.getFieldOfDefinition().getOneElement());
     }
     
-    private AbstractEllipticCurvePoint addAssumingZ2IsOne(AbstractEllipticCurvePoint Q) {
+    @Override
+    public AbstractEllipticCurvePoint addAssumingZ2IsOne(AbstractEllipticCurvePoint Q) {
         FieldElement t0 = Q.y.mul(z);
         FieldElement u = t0.sub(y);
         FieldElement t1 = Q.x.mul(z);

@@ -59,10 +59,10 @@ public class MyMetric {
     public String toString() {
         String res = "=== " + metricName + " ===\n";
         res += String.format("Size    : %d\n", size());
-        res += String.format("Sum     : %.1f\n", sum());
-        res += String.format("Average : %.1f\n", computeAverage());
-        res += String.format("Std-Dev : %.1f\n", computeStdDev());
-        res += String.format("Median  : %.1f", computeMedian());
+        res += String.format("Sum     : %.3f\n", sum());
+        res += String.format("Average : %.3f\n", computeAverage());
+        res += String.format("Std-Dev : %.3f\n", computeStdDev());
+        res += String.format("Median  : %.3f", computeMedian());
         return res;
     }
     

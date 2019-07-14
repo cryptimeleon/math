@@ -46,7 +46,8 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         return new MyJacobiEllipticCurvePoint(structure, x.mul(div2), y.mul(div3), structure.getFieldOfDefinition().getOneElement());
     }
     
-    private AbstractEllipticCurvePoint addAssumingZ2IsOne(AbstractEllipticCurvePoint Q) {
+    @Override
+    public AbstractEllipticCurvePoint addAssumingZ2IsOne(AbstractEllipticCurvePoint Q) {
         FieldElement Z1Z1 = z.square();
         FieldElement U2 = Q.x.mul(Z1Z1);
         FieldElement t0 = z.mul(Z1Z1);

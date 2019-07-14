@@ -1,5 +1,7 @@
 package de.upb.crypto.math.swante;
 
+import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
+import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 
 import java.math.BigInteger;
@@ -26,6 +28,14 @@ public class MyTestUtils {
         Zp.ZpElement[] result = new Zp.ZpElement[count];
         for (int i = 0; i < count; i++) {
             result[i] = zp.getUniformlyRandomUnit();
+        }
+        return result;
+    }
+    
+    public static AbstractEllipticCurvePoint[] createRandomCurvePoints(MyShortFormWeierstrassCurve curve, int numPoints) {
+        AbstractEllipticCurvePoint[] result = new AbstractEllipticCurvePoint[numPoints];
+        for (int i = 0; i < numPoints; i++) {
+            result[i] = curve.getUniformlyRandomElement();
         }
         return result;
     }

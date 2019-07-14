@@ -1,65 +1,59 @@
 package de.upb.crypto.math.swante.usedinthesis;
 
+import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
-import de.upb.crypto.math.swante.MyTestUtils;
+import de.upb.crypto.math.swante.*;
 import de.upb.crypto.math.swante.util.MyMetric;
 import org.junit.Test;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
 
 import static de.upb.crypto.math.swante.misc.pln;
 
 public class CoordinateTypeTests {
     
-    int numSuperIterations = 5;
-    int numWarmUpIterations = 5;
-    int numValues = 1000 * 1000;
-    int minBitLengthPower = 4;
-    int maxBitLengthPower = 8;
+    int numSuperIterations = 10000;
+    int numWarmUpIterations = numSuperIterations;
+    int numPoints = 1000;
     
     @Test
-    public void testFieldOperations() {
+    public void testCoordinateTypes() {
         pln("=========================");
-        pln("Running field operation performance tests");
-        for (int iMeta = 1; iMeta <= 2; iMeta++) {
-            ArrayList<Double> results = new ArrayList<Double>();
+        //        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp192r1CurveParameters();
+        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
+        Zp zp = new Zp(parameters.p);
+        
+        MyAffineCurve curve = new MyAffineCurve(parameters);
+//        MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
+//        MyJacobiCurve curve = new MyJacobiCurve(parameters);
+        pln("Running coordinate type performance tests for curve: " + curve.toString());
+        AbstractEllipticCurvePoint[] A = MyTestUtils.createRandomCurvePoints(curve, numPoints);
+        AbstractEllipticCurvePoint[] B = MyTestUtils.createRandomCurvePoints(curve, numPoints);
+        AbstractEllipticCurvePoint[] C = MyTestUtils.createRandomCurvePoints(curve, numPoints);
+        for (int i = 0; i < numPoints; i++) {
+            C[i] = C[i].normalize();
+        }
+        zp.getUniformlyRandomUnit();
+        for (int iMeta = 1; iMeta <= 1; iMeta++) {
             pln("meta iteration " + iMeta);
-            for (int bitLengthPower = minBitLengthPower; bitLengthPower <= maxBitLengthPower; bitLengthPower++) {
-                int bitLength = 1 << bitLengthPower;
-                pln("=========================");
-                pln("Bit Length = " + bitLength);
-                BigInteger p = MyTestUtils.createPrimeWithGivenBitLength(bitLength);
-                Zp zp = new Zp(p);
-                MyMetric metric = new MyMetric("basic field operation costs for bitLength=" + bitLength);
-                for (int iter = -numWarmUpIterations; iter < numSuperIterations; iter++) {
-                    Zp.ZpElement[] A = MyTestUtils.createRandomZpValues(zp, numValues);
-                    Zp.ZpElement[] B = MyTestUtils.createRandomZpValues(zp, numValues);
-                    double startMillis = System.nanoTime() / 1.0e6;
-                    for (int i = 0; i < numValues; i++) {
-                        A[i].add(B[i]);
-//                    A[i].sub(B[i]);
-//                    A[i].square();
-//                    A[i].mul(B[i]);
-                        A[i].inv();
-                    }
-                    double elapsedMillis = System.nanoTime() / 1.0e6 - startMillis;
-                    if (iter >= 0) {
-                        metric.add(elapsedMillis);
-                    }
-                    pln(String.format("bitLength=%d, iteration=%d, #values=%d, time=%.1f ms", bitLength, iter, numValues, elapsedMillis));
+            MyMetric metric = new MyMetric("curve metric");
+            for (int iter = -numWarmUpIterations; iter < numSuperIterations; iter++) {
+                double startMillis = System.nanoTime() / 1.0e6;
+                for (int i = 0; i < numPoints; i++) {
+//                    A[i].add(B[i]);
+                    A[i].square();
+//                    A[i].addAssumingZ2IsOne(C[i]);
                 }
-//                pln(metric);
-                results.add(metric.computeMedian());
+                double elapsedMillis = System.nanoTime() / 1.0e6 - startMillis;
+                if (iter >= 0) {
+                    metric.add(elapsedMillis);
+                }
+                if (iter <= -numWarmUpIterations+10 || iter >= 0 && iter < 10 || iter % 200 == 0) {
+                    pln(String.format("iteration=%d, #values=%d, time=%.3f ms", iter, numPoints, elapsedMillis));
+                }
             }
-            pln("=====================");
-            pln("Final results");
-            pln("=====================");
-            pln("<bit length power>\t<elapsed millis>");
-            for (int bitLengthPower = minBitLengthPower; bitLengthPower <= maxBitLengthPower; bitLengthPower++) {
-                pln(bitLengthPower + "\t" + results.get(bitLengthPower - minBitLengthPower));
-            }
+            pln(metric);
         }
     }
+    
+    
     
 }
