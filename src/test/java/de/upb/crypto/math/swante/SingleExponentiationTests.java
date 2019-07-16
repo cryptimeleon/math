@@ -24,14 +24,17 @@ public class SingleExponentiationTests {
         GroupElement[] expected = {g.pow(1), g.pow(3), g.pow(5), g.pow(7)};
         int windowSize = 3;
         int m = (1 << windowSize) - 1;
-        GroupElement[] smallPowersOfG = precomputeSmallOddPowers(g, m);
-        Assert.assertArrayEquals(expected, smallPowersOfG);
-        BigInteger exponent = BigInteger.valueOf(1000001);
-        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingSlidingWindow(g, exponent, windowSize, smallPowersOfG));
+        GroupElement[] smallOddPowersOfG = precomputeSmallOddPowers(g, m);
+        GroupElement[] allSmallPowersOfG = precomputeAllSmallPowers(g, m);
+        Assert.assertArrayEquals(expected, smallOddPowersOfG);
+//        BigInteger exponent = BigInteger.valueOf(1000001);
+        BigInteger exponent = BigInteger.valueOf(2);
+        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsing2wAryMethod(g, exponent, windowSize, allSmallPowersOfG));
+        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingSlidingWindow(g, exponent, windowSize, smallOddPowersOfG));
         Assert.assertArrayEquals(new int[]{-31,0,0,0,0,0,0,-17,0,0,0,0,0,3}, MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(BigInteger.valueOf(22369), 5));
         Assert.assertArrayEquals(new int[]{1,0,0,0,0,-5,0,0,0,0,0,1,5}, MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(BigInteger.valueOf(22369), 5));
         int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponent, m);
-        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingLrSfwMethod(g, expDigits, smallPowersOfG));
+        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingLrSfwMethod(g, expDigits, smallOddPowersOfG));
     }
     
     @Test

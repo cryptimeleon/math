@@ -5,7 +5,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import java.math.BigInteger;
 
 /**
- * Class containing algorithms for computing powers efficiently of GroupElements
+ * Class containing algorithms for computing single powers efficiently of GroupElements
  */
 public class MyExponentiationAlgorithms {
     
@@ -44,7 +44,51 @@ public class MyExponentiationAlgorithms {
     }
     
     /**
-     * Precomputes the small powers of base element. Should ideally not be called twice
+     * @param base
+     * @param exponent
+     * @param windowSize
+     * @param allSmallPowersOfBase: all powers from base^0 to base^m, with m=(1<<windowSize)-1, including even powers!
+     * @return base^exponent using the efficient sliding window technique
+     */
+    public static GroupElement powUsing2wAryMethod(GroupElement base, BigInteger exponent, int windowSize, GroupElement[] allSmallPowersOfBase) {
+        GroupElement res = base.getStructure().getNeutralElement();
+        int l = exponent.bitLength();
+        if (windowSize > 20) {
+            throw new IllegalArgumentException("too large windowSize");
+        }
+        for (int eIndex = (l - 1) / windowSize * windowSize; eIndex >= 0; eIndex -= windowSize) {
+            int e = 0;
+            for (int i = windowSize - 1; i >= 0; i--) {
+                res = res.square();
+                e <<= 1;
+                if (exponent.testBit(eIndex + i)) {
+                    e++;
+                }
+            }
+            res = res.op(allSmallPowersOfBase[e]);
+        }
+        return res;
+    }
+    
+    /**
+     * Precomputes the all small powers of base element. Should ideally not be called twice
+     * on the same instance. You should cache the result instead.
+     *
+     * @param base
+     * @param m integer, should not be too large
+     * @return array with x^0,x^1,x^2,...,x^m
+     */
+    public static GroupElement[] precomputeAllSmallPowers(GroupElement base, int m) {
+        GroupElement[] res = new GroupElement[m+1];
+        res[0] = base.getStructure().getNeutralElement();
+        for (int i = 1; i < res.length; i++) {
+            res[i] = res[i-1].op(base);
+        }
+        return res;
+    }
+    
+    /**
+     * Precomputes the small odd powers of base element. Should ideally not be called twice
      * on the same instance. You should cache the result instead.
      *
      * @param base
@@ -65,10 +109,10 @@ public class MyExponentiationAlgorithms {
      * @param base
      * @param exponent
      * @param windowSize
-     * @param smallPowersOfBase: the result of above method when called with m=(1<<windowSize)-1
+     * @param smallOddPowersOfBase: the result of above method when called with m=(1<<windowSize)-1
      * @return base^exponent using the efficient sliding window technique
      */
-    public static GroupElement powUsingSlidingWindow(GroupElement base, BigInteger exponent, int windowSize, GroupElement[] smallPowersOfBase) {
+    public static GroupElement powUsingSlidingWindow(GroupElement base, BigInteger exponent, int windowSize, GroupElement[] smallOddPowersOfBase) {
         GroupElement y = base.getStructure().getNeutralElement();
         int l = exponent.bitLength();
         int i = l - 1;
@@ -89,7 +133,7 @@ public class MyExponentiationAlgorithms {
                     }
                 }
                 
-                y = y.op(smallPowersOfBase[smallExponent / 2]);
+                y = y.op(smallOddPowersOfBase[smallExponent / 2]);
                 powSimpleSlidignWindowOpCounter++;
                 i = s - 1;
             } else {
@@ -168,12 +212,12 @@ public class MyExponentiationAlgorithms {
      * to reduce the number of non-zero digits in the exponent.
      * @param base
      * @param exponentDigits odd signed digits of exponent with abs value <= m, can also be equal to zero
-     * @param smallPowersOfBase odd powers up to m
+     * @param smallOddPowersOfBase odd powers up to m
      * @return base powered by the exponent given by the exponent digits
      */
-    public static GroupElement powUsingLrSfwMethod(GroupElement base, int[] exponentDigits, GroupElement[] smallPowersOfBase) {
+    public static GroupElement powUsingLrSfwMethod(GroupElement base, int[] exponentDigits, GroupElement[] smallOddPowersOfBase) {
         int l = exponentDigits.length - 1;
-        GroupElement A = smallPowersOfBase[Math.abs(exponentDigits[l])/2];
+        GroupElement A = smallOddPowersOfBase[Math.abs(exponentDigits[l])/2];
         if (exponentDigits[l] < 0) {
             A = A.inv();
         }
@@ -183,7 +227,7 @@ public class MyExponentiationAlgorithms {
             if (exponentDigit == 0) {
                 continue;
             }
-            GroupElement smallPower = smallPowersOfBase[Math.abs(exponentDigit)/2];
+            GroupElement smallPower = smallOddPowersOfBase[Math.abs(exponentDigit)/2];
             if (exponentDigit < 0) {
                 smallPower = smallPower.inv();
             }

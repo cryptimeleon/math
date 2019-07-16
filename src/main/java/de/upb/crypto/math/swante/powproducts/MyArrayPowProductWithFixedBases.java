@@ -54,6 +54,11 @@ public class MyArrayPowProductWithFixedBases {
         return longestExponentBitLength;
     }
     
+    /**
+     *
+     * @param windowSize
+     * @return array containing all combinations of small powers of the bases, with given windowSize
+     */
     protected GroupElement[] computeAllSmallPowerProducts(int windowSize) {
         int numPrecomputedPowers = 1 << (windowSize * numBases);
         GroupElement[] smallPowers = new GroupElement[numPrecomputedPowers];
