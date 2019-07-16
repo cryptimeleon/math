@@ -17,29 +17,28 @@ public class CoordinateTypeTests {
     @Test
     public void testCoordinateTypes() {
         pln("=========================");
-        //        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp192r1CurveParameters();
-        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
+                MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp192r1CurveParameters();
+//        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         Zp zp = new Zp(parameters.p);
         
-        MyAffineCurve curve = new MyAffineCurve(parameters);
+//        MyAffineCurve curve = new MyAffineCurve(parameters);
 //        MyProjectiveCurve curve = new MyProjectiveCurve(parameters);
-//        MyJacobiCurve curve = new MyJacobiCurve(parameters);
+        MyJacobiCurve curve = new MyJacobiCurve(parameters);
         pln("Running coordinate type performance tests for curve: " + curve.toString());
-        AbstractEllipticCurvePoint[] A = MyTestUtils.createRandomCurvePoints(curve, numPoints);
-        AbstractEllipticCurvePoint[] B = MyTestUtils.createRandomCurvePoints(curve, numPoints);
-        AbstractEllipticCurvePoint[] C = MyTestUtils.createRandomCurvePoints(curve, numPoints);
+        AbstractEllipticCurvePoint[] A = misc.createRandomCurvePoints(curve, numPoints);
+        AbstractEllipticCurvePoint[] B = misc.createRandomCurvePoints(curve, numPoints);
+        AbstractEllipticCurvePoint[] C = misc.createRandomCurvePoints(curve, numPoints);
         for (int i = 0; i < numPoints; i++) {
             C[i] = C[i].normalize();
         }
-        zp.getUniformlyRandomUnit();
         for (int iMeta = 1; iMeta <= 1; iMeta++) {
             pln("meta iteration " + iMeta);
             MyMetric metric = new MyMetric("curve metric");
             for (int iter = -numWarmUpIterations; iter < numSuperIterations; iter++) {
                 double startMillis = System.nanoTime() / 1.0e6;
                 for (int i = 0; i < numPoints; i++) {
-//                    A[i].add(B[i]);
-                    A[i].square();
+                    A[i].add(B[i]);
+//                    A[i].square();
 //                    A[i].addAssumingZ2IsOne(C[i]);
                 }
                 double elapsedMillis = System.nanoTime() / 1.0e6 - startMillis;

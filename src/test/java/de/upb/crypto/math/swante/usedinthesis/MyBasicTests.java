@@ -1,7 +1,7 @@
 package de.upb.crypto.math.swante.usedinthesis;
 
 import de.upb.crypto.math.structures.zn.Zp;
-import de.upb.crypto.math.swante.MyTestUtils;
+import de.upb.crypto.math.swante.misc;
 import de.upb.crypto.math.swante.util.MyMetric;
 import org.junit.Test;
 
@@ -29,12 +29,12 @@ public class MyBasicTests {
                 int bitLength = 1 << bitLengthPower;
                 pln("=========================");
                 pln("Bit Length = " + bitLength);
-                BigInteger p = MyTestUtils.createPrimeWithGivenBitLength(bitLength);
+                BigInteger p = misc.createPrimeWithGivenBitLength(bitLength);
                 Zp zp = new Zp(p);
                 MyMetric metric = new MyMetric("basic field operation costs for bitLength=" + bitLength);
                 for (int iter = -numWarmUpIterations; iter < numSuperIterations; iter++) {
-                    Zp.ZpElement[] A = MyTestUtils.createRandomZpValues(zp, numValues);
-                    Zp.ZpElement[] B = MyTestUtils.createRandomZpValues(zp, numValues);
+                    Zp.ZpElement[] A = misc.createRandomZpValues(zp, numValues);
+                    Zp.ZpElement[] B = misc.createRandomZpValues(zp, numValues);
                     double startMillis = System.nanoTime() / 1.0e6;
                     for (int i = 0; i < numValues; i++) {
                         A[i].add(B[i]);

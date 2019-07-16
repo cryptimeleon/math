@@ -1,5 +1,8 @@
 package de.upb.crypto.math.swante;
 
+import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
+import de.upb.crypto.math.structures.zn.Zp;
+
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -102,14 +105,35 @@ public class misc {
         }
     }
     
-    private static Random rand = new Random();
+    private static Random defaultRand = new Random();
     
     static {
         seedRand(0L);
     }
     
     public static void seedRand(long seed) {
-        rand.setSeed(seed);
+        defaultRand.setSeed(seed);
+    }
+    
+    
+    public static BigInteger createPrimeWithGivenBitLength(int bitLength) {
+        return BigInteger.probablePrime(bitLength, defaultRand);
+    }
+    
+    public static Zp.ZpElement[] createRandomZpValues(Zp zp, int count) {
+        Zp.ZpElement[] result = new Zp.ZpElement[count];
+        for (int i = 0; i < count; i++) {
+            result[i] = zp.getUniformlyRandomUnit();
+        }
+        return result;
+    }
+    
+    public static AbstractEllipticCurvePoint[] createRandomCurvePoints(MyShortFormWeierstrassCurve curve, int numPoints) {
+        AbstractEllipticCurvePoint[] result = new AbstractEllipticCurvePoint[numPoints];
+        for (int i = 0; i < numPoints; i++) {
+            result[i] = curve.getUniformlyRandomElement();
+        }
+        return result;
     }
     
     
@@ -146,9 +170,9 @@ public class misc {
     }
     
     public static BigInteger randBig(BigInteger maxExcluding) {
-        BigInteger result = new BigInteger(maxExcluding.bitLength(), rand);
+        BigInteger result = new BigInteger(maxExcluding.bitLength(), defaultRand);
         while( result.compareTo(maxExcluding) >= 0 ) {
-            result = new BigInteger(maxExcluding.bitLength(), rand);
+            result = new BigInteger(maxExcluding.bitLength(), defaultRand);
         }
         return result;
     }
@@ -156,7 +180,7 @@ public class misc {
     public static ArrayList<Integer> randInts(int count, int min, int maxExclusive) {
         ArrayList<Integer> res = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            res.add(rand.nextInt(maxExclusive-min) + min);
+            res.add(defaultRand.nextInt(maxExclusive-min) + min);
         }
         return res;
     }
@@ -175,7 +199,7 @@ public class misc {
     public static ArrayList<Float> randFloats(int count, float min, float maxExclusive) {
         ArrayList<Float> res = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            res.add(min + rand.nextFloat()*(maxExclusive-min));
+            res.add(min + defaultRand.nextFloat()*(maxExclusive-min));
         }
         return res;
     }
@@ -183,7 +207,7 @@ public class misc {
     public static ArrayList<Double> randDoubles(int count, double min, double maxExclusive) {
         ArrayList<Double> res = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            res.add(min + rand.nextDouble()*(maxExclusive-min));
+            res.add(min + defaultRand.nextDouble()*(maxExclusive-min));
         }
         return res;
     }
