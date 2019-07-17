@@ -34,6 +34,9 @@ public class ThesisSingleExpo {
         if (args[1].equals("jacobi")) {
             curve = new MyJacobiCurve(parameters);
         }
+//        AbstractEllipticCurvePoint g = curve.getGenerator();
+//        AbstractEllipticCurvePoint zero = curve.getNeutralElement();
+//        myAssert(g.pow(curve.size()).equals(zero));
         int numPoints = Integer.parseInt(args[2]);
         int numIterations = Integer.parseInt(args[3]);
         int windowSize = Integer.parseInt(args[4]);
