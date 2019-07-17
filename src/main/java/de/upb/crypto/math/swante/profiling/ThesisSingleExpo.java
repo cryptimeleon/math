@@ -1,29 +1,34 @@
 package de.upb.crypto.math.swante.profiling;
 
+import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.*;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.*;
+import static de.upb.crypto.math.swante.misc.myAssert;
 import static de.upb.crypto.math.swante.misc.pln;
 
-public class ThesisExpo {
+public class ThesisSingleExpo {
     public static void main(String[] args) {
         pln("=========================");
         if (args.length == 0) {
-            args = "256 projective 10 100 1 1 True".split(" ");
+            args = "256 projective 10 100 1 1 True BN".split(" ");
         }
         pln(args);
+        int bitLength = Integer.parseInt(args[0]);
+        myAssert(bitLength == 192 || bitLength == 256);
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp192r1CurveParameters();
-        if (args[0].equals("256")) {
+        if (bitLength == 256) {
             parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         }
+        if (args[7].equals("BN")) {
+            parameters = misc.createBnWeierstrassCurveGroupParams(bitLength);
+        }
+        
         Zp zp = new Zp(parameters.p);
         MyShortFormWeierstrassCurve curve = new MyProjectiveCurve(parameters);
         if (args[1].equals("jacobi")) {
@@ -39,9 +44,11 @@ public class ThesisExpo {
             cacheSmallPowers = true;
         }
         AbstractEllipticCurvePoint[] bases = misc.createRandomCurvePoints(curve, numPoints);
-        GroupElement[][] precomputedPowers = new GroupElement[numPoints][];
+        GroupElement[][] precomputedOddPowers = new GroupElement[numPoints][];
+        GroupElement[][] precomputedAllPowers = new GroupElement[numPoints][];
         for (int i = 0; i < numPoints; i++) {
-            precomputedPowers[i] = precomputeSmallOddPowers(bases[i], m);
+            precomputedOddPowers[i] = precomputeSmallOddPowers(bases[i], m);
+            precomputedAllPowers[i] = precomputeAllSmallPowers(bases[i], m);
         }
         Zp.ZpElement[] exponentsZp = misc.createRandomZpValues(zp, numPoints);
         BigInteger[] exponents = new BigInteger[numPoints];
@@ -58,14 +65,19 @@ public class ThesisExpo {
                 if (algo == 1) { // normal pow
                     bases[i].pow(exponents[i]);
                 } else if (algo == 2) { // 2w ary
+                    GroupElement[] smallAllPowers = precomputedAllPowers[i];
+                    if (!cacheSmallPowers) {
+                        smallAllPowers = precomputeAllSmallPowers(bases[i], m);
+                    }
+                    powUsing2wAryMethod(bases[i], exponents[i], windowSize, smallAllPowers);
                 } else if (algo == 3) { // sliding window pow
-                    GroupElement[] smallPowers = precomputedPowers[i];
+                    GroupElement[] smallPowers = precomputedOddPowers[i];
                     if (!cacheSmallPowers) {
                         smallPowers = precomputeSmallOddPowers(bases[i], m);
                     }
                     powUsingSlidingWindow(bases[i], exponents[i], windowSize, smallPowers);
                 } else if (algo == 4) { // wNAF
-                    GroupElement[] smallPowers = precomputedPowers[i];
+                    GroupElement[] smallPowers = precomputedOddPowers[i];
                     if (!cacheSmallPowers) {
                         smallPowers = precomputeSmallOddPowers(bases[i], m);
                     }

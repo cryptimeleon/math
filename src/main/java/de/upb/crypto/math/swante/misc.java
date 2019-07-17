@@ -1,5 +1,11 @@
 package de.upb.crypto.math.swante;
 
+import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupRequirement;
+import de.upb.crypto.math.interfaces.mappings.BilinearMap;
+import de.upb.crypto.math.pairings.bn.BarretoNaehrigGroup1;
+import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
+import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 
@@ -11,10 +17,10 @@ import java.util.function.Supplier;
 public class misc {
     
     public static void main(String[] args) {
-        pln(randInts(15,3,9).toString());
-        pln(tos(randInts(15,3,9)));
+        pln(randInts(15, 3, 9).toString());
+        pln(tos(randInts(15, 3, 9)));
         pln(setOf("hello", "nice"));
-        myAssert(1<0, () -> "fail");
+        myAssert(1 < 0, () -> "fail");
     }
     
     /**
@@ -83,7 +89,7 @@ public class misc {
         return new HashSet<>(Arrays.asList(elements));
     }
     
-    public static <K,V> HashMap<K,V> mapOf(Pair<K,V>... elements) {
+    public static <K, V> HashMap<K, V> mapOf(Pair<K, V>... elements) {
         HashMap<K, V> hashMap = new HashMap<>();
         for (Pair<K, V> element : elements) {
             hashMap.put(element.a, element.b);
@@ -136,14 +142,38 @@ public class misc {
         return result;
     }
     
+    /**
+     * @param bitLength
+     * @return parameters for MyShortFormWeierstassCurve for a BN curve of given bitLength
+     */
+    public static MyShortFormWeierstrassCurveParameters createBnWeierstrassCurveGroupParams(int bitLength) {
+        BarretoNaehrigProvider bnProvider = new BarretoNaehrigProvider();
+        BilinearMap bnMap = null;
+        if (bitLength == 256) { // Barreto-Naehrig non-native, SFC-256
+            bnMap = bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256).getBilinearMap();
+        } else {
+            // Barreto-Naehrig non-native
+            bnMap = bnProvider.provideBilinearGroup(bitLength, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3)).getBilinearMap();
+        }
+        BarretoNaehrigGroup1 g1 = (BarretoNaehrigGroup1) bnMap.getG1();
+        AbstractEllipticCurvePoint G = ((AbstractEllipticCurvePoint) g1.getGenerator()).normalize();
+        BigInteger h = new BigInteger("01", 16);
+        BigInteger n = g1.size();
+        Zp.ZpElement b = (Zp.ZpElement) ((ExtensionFieldElement) g1.getA6()).getCoefficients()[0];
+        Zp.ZpElement Gx = (Zp.ZpElement) ((ExtensionFieldElement) G.getX()).getCoefficients()[0];
+        Zp.ZpElement Gy = (Zp.ZpElement) ((ExtensionFieldElement) G.getY()).getCoefficients()[0];
+        BigInteger p = Gx.getStructure().size();
+        return new MyShortFormWeierstrassCurveParameters(p, BigInteger.ZERO, b.getInteger(), Gx.getInteger(), Gy.getInteger(), n, h);
+    }
     
-    private static double lastTickMillis = System.nanoTime()/1.0e6;
+    
+    private static double lastTickMillis = System.nanoTime() / 1.0e6;
     
     /**
      * @return time since last call of tick (or program startup), in milli-seconds
      */
     public static double tick() {
-        double currentTimeInMillis = System.nanoTime()/1.0e6;
+        double currentTimeInMillis = System.nanoTime() / 1.0e6;
         double deltaTimeInMillis = currentTimeInMillis - lastTickMillis;
         lastTickMillis = currentTimeInMillis;
         return deltaTimeInMillis;
@@ -151,7 +181,7 @@ public class misc {
     
     public static void sleep(double seconds) {
         try {
-            Thread.sleep((long) (seconds*1000.0));
+            Thread.sleep((long) (seconds * 1000.0));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -171,7 +201,7 @@ public class misc {
     
     public static BigInteger randBig(BigInteger maxExcluding) {
         BigInteger result = new BigInteger(maxExcluding.bitLength(), defaultRand);
-        while( result.compareTo(maxExcluding) >= 0 ) {
+        while (result.compareTo(maxExcluding) >= 0) {
             result = new BigInteger(maxExcluding.bitLength(), defaultRand);
         }
         return result;
@@ -180,11 +210,10 @@ public class misc {
     public static ArrayList<Integer> randInts(int count, int min, int maxExclusive) {
         ArrayList<Integer> res = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            res.add(defaultRand.nextInt(maxExclusive-min) + min);
+            res.add(defaultRand.nextInt(maxExclusive - min) + min);
         }
         return res;
     }
-    
     
     
     public static ArrayList<Long> randLongs(int count, long min, long maxExclusive) {
@@ -199,7 +228,7 @@ public class misc {
     public static ArrayList<Float> randFloats(int count, float min, float maxExclusive) {
         ArrayList<Float> res = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            res.add(min + defaultRand.nextFloat()*(maxExclusive-min));
+            res.add(min + defaultRand.nextFloat() * (maxExclusive - min));
         }
         return res;
     }
@@ -207,7 +236,7 @@ public class misc {
     public static ArrayList<Double> randDoubles(int count, double min, double maxExclusive) {
         ArrayList<Double> res = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            res.add(min + defaultRand.nextDouble()*(maxExclusive-min));
+            res.add(min + defaultRand.nextDouble() * (maxExclusive - min));
         }
         return res;
     }
@@ -217,7 +246,7 @@ public class misc {
         for (Object obj : objs) {
             sb.append(" ").append(obj.toString());
         }
-        if (sb.length()==0) {
+        if (sb.length() == 0) {
             System.out.println();
             return;
         }
@@ -230,7 +259,7 @@ public class misc {
         for (Object obj : list) {
             sb.append(", ").append(obj.toString());
         }
-        if (sb.length()==0) {
+        if (sb.length() == 0) {
             return "[]";
         }
         String res = "[" + sb.toString().substring(2) + "]";
@@ -242,7 +271,7 @@ public class misc {
         for (Object obj : list) {
             sb.append(", ").append(obj.toString());
         }
-        if (sb.length()==0) {
+        if (sb.length() == 0) {
             return "[]";
         }
         return "[" + sb.toString().substring(2) + "]";
