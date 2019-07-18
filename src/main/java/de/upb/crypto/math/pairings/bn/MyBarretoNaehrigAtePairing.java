@@ -3,6 +3,7 @@ package de.upb.crypto.math.pairings.bn;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
+import de.upb.crypto.math.interfaces.structures.Field;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.AbstractPairing;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
@@ -37,7 +38,8 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
      *
      * @return random non-zero element from the actual G2 group of the Ate pairing
      */
-    public BarretoNaehrigSourceGroupElement getUnitRandomElementFromActualG2Group() {
+    @Override
+    public BarretoNaehrigSourceGroupElement getUnitRandomElementFromG2Group() {
         BigInteger e = misc.randBig(g2.size().subtract(BigInteger.ONE));
         return this.actualG2Generator.pow(e);
     }
@@ -106,7 +108,8 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
         while (true) {
             AbstractEllipticCurvePoint Q = (AbstractEllipticCurvePoint) bnMap.getG2().getUniformlyRandomElement();
             AbstractEllipticCurvePoint Qinv = Q.inv();
-            BigInteger p = ((Zp) ((AbstractEllipticCurvePoint) bnMap.getG1().getGenerator()).getX().getStructure()).size();
+            Field structure = ((AbstractEllipticCurvePoint) bnMap.getG1().getGenerator()).getX().getStructure();
+            BigInteger p = ((ExtensionField) structure).getBaseField().size();
             Q.applyFrobenius(p);
             BarretoNaehrigGroup2Element generator = (BarretoNaehrigGroup2Element) Q.add(Qinv);
             if (!generator.isNeutralElement()) {

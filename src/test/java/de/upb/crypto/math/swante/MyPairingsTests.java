@@ -4,15 +4,20 @@ import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
+import de.upb.crypto.math.interfaces.structures.Field;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.lazy.LazyPairing;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
+import de.upb.crypto.math.pairings.bn.MyBarretoNaehrigAtePairing;
 import de.upb.crypto.math.pairings.debug.DebugBilinearMap;
+import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroup;
+import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
@@ -25,19 +30,37 @@ import static org.junit.Assert.assertTrue;
 
 public class MyPairingsTests {
     
-    BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
-    BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
-    BilinearMap pairing = bnGroup.getBilinearMap();
-    
     @Test
-    public void testLittleThings() {
-        GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
-        GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
-        GroupElement res = pairing.apply(p1, p2);
+    public void testTate() {
+        BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
+        BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
+        BilinearMap pairing = bnGroup.getBilinearMap();
+        BigInteger r = pairing.getG1().size();
+        Assert.assertEquals(r, pairing.getG2().size());
+        Assert.assertEquals(r, pairing.getGT().size());
+        Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
+        Assert.assertEquals(pairing.getG2().getGenerator().pow(r), pairing.getG2().getNeutralElement());
+        Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
+        testBasicProperties(pairing);
     }
     
     @Test
-    public void testBasicProperties() {
+    public void testAte() {
+        MyBarretoNaehrigAtePairing pairing = MyBarretoNaehrigAtePairing.createAtePairing(128);
+        BigInteger r = pairing.getG1().size();
+        Assert.assertEquals(r, pairing.getG2().size());
+        Assert.assertEquals(r, pairing.getGT().size());
+        Field structure = ((AbstractEllipticCurvePoint) pairing.getG1().getGenerator()).getX().getStructure();
+        BigInteger p = ((ExtensionField) structure).getBaseField().size();
+//        Assert.assertEquals(pairing.actualG2Generator.pow(p));
+        Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
+        Assert.assertEquals(pairing.actualG2Generator.pow(r), pairing.getG2().getNeutralElement());
+        Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
+        testBasicProperties(pairing);
+    }
+    
+    
+    public void testBasicProperties(BilinearMap pairing) {
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
         GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
         
@@ -88,59 +111,5 @@ public class MyPairingsTests {
         assertTrue(pairing.apply(p1.pow(x1), p2.pow(x2)).equals(pairing.apply(p1, p2).pow(x1.mul(x2))));
     }
     
-    @Test
-    public void testExpressions() {
-        GroupElement g[] = new GroupElement[5];
-        GroupElement h[] = new GroupElement[g.length];
-        Zp.ZpElement exp[] = new Zp.ZpElement[g.length];
-        Zp zp = new Zp(pairing.getG1().size());
-        
-        for (int i = 0; i < g.length; i++) {
-            g[i] = pairing.getG1().getUniformlyRandomElement();
-            h[i] = pairing.getG2().getUniformlyRandomElement();
-            exp[i] = zp.getUniformlyRandomElement();
-        }
-        exp[0] = zp.getZeroElement();
-        
-        //Compute result using expression
-        PairingProductExpression expr = pairing.pairingProductExpression();
-        for (int i = 0; i < g.length; i++) {
-            expr.op(g[i], h[i], exp[i]);
-        }
-        GroupElement resultExpr = expr.evaluate();
-        
-        //Compute result naively using pow() in G1
-        GroupElement naive = pairing.getGT().getNeutralElement();
-        for (int i = 0; i < g.length; i++) {
-            naive = naive.op(pairing.apply(g[i].pow(exp[i]), h[i]));
-        }
-        assertEquals(naive, resultExpr);
-        
-        //Compute result naively using pow() in G2
-        naive = pairing.getGT().getNeutralElement();
-        for (int i = 0; i < g.length; i++) {
-            naive = naive.op(pairing.apply(g[i], h[i].pow(exp[i])));
-        }
-        assertEquals(naive, resultExpr);
-        
-        //Compute result naively using pow() in GT
-        naive = pairing.getGT().getNeutralElement();
-        for (int i = 0; i < g.length; i++) {
-            naive = naive.op(pairing.apply(g[i], h[i]).pow(exp[i]));
-        }
-        assertEquals(naive, resultExpr);
-        
-        //Try nested expressions: e(g[i] * g[i+1], h[i])^2
-        expr = pairing.pairingProductExpression();
-        for (int i = 0; i + 1 < g.length; i += 2) {
-            expr.op(g[i].asPowProductExpression().op(g[i + 1]).pow(exp[i]), h[i].asPowProductExpression(), BigInteger.valueOf(2));
-        }
-        resultExpr = expr.evaluate();
-        naive = pairing.getGT().getNeutralElement();
-        for (int i = 0; i + 1 < g.length; i += 2) {
-            naive = naive.op(pairing.apply(g[i].op(g[i + 1]), h[i], exp[i].mul(zp.valueOf(2))));
-        }
-        assertEquals(resultExpr, naive);
-    }
     
 }

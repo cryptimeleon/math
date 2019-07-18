@@ -4,9 +4,11 @@ import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.pairings.bn.BarretoNaehrigSourceGroupElement;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.swante.misc;
 
 import java.math.BigInteger;
 
@@ -19,7 +21,12 @@ public abstract class AbstractPairing implements BilinearMap {
     protected PairingSourceGroup g1;
     protected PairingSourceGroup g2;
     protected PairingTargetGroup gT;
-
+    
+    
+    public PairingSourceGroupElement getUnitRandomElementFromG2Group() {
+        BigInteger e = misc.randBig(g2.size().subtract(BigInteger.ONE));
+        return (PairingSourceGroupElement) this.g2.generator.pow(e);
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
