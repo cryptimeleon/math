@@ -1,35 +1,45 @@
 package de.upb.crypto.math.pairings.bn;
 
+import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupRequirement;
+import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.AbstractPairing;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
-import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
+import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.swante.misc;
 
 import java.math.BigInteger;
 
 /**
  * Ate-pairing specific implementation of BN based pairings.
- *
+ * Just like the Tate pairing, but using t as parameter in the miller loop.
+ * Also, since G2 must be limited, we add a special generator that will generate
+ * the desired subgroup from the original G2 of the Tate pairing.
  * @author sscholz
  */
 public class MyBarretoNaehrigAtePairing extends AbstractPairing {
+    public final BarretoNaehrigGroup2Element actualG2Generator;
+    
     /**
      * Construct Ate pairing {@code g1} x {@code g2} -> {@code gT}.
      */
-    public MyBarretoNaehrigAtePairing(BarretoNaehrigGroup1 g1, BarretoNaehrigGroup2 g2, BarretoNaehrigTargetGroup gT) {
-        super(g1, g2, gT);
-
-    }
-
     public MyBarretoNaehrigAtePairing(BarretoNaehrigSourceGroup g1, BarretoNaehrigSourceGroup g2,
-                                      BarretoNaehrigTargetGroup gT) {
+                                      BarretoNaehrigTargetGroup gT, BarretoNaehrigGroup2Element actualG2Generator) {
         super(g1, g2, gT);
+        this.actualG2Generator = actualG2Generator;
     }
-
-    public MyBarretoNaehrigAtePairing(Representation r) {
-        super(r);
+    
+    /**
+     *
+     * @return random non-zero element from the actual G2 group of the Ate pairing
+     */
+    public BarretoNaehrigSourceGroupElement getUnitRandomElementFromActualG2Group() {
+        BigInteger e = misc.randBig(g2.size().subtract(BigInteger.ONE));
+        return this.actualG2Generator.pow(e);
     }
 
     @Override
@@ -63,11 +73,17 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
 
         return targetField.createElement(coefficients);
     }
-
+    
+    /**
+     * Uses the same order as the Tate pairing:
+     * @param P - from G1
+     * @param Q - from G2
+     * @return the pairing result from GT
+     */
     @Override
     protected ExtensionFieldElement pair(PairingSourceGroupElement P, PairingSourceGroupElement Q) {
-        BigInteger t = this.getG1().size(); // swante: todo: change to frob trace t
-        ExtensionFieldElement result = this.miller(P, Q, t);
+        BigInteger t = ((BarretoNaehrigGroup2) this.getG2()).getTraceFrobenius();
+        ExtensionFieldElement result = this.miller(P, Q, t.subtract(BigInteger.ONE));
         /*this might happen, if P and Q are from same subgroup. In this case, we get neutral element for Ate pairing.*/
         if (result.isZero()) {
             return result.getStructure().getOneElement();
@@ -75,6 +91,28 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
             return result;
         }
 
+    }
+    
+    /**
+     *
+     * @param bitLength
+     * @return ate pairing with desired security. uses the existing Tate pairing,
+     * but additionally computes a correct generator for G2 so that random elements
+     * can be computed.
+     */
+    public static MyBarretoNaehrigAtePairing createAtePairing(int bitLength) {
+        BarretoNaehrigProvider bnProvider = new BarretoNaehrigProvider();
+        BilinearMap bnMap = bnProvider.provideBilinearGroup(bitLength, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3)).getBilinearMap();
+        while (true) {
+            AbstractEllipticCurvePoint Q = (AbstractEllipticCurvePoint) bnMap.getG2().getUniformlyRandomElement();
+            AbstractEllipticCurvePoint Qinv = Q.inv();
+            BigInteger p = ((Zp) ((AbstractEllipticCurvePoint) bnMap.getG1().getGenerator()).getX().getStructure()).size();
+            Q.applyFrobenius(p);
+            BarretoNaehrigGroup2Element generator = (BarretoNaehrigGroup2Element) Q.add(Qinv);
+            if (!generator.isNeutralElement()) {
+                return new MyBarretoNaehrigAtePairing((BarretoNaehrigGroup1)bnMap.getG1(), (BarretoNaehrigGroup2)bnMap.getG2(), (BarretoNaehrigTargetGroup) bnMap.getGT(), generator);
+            }
+        }
     }
 
     @Override

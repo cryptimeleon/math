@@ -74,18 +74,18 @@ public class ThesisSingleExpo {
                     }
                     powUsing2wAryMethod(bases[i], exponents[i], windowSize, smallAllPowers);
                 } else if (algo == 3) { // sliding window pow
-                    GroupElement[] smallPowers = precomputedOddPowers[i];
+                    GroupElement[] smallOddPowers = precomputedOddPowers[i];
                     if (!cacheSmallPowers) {
-                        smallPowers = precomputeSmallOddPowers(bases[i], m);
+                        smallOddPowers = precomputeSmallOddPowers(bases[i], m);
                     }
-                    powUsingSlidingWindow(bases[i], exponents[i], windowSize, smallPowers);
+                    powUsingSlidingWindow(bases[i], exponents[i], windowSize, smallOddPowers);
                 } else if (algo == 4) { // wNAF
-                    GroupElement[] smallPowers = precomputedOddPowers[i];
+                    GroupElement[] smallOddPowers = precomputedOddPowers[i];
                     if (!cacheSmallPowers) {
-                        smallPowers = precomputeSmallOddPowers(bases[i], m);
+                        smallOddPowers = precomputeSmallOddPowers(bases[i], m);
                     }
                     int[] expDigits = MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents[i], windowSize);
-                    MyExponentiationAlgorithms.powSingleWNaf(bases[i], expDigits, smallPowers);
+                    MyExponentiationAlgorithms.powSingleWNaf(bases[i], expDigits, smallOddPowers);
                 }
             }
         }

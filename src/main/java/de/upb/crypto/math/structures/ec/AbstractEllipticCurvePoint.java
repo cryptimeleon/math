@@ -25,6 +25,11 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
         this.z = z;
     }
     
+    /**
+     * mixed addition (projective/jabobian + affine)
+     * @param Q, must be normalized
+     * @return sum of this + Q
+     */
     public AbstractEllipticCurvePoint addAssumingZ2IsOne(AbstractEllipticCurvePoint Q) {
         throw new NotImplementedException();
     }
@@ -37,6 +42,15 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
             return normalize();
         }
         return this;
+    }
+    
+    /**
+     * apply frobenius function to this instance, in-place
+     * @param p prime order of finite field
+     */
+    public void applyFrobenius(BigInteger p) {
+        x = x.pow(p);
+        y = y.pow(p);
     }
     
     public abstract AbstractEllipticCurvePoint add(AbstractEllipticCurvePoint Q);

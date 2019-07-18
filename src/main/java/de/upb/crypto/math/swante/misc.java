@@ -111,7 +111,7 @@ public class misc {
         }
     }
     
-    private static Random defaultRand = new Random();
+    public static Random defaultRand = new Random();
     
     static {
         seedRand(0L);
@@ -149,12 +149,12 @@ public class misc {
     public static MyShortFormWeierstrassCurveParameters createBnWeierstrassCurveGroupParams(int bitLength) {
         BarretoNaehrigProvider bnProvider = new BarretoNaehrigProvider();
         BilinearMap bnMap = null;
-        if (bitLength == 256) { // Barreto-Naehrig non-native, SFC-256
-            bnMap = bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256).getBilinearMap();
-        } else {
+//        if (bitLength == 256) { // Barreto-Naehrig non-native, SFC-256
+//            bnMap = bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256).getBilinearMap();
+//        } else {
             // Barreto-Naehrig non-native
             bnMap = bnProvider.provideBilinearGroup(bitLength, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3)).getBilinearMap();
-        }
+//        }
         BarretoNaehrigGroup1 g1 = (BarretoNaehrigGroup1) bnMap.getG1();
         AbstractEllipticCurvePoint G = ((AbstractEllipticCurvePoint) g1.getGenerator()).normalize();
         BigInteger h = new BigInteger("01", 16);
@@ -165,6 +165,8 @@ public class misc {
         BigInteger p = Gx.getStructure().size();
         return new MyShortFormWeierstrassCurveParameters(p, BigInteger.ZERO, b.getInteger(), Gx.getInteger(), Gy.getInteger(), n, h);
     }
+    
+    
     
     
     private static double lastTickMillis = System.nanoTime() / 1.0e6;
