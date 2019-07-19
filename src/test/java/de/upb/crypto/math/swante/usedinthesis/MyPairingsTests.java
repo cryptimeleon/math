@@ -1,4 +1,4 @@
-package de.upb.crypto.math.swante;
+package de.upb.crypto.math.swante.usedinthesis;
 
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;

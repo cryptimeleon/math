@@ -19,18 +19,11 @@ public class ThesisMultiExpo {
     public static void main(String[] args) {
         pln("=========================");
         if (args.length == 0) {
-            args = "256 projective 10 100 1 1 True BN".split(" ");
+            args = "128 projective 10 100 1 1 True".split(" ");
         }
         pln(args);
         int bitLength = Integer.parseInt(args[0]);
-        myAssert(bitLength == 192 || bitLength == 256);
-        MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp192r1CurveParameters();
-        if (bitLength == 256) {
-            parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
-        }
-        if (args[7].equals("BN")) {
-            parameters = misc.createBnWeierstrassCurveGroupParams(bitLength);
-        }
+        MyShortFormWeierstrassCurveParameters parameters = misc.createBnWeierstrassCurveGroupParams(bitLength);
         
         Zp zp = new Zp(parameters.p);
         MyShortFormWeierstrassCurve curve = new MyProjectiveCurve(parameters);
@@ -64,8 +57,9 @@ public class ThesisMultiExpo {
             }
         }
         double startMillis = System.nanoTime() / 1.0e6;
+        double originalStartMillis = startMillis;
         for (int iter = -numIterations; iter < numIterations; iter++) {
-            if (iter < 0) { // start timing only after warmup phase
+            if (iter == 0) { // start timing only after warmup phase
                 startMillis = System.nanoTime() / 1.0e6;
             }
             if (algo == 0) { // old version with HashMap
@@ -92,7 +86,10 @@ public class ThesisMultiExpo {
             if (algo != 0) {
                 myPpe.evaluate(exponents);
             }
-            
+            if (System.nanoTime() / 1.0e6 - originalStartMillis > 15*1000) { // exit early if this run will take too long
+                pln("Result: too much");
+                return;
+            }
         }
         double elapsedMillis = System.nanoTime() / 1.0e6 - startMillis;
         pln("Result: " + elapsedMillis);
