@@ -16,11 +16,10 @@ public class ThesisSingleExpo {
     public static void main(String[] args) {
         pln("=========================");
         if (args.length == 0) {
-            args = "256 projective 10 100 1 1 True BN".split(" ");
+            args = "256 projective 10 500 1 1 True BN".split(" ");
         }
         pln(args);
         int bitLength = Integer.parseInt(args[0]);
-        myAssert(bitLength == 192 || bitLength == 256);
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp192r1CurveParameters();
         if (bitLength == 256) {
             parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();

@@ -10,6 +10,7 @@ import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
+import de.upb.crypto.math.structures.quotient.FiniteFieldExtension;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.misc;
 
@@ -107,6 +108,10 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
         BilinearMap bnMap = bnProvider.provideBilinearGroup(bitLength, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3)).getBilinearMap();
         while (true) {
             AbstractEllipticCurvePoint Q = (AbstractEllipticCurvePoint) bnMap.getG2().getUniformlyRandomElement();
+            ExtensionField extField = ((ExtensionFieldElement) Q.getX()).getStructure();
+//            Q.setX(extField.lift(Q.getX())); // todo: doesn't work
+//            Q.setY(extField.lift(Q.getY()));
+//            Q.setZ(extField.lift(Q.getZ()));
             AbstractEllipticCurvePoint Qinv = Q.inv();
             Field structure = ((AbstractEllipticCurvePoint) bnMap.getG1().getGenerator()).getX().getStructure();
             BigInteger p = ((ExtensionField) structure).getBaseField().size();

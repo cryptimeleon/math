@@ -25,6 +25,22 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
         this.z = z;
     }
     
+    public void setX(FieldElement x) {
+        this.x = x;
+    }
+    
+    public void setY(FieldElement y) {
+        this.y = y;
+    }
+    
+    public void setZ(FieldElement z) {
+        this.z = z;
+    }
+    
+    public AbstractEllipticCurvePoint copy() {
+        return this.add((AbstractEllipticCurvePoint) structure.getNeutralElement());
+    }
+    
     /**
      * mixed addition (projective/jabobian + affine)
      * @param Q, must be normalized
