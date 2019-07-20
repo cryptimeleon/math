@@ -90,7 +90,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement v = Q.x.mul(z).sub(x1z2);
         FieldElement y1z2 = y.mul(Q.z);
         FieldElement u = Q.y.mul(z).sub(y1z2);
-        if (v.isZero()) { // todo
+        if (v.isZero()) {
             if (u.isZero()) {
                 return this.square();
             }
