@@ -12,8 +12,8 @@ import de.upb.crypto.math.swante.powproducts.MySimultaneousSlidingWindowPowProdu
 
 import java.math.BigInteger;
 
-import static de.upb.crypto.math.swante.misc.myAssert;
-import static de.upb.crypto.math.swante.misc.pln;
+import static de.upb.crypto.math.swante.MyUtil.myAssert;
+import static de.upb.crypto.math.swante.MyUtil.pln;
 
 public class ThesisMultiExpo {
     public static void main(String[] args) {
@@ -23,7 +23,7 @@ public class ThesisMultiExpo {
         }
         pln(args);
         int bitLength = Integer.parseInt(args[0]);
-        MyShortFormWeierstrassCurveParameters parameters = misc.createBnWeierstrassCurveGroupParams(bitLength);
+        MyShortFormWeierstrassCurveParameters parameters = MyUtil.createBnWeierstrassCurveGroupParams(bitLength);
         
         Zp zp = new Zp(parameters.p);
         MyShortFormWeierstrassCurve curve = new MyProjectiveCurve(parameters);
@@ -42,12 +42,12 @@ public class ThesisMultiExpo {
         if (args[6].equals("True")) {
             cacheSmallPowers = true;
         }
-        Zp.ZpElement[] exponentsZp = misc.createRandomZpValues(zp, numBases);
+        Zp.ZpElement[] exponentsZp = MyUtil.createRandomZpValues(zp, numBases);
         BigInteger[] exponents = new BigInteger[numBases];
         for (int i = 0; i < numBases; i++) {
             exponents[i] = exponentsZp[i].getInteger();
         }
-        AbstractEllipticCurvePoint[] bases = misc.createRandomCurvePoints(curve, numBases);
+        AbstractEllipticCurvePoint[] bases = MyUtil.createRandomCurvePoints(curve, numBases);
         MyArrayPowProductWithFixedBases myPpe = null;
         if (cacheSmallPowers) { // cache small powers for algorithms where caching makes sense
             if (algo == 3) { // simultaneous sliding window

@@ -1,6 +1,5 @@
 package de.upb.crypto.math.swante.profiling;
 
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
@@ -9,8 +8,8 @@ import de.upb.crypto.math.swante.*;
 import java.math.BigInteger;
 
 import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.*;
-import static de.upb.crypto.math.swante.misc.myAssert;
-import static de.upb.crypto.math.swante.misc.pln;
+import static de.upb.crypto.math.swante.MyUtil.myAssert;
+import static de.upb.crypto.math.swante.MyUtil.pln;
 
 public class ThesisSingleExpo {
     public static void main(String[] args) {
@@ -25,7 +24,7 @@ public class ThesisSingleExpo {
             parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         }
         if (args[7].equals("BN")) {
-            parameters = misc.createBnWeierstrassCurveGroupParams(bitLength);
+            parameters = MyUtil.createBnWeierstrassCurveGroupParams(bitLength);
         }
         
         Zp zp = new Zp(parameters.p);
@@ -45,14 +44,14 @@ public class ThesisSingleExpo {
         if (args[6].equals("True")) {
             cacheSmallPowers = true;
         }
-        AbstractEllipticCurvePoint[] bases = misc.createRandomCurvePoints(curve, numPoints);
+        AbstractEllipticCurvePoint[] bases = MyUtil.createRandomCurvePoints(curve, numPoints);
         GroupElement[][] precomputedOddPowers = new GroupElement[numPoints][];
         GroupElement[][] precomputedAllPowers = new GroupElement[numPoints][];
         for (int i = 0; i < numPoints; i++) {
             precomputedOddPowers[i] = precomputeSmallOddPowers(bases[i], m);
             precomputedAllPowers[i] = precomputeAllSmallPowers(bases[i], m);
         }
-        Zp.ZpElement[] exponentsZp = misc.createRandomZpValues(zp, numPoints);
+        Zp.ZpElement[] exponentsZp = MyUtil.createRandomZpValues(zp, numPoints);
         BigInteger[] exponents = new BigInteger[numPoints];
         for (int i = 0; i < numPoints; i++) {
             exponents[i] = exponentsZp[i].getInteger();
@@ -60,7 +59,7 @@ public class ThesisSingleExpo {
         
         double startMillis = System.nanoTime() / 1.0e6;
         for (int iter = -numIterations; iter < numIterations; iter++) {
-            if (iter < 0) { // start timing only after warmup phase
+            if (iter == 0) { // start timing only after warmup phase
                 startMillis = System.nanoTime() / 1.0e6;
             }
             for (int i = 0; i < numPoints; i++) {

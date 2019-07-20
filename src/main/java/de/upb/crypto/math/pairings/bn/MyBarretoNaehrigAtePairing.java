@@ -10,9 +10,7 @@ import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
-import de.upb.crypto.math.structures.quotient.FiniteFieldExtension;
-import de.upb.crypto.math.structures.zn.Zp;
-import de.upb.crypto.math.swante.misc;
+import de.upb.crypto.math.swante.MyUtil;
 
 import java.math.BigInteger;
 
@@ -41,7 +39,7 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
      */
     @Override
     public BarretoNaehrigSourceGroupElement getUnitRandomElementFromG2Group() {
-        BigInteger e = misc.randBig(g2.size().subtract(BigInteger.ONE));
+        BigInteger e = MyUtil.randBig(g2.size().subtract(BigInteger.ONE));
         return this.actualG2Generator.pow(e);
     }
 

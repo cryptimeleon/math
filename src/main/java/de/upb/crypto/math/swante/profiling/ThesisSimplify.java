@@ -1,19 +1,12 @@
 package de.upb.crypto.math.swante.profiling;
 
-import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.PowProductExpression;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
-import de.upb.crypto.math.structures.quotient.FiniteFieldExtension;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.*;
-import de.upb.crypto.math.swante.powproducts.MyArrayPowProductWithFixedBases;
-import de.upb.crypto.math.swante.powproducts.MyFastPowProductWithoutCaching;
-import de.upb.crypto.math.swante.powproducts.MySimpleInterleavingPowProduct;
-import de.upb.crypto.math.swante.powproducts.MySimultaneousSlidingWindowPowProduct;
 
 import java.math.BigInteger;
 
-import static de.upb.crypto.math.swante.misc.pln;
+import static de.upb.crypto.math.swante.MyUtil.pln;
 
 public class ThesisSimplify {
     public static void main(String[] args) {
@@ -23,20 +16,19 @@ public class ThesisSimplify {
         }
         pln(args);
         int bitLength = Integer.parseInt(args[0]);
-        MyShortFormWeierstrassCurveParameters parameters = misc.createBnWeierstrassCurveGroupParams(bitLength);
+        MyShortFormWeierstrassCurveParameters parameters = MyUtil.createBnWeierstrassCurveGroupParams(bitLength);
         BigInteger p = parameters.p;
         Zp zp = new Zp(p);
         MyShortFormWeierstrassCurve curve = new MyProjectiveCurve(parameters);
-        pln(curve.size(), p);
         int numBases = Integer.parseInt(args[1]);
         int numIterations = Integer.parseInt(args[2]);
         int algo = Integer.parseInt(args[3]);
-        Zp.ZpElement[] exponentsZp = misc.createRandomZpValues(zp, numBases);
+        Zp.ZpElement[] exponentsZp = MyUtil.createRandomZpValues(zp, numBases);
         BigInteger[] exponents = new BigInteger[numBases];
         for (int i = 0; i < numBases; i++) {
             exponents[i] = exponentsZp[i].getInteger();
         }
-        AbstractEllipticCurvePoint[] bases = misc.createRandomCurvePoints(curve, numBases);
+        AbstractEllipticCurvePoint[] bases = MyUtil.createRandomCurvePoints(curve, numBases);
         MyProjectiveTriple[] basesSimple = new MyProjectiveTriple[numBases];
         for (int i = 0; i < numBases; i++) {
             basesSimple[i] = new MyProjectiveTriple(((Zp.ZpElement) bases[i].getX()).getInteger(), ((Zp.ZpElement) bases[i].getY()).getInteger(), ((Zp.ZpElement) bases[i].getZ()).getInteger());

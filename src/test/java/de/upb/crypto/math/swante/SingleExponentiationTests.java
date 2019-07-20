@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.*;
-import static de.upb.crypto.math.swante.misc.pln;
+import static de.upb.crypto.math.swante.MyUtil.pln;
 
 public class SingleExponentiationTests {
     
@@ -42,20 +42,20 @@ public class SingleExponentiationTests {
         int numBases = 10;
         int numExponents = 20;
         List<AbstractEllipticCurvePoint> bases = IntStream.range(0, numBases).mapToObj(it -> curve.getUniformlyRandomElement()).collect(Collectors.toList());
-        List<BigInteger> exponents = IntStream.range(0, numExponents).mapToObj(it -> misc.randBig(parameters.p)).collect(Collectors.toList());
+        List<BigInteger> exponents = IntStream.range(0, numExponents).mapToObj(it -> MyUtil.randBig(parameters.p)).collect(Collectors.toList());
         for (int windowSize = 1; windowSize < 12; windowSize++) {
             int m = (1 << windowSize) - 1;
             pln("==========================");
             pln(String.format("wsize=%d (m=%d), #bases=%d, #exponents=%d", windowSize, m, numBases, numExponents));
-            misc.tick();
+            MyUtil.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
                 for (int j = 0; j < numExponents; j++) {
                     base.pow(exponents.get(j));
                 }
             }
-            pln(String.format("normal pow -> %.2f ms", misc.tick()));
-            misc.tick();
+            pln(String.format("normal pow -> %.2f ms", MyUtil.tick()));
+            MyUtil.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
                 for (int j = 0; j < numExponents; j++) {
@@ -63,9 +63,9 @@ public class SingleExponentiationTests {
                     powUsingSlidingWindow(base, exponents.get(j), windowSize, smallPowers);
                 }
             }
-            pln(String.format("sliding window pow (without caching) -> %.2f ms", misc.tick()));
+            pln(String.format("sliding window pow (without caching) -> %.2f ms", MyUtil.tick()));
             powSimpleSlidignWindowOpCounter = 0;
-            misc.tick();
+            MyUtil.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
                 GroupElement[] smallPowers = precomputeSmallOddPowers(base, m);
@@ -73,8 +73,8 @@ public class SingleExponentiationTests {
                     powUsingSlidingWindow(base, exponents.get(j), windowSize, smallPowers);
                 }
             }
-            pln(String.format("sliding window pow (with caching of small base powers) -> %.2f ms", misc.tick()));
-            misc.tick();
+            pln(String.format("sliding window pow (with caching of small base powers) -> %.2f ms", MyUtil.tick()));
+            MyUtil.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
                 GroupElement[] smallOddPowers = precomputeSmallOddPowers(base, m);
@@ -84,8 +84,8 @@ public class SingleExponentiationTests {
                     MyExponentiationAlgorithms.powSingleWNaf(base, expDigits, smallOddPowers);
                 }
             }
-            pln(String.format("signed digit / (non-fractional!) wNAF pow (with caching of small base powers) -> %.2f ms", misc.tick()));
-            misc.tick();
+            pln(String.format("signed digit / (non-fractional!) wNAF pow (with caching of small base powers) -> %.2f ms", MyUtil.tick()));
+            MyUtil.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
                 GroupElement[] smallPowers = precomputeSmallOddPowers(base, m);
@@ -95,7 +95,7 @@ public class SingleExponentiationTests {
                     powUsingLrSfwMethod(base, expDigits, smallPowers);
                 }
             }
-            pln(String.format("signed digit fractional window pow (with caching of small base powers) -> %.2f ms", misc.tick()));
+            pln(String.format("signed digit fractional window pow (with caching of small base powers) -> %.2f ms", MyUtil.tick()));
             pln("total #M, simple Squre&Multiply: " + powSimpleSquareAndMultiplyOpCounter);
             pln("total #M, simple SlidingWindow: " + powSimpleSlidignWindowOpCounter);
             pln("total #M, wNAF: " + powSingleWNafOpCounter);

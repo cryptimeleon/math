@@ -4,7 +4,7 @@ import de.upb.crypto.math.swante.MyShortFormWeierstrassCurveParameters;
 
 import java.math.BigInteger;
 
-import static de.upb.crypto.math.swante.misc.myAssert;
+import static de.upb.crypto.math.swante.MyUtil.myAssert;
 
 interface Element<E extends Element> {
     Structure<E> getStructure();

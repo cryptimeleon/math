@@ -165,7 +165,7 @@ public class MyExponentiationAlgorithms {
         }
         int i = lambda +1;
         int l = 0;
-        int wm = misc.bitLength(m);
+        int wm = MyUtil.bitLength(m);
         while (i >= 0) {
             if (beta[i] == (i==0 ? 0 : beta[i-1])) {
                 i--;
@@ -253,7 +253,7 @@ public class MyExponentiationAlgorithms {
         while (c.signum() > 0) {
             int b = 0;
             if (c.testBit(0)) {
-                b = misc.getNLeastSignificantBits(c.intValue(), windowSize+1);
+                b = MyUtil.getNLeastSignificantBits(c.intValue(), windowSize+1);
                 if (b >= 1 << windowSize) {
                     b -= 1 << (windowSize+1);
                 }

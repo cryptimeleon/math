@@ -3,22 +3,11 @@ package de.upb.crypto.math.swante.profiling;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.PowProductExpression;
 import de.upb.crypto.math.pairings.bn.*;
 import de.upb.crypto.math.pairings.generic.AbstractPairing;
-import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
-import de.upb.crypto.math.structures.zn.Zp;
-import de.upb.crypto.math.swante.*;
-import de.upb.crypto.math.swante.powproducts.MyArrayPowProductWithFixedBases;
-import de.upb.crypto.math.swante.powproducts.MyFastPowProductWithoutCaching;
-import de.upb.crypto.math.swante.powproducts.MySimpleInterleavingPowProduct;
-import de.upb.crypto.math.swante.powproducts.MySimultaneousSlidingWindowPowProduct;
 
-import java.math.BigInteger;
-
-import static de.upb.crypto.math.swante.misc.myAssert;
-import static de.upb.crypto.math.swante.misc.pln;
+import static de.upb.crypto.math.swante.MyUtil.myAssert;
+import static de.upb.crypto.math.swante.MyUtil.pln;
 
 public class ThesisPairings {
     public static void main(String[] args) {
@@ -46,7 +35,7 @@ public class ThesisPairings {
         }
         double startMillis = System.nanoTime() / 1.0e6;
         for (int iter = -numIterations; iter < numIterations; iter++) {
-            if (iter < 0) { // start timing only after warmup phase
+            if (iter == 0) { // start timing only after warmup phase
                 startMillis = System.nanoTime() / 1.0e6;
             }
             for (int i = 0; i < numPoints; i++) {
