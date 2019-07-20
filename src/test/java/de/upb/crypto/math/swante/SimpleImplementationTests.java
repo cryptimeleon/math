@@ -30,6 +30,7 @@ public class SimpleImplementationTests {
         pln(x);
         Assert.assertEquals(((Zp.ZpElement) ((MyProjectiveEllipticCurvePoint) x.square()).getX()).getInteger(), g.times2(p,a).x);
         Assert.assertEquals(((Zp.ZpElement) ((MyProjectiveEllipticCurvePoint) x.add(x).add(x)).getX()).getInteger(), g.add(p,a,g).add(p,a,g).x);
+        Assert.assertEquals(((Zp.ZpElement) ((MyProjectiveEllipticCurvePoint) x.pow(11)).getX()).getInteger(), g.pow(p,a,BigInteger.valueOf(11)).x);
     }
     
     @Test

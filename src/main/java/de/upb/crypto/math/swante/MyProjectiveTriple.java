@@ -1,5 +1,8 @@
 package de.upb.crypto.math.swante;
 
+import de.upb.crypto.math.interfaces.structures.FieldElement;
+import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
+
 import java.math.BigInteger;
 
 public class MyProjectiveTriple {
@@ -25,9 +28,9 @@ public class MyProjectiveTriple {
         this(zero, one, zero); // neutral element
     }
     
-    public MyProjectiveTriple add(BigInteger p, BigInteger a, MyProjectiveTriple q) {
+    public MyProjectiveTriple add(BigInteger p, BigInteger curveParameterA, MyProjectiveTriple q) {
         if (q == this) {
-            return times2(p, a);
+            return times2(p, curveParameterA);
         }
         if (q.z.signum() == 0) {
             return this;
@@ -35,25 +38,25 @@ public class MyProjectiveTriple {
         if (z.signum() == 0) {
             return q;
         }
-        BigInteger t0 = y.multiply(q.z).mod(p);
-        BigInteger t1 = q.y.multiply(z).mod(p);
-        BigInteger u0 = x.multiply(q.z).mod(p);
-        BigInteger u1 = q.x.multiply(z).mod(p);
-        if (u0.equals(u1)) {
-            if (t0.equals(t1)) {
-                return times2(p, a);
+        BigInteger x1z2 = x.multiply(q.z).mod(p);
+        BigInteger v = q.x.multiply(z).mod(p).subtract(x1z2);
+        BigInteger y1z2 = y.multiply(q.z).mod(p);
+        BigInteger u = q.y.multiply(z).mod(p).subtract(y1z2);
+        if (v.signum() == 0) {
+            if (u.signum() == 0) {
+                return this.times2(p, curveParameterA);
             }
-            return new MyProjectiveTriple(zero, one, zero);
+            return new MyProjectiveTriple();
         }
-        BigInteger t = t0.subtract(t1).mod(p);
-        BigInteger u = u0.subtract(u1).mod(p);
-        BigInteger u2 = u.multiply(u).mod(p);
-        BigInteger v = z.multiply(q.z).mod(p);
-        BigInteger w = t.multiply(t).mod(p).multiply(v).mod(p).subtract(u2.multiply(u0.add(u1)).mod(p));
-        BigInteger u3 = u.multiply(u2).mod(p);
-        BigInteger rx = u.multiply(w).mod(p);
-        BigInteger ry = t.multiply(u0.multiply(u2).mod(p).subtract(w)).mod(p).subtract(t0.multiply(u3).mod(p)).mod(p);
-        BigInteger rz = u3.multiply(v).mod(p);
+        BigInteger uu = u.multiply(u).mod(p);
+        BigInteger vv = v.multiply(v).mod(p);
+        BigInteger vvv = v.multiply(vv).mod(p);
+        BigInteger r = vv.multiply(x1z2).mod(p);
+        BigInteger z1z2 = z.multiply(q.z).mod(p);
+        BigInteger a = uu.multiply(z1z2).mod(p).subtract(vvv).subtract(r.shiftLeft(1));
+        BigInteger rx = v.multiply(a).mod(p);
+        BigInteger ry = u.multiply(r.subtract(a)).mod(p).subtract(vvv.multiply(y1z2).mod(p)).mod(p);
+        BigInteger rz = vvv.multiply(z1z2).mod(p);
         return new MyProjectiveTriple(rx, ry, rz);
     }
     
@@ -62,14 +65,19 @@ public class MyProjectiveTriple {
         if (z.signum() == 0 || y.signum() == 0) {
             return new MyProjectiveTriple(zero, one, zero);
         }
-        BigInteger t = x.multiply(x).multiply(three).mod(p).add(z.multiply(z).mod(p).multiply(curveParameterA).mod(p));
-        BigInteger u = y.multiply(z).shiftLeft(1).mod(p);
-        BigInteger v = u.multiply(x).mod(p).multiply(y).shiftLeft(1).mod(p);
-        BigInteger w = t.multiply(t).subtract(v.shiftLeft(1)).mod(p);
-        BigInteger rx = u.multiply(w).mod(p);
-        BigInteger u2 = u.multiply(u).mod(p);
-        BigInteger ry = t.multiply(v.subtract(w)).mod(p).subtract(u2.multiply(y.multiply(y).shiftLeft(1).mod(p)).mod(p)).mod(p);
-        BigInteger rz = u2.multiply(u).mod(p);
+        BigInteger xx = x.multiply(x).mod(p);
+        BigInteger zz = z.multiply(z).mod(p);
+        BigInteger w = curveParameterA.multiply(zz).mod(p).add(xx.multiply(three));
+        BigInteger s = y.multiply(z).mod(p).shiftLeft(1);
+        BigInteger ss = s.multiply(s).mod(p);
+        BigInteger r = y.multiply(s).mod(p);
+        BigInteger rr = r.multiply(r).mod(p);
+        BigInteger xPlusR = x.add(r);
+        BigInteger B = xPlusR.multiply(xPlusR).mod(p).subtract(xx).subtract(rr);
+        BigInteger h = w.multiply(w).mod(p).subtract(B.shiftLeft(1));
+        BigInteger rx = h.multiply(s).mod(p);
+        BigInteger ry = w.multiply(B.subtract(h)).subtract(rr.shiftLeft(1)).mod(p);
+        BigInteger rz = s.multiply(ss).mod(p);
         return new MyProjectiveTriple(rx, ry, rz);
     }
     
