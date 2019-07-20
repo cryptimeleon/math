@@ -11,6 +11,7 @@ import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.bn.MyBarretoNaehrigAtePairing;
 import de.upb.crypto.math.pairings.debug.DebugBilinearMap;
+import de.upb.crypto.math.pairings.generic.AbstractPairing;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroup;
@@ -41,7 +42,7 @@ public class MyPairingsTests {
         Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
         Assert.assertEquals(pairing.getG2().getGenerator().pow(r), pairing.getG2().getNeutralElement());
         Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
-        testBasicProperties(pairing);
+        testBasicProperties((AbstractPairing) pairing);
     }
     
     @Test
@@ -52,17 +53,18 @@ public class MyPairingsTests {
         Assert.assertEquals(r, pairing.getGT().size());
         Field structure = ((AbstractEllipticCurvePoint) pairing.getG1().getGenerator()).getX().getStructure();
         BigInteger p = ((ExtensionField) structure).getBaseField().size();
+        testBasicProperties(pairing);
 //        Assert.assertEquals(pairing.actualG2Generator.pow(p));
         Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
         Assert.assertEquals(pairing.actualG2Generator.pow(r), pairing.getG2().getNeutralElement());
         Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
-        testBasicProperties(pairing);
+        
     }
     
     
-    public void testBasicProperties(BilinearMap pairing) {
+    public void testBasicProperties(AbstractPairing pairing) {
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
-        GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
+        GroupElement p2 = pairing.getUnitRandomElementFromG2Group(), r2 = pairing.getUnitRandomElementFromG2Group();
         
         GroupElement t1, t2, t3, t4;
         

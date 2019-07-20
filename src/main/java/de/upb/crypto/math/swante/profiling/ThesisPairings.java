@@ -13,11 +13,10 @@ public class ThesisPairings {
     public static void main(String[] args) {
         pln("=========================");
         if (args.length == 0) {
-            args = "256 10 100 Tate".split(" ");
+            args = "128 1 5 Tate".split(" ");
         }
-        pln(args);
         int bitLength = Integer.parseInt(args[0]);
-        AbstractPairing pairing = null;
+        AbstractPairing pairing;
         if (args[3].equals("Ate")) { // Ate
             pairing = MyBarretoNaehrigAtePairing.createAtePairing(bitLength);
         } else { // Tate
@@ -33,6 +32,7 @@ public class ThesisPairings {
             A[i] = (BarretoNaehrigGroup1Element) pairing.getG1().getUniformlyRandomNonNeutral();
             B[i] = (BarretoNaehrigGroup2Element) pairing.getUnitRandomElementFromG2Group();
         }
+        pln(args);
         double startMillis = System.nanoTime() / 1.0e6;
         for (int iter = -numIterations; iter < numIterations; iter++) {
             if (iter == 0) { // start timing only after warmup phase

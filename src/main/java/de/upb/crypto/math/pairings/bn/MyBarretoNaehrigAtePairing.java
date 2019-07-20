@@ -84,7 +84,7 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
     @Override
     protected ExtensionFieldElement pair(PairingSourceGroupElement P, PairingSourceGroupElement Q) {
         BigInteger t = ((BarretoNaehrigGroup2) this.getG2()).getTraceFrobenius();
-        ExtensionFieldElement result = this.miller(P, Q, t.subtract(BigInteger.ONE));
+        ExtensionFieldElement result = this.miller(Q, P, t.subtract(BigInteger.ONE));
         /*this might happen, if P and Q are from same subgroup. In this case, we get neutral element for Ate pairing.*/
         if (result.isZero()) {
             return result.getStructure().getOneElement();
