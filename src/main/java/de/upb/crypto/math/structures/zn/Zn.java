@@ -103,7 +103,7 @@ public class Zn implements Ring {
          * Construct a new ZnElement initialized as [v] mod n (no need to reduce v before calling)
          */
         protected ZnElement(BigInteger v) {
-//            if (v.compareTo(n) < 0 && v.signum todo (BigInteger.ZERO) >= 0) {
+//            if (v.compareTo(n) < 0 && v.signum() >= 0) {
 //                this.v = v;
 //            } else {
                 this.v = v.mod(n);

@@ -19,7 +19,7 @@ public class ThesisSimplify {
     public static void main(String[] args) {
         pln("=========================");
         if (args.length == 0) {
-            args = "128 10 100 1".split(" ");
+            args = "256 10 100 2".split(" ");
         }
         pln(args);
         int bitLength = Integer.parseInt(args[0]);
@@ -27,6 +27,7 @@ public class ThesisSimplify {
         BigInteger p = parameters.p;
         Zp zp = new Zp(p);
         MyShortFormWeierstrassCurve curve = new MyProjectiveCurve(parameters);
+        pln(curve.size(), p);
         int numBases = Integer.parseInt(args[1]);
         int numIterations = Integer.parseInt(args[2]);
         int algo = Integer.parseInt(args[3]);
@@ -45,7 +46,15 @@ public class ThesisSimplify {
             if (iter == 0) { // start timing only after warmup phase
                 startMillis = System.nanoTime() / 1.0e6;
             }
-            
+            if (algo == 1) { // normal implementation
+                for (int i = 0; i < numBases; i++) {
+                    MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(bases[i], exponents[i]);
+                }
+            } else { // simple version
+                for (int i = 0; i < numBases; i++) {
+                    basesSimple[i].pow(p, parameters.a, exponents[i]);
+                }
+            }
         }
         double elapsedMillis = System.nanoTime() / 1.0e6 - startMillis;
         pln("Result: " + elapsedMillis);
