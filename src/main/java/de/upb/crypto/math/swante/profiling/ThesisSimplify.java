@@ -12,7 +12,7 @@ public class ThesisSimplify {
     public static void main(String[] args) {
         pln("=========================");
         if (args.length == 0) {
-            args = "256 10 100 2".split(" ");
+            args = "128 10 10 2".split(" ");
         }
         pln(args);
         int bitLength = Integer.parseInt(args[0]);
@@ -31,7 +31,7 @@ public class ThesisSimplify {
         AbstractEllipticCurvePoint[] bases = MyUtil.createRandomCurvePoints(curve, numBases);
         MyProjectiveTriple[] basesSimple = new MyProjectiveTriple[numBases];
         for (int i = 0; i < numBases; i++) {
-            basesSimple[i] = new MyProjectiveTriple(((Zp.ZpElement) bases[i].getX()).getInteger(), ((Zp.ZpElement) bases[i].getY()).getInteger(), ((Zp.ZpElement) bases[i].getZ()).getInteger());
+            basesSimple[i] = new MyProjectiveTriple(p, parameters.a, ((Zp.ZpElement) bases[i].getX()).getInteger(), ((Zp.ZpElement) bases[i].getY()).getInteger(), ((Zp.ZpElement) bases[i].getZ()).getInteger());
         }
         double startMillis = System.nanoTime() / 1.0e6;
         for (int iter = -numIterations; iter < numIterations; iter++) {
@@ -44,7 +44,7 @@ public class ThesisSimplify {
                 }
             } else { // simple version
                 for (int i = 0; i < numBases; i++) {
-                    basesSimple[i].pow(p, parameters.a, exponents[i]);
+                    basesSimple[i].pow(exponents[i]);
                 }
             }
         }
