@@ -9,7 +9,7 @@ import de.upb.crypto.math.swante.util.MyUtil;
 
 import java.math.BigInteger;
 
-import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.*;
+import static de.upb.crypto.math.swante.MySingleExponentiationAlgorithms.*;
 import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
@@ -84,8 +84,8 @@ public class ThesisSingleExpo {
                     if (!cacheSmallPowers) {
                         smallOddPowers = precomputeSmallOddPowers(bases[i], m);
                     }
-                    int[] expDigits = MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents[i], windowSize);
-                    MyExponentiationAlgorithms.powSingleWNaf(bases[i], expDigits, smallOddPowers);
+                    int[] expDigits = MySingleExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents[i], windowSize);
+                    MySingleExponentiationAlgorithms.powSingleWNaf(bases[i], expDigits, smallOddPowers);
                 }
             }
         }

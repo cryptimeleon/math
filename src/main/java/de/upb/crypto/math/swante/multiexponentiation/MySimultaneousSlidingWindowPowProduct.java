@@ -1,11 +1,11 @@
-package de.upb.crypto.math.swante.powproducts;
+package de.upb.crypto.math.swante.multiexponentiation;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.math.BigInteger;
 import java.util.stream.IntStream;
 
-public class MySimultaneousSlidingWindowPowProduct extends MyArrayPowProductWithFixedBases {
+public class MySimultaneousSlidingWindowPowProduct extends MyBasicPowProduct {
     
     private final GroupElement[] smallPowers;
     private final int windowSize;

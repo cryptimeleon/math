@@ -2,7 +2,7 @@ package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.PowProductExpression;
-import de.upb.crypto.math.swante.powproducts.*;
+import de.upb.crypto.math.swante.multiexponentiation.*;
 import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
 import de.upb.crypto.math.swante.util.MyUtil;
 import org.junit.Assert;
@@ -40,11 +40,11 @@ public class MultiExponentiationTests {
             originalPowProductExpression.op(base, e);
         }
         Assert.assertEquals(expected, curve.evaluate(originalPowProductExpression));
-        Assert.assertEquals(expected, new MyArrayPowProductWithFixedBases(bases).evaluate(exponents));
-        Assert.assertEquals(expected, new MyFastPowProductWithoutCaching(bases).evaluate(exponents));
+        Assert.assertEquals(expected, new MyBasicPowProduct(bases).evaluate(exponents));
+        Assert.assertEquals(expected, new MySimplePowProductWithSharedDoublings(bases).evaluate(exponents));
         Assert.assertEquals(expected, new MySimultaneous2wAryPowProduct(bases, 3).evaluate(exponents));
         Assert.assertEquals(expected, new MySimultaneousSlidingWindowPowProduct(bases, 3).evaluate(exponents));
-        Assert.assertEquals(expected, new MySimpleInterleavingPowProduct(bases, 3).evaluate(exponents));
+        Assert.assertEquals(expected, new MyInterleavingSlidingWindowPowProduct(bases, 3).evaluate(exponents));
         Assert.assertEquals(expected, new MyInterleavingSignedWindowPowProduct(bases, 3).evaluate(exponents));
     }
     
@@ -68,7 +68,7 @@ public class MultiExponentiationTests {
         pln("==========================");
         pln(String.format("#iterations=%d, #bases=%d, simultaneousWindowSize=%d, interleavedWindowSize=%d", numIterations, numBases, simultaneousWindowSize, interleavingWindowSize));
         MyUtil.tick();
-        MyArrayPowProductWithFixedBases my1 = new MyArrayPowProductWithFixedBases(bases);
+        MyBasicPowProduct my1 = new MyBasicPowProduct(bases);
         for (int i = 0; i < numIterations; i++) {
             expected[i] = my1.evaluate(exponents[i]);
         }
@@ -85,7 +85,7 @@ public class MultiExponentiationTests {
         }
         pln(String.format("original power product -> %.2f ms", MyUtil.tick()));
         MyUtil.tick();
-        MyFastPowProductWithoutCaching my2 = new MyFastPowProductWithoutCaching(bases);
+        MySimplePowProductWithSharedDoublings my2 = new MySimplePowProductWithSharedDoublings(bases);
         for (int i = 0; i < numIterations; i++) {
             Assert.assertEquals(expected[i], my2.evaluate(exponents[i]));
         }
@@ -103,7 +103,7 @@ public class MultiExponentiationTests {
         }
         pln(String.format("simultaneous sliding-window -> %.2f ms", MyUtil.tick()));
         MyUtil.tick();
-        MySimpleInterleavingPowProduct my5 = new MySimpleInterleavingPowProduct(bases, interleavingWindowSize);
+        MyInterleavingSlidingWindowPowProduct my5 = new MyInterleavingSlidingWindowPowProduct(bases, interleavingWindowSize);
         for (int i = 0; i < numIterations; i++) {
             Assert.assertEquals(expected[i], my5.evaluate(exponents[i]));
         }

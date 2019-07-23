@@ -63,7 +63,7 @@ public class EllipticCurvePointTests {
         MyUtil.tick();
         for (int i = 0; i < numPowerIterations; i++) {
             tmp = tmp.prepareForPow(exponent);
-            tmp = (AbstractEllipticCurvePoint) MyExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
+            tmp = (AbstractEllipticCurvePoint) MySingleExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
             tmp = tmp.normalize();
         }
         elapsed = MyUtil.tick();
@@ -72,7 +72,7 @@ public class EllipticCurvePointTests {
         MyUtil.tick();
         for (int i = 0; i < numPowerIterations; i++) {
             tmp = tmp.prepareForPow(exponent);
-            tmp = (AbstractEllipticCurvePoint) MyExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
+            tmp = (AbstractEllipticCurvePoint) MySingleExponentiationAlgorithms.defaultPowImplementation(tmp, exponent);
             tmp = tmp.normalize();
         }
         elapsed = MyUtil.tick();

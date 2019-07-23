@@ -1,9 +1,8 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
-import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
-import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
+import de.upb.crypto.math.swante.MySingleExponentiationAlgorithms;
 
 import java.math.BigInteger;
 
@@ -64,7 +63,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * For negative exponents k, computes this.inv().pow(-k)
      */
     default GroupElement pow(BigInteger k) { //default implementation: square&multiply algorithm
-        return MyExponentiationAlgorithms.defaultPowImplementation(this, k);
+        return MySingleExponentiationAlgorithms.defaultPowImplementation(this, k);
     }
     
     /**

@@ -42,7 +42,7 @@ public class ThesisSimplify {
             }
             if (algo == 1) { // normal implementation
                 for (int i = 0; i < numBases; i++) {
-                    MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(bases[i], exponents[i]);
+                    MySingleExponentiationAlgorithms.simpleSquareAndMultiplyPow(bases[i], exponents[i]);
                 }
             } else { // simple version
                 for (int i = 0; i < numBases; i++) {

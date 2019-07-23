@@ -1,4 +1,4 @@
-package de.upb.crypto.math.swante.powproducts;
+package de.upb.crypto.math.swante.multiexponentiation;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -10,13 +10,13 @@ import java.math.BigInteger;
  * Bases are assumed to be known in advance (precomputations can therefore be
  * done on them). Exponents are unknown and passed during the evaluation phase.
  */
-public class MyArrayPowProductWithFixedBases {
+public class MyBasicPowProduct {
     
     public final int numBases;
     protected final GroupElement[] bases;
     protected final Group group;
     
-    public MyArrayPowProductWithFixedBases(GroupElement[] bases) {
+    public MyBasicPowProduct(GroupElement[] bases) {
         this.bases = bases;
         this.numBases = bases.length;
         this.group = bases[0].getStructure();
@@ -24,7 +24,7 @@ public class MyArrayPowProductWithFixedBases {
     
     /**
      * Very simple implementation without any caching, simply doing the exponentiation
-     * seperately for each base.
+     * separately for each base.
      * Child classes should override this with something more elaborate.
      *
      * @return bases[0]^exponents[0]*bases[1]^exponents[1]*...

@@ -8,7 +8,7 @@ import java.math.BigInteger;
 /**
  * Class containing algorithms for computing single powers efficiently of GroupElements
  */
-public class MyExponentiationAlgorithms {
+public class MySingleExponentiationAlgorithms {
     
     /**
      * This is the method that should be called by default for normal

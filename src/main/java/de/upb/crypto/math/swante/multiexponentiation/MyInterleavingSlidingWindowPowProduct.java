@@ -1,23 +1,23 @@
-package de.upb.crypto.math.swante.powproducts;
+package de.upb.crypto.math.swante.multiexponentiation;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
+import de.upb.crypto.math.swante.MySingleExponentiationAlgorithms;
 
 import java.math.BigInteger;
 
-public class MySimpleInterleavingPowProduct extends MyArrayPowProductWithFixedBases {
+public class MyInterleavingSlidingWindowPowProduct extends MyBasicPowProduct {
     
     private final GroupElement[][] smallOddPowers;
     private final int windowSize;
     
-    public MySimpleInterleavingPowProduct(GroupElement[] bases, int windowSize) {
+    public MyInterleavingSlidingWindowPowProduct(GroupElement[] bases, int windowSize) {
         super(bases);
         
         this.windowSize = windowSize;
         int m = (1 << windowSize) - 1;
         this.smallOddPowers = new GroupElement[numBases][];
         for (int i = 0; i < numBases; i++) {
-            this.smallOddPowers[i] = MyExponentiationAlgorithms.precomputeSmallOddPowers(bases[i], m);
+            this.smallOddPowers[i] = MySingleExponentiationAlgorithms.precomputeSmallOddPowers(bases[i], m);
         }
     }
     

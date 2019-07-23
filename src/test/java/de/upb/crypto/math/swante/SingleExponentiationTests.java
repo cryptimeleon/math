@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.*;
+import static de.upb.crypto.math.swante.MySingleExponentiationAlgorithms.*;
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 public class SingleExponentiationTests {
@@ -31,12 +31,12 @@ public class SingleExponentiationTests {
         Assert.assertArrayEquals(expected, smallOddPowersOfG);
 //        BigInteger exponent = BigInteger.valueOf(1000001);
         BigInteger exponent = BigInteger.valueOf(2);
-        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsing2wAryMethod(g, exponent, windowSize, allSmallPowersOfG));
-        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingSlidingWindow(g, exponent, windowSize, smallOddPowersOfG));
-        Assert.assertArrayEquals(new int[]{-31,0,0,0,0,0,0,-17,0,0,0,0,0,3}, MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(BigInteger.valueOf(22369), 5));
-        Assert.assertArrayEquals(new int[]{1,0,0,0,0,-5,0,0,0,0,0,1,5}, MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(BigInteger.valueOf(22369), 5));
-        int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponent, m);
-        Assert.assertEquals(MyExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingLrSfwMethod(g, expDigits, smallOddPowersOfG));
+        Assert.assertEquals(MySingleExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsing2wAryMethod(g, exponent, windowSize, allSmallPowersOfG));
+        Assert.assertEquals(MySingleExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingSlidingWindow(g, exponent, windowSize, smallOddPowersOfG));
+        Assert.assertArrayEquals(new int[]{-31,0,0,0,0,0,0,-17,0,0,0,0,0,3}, MySingleExponentiationAlgorithms.precomputeExponentDigitsForWNAF(BigInteger.valueOf(22369), 5));
+        Assert.assertArrayEquals(new int[]{1,0,0,0,0,-5,0,0,0,0,0,1,5}, MySingleExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(BigInteger.valueOf(22369), 5));
+        int[] expDigits = MySingleExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(exponent, m);
+        Assert.assertEquals(MySingleExponentiationAlgorithms.simpleSquareAndMultiplyPow(g, exponent), powUsingLrSfwMethod(g, expDigits, smallOddPowersOfG));
     }
     
     @Test
@@ -82,8 +82,8 @@ public class SingleExponentiationTests {
                 GroupElement[] smallOddPowers = precomputeSmallOddPowers(base, m);
                 for (int j = 0; j < numExponents; j++) {
                     BigInteger originalExponent = exponents.get(j);
-                    int[] expDigits = MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(originalExponent, windowSize);
-                    MyExponentiationAlgorithms.powSingleWNaf(base, expDigits, smallOddPowers);
+                    int[] expDigits = MySingleExponentiationAlgorithms.precomputeExponentDigitsForWNAF(originalExponent, windowSize);
+                    MySingleExponentiationAlgorithms.powSingleWNaf(base, expDigits, smallOddPowers);
                 }
             }
             pln(String.format("signed digit / (non-fractional!) wNAF pow (with caching of small base powers) -> %.2f ms", MyUtil.tick()));
@@ -93,7 +93,7 @@ public class SingleExponentiationTests {
                 GroupElement[] smallPowers = precomputeSmallOddPowers(base, m);
                 for (int j = 0; j < numExponents; j++) {
                     BigInteger originalExponent = exponents.get(j);
-                    int[] expDigits = MyExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(originalExponent, m);
+                    int[] expDigits = MySingleExponentiationAlgorithms.precomputeExponentTransformationForLrSfwMethod(originalExponent, m);
                     powUsingLrSfwMethod(base, expDigits, smallPowers);
                 }
             }

@@ -1,12 +1,12 @@
-package de.upb.crypto.math.swante.powproducts;
+package de.upb.crypto.math.swante.multiexponentiation;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.math.BigInteger;
 
-public class MyFastPowProductWithoutCaching extends MyArrayPowProductWithFixedBases {
+public class MySimplePowProductWithSharedDoublings extends MyBasicPowProduct {
     
-    public MyFastPowProductWithoutCaching(GroupElement[] bases) {
+    public MySimplePowProductWithSharedDoublings(GroupElement[] bases) {
         super(bases);
     }
     

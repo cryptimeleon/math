@@ -106,7 +106,7 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         FieldElement rx = v.mul(a);
         FieldElement ry = u.mul(r.sub(a)).sub(vvv.mul(y1z2));
         FieldElement rz = vvv.mul(z1z2);
-        return new MyProjectiveEllipticCurvePoint(structure, rx, ry, rz); // todo: return actual type of this instance somehow
+        return new MyProjectiveEllipticCurvePoint(structure, rx, ry, rz);
     }
     
     // returns this+this

@@ -1,7 +1,7 @@
-package de.upb.crypto.math.swante.powproducts;
+package de.upb.crypto.math.swante.multiexponentiation;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.swante.MyExponentiationAlgorithms;
+import de.upb.crypto.math.swante.MySingleExponentiationAlgorithms;
 
 import java.math.BigInteger;
 
@@ -9,7 +9,7 @@ import java.math.BigInteger;
 /**
  * Signed-window / wNAF interleaved pow product algorithm.
  */
-public class MyInterleavingSignedWindowPowProduct extends MyArrayPowProductWithFixedBases {
+public class MyInterleavingSignedWindowPowProduct extends MyBasicPowProduct {
     
     private final GroupElement[][] smallOddPowers;
     private final int windowSize;
@@ -21,7 +21,7 @@ public class MyInterleavingSignedWindowPowProduct extends MyArrayPowProductWithF
         int m = (1 << windowSize) - 1;
         this.smallOddPowers = new GroupElement[numBases][];
         for (int i = 0; i < numBases; i++) {
-            this.smallOddPowers[i] = MyExponentiationAlgorithms.precomputeSmallOddPowers(bases[i], m);
+            this.smallOddPowers[i] = MySingleExponentiationAlgorithms.precomputeSmallOddPowers(bases[i], m);
         }
     }
     
@@ -56,7 +56,7 @@ public class MyInterleavingSignedWindowPowProduct extends MyArrayPowProductWithF
         int longestExponentDigitLength = 0;
         int[][] exponentDigits = new int[numBases][];
         for (int i = 0; i < numBases; i++) {
-            exponentDigits[i] = MyExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents[i], windowSize);
+            exponentDigits[i] = MySingleExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents[i], windowSize);
             longestExponentDigitLength = Math.max(longestExponentDigitLength, exponentDigits[i].length);
         }
         // padding with zeros:

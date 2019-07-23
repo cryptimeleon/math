@@ -5,10 +5,10 @@ import de.upb.crypto.math.interfaces.structures.PowProductExpression;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.*;
-import de.upb.crypto.math.swante.powproducts.MyArrayPowProductWithFixedBases;
-import de.upb.crypto.math.swante.powproducts.MyFastPowProductWithoutCaching;
-import de.upb.crypto.math.swante.powproducts.MySimpleInterleavingPowProduct;
-import de.upb.crypto.math.swante.powproducts.MySimultaneousSlidingWindowPowProduct;
+import de.upb.crypto.math.swante.multiexponentiation.MyBasicPowProduct;
+import de.upb.crypto.math.swante.multiexponentiation.MySimplePowProductWithSharedDoublings;
+import de.upb.crypto.math.swante.multiexponentiation.MyInterleavingSlidingWindowPowProduct;
+import de.upb.crypto.math.swante.multiexponentiation.MySimultaneousSlidingWindowPowProduct;
 import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
 import de.upb.crypto.math.swante.util.MyUtil;
 
@@ -50,12 +50,12 @@ public class ThesisMultiExpo {
             exponents[i] = exponentsZp[i].getInteger();
         }
         AbstractEllipticCurvePoint[] bases = MyUtil.createRandomCurvePoints(curve, numBases);
-        MyArrayPowProductWithFixedBases myPpe = null;
+        MyBasicPowProduct myPpe = null;
         if (cacheSmallPowers) { // cache small powers for algorithms where caching makes sense
             if (algo == 3) { // simultaneous sliding window
                 myPpe = new MySimultaneousSlidingWindowPowProduct(bases, windowSize);
             } else if (algo == 4) { // interleaved sliding window
-                myPpe = new MySimpleInterleavingPowProduct(bases, windowSize);
+                myPpe = new MyInterleavingSlidingWindowPowProduct(bases, windowSize);
             }
         }
         double startMillis = System.nanoTime() / 1.0e6;
@@ -73,16 +73,16 @@ public class ThesisMultiExpo {
                 }
                 originalPpe.evaluate();
             } else if (algo == 1) { // slow array version without sharing squarings
-                myPpe = new MyArrayPowProductWithFixedBases(bases);
+                myPpe = new MyBasicPowProduct(bases);
             } else if (algo == 2) { // fast array version with sharing squarings
-                myPpe = new MyFastPowProductWithoutCaching(bases);
+                myPpe = new MySimplePowProductWithSharedDoublings(bases);
             } else if (algo == 3) { // simultaneous sliding window method
                 if (!cacheSmallPowers) {
                     myPpe = new MySimultaneousSlidingWindowPowProduct(bases, windowSize);
                 }
             } else if (algo == 4) { // interleaved sliding window method
                 if (!cacheSmallPowers) {
-                    myPpe = new MySimpleInterleavingPowProduct(bases, windowSize);
+                    myPpe = new MyInterleavingSlidingWindowPowProduct(bases, windowSize);
                 }
             }
             if (algo != 0) {

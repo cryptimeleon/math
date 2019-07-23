@@ -1,4 +1,4 @@
-package de.upb.crypto.math.swante.powproducts;
+package de.upb.crypto.math.swante.multiexponentiation;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
@@ -9,7 +9,7 @@ import java.math.BigInteger;
  * are looked at simultaneously. These low powers are precomputed and cached.
  * With a window size of 1, this is called "Shamir's trick".
  */
-public class MySimultaneous2wAryPowProduct extends MyArrayPowProductWithFixedBases {
+public class MySimultaneous2wAryPowProduct extends MyBasicPowProduct {
     
     private final GroupElement[] smallPowers;
     private final int windowSize;
