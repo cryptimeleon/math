@@ -30,6 +30,9 @@ public class MyProjectiveTriple {
     }
     
     private BigInteger modp(BigInteger x) {
+        if (x.compareTo(p) < 0 && x.signum() >= 0) {
+            return x;
+        }
         return x.mod(p);
     }
     

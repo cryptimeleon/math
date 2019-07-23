@@ -5,7 +5,7 @@ import de.upb.crypto.math.interfaces.structures.Field;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.helpers.FiniteFieldTools;
-import de.upb.crypto.math.swante.MyUtil;
+import de.upb.crypto.math.swante.util.MyUtil;
 
 import java.math.BigInteger;
 

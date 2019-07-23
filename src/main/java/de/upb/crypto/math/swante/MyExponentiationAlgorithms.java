@@ -1,6 +1,7 @@
 package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.swante.util.MyUtil;
 
 import java.math.BigInteger;
 
@@ -14,7 +15,7 @@ public class MyExponentiationAlgorithms {
      * exponentations
      * @param base
      * @param exponent
-     * @return
+     * @return base^exponent
      */
     public static GroupElement defaultPowImplementation(GroupElement base, BigInteger exponent) {
         // Todo: switch according to most efficient expo algo (e.g. cost of invert)

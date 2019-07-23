@@ -2,6 +2,9 @@ package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.swante.util.MyGlobals;
+import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
+import de.upb.crypto.math.swante.util.MyUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +14,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static de.upb.crypto.math.swante.MyUtil.pln;
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 @RunWith(value = Parameterized.class)
 public class EllipticCurvePointTests {

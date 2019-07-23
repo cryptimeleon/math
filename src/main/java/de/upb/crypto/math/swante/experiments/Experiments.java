@@ -1,10 +1,10 @@
 package de.upb.crypto.math.swante.experiments;
 
-import de.upb.crypto.math.swante.MyShortFormWeierstrassCurveParameters;
+import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
 
 import java.math.BigInteger;
 
-import static de.upb.crypto.math.swante.MyUtil.myAssert;
+import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
 
 interface Element<E extends Element> {
     Structure<E> getStructure();

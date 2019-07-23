@@ -2,12 +2,11 @@ package de.upb.crypto.math.performance.group;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.structures.test.GroupTests;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.MyAffineCurve;
 import de.upb.crypto.math.swante.MyJacobiCurve;
 import de.upb.crypto.math.swante.MyProjectiveCurve;
-import de.upb.crypto.math.swante.MyShortFormWeierstrassCurveParameters;
+import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

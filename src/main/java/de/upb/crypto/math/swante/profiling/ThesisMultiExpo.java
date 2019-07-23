@@ -9,11 +9,13 @@ import de.upb.crypto.math.swante.powproducts.MyArrayPowProductWithFixedBases;
 import de.upb.crypto.math.swante.powproducts.MyFastPowProductWithoutCaching;
 import de.upb.crypto.math.swante.powproducts.MySimpleInterleavingPowProduct;
 import de.upb.crypto.math.swante.powproducts.MySimultaneousSlidingWindowPowProduct;
+import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
+import de.upb.crypto.math.swante.util.MyUtil;
 
 import java.math.BigInteger;
 
-import static de.upb.crypto.math.swante.MyUtil.myAssert;
-import static de.upb.crypto.math.swante.MyUtil.pln;
+import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 public class ThesisMultiExpo {
     public static void main(String[] args) {

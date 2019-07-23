@@ -1,4 +1,4 @@
-package de.upb.crypto.math.swante.usedinthesis;
+package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
@@ -29,7 +29,7 @@ import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class MyPairingsTests {
+public class AtePairingTests {
     
     @Test
     public void testTate() {

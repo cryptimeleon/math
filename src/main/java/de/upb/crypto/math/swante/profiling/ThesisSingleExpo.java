@@ -4,12 +4,14 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.*;
+import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
+import de.upb.crypto.math.swante.util.MyUtil;
 
 import java.math.BigInteger;
 
 import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.*;
-import static de.upb.crypto.math.swante.MyUtil.myAssert;
-import static de.upb.crypto.math.swante.MyUtil.pln;
+import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 public class ThesisSingleExpo {
     public static void main(String[] args) {

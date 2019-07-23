@@ -6,8 +6,8 @@ import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.pairings.bn.*;
 import de.upb.crypto.math.pairings.generic.AbstractPairing;
 
-import static de.upb.crypto.math.swante.MyUtil.myAssert;
-import static de.upb.crypto.math.swante.MyUtil.pln;
+import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 public class ThesisPairings {
     public static void main(String[] args) {

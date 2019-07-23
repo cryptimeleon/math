@@ -7,7 +7,7 @@ import de.upb.crypto.math.interfaces.structures.Ring;
 import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.swante.MyUtil;
+import de.upb.crypto.math.swante.util.MyUtil;
 
 import java.math.BigInteger;
 import java.util.Optional;

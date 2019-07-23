@@ -3,8 +3,10 @@ package de.upb.crypto.math.swante.profiling;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 import de.upb.crypto.math.swante.*;
+import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
+import de.upb.crypto.math.swante.util.MyUtil;
 
-import static de.upb.crypto.math.swante.MyUtil.pln;
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 public class ThesisCoordTypeComparison {
     public static void main(String[] args) {

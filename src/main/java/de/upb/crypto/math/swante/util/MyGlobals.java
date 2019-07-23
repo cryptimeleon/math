@@ -1,4 +1,4 @@
-package de.upb.crypto.math.swante;
+package de.upb.crypto.math.swante.util;
 
 public class MyGlobals {
     

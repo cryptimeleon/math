@@ -1,14 +1,14 @@
 package de.upb.crypto.math.swante.usedinthesis;
 
 import de.upb.crypto.math.structures.zn.Zp;
-import de.upb.crypto.math.swante.MyUtil;
+import de.upb.crypto.math.swante.util.MyUtil;
 import de.upb.crypto.math.swante.util.MyMetric;
 import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-import static de.upb.crypto.math.swante.MyUtil.pln;
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 public class MyBasicTests {
     

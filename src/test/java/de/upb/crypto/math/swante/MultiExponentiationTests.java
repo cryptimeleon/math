@@ -3,13 +3,15 @@ package de.upb.crypto.math.swante;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.PowProductExpression;
 import de.upb.crypto.math.swante.powproducts.*;
+import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
+import de.upb.crypto.math.swante.util.MyUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.stream.IntStream;
 
-import static de.upb.crypto.math.swante.MyUtil.pln;
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 public class MultiExponentiationTests {
     

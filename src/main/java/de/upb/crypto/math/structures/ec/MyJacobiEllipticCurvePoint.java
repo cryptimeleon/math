@@ -3,7 +3,7 @@ package de.upb.crypto.math.structures.ec;
 
 import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
-import de.upb.crypto.math.swante.MyGlobals;
+import de.upb.crypto.math.swante.util.MyGlobals;
 
 // a point on a short form weierstrass curve, in Jacobian coordinates
 // representing the affine point (x/z^2, y/z^3)

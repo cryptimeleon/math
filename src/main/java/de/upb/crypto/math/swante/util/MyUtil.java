@@ -1,4 +1,4 @@
-package de.upb.crypto.math.swante;
+package de.upb.crypto.math.swante.util;
 
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
@@ -8,10 +8,10 @@ import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.swante.MyShortFormWeierstrassCurve;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 public class MyUtil {

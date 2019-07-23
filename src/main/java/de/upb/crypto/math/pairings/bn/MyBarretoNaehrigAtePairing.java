@@ -10,7 +10,7 @@ import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
-import de.upb.crypto.math.swante.MyUtil;
+import de.upb.crypto.math.swante.util.MyUtil;
 
 import java.math.BigInteger;
 

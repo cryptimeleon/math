@@ -8,7 +8,7 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.swante.MyGlobals;
+import de.upb.crypto.math.swante.util.MyGlobals;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.math.BigInteger;

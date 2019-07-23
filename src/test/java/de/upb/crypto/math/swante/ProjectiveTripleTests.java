@@ -2,12 +2,13 @@ package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.structures.ec.MyProjectiveEllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static de.upb.crypto.math.swante.MyUtil.pln;
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 
 

@@ -2,6 +2,8 @@ package de.upb.crypto.math.swante;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
+import de.upb.crypto.math.swante.util.MyShortFormWeierstrassCurveParameters;
+import de.upb.crypto.math.swante.util.MyUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static de.upb.crypto.math.swante.MyExponentiationAlgorithms.*;
-import static de.upb.crypto.math.swante.MyUtil.pln;
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 public class SingleExponentiationTests {
     
