@@ -10,7 +10,7 @@ import java.math.BigInteger;
 
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
-public class ThesisSimplify {
+public class ThesisProjectiveTriple {
     public static void main(String[] args) {
         pln("=========================");
         if (args.length == 0) {
