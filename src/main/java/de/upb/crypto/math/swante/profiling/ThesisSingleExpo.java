@@ -78,14 +78,14 @@ public class ThesisSingleExpo {
                     if (!cacheSmallPowers) {
                         smallOddPowers = precomputeSmallOddPowers(bases[i], m);
                     }
-                    powUsingSlidingWindow(bases[i], exponents[i], windowSize, smallOddPowers);
+                    powUsingSlidingWindowMethod(bases[i], exponents[i], windowSize, smallOddPowers);
                 } else if (algo == 4) { // wNAF
                     GroupElement[] smallOddPowers = precomputedOddPowers[i];
                     if (!cacheSmallPowers) {
                         smallOddPowers = precomputeSmallOddPowers(bases[i], m);
                     }
                     int[] expDigits = MySingleExponentiationAlgorithms.precomputeExponentDigitsForWNAF(exponents[i], windowSize);
-                    MySingleExponentiationAlgorithms.powSingleWNaf(bases[i], expDigits, smallOddPowers);
+                    MySingleExponentiationAlgorithms.powUsingWNafMethod(bases[i], expDigits, smallOddPowers);
                 }
             }
         }

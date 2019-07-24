@@ -555,7 +555,7 @@ class ExampleProjectiveCurve extends ExampleShortFormWeierstrassCurve<ExamplePro
     
 }
 
-public class Experiments {
+public class MyExperiments {
     public static void main(String[] args) {
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         ExampleProjectiveCurve curve = new ExampleProjectiveCurve(parameters);

@@ -113,7 +113,7 @@ public class MySingleExponentiationAlgorithms {
      * @param smallOddPowersOfBase: the result of above method when called with m=(1<<windowSize)-1
      * @return base^exponent using the efficient sliding window technique
      */
-    public static GroupElement powUsingSlidingWindow(GroupElement base, BigInteger exponent, int windowSize, GroupElement[] smallOddPowersOfBase) {
+    public static GroupElement powUsingSlidingWindowMethod(GroupElement base, BigInteger exponent, int windowSize, GroupElement[] smallOddPowersOfBase) {
         GroupElement y = base.getStructure().getNeutralElement();
         int l = exponent.bitLength();
         int i = l - 1;
@@ -281,7 +281,7 @@ public class MySingleExponentiationAlgorithms {
      * @param smallOddPowers small odd powers
      * @return
      */
-    public static GroupElement powSingleWNaf(GroupElement base, int[] exponentDigits, GroupElement[] smallOddPowers) {
+    public static GroupElement powUsingWNafMethod(GroupElement base, int[] exponentDigits, GroupElement[] smallOddPowers) {
         GroupElement A = base.getStructure().getNeutralElement();
         for (int i = exponentDigits.length-1; i >= 0; i--) {
             if (i != exponentDigits.length-1) {
