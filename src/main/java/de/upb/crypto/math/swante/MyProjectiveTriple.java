@@ -1,5 +1,7 @@
 package de.upb.crypto.math.swante;
 
+import de.upb.crypto.math.swante.util.MyGlobals;
+
 import java.math.BigInteger;
 
 public class MyProjectiveTriple {
@@ -30,7 +32,7 @@ public class MyProjectiveTriple {
     }
     
     private BigInteger modp(BigInteger x) {
-        if (x.compareTo(p) < 0 && x.signum() >= 0) {
+        if (MyGlobals.skipModOperationIfPossible && x.compareTo(p) < 0 && x.signum() >= 0) {
             return x;
         }
         return x.mod(p);

@@ -7,6 +7,7 @@ import de.upb.crypto.math.interfaces.structures.Ring;
 import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.swante.util.MyGlobals;
 import de.upb.crypto.math.swante.util.MyUtil;
 
 import java.math.BigInteger;
@@ -102,11 +103,11 @@ public class Zn implements Ring {
          * Construct a new ZnElement initialized as [v] mod n (no need to reduce v before calling)
          */
         protected ZnElement(BigInteger v) {
-//            if (v.compareTo(n) < 0 && v.signum() >= 0) {
-//                this.v = v;
-//            } else {
+            if (MyGlobals.skipModOperationIfPossible && v.compareTo(n) < 0 && v.signum() >= 0) {
+                this.v = v;
+            } else {
                 this.v = v.mod(n);
-//            }
+            }
         }
 
         /**
