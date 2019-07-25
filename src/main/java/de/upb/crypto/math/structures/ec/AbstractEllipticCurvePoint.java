@@ -9,7 +9,6 @@ import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.swante.util.MyGlobals;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.math.BigInteger;
 
@@ -47,7 +46,7 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
      * @return sum of this + Q
      */
     public AbstractEllipticCurvePoint addAssumingZ2IsOne(AbstractEllipticCurvePoint Q) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
     
     @Override

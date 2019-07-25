@@ -15,7 +15,7 @@ public class ThesisProjectiveTriple {
     public static void main(String[] args) {
         pln("=========================");
         if (args.length == 0) {
-            args = "128 10 10 1 True".split(" ");
+            args = "128 10 10 2 True".split(" ");
         }
         pln(args);
         int bitLength = Integer.parseInt(args[0]);
@@ -26,10 +26,6 @@ public class ThesisProjectiveTriple {
         int numBases = Integer.parseInt(args[1]);
         int numIterations = Integer.parseInt(args[2]);
         int algo = Integer.parseInt(args[3]);
-        MyGlobals.skipModOperationIfPossible = false;
-        if (args[4].equals("True")) {
-            MyGlobals.skipModOperationIfPossible = true;
-        }
         Zp.ZpElement[] exponentsZp = MyUtil.createRandomZpValues(zp, numBases);
         BigInteger[] exponents = new BigInteger[numBases];
         for (int i = 0; i < numBases; i++) {
