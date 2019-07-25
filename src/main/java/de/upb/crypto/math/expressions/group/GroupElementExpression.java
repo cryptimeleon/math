@@ -5,45 +5,62 @@ import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentLiteralExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.interfaces.structures.FutureGroupElement;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 /**
  * {@link Expression} that evaluates to a {@link GroupElement}.
  */
-public interface GroupElementExpression extends Expression {
-    GroupElement evaluate();
+public abstract class GroupElementExpression implements Expression {
+    protected Group group;
 
-    default FutureGroupElement evaluateAsync() {
+    public GroupElementExpression(Group group) {
+        this.group = group;
+    }
+
+    public GroupElement evaluate() {
+        return group.evaluate(this);
+    }
+
+    public FutureGroupElement evaluateAsync() {
         return new FutureGroupElement(this::evaluate);
     }
 
-    default GroupElementExpression op(GroupElementExpression rhs) {
+    public  GroupElementExpression op(GroupElementExpression rhs) {
         return new GroupOpExpr(this, rhs);
     }
-    default GroupElementExpression op(GroupElement rhs) {
+    public GroupElementExpression op(GroupElement rhs) {
         return new GroupOpExpr(this, new GroupElementLiteralExpr(rhs));
     }
-    default GroupElementExpression op(String rhs) {
+    public GroupElementExpression op(String rhs) {
         return new GroupOpExpr(this, new GroupVariableExpr(rhs));
     }
 
-    default GroupElementExpression pow(ExponentExpr exponent) {
+    public GroupElementExpression pow(ExponentExpr exponent) {
         return new GroupPowExpr(this, exponent);
     }
-    default GroupElementExpression pow(BigInteger exponent) {
+    public GroupElementExpression pow(BigInteger exponent) {
         return new GroupPowExpr(this, new ExponentLiteralExpr(exponent));
     }
-    default GroupElementExpression pow(Zn.ZnElement exponent) {
+    public GroupElementExpression pow(Zn.ZnElement exponent) {
         return new GroupPowExpr(this, new ExponentLiteralExpr(exponent.getInteger()));
     }
-    default GroupElementExpression pow(String exponent) {
+    public GroupElementExpression pow(String exponent) {
         return new GroupPowExpr(this, new ExponentVariableExpr(exponent));
     }
 
-    default GroupElementExpression inv() {
+    public GroupElementExpression opPow(GroupElementExpression rhs, ExponentExpr exponentOfRhs) { //TODO more of those (overload)
+        return op(rhs.pow(exponentOfRhs));
+    }
+
+    public GroupElementExpression inv() {
         return new GroupInvExpr(this);
     }
+
+    @Override
+    public GroupElementExpression substitute(Map<String, ? extends Expression> substitutions);
 }

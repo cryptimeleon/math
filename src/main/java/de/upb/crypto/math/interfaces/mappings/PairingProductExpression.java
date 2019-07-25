@@ -314,7 +314,6 @@ public class PairingProductExpression implements GroupElementExpression {
         return result;
     }
 
-    @Override
     public PairingProductExpression staticOptimization() {
         if (getNumberOfFactors() == 0)
             return new PairingProductExpression(this);
@@ -325,7 +324,6 @@ public class PairingProductExpression implements GroupElementExpression {
         return new PairingProductExpression(result);
     }
 
-    @Override
     public PairingProductExpression dynamicOptimization() {
         PairingProductExpression optimized = new PairingProductExpression(bilinearMap);
 
@@ -373,7 +371,6 @@ public class PairingProductExpression implements GroupElementExpression {
      * any operation on the {@link FutureGroupElement}, the caller thread
      * may be blocked until the value is ready.
      */
-    @Override
     public FutureGroupElement evaluateConcurrent() {
         return bilinearMap.evaluateConcurrent(this);
     }

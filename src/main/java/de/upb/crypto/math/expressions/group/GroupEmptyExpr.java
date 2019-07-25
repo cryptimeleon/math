@@ -1,11 +1,13 @@
 package de.upb.crypto.math.expressions.group;
 
+import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 public class GroupEmptyExpr implements GroupElementExpression {
     protected Group group;
@@ -46,6 +48,11 @@ public class GroupEmptyExpr implements GroupElementExpression {
 
     @Override
     public GroupElementExpression inv() {
+        return this;
+    }
+
+    @Override
+    public GroupEmptyExpr substitute(Map<String, ? extends Expression> substitutions) {
         return this;
     }
 }

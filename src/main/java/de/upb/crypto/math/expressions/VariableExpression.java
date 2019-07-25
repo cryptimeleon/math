@@ -1,6 +1,8 @@
 package de.upb.crypto.math.expressions;
 
-public class VariableExpression implements Expression {
+import java.util.Map;
+
+public abstract class VariableExpression implements Expression {
     protected String name;
 
     public VariableExpression(String name) {

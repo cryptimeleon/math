@@ -317,7 +317,6 @@ public class PowProductExpression implements GroupElementExpression {
      * <p>
      * GroupElement result = bilinearMap.apply(v.get(), w.get());
      */
-    @Override
     public FutureGroupElement evaluateConcurrent() {
         return group.evaluateConcurrent(this);
     }

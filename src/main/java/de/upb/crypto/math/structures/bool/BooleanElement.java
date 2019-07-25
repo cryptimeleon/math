@@ -1,6 +1,5 @@
 package de.upb.crypto.math.structures.bool;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.Ring;

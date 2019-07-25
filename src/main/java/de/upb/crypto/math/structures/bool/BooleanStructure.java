@@ -1,6 +1,5 @@
 package de.upb.crypto.math.structures.bool;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import de.upb.crypto.math.interfaces.structures.Ring;
 import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.interfaces.structures.Structure;
