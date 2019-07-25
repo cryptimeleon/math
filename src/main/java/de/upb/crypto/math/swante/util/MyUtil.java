@@ -114,6 +114,15 @@ public class MyUtil {
     public static MyShortFormWeierstrassCurveParameters createBnWeierstrassCurveGroupParams(int bitLength) {
         BarretoNaehrigProvider bnProvider = new BarretoNaehrigProvider();
         BilinearMap bnMap = bnProvider.provideBilinearGroup(bitLength, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3)).getBilinearMap();
+        return getCurveParamsFromMap(bnMap);
+    }
+    public static MyShortFormWeierstrassCurveParameters createBnSFC256WeierstrassCurveGroupParams() {
+        BarretoNaehrigProvider bnProvider = new BarretoNaehrigProvider();
+        BilinearMap bnMap = bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256).getBilinearMap();
+        return getCurveParamsFromMap(bnMap);
+    }
+    
+    private static MyShortFormWeierstrassCurveParameters getCurveParamsFromMap(BilinearMap bnMap) {
         BarretoNaehrigGroup1 g1 = (BarretoNaehrigGroup1) bnMap.getG1();
         AbstractEllipticCurvePoint G = ((AbstractEllipticCurvePoint) g1.getGenerator()).normalize();
         BigInteger h = new BigInteger("01", 16);
@@ -124,8 +133,6 @@ public class MyUtil {
         BigInteger p = Gx.getStructure().size();
         return new MyShortFormWeierstrassCurveParameters(p, BigInteger.ZERO, b.getInteger(), Gx.getInteger(), Gy.getInteger(), n, h);
     }
-    
-    
     
     
     private static double lastTickMillis = System.nanoTime() / 1.0e6;
