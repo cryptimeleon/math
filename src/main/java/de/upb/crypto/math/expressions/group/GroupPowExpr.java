@@ -6,18 +6,19 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.util.Map;
 
-public class GroupPowExpr implements GroupElementExpression {
+public class GroupPowExpr extends GroupElementExpression {
     protected GroupElementExpression base;
     protected ExponentExpr exponent;
 
     public GroupPowExpr(GroupElementExpression base, ExponentExpr exponent) {
+        super(base.getDefaultEvaluator());
         this.base = base;
         this.exponent = exponent;
     }
 
     @Override
-    public GroupElement evaluate() {
-        return base.evaluate().pow(exponent.evaluate());
+    public GroupElement evaluateNaive() {
+        return base.evaluateNaive().pow(exponent.evaluate());
     }
 
     @Override

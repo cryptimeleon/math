@@ -9,22 +9,43 @@ import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
+import javax.annotation.Nullable;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * {@link Expression} that evaluates to a {@link GroupElement}.
  */
 public abstract class GroupElementExpression implements Expression {
-    protected Group group;
+    /**
+     * Default evaluator for this expression.
+     */
+    protected final GroupElementExpressionEvaluator evaluator;
 
-    public GroupElementExpression(Group group) {
-        this.group = group;
+    public GroupElementExpression() {this(null);}
+
+    public GroupElementExpression(GroupElementExpressionEvaluator evaluator) {
+        this.evaluator = evaluator;
     }
 
     public GroupElement evaluate() {
-        return group.evaluate(this);
+        return evaluate(evaluator);
     }
+
+    public GroupElement evaluate(GroupElementExpressionEvaluator evaluator) {
+        if (evaluator == null)
+            throw new IllegalArgumentException("Trying to evaluate expression that has no evaluator attached to it");
+        return evaluator.evaluate(this);
+    }
+
+    /**
+     * Naively compute the value of this expression (without optimizations provided by the group)
+     * There should usually be no good reason for procotol implementors to call this. Prefer evaluate(), which should be faster.
+     *
+     * @return the value of this expression
+     */
+    public abstract GroupElement evaluateNaive();
 
     public FutureGroupElement evaluateAsync() {
         return new FutureGroupElement(this::evaluate);
@@ -62,5 +83,15 @@ public abstract class GroupElementExpression implements Expression {
     }
 
     @Override
-    public GroupElementExpression substitute(Map<String, ? extends Expression> substitutions);
+    public abstract GroupElementExpression substitute(Map<String, ? extends Expression> substitutions);
+
+    public GroupElementExpression substitute(String variable, Expression substitution) {
+        Map<String, Expression> map = new HashMap<>();
+        map.put(variable, substitution);
+        return substitute(map);
+    }
+
+    public GroupElementExpressionEvaluator getDefaultEvaluator() {
+        return evaluator;
+    }
 }

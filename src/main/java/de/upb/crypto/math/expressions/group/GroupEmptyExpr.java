@@ -1,5 +1,6 @@
 package de.upb.crypto.math.expressions.group;
 
+import de.upb.crypto.math.expressions.EvaluationException;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
@@ -9,16 +10,19 @@ import de.upb.crypto.math.structures.zn.Zn;
 import java.math.BigInteger;
 import java.util.Map;
 
-public class GroupEmptyExpr implements GroupElementExpression {
-    protected Group group;
+public class GroupEmptyExpr extends GroupElementExpression {
 
     public GroupEmptyExpr(Group group) {
-        this.group = group;
+        super(group.getExpressionEvaluator());
+    }
+
+    public GroupEmptyExpr(GroupElementExpressionEvaluator evaluator) {
+        super(evaluator);
     }
 
     @Override
-    public GroupElement evaluate() {
-        return group.getNeutralElement();
+    public GroupElement evaluateNaive() {
+        throw new EvaluationException(this, "Cannot evaluate empty expression");
     }
 
     @Override

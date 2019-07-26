@@ -5,15 +5,23 @@ import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
-public class GroupVariableExpr extends VariableExpression implements GroupElementExpression {
-    public GroupVariableExpr(String name) {
-        super(name);
+public class GroupVariableExpr extends GroupElementExpression implements VariableExpression {
+    protected final String name;
+
+    public GroupVariableExpr(@Nonnull String name) {
+        this.name = name;
     }
 
     @Override
     public GroupElement evaluate() {
+        return evaluateNaive();
+    }
+
+    @Override
+    public GroupElement evaluateNaive() {
         throw new EvaluationException(this, "Variable cannot be evaluated");
     }
 
@@ -23,5 +31,10 @@ public class GroupVariableExpr extends VariableExpression implements GroupElemen
             return (GroupElementExpression) substitutions.get(name);
         else
             return this;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

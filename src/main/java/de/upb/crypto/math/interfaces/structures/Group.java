@@ -1,14 +1,10 @@
 package de.upb.crypto.math.interfaces.structures;
 
-import de.upb.crypto.math.expressions.PowProductExpression;
-import de.upb.crypto.math.expressions.group.GroupPowProdExpr;
+import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 
 import java.lang.reflect.Type;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,120 +49,6 @@ public interface Group extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Computes the value of the PowProductExpressions
-     * This will usually be more efficient than
-     * naively computing that product.
-     *
-     * @param expr a PowProductExpression
-     * @throws IllegalArgumentException if an element is of the wrong type (e.g., incompatible group elements)
-     */
-    default GroupElement evaluate(PowProductExpression expr) throws IllegalArgumentException {
-        expr = expr.dynamicOptimization();
-
-        //Simultaneous exponentiations. Assumes that exponents are nonnegative (ensured by preceeding PowProductExpression.forEach contract)
-        int largestExponentBitLength = expr.getLargestExponentBitLength();
-        GroupElement result = getNeutralElement();
-        Map<GroupElement, BigInteger> factors = expr.getExpression();
-        for (int i = largestExponentBitLength; i >= 0; i--) {
-            result = result.op(result); //square step shared among all group elements of this product
-            for (Map.Entry<? extends GroupElement, BigInteger> entry : factors.entrySet()) {
-                if (entry.getValue().testBit(i)) {
-                    result = result.op(entry.getKey());
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Computes the value of the GroupPowProdExpr
-     * This will usually be more efficient than
-     * naively computing that product.
-     *
-     * @param expr a PowProductExpression without any variables
-     * @throws IllegalArgumentException if an element is of the wrong type (e.g., incompatible group elements)
-     */
-    default GroupElement evaluate(GroupPowProdExpr expr) throws IllegalArgumentException {
-        if (this.isCommutative()) {
-            //Simultaneous exponentiations. Assumes that exponents are nonnegative (ensured by preceeding PowProductExpression.forEach contract)
-            int largestExponentBitLength = 0;
-            if (size() != null) { //finite group of known order
-                largestExponentBitLength = size().bitLength();
-            } else {
-                for (GroupPowProdExpr e : expr)
-                    largestExponentBitLength = Math.max(largestExponentBitLength, e.getExponent().evaluate().bitLength());
-            }
-
-
-            GroupElement result = getNeutralElement();
-            for (int i = largestExponentBitLength; i >= 0; i--) {
-                result = result.op(result); //square step shared among all group elements of this product
-                for (GroupPowProdExpr factor : expr) {
-                    if (factor.getExponent().evaluate().testBit(i)) {
-                        result = result.op(factor.getBase().evaluate());
-                    }
-                }
-            }
-            return result;
-        } else {
-            GroupElement result = getNeutralElement();
-            for (GroupPowProdExpr e : expr)
-                result = e.getBase().evaluate().pow(e.getExponent().evaluate()).op(result);
-            return result;
-        }
-    }
-
-    /**
-     * Computes the value of the PowProductExpressions
-     * This will usually be more efficient than
-     * naively computing that product.
-     * <p>
-     * The result is being processed on another thread.
-     * The returned value is a FutureGroupElement. The actual result
-     * can be retrieved by calling get() on the FutureGroupElement.
-     * This blocks the thread until the value has been computed.
-     * <p>
-     * The prefered way to utilize this method is to call this method
-     * a bunch of times, then do something with the results, e.g.,
-     * FutureGroupElement lhs = evaluateConcurrent(exprLhs);
-     * FutureGroupElement rhs = evaluateConcurrent(exprRhs); //will be evaluated at the same time as lhs.
-     * bilinearMap.apply(lhs.get(), rhs.get()); //will block until both lhs and rhs are evaluated.
-     *
-     * @param expr a PowProductExpression
-     * @throws IllegalArgumentException if an element is of the wrong type (e.g., incompatible group elements)
-     */
-    default FutureGroupElement evaluateConcurrent(PowProductExpression expr) throws IllegalArgumentException {
-        return new FutureGroupElement(() -> evaluate(expr));
-    }
-
-    /**
-     * Computes the product of e[i]^exponents[i].
-     * This will usually be more efficient than
-     * naively computing that product.
-     *
-     * @param elements  group elements
-     * @param exponents exponents for the group elements
-     * @return the product of e[i]^exponents[i]
-     * @throws IllegalArgumentException if an element is of the wrong type or the list lengths are mismatched
-     */
-    default GroupElement evaluate(List<? extends GroupElement> elements, List<BigInteger> exponents) throws IllegalArgumentException {
-        if (elements.size() != exponents.size())
-            throw new IllegalArgumentException("Mismatch between number of operands (" + elements.size() + ") and number of exponents (" + exponents.size() + ")");
-
-        if (!isCommutative()) {
-            GroupElement result = getNeutralElement();
-            for (int i = 0; i < elements.size(); i++)
-                result = result.op(elements.get(i).pow(exponents.get(i)));
-            return result;
-        }
-
-        PowProductExpression expr = new PowProductExpression(this);
-        for (int i = 0; i < elements.size(); i++)
-            expr.op(elements.get(i), exponents.get(i));
-        return evaluate(expr);
-    }
-
-    /**
      * Returns true if this group is known to be commutative.
      */
     boolean isCommutative();
@@ -177,13 +59,6 @@ public interface Group extends Structure, RepresentationRestorer {
      */
     int estimateCostOfInvert();
 
-    /**
-     * Returns a PowProductExpression containing this group element.
-     */
-    default PowProductExpression powProductExpression() {
-        return new PowProductExpression(this);
-    }
-
     @Override
     default GroupElement recreateFromRepresentation(Type type, Representation repr) {
         if (!(type instanceof Class && GroupElement.class.isAssignableFrom((Class) type)))
@@ -191,4 +66,11 @@ public interface Group extends Structure, RepresentationRestorer {
 
         return getElement(repr);
     }
+    /**
+     * Returns the suggested evaluator for GroupElementExpressions for elements of this group.
+     * If this group is part of a larger structure (e.g., a BilinearGroup), the evaluator ideally should optimize for that complete super structure.
+     *
+     * @return an evaluator that is able to handle all expressions that legitimately involve an element of this group (this includes PairingExpr).
+     */
+    GroupElementExpressionEvaluator getExpressionEvaluator();
 }
