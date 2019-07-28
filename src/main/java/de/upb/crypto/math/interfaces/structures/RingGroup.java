@@ -1,10 +1,7 @@
 package de.upb.crypto.math.interfaces.structures;
 
-import de.upb.crypto.math.serialization.ObjectRepresentation;
+import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.serialization.StringRepresentation;
-import de.upb.crypto.math.serialization.util.RepresentationToJavaObjectHelper;
-
 /**
  * Common base class for ring subgroups (additive/unit groups)
  */
@@ -21,8 +18,7 @@ public abstract class RingGroup implements Group {
     }
 
     public RingGroup(Representation repr) {
-        ObjectRepresentation r = (ObjectRepresentation) repr;
-        ring = (Ring) RepresentationToJavaObjectHelper.getInstance().getObject(((StringRepresentation) r.get("ringTypeName")).get(), r.get("ringRepresentation"));
+        ring = (Ring) repr.repr().recreateRepresentable();
     }
 
     @Override
@@ -37,10 +33,7 @@ public abstract class RingGroup implements Group {
 
     @Override
     public Representation getRepresentation() {
-        ObjectRepresentation result = new ObjectRepresentation();
-        result.put("ringTypeName", new StringRepresentation(ring.getRepresentedTypeName()));
-        result.put("ringRepresentation", ring.getRepresentation());
-        return result;
+        return new RepresentableRepresentation(ring);
     }
 
     public Ring getRing() {

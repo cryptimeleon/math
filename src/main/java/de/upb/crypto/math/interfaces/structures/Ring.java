@@ -1,7 +1,9 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +14,7 @@ import java.util.List;
  * A Ring (with 1).
  * Operations are defined on its elements.
  */
-public interface Ring extends Structure {
+public interface Ring extends Structure, RepresentationRestorer {
     /**
      * Returns an object representing the additive group of this ring
      */
@@ -47,6 +49,14 @@ public interface Ring extends Structure {
 
     @Override
     RingElement getElement(Representation repr);
+
+    @Override
+    default RingElement recreateFromRepresentation(Type type, Representation repr) {
+        if (!(type instanceof Class && RingElement.class.isAssignableFrom((Class) type)))
+            throw new IllegalArgumentException("Ring cannot recreate type "+type.getTypeName()+" from representation");
+
+        return getElement(repr);
+    }
 
     @Override
     RingElement getUniformlyRandomElement() throws UnsupportedOperationException;

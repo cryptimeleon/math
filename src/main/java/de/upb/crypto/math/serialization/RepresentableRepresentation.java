@@ -1,6 +1,6 @@
 package de.upb.crypto.math.serialization;
 
-import de.upb.crypto.math.serialization.util.RepresentationToJavaObjectHelper;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * A Representation that saves a (getRepresentedTypeName(), getRepresentation()) tuple.
@@ -13,7 +13,7 @@ public class RepresentableRepresentation extends Representation {
     protected final Representation representation;
 
     public RepresentableRepresentation(Representable r) {
-        representedTypeName = r.getRepresentedTypeName();
+        representedTypeName = r.getClass().getName();
         representation = r.getRepresentation();
     }
 
@@ -40,7 +40,27 @@ public class RepresentableRepresentation extends Representation {
      * to try to recreate the Representable that is represented here.
      */
     public Object recreateRepresentable() {
-        return RepresentationToJavaObjectHelper.getInstance().getObject(representedTypeName, representation);
+        switch (representedTypeName) {
+            default: //default case: try some reflection magic (i.e. try to interpret representedTypeName as fully qualified class name, call constructor with Representation argument)
+                try {
+                    Class<?> c = Class.forName(representedTypeName);
+                    try {
+                        if (c.isEnum()) {
+                            return Enum.valueOf((Class<? extends Enum>) c, representation.str().get());
+                        }
+                        return c.getConstructor(Representation.class).newInstance(representation);
+                    } catch (NoSuchMethodException e) { //no constructor with single Representation paramenter
+                        if (representation == null) //no representation necessary. Try default constructor
+                            return c.getConstructor(new Class<?>[]{}).newInstance();
+                        else
+                            throw e;
+                    }
+                } catch (ClassNotFoundException e) {
+                    throw new IllegalArgumentException("Cannot find class " + representedTypeName, e);
+                } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    throw new IllegalArgumentException("Don't know how to handle Representable type '" + representedTypeName + "'", e);
+                }
+        }
     }
 
     @Override
