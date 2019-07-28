@@ -20,7 +20,7 @@ public class StandaloneRepresentationHandler implements RepresentationHandler {
         this.type = type;
     }
 
-    static boolean canHandle(Type type) {
+    public static boolean canHandle(Type type) {
         if (!(type instanceof Class))
             return false;
         Class clazz = ((Class) type);
