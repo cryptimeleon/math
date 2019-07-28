@@ -1,6 +1,6 @@
 package de.upb.crypto.math.interfaces.structures;
 
-import de.upb.crypto.math.expressions.PowProductExpression;
+import de.upb.crypto.math.expressions.group.GroupElementLiteralExpr;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
@@ -30,18 +30,6 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * @throws IllegalArgumentException if e is of the wrong type
      */
     GroupElement op(Element e) throws IllegalArgumentException;
-
-    /**
-     * Computes this.op(result of given expression).
-     *
-     * @param expr a PowProductExpression
-     * @return this.op(expr.evaluate ())
-     * @throws IllegalArgumentException if an element is of the wrong type
-     * @see Group::evaluate()
-     */
-    default GroupElement op(PowProductExpression expr) throws IllegalArgumentException {
-        return this.op(getStructure().evaluate(expr));
-    }
 
     /**
      * Calculates the result of applying the group operation k times.
@@ -90,9 +78,9 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     }
 
     /**
-     * Returns a new {@link PowProductExpression} containing exactly this group element.
+     * Returns a {@link de.upb.crypto.math.expressions.group.GroupElementExpression} containing exactly this group element.
      */
-    default PowProductExpression asPowProductExpression() {
-        return getStructure().powProductExpression().op(this);
+    default GroupElementLiteralExpr expr() {
+        return new GroupElementLiteralExpr(this);
     }
 }

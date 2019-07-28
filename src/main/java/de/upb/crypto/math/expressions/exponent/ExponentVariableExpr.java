@@ -9,9 +9,10 @@ import de.upb.crypto.math.structures.zn.Zn;
 import java.math.BigInteger;
 import java.util.Map;
 
-public class ExponentVariableExpr extends VariableExpression implements ExponentExpr {
+public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
+    protected final String name;
     public ExponentVariableExpr(String name) {
-        super(name);
+        this.name = name;
     }
 
     @Override
@@ -30,5 +31,10 @@ public class ExponentVariableExpr extends VariableExpression implements Exponent
             return (ExponentExpr) substitutions.get(name);
         else
             return this;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

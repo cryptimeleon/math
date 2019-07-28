@@ -1,8 +1,5 @@
 package de.upb.crypto.math.pairings.debug;
 
-import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
-import de.upb.crypto.math.expressions.PowProductExpression;
-
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
@@ -46,10 +43,7 @@ public class DebugGroupLogger {
             DebugGroup.class.getName(),
             DebugGroupElement.class.getName(),
             DebugBilinearMap.class.getName(),
-            HashIntoDebugGroup.class.getName(),
-            PowProductExpression.class.getName(),
-            GroupElementMixedExpression.class.getName(),
-            PairingProductExpression.class.getName()
+            HashIntoDebugGroup.class.getName()
     ));
 
     private static final Pattern stacktraceFilterPattern = Pattern.compile("(java\\.|jdk\\.|org\\.junit|com\\.intellij).*");

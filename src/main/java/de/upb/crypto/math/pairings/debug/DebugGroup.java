@@ -1,9 +1,7 @@
 package de.upb.crypto.math.pairings.debug;
 
-import de.upb.crypto.math.interfaces.structures.FutureGroupElement;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.expressions.PowProductExpression;
 import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
@@ -11,8 +9,6 @@ import de.upb.crypto.math.serialization.StringRepresentation;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -86,36 +82,6 @@ public class DebugGroup implements Group {
     @Override
     public Optional<Integer> getUniqueByteLength() {
         return zn.getUniqueByteLength();
-    }
-
-    @Override
-    public GroupElement evaluate(PowProductExpression expr) throws IllegalArgumentException {
-        DebugGroupLogger.log(name, "PowProdExpr");
-        return evaluateWithoutLog(expr);
-    }
-
-    @Override
-    public FutureGroupElement evaluateConcurrent(PowProductExpression expr) throws IllegalArgumentException {
-        DebugGroupLogger.log(name, "PowProdExprConcurrent");
-        return new FutureGroupElement(() -> evaluateWithoutLog(expr));
-    }
-
-    @Override
-    public GroupElement evaluate(List<? extends GroupElement> elements, List<BigInteger> exponents) throws IllegalArgumentException {
-        PowProductExpression expr = new PowProductExpression(this);
-        for (int i = 0; i < elements.size(); i++)
-            expr.op(elements.get(i), exponents.get(i));
-        return evaluate(expr);
-    }
-
-    protected GroupElement evaluateWithoutLog(PowProductExpression expr) {
-        Zn.ZnElement result = zn.getZeroElement();
-
-        for (Map.Entry<GroupElement, BigInteger> e : expr.getExpression().entrySet())
-            result = result.add(((DebugGroupElement) e.getKey()).elem.mul(zn.createZnElement(e.getValue())));
-
-        return wrap(result);
-
     }
 
     @Override

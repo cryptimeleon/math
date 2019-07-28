@@ -1,7 +1,6 @@
 package de.upb.crypto.math.structures.zn;
 
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.Ring;
@@ -35,14 +34,6 @@ public class RingMultiplication implements BilinearMap {
     @Override
     public RingAdditiveGroupElement apply(GroupElement a, GroupElement b, BigInteger e) {
         return ((RingAdditiveGroup) a.getStructure()).new RingAdditiveGroupElement(((RingAdditiveGroupElement) a.pow(e)).projectToRing().mul(((RingAdditiveGroupElement) b).projectToRing()));
-    }
-
-    @Override
-    public GroupElement evaluate(PairingProductExpression expr) {
-        return expr.stream()
-                .map(entry -> (GroupElement) apply(entry.getKey().getG(), entry.getKey().getH(), entry.getValue()))
-                .reduce(GroupElement::op)
-                .orElse(new RingAdditiveGroup(ring).getNeutralElement());
     }
 
     @Override

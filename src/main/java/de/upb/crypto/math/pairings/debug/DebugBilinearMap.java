@@ -1,8 +1,6 @@
 package de.upb.crypto.math.pairings.debug;
 
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
-import de.upb.crypto.math.interfaces.structures.FutureGroupElement;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.BigIntegerRepresentation;
@@ -11,7 +9,6 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -77,29 +74,6 @@ public class DebugBilinearMap implements BilinearMap {
 
         DebugGroupLogger.log("e", "pairing");
         return gt.wrap(((DebugGroupElement) g1).elem.mul(((DebugGroupElement) g2).elem));
-    }
-
-    @Override
-    public GroupElement evaluate(PairingProductExpression expr) {
-        DebugGroupLogger.log("e", "PairProdEq");
-        return evaluateWithoutLog(expr);
-    }
-
-    @Override
-    public FutureGroupElement evaluateConcurrent(PairingProductExpression expression) {
-        DebugGroupLogger.log("e", "evalConcurrent");
-        return new FutureGroupElement(() -> evaluateWithoutLog(expression));
-    }
-
-    protected GroupElement evaluateWithoutLog(PairingProductExpression expr) {
-        Zn.ZnElement result = zn.getZeroElement();
-
-        for (Map.Entry<PairingProductExpression.AtomicExpression, BigInteger> e : expr.getExpression().entrySet())
-            result = result.add(((DebugGroupElement) e.getKey().getG()).elem
-                    .mul(((DebugGroupElement) e.getKey().getH()).elem)
-                    .mul(zn.createZnElement(e.getValue())));
-
-        return gt.wrap(result);
     }
 
     @Override

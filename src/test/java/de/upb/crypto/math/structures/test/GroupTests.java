@@ -109,7 +109,7 @@ public class GroupTests extends StructureTests {
         }
     }
 
-    @Test
+    /*@Test
     public void testBatchOp() {
         ArrayList<GroupElement> elems = new ArrayList<>();
         ArrayList<BigInteger> exponents = new ArrayList<>();
@@ -134,7 +134,7 @@ public class GroupTests extends StructureTests {
 
         GroupElement resultBatch = group.evaluate(elems, exponents);
         assertEquals("Batch operations", resultNaive, resultBatch);
-    }
+    }*/
 
     @Test
     public void testEqualsAndHashCode() {

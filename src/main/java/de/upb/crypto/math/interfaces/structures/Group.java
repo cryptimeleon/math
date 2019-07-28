@@ -1,6 +1,9 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.group.GroupElementLiteralExpr;
+import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
+import de.upb.crypto.math.expressions.group.NaiveGroupElementExpressionEvaluator;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 
@@ -59,6 +62,13 @@ public interface Group extends Structure, RepresentationRestorer {
      */
     int estimateCostOfInvert();
 
+    /**
+     * Returns a GroupElementExpression containing the neutral group element.
+     */
+    default GroupEmptyExpr expr() {
+        return new GroupEmptyExpr(this);
+    }
+
     @Override
     default GroupElement recreateFromRepresentation(Type type, Representation repr) {
         if (!(type instanceof Class && GroupElement.class.isAssignableFrom((Class) type)))
@@ -72,5 +82,8 @@ public interface Group extends Structure, RepresentationRestorer {
      *
      * @return an evaluator that is able to handle all expressions that legitimately involve an element of this group (this includes PairingExpr).
      */
-    GroupElementExpressionEvaluator getExpressionEvaluator();
+    default GroupElementExpressionEvaluator getExpressionEvaluator() {
+        return new NaiveGroupElementExpressionEvaluator();
+    }
 }
+

@@ -26,7 +26,7 @@ public class HashIntoLazyGroup implements HashIntoStructure {
 
     @Override
     public Element hashIntoStructure(byte[] x) {
-        return new LeafGroupElement(group, (GroupElement) baseHash.hashIntoStructure(x));
+        return new LazyGroupElement(group, (GroupElement) baseHash.hashIntoStructure(x));
     }
 
     @Override

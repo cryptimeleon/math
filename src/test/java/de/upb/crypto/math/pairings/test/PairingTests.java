@@ -1,9 +1,9 @@
 package de.upb.crypto.math.pairings.test;
 
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.lazy.LazyPairing;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
@@ -95,10 +95,10 @@ public class PairingTests {
         }
         exp[0] = zp.getZeroElement();
 
-        //Compute result using expression
-        PairingProductExpression expr = pairing.pairingProductExpression();
+        //Compute result using expression TODO
+        GroupElementExpression expr = pairing.getGT().expr();
         for (int i = 0; i < g.length; i++) {
-            expr.op(g[i], h[i], exp[i]);
+            expr.op(pairing.expr(g[i], h[i]).pow(exp[i]));
         }
         GroupElement resultExpr = expr.evaluate();
 
@@ -124,9 +124,9 @@ public class PairingTests {
         assertEquals(naive, resultExpr);
 
         //Try nested expressions: e(g[i] * g[i+1], h[i])^2
-        expr = pairing.pairingProductExpression();
+        expr = pairing.getGT().expr();
         for (int i = 0; i + 1 < g.length; i += 2) {
-            expr.op(g[i].asPowProductExpression().op(g[i + 1]).pow(exp[i]), h[i].asPowProductExpression(), BigInteger.valueOf(2));
+            expr.opPow(pairing.expr(g[i].expr().op(g[i + 1]).pow(exp[i]), h[i].expr()), BigInteger.valueOf(2));
         }
         resultExpr = expr.evaluate();
         naive = pairing.getGT().getNeutralElement();

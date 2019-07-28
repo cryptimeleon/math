@@ -1,7 +1,6 @@
 package de.upb.crypto.math.pairings.generic;
 
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
@@ -81,21 +80,6 @@ public abstract class AbstractPairing implements BilinearMap {
 
     public AbstractPairing(PairingSourceGroup g1, PairingSourceGroup g2, PairingTargetGroup gT) {
         init(g1, g2, gT);
-    }
-
-    @Override
-    public PairingTargetGroupElement evaluate(PairingProductExpression expr) {
-        expr = expr.dynamicOptimization();
-        //we assume that operations in g1 are more efficient than in g2 and gt
-        FieldElement result = expr.stream()
-                .map(x -> this.pair(
-                        (PairingSourceGroupElement) x.getKey().getGExpression().pow(x.getValue()).evaluate(), //exponentiate in G1
-                        (PairingSourceGroupElement) x.getKey().getH()))
-                .reduce(ExtensionFieldElement::mul)
-                .orElse(this.getGT().getFieldOfDefinition().getOneElement());
-
-        /*perform final exponentiation at product*/
-        return this.exponentiate(result);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package de.upb.crypto.math.performance.pairing;
 
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
@@ -25,7 +25,7 @@ public class PairingPerformanceTest {
     private ArrayList<GroupElement> g1Elements;
     private ArrayList<GroupElement> g2Elements;
     private ArrayList<BigInteger> exponents;
-    PairingProductExpression expression;
+    GroupElementExpression expression;
 
     final int numberOfElements = 1;
 
@@ -60,7 +60,7 @@ public class PairingPerformanceTest {
     public void setupTest() {
         Group g1 = pairing.getG1();
         Group g2 = pairing.getG2();
-        expression = pairing.pairingProductExpression();
+        expression = pairing.expr();
 
         // Generate test data
         g1Elements = new ArrayList<>();
@@ -71,7 +71,7 @@ public class PairingPerformanceTest {
             g1Elements.add(g1.getUniformlyRandomElement());
             g2Elements.add(g2.getUniformlyRandomElement());
             exponents.add(new Zn(g1.size()).getUniformlyRandomElement().getInteger());
-            expression.op(g1Elements.get(i), g2Elements.get(i), exponents.get(i));
+            expression.opPow(pairing.expr(g1Elements.get(i), g2Elements.get(i)), exponents.get(i));
         }
 
         System.out.println("Testing " + pairing.getClass().getSimpleName() + " with " + numberOfElements + " pairings...");
@@ -81,7 +81,7 @@ public class PairingPerformanceTest {
     @Test
     public void evaluatePairing() {
         long referenceTime = System.nanoTime();
-        GroupElement result = pairing.evaluate(this.expression);
+        GroupElement result = this.expression.evaluate();
         System.out.println("Time to evaluate: " + (System.nanoTime() - referenceTime) / 1e6 + " ms");
 
         referenceTime = System.nanoTime();

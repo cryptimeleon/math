@@ -1,7 +1,6 @@
 package de.upb.crypto.math.lazy;
 
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
@@ -56,17 +55,12 @@ public class LazyPairing implements BilinearMap {
 
     @Override
     public LazyGroupElement apply(GroupElement g1, GroupElement g2) {
-        return new PairingEvaluationElement(gt, (LazyGroupElement) g1, (LazyGroupElement) g2);
+        return new LazyGroupElement(gt, baseBilinearMap.expr(((LazyGroupElement) g1).expr, ((LazyGroupElement) g2).expr));
     }
 
     @Override
     public LazyGroupElement apply(GroupElement g1, GroupElement g2, Zn.ZnElement exponent) {
         return apply(g1, g2, exponent.getInteger());
-    }
-
-    @Override
-    public LazyGroupElement evaluate(PairingProductExpression expr) {
-        return new BatchApplyPairingElement(gt, expr);
     }
 
     @Override

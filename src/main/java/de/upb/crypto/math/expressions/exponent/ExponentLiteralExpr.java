@@ -14,6 +14,10 @@ public class ExponentLiteralExpr implements ExponentExpr {
         this.exponent = exponent;
     }
 
+    public ExponentLiteralExpr(Zn.ZnElement exponent) {
+        this.exponent = exponent.getInteger();
+    }
+
     @Override
     public BigInteger evaluate() {
         return exponent;

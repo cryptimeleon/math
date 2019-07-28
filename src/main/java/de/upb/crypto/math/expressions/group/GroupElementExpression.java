@@ -74,8 +74,28 @@ public abstract class GroupElementExpression implements Expression {
         return new GroupPowExpr(this, new ExponentVariableExpr(exponent));
     }
 
-    public GroupElementExpression opPow(GroupElementExpression rhs, ExponentExpr exponentOfRhs) { //TODO more of those (overload)
+    public GroupElementExpression opPow(GroupElementExpression rhs, ExponentExpr exponentOfRhs) {
         return op(rhs.pow(exponentOfRhs));
+    }
+
+    public GroupElementExpression opPow(GroupElementExpression rhs, BigInteger exponentOfRhs) {
+        return op(rhs.pow(new ExponentLiteralExpr(exponentOfRhs)));
+    }
+
+    public GroupElementExpression opPow(GroupElementExpression rhs, Zn.ZnElement exponentOfRhs) {
+        return op(rhs.pow(new ExponentLiteralExpr(exponentOfRhs)));
+    }
+
+    public GroupElementExpression opPow(GroupElement rhs, ExponentExpr exponentOfRhs) {
+        return op(rhs.expr().pow(exponentOfRhs));
+    }
+
+    public GroupElementExpression opPow(GroupElement rhs, BigInteger exponentOfRhs) {
+        return op(rhs.expr().pow(new ExponentLiteralExpr(exponentOfRhs)));
+    }
+
+    public GroupElementExpression opPow(GroupElement rhs, Zn.ZnElement exponentOfRhs) {
+        return op(rhs.expr().pow(new ExponentLiteralExpr(exponentOfRhs)));
     }
 
     public GroupElementExpression inv() {

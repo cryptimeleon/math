@@ -1,5 +1,7 @@
 package de.upb.crypto.math.interfaces.mappings;
 
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.PairingExpr;
 import de.upb.crypto.math.interfaces.structures.FutureGroupElement;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -40,38 +42,20 @@ public interface BilinearMap extends BiFunction<GroupElement, GroupElement, Grou
         return apply(g1, g2, exponent.getInteger());
     }
 
-    /**
-     * Computes the product as given by the expression ({@see PairingProductExpression}).
-     * <p>
-     * This is generally much more efficient than computing the expression naively.
-     */
-    public GroupElement evaluate(PairingProductExpression expr);
+    public default PairingExpr expr(GroupElementExpression g1elem, GroupElementExpression g2elem) {
+        return new PairingExpr(this, g1elem, g2elem);
+    }
 
-    /**
-     * Computes the value of the {@link PairingProductExpression}
-     * This will usually be more efficient than
-     * naively computing that product.
-     * <p>
-     * The result is being processed on another thread.
-     * The result is a {@link FutureGroupElement}. When calling
-     * any operation on the {@link FutureGroupElement}, the caller thread
-     * may be blocked until the value is ready.
-     *
-     * @param expression {@link PairingProductExpression} to evaluate
-     */
-    default FutureGroupElement evaluateConcurrent(PairingProductExpression expression) {
-        return new FutureGroupElement(() -> evaluate(expression));
+    public default PairingExpr expr(GroupElement g1elem, GroupElement g2elem) {
+        return expr(g1elem.expr(), g2elem.expr());
+    }
+
+    public default GroupElementExpression expr() {
+        return getGT().expr();
     }
 
     /**
      * Returns true if e(g,h) == e(h,g) for all g,h.
      */
     public boolean isSymmetric();
-
-    /**
-     * @return empty {@link PairingProductExpression} for this map
-     */
-    default PairingProductExpression pairingProductExpression() {
-        return new PairingProductExpression(this);
-    }
 }
