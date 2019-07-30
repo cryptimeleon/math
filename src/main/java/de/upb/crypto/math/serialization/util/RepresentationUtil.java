@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated //will be removed eventually. Superseded by ReprUtil and its annotation-based framwork.
 public class RepresentationUtil {
 
     /**

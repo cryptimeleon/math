@@ -1,7 +1,9 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +13,7 @@ import java.util.concurrent.Executors;
 /**
  * A Group. Operations are defined on its elements.
  */
-public interface Group extends Structure {
+public interface Group extends Structure, RepresentationRestorer {
     /**
      * Thread pool used for concurrent evaluation of multiple PowProductExpressions
      */
@@ -140,5 +142,13 @@ public interface Group extends Structure {
      */
     default PowProductExpression powProductExpression() {
         return new PowProductExpression(this);
+    }
+
+    @Override
+    default GroupElement recreateFromRepresentation(Type type, Representation repr) {
+        if (!(type instanceof Class && GroupElement.class.isAssignableFrom((Class) type)))
+            throw new IllegalArgumentException("Group cannot recreate type "+type.getTypeName()+" from representation");
+
+        return getElement(repr);
     }
 }

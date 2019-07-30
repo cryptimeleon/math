@@ -4,6 +4,7 @@ import de.upb.crypto.math.serialization.Representation;
 
 import java.lang.reflect.InvocationTargetException;
 
+@Deprecated //not required anymore. Will be removed in future releases.
 public class RepresentationToJavaObjectHelper {
     private static RepresentationToJavaObjectHelper instance = null;
 

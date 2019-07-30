@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
  */
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.FIELD)
+@Deprecated //planning deleation. Superseded by the de.upb.crypto.math.serialization.annotation.v2 framework.
 public @interface Represented {
     String recoveryMethod() default "";
 
