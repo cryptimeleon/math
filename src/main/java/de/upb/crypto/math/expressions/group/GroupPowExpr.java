@@ -5,6 +5,7 @@ import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class GroupPowExpr extends GroupElementExpression {
     protected GroupElementExpression base;
@@ -24,5 +25,12 @@ public class GroupPowExpr extends GroupElementExpression {
     @Override
     public GroupPowExpr substitute(Map<String, ? extends Expression> substitutions) {
         return new GroupPowExpr(base.substitute(substitutions), exponent.substitute(substitutions));
+    }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {
+        visitor.accept(this);
+        base.treeWalk(visitor);
+        exponent.treeWalk(visitor);
     }
 }

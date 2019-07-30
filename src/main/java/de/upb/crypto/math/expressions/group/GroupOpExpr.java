@@ -4,6 +4,7 @@ import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class GroupOpExpr extends GroupElementExpression {
     protected GroupElementExpression lhs, rhs;
@@ -30,5 +31,12 @@ public class GroupOpExpr extends GroupElementExpression {
 
     public GroupElementExpression getRhs() {
         return rhs;
+    }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {
+        visitor.accept(this);
+        lhs.treeWalk(visitor);
+        rhs.treeWalk(visitor);
     }
 }

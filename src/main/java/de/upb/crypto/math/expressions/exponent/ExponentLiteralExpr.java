@@ -6,6 +6,7 @@ import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ExponentLiteralExpr implements ExponentExpr {
     protected BigInteger exponent;
@@ -31,5 +32,10 @@ public class ExponentLiteralExpr implements ExponentExpr {
     @Override
     public ExponentLiteralExpr substitute(Map<String, ? extends Expression> substitutions) {
         return this;
+    }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {
+        visitor.accept(this);
     }
 }

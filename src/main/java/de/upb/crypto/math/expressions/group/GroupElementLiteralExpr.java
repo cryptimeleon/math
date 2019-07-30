@@ -5,6 +5,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class GroupElementLiteralExpr extends GroupElementExpression {
     protected GroupElement value;
@@ -22,5 +23,10 @@ public class GroupElementLiteralExpr extends GroupElementExpression {
     @Override
     public GroupElementLiteralExpr substitute(Map<String, ? extends Expression> substitutions) {
         return this;
+    }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {
+        visitor.accept(this);
     }
 }

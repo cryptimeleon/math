@@ -6,6 +6,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class GroupInvExpr extends GroupElementExpression {
     protected GroupElementExpression base;
@@ -27,5 +28,11 @@ public class GroupInvExpr extends GroupElementExpression {
 
     public GroupElementExpression getBase() {
         return base;
+    }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {
+        visitor.accept(this);
+        visitor.accept(base);
     }
 }

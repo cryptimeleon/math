@@ -9,6 +9,7 @@ import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class GroupEmptyExpr extends GroupElementExpression {
 
@@ -59,4 +60,7 @@ public class GroupEmptyExpr extends GroupElementExpression {
     public GroupEmptyExpr substitute(Map<String, ? extends Expression> substitutions) {
         return this;
     }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {}
 }

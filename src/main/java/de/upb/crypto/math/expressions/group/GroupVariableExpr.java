@@ -7,6 +7,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class GroupVariableExpr extends GroupElementExpression implements VariableExpression {
     protected final String name;
@@ -36,5 +37,10 @@ public class GroupVariableExpr extends GroupElementExpression implements Variabl
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {
+        visitor.accept(this);
     }
 }

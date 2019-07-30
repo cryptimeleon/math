@@ -5,6 +5,7 @@ import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class PairingExpr extends GroupElementExpression {
     protected GroupElementExpression lhs, rhs;
@@ -37,5 +38,12 @@ public class PairingExpr extends GroupElementExpression {
 
     public GroupElementExpression getRhs() {
         return rhs;
+    }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {
+        visitor.accept(this);
+        lhs.treeWalk(visitor);
+        rhs.treeWalk(visitor);
     }
 }

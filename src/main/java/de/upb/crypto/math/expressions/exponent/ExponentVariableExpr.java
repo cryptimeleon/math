@@ -8,6 +8,7 @@ import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
     protected final String name;
@@ -36,5 +37,10 @@ public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {
+        visitor.accept(this);
     }
 }

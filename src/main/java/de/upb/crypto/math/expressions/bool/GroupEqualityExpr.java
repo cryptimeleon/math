@@ -4,6 +4,7 @@ import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class GroupEqualityExpr implements BooleanExpression {
     protected GroupElementExpression lhs, rhs;
@@ -21,5 +22,12 @@ public class GroupEqualityExpr implements BooleanExpression {
     @Override
     public GroupEqualityExpr substitute(Map<String, ? extends Expression> substitutions) {
         return new GroupEqualityExpr(lhs.substitute(substitutions), rhs.substitute(substitutions));
+    }
+
+    @Override
+    public void treeWalk(Consumer<Expression> visitor) {
+        visitor.accept(this);
+        lhs.treeWalk(visitor);
+        rhs.treeWalk(visitor);
     }
 }
