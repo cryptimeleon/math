@@ -20,13 +20,6 @@ public abstract class AbstractPairing implements BilinearMap {
     protected PairingSourceGroup g1;
     protected PairingSourceGroup g2;
     protected PairingTargetGroup gT;
-    
-    
-    // should get overridden by Ate pairing, using the actual generator there
-    public PairingSourceGroupElement getUnitRandomElementFromG2Group() {
-        BigInteger e = MyUtil.randBig(g2.size().subtract(BigInteger.ONE));
-        return (PairingSourceGroupElement) this.g2.generator.pow(e);
-    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()

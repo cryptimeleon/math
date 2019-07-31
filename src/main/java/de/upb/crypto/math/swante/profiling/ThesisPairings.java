@@ -35,7 +35,7 @@ public class ThesisPairings {
         BarretoNaehrigGroup2Element[] B = new BarretoNaehrigGroup2Element[numPoints];
         for (int i = 0; i < numPoints; i++) {
             A[i] = (BarretoNaehrigGroup1Element) pairing.getG1().getUniformlyRandomNonNeutral();
-            B[i] = (BarretoNaehrigGroup2Element) pairing.getUnitRandomElementFromG2Group();
+            B[i] = (BarretoNaehrigGroup2Element) pairing.getG2().getUniformlyRandomNonNeutral();
         }
         pln(args);
         double startMillis = System.nanoTime() / 1.0e6;

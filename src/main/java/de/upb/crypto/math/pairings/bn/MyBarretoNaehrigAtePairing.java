@@ -33,16 +33,6 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
         this.actualG2Generator = actualG2Generator;
     }
     
-    /**
-     *
-     * @return random non-zero element from the actual G2 group of the Ate pairing
-     */
-    @Override
-    public BarretoNaehrigSourceGroupElement getUnitRandomElementFromG2Group() {
-        BigInteger e = MyUtil.randBig(g2.size().subtract(BigInteger.ONE));
-        return this.actualG2Generator.pow(e);
-    }
-
     @Override
     protected ExtensionFieldElement evaluateLine(FieldElement[] line, PairingSourceGroupElement P, PairingSourceGroupElement Q) {
         ExtensionField targetField = this.getGT().getFieldOfDefinition();

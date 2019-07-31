@@ -45,15 +45,14 @@ public class AtePairingTests {
         Field structure = ((AbstractEllipticCurvePoint) pairing.getG1().getGenerator()).getX().getStructure();
         BigInteger p = ((ExtensionField) structure).getBaseField().size();
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
-        GroupElement p2 = pairing.getUnitRandomElementFromG2Group(), r2 = pairing.getUnitRandomElementFromG2Group();
+        GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
         GroupElement t1 = pairing.apply(p1, p2);
         pln(t1);
         Assert.assertEquals(r, pairing.getG2().size());
         Assert.assertEquals(r, pairing.getGT().size());
         testBasicProperties(pairing);
-        Assert.assertEquals(pairing.actualG2Generator.pow(p), pairing.getG2().getNeutralElement());
         Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
-        Assert.assertEquals(pairing.actualG2Generator.pow(r), pairing.getG2().getNeutralElement());
+        Assert.assertEquals(pairing.getG2().getGenerator().pow(r), pairing.getG2().getNeutralElement());
         Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
         
     }
@@ -74,7 +73,7 @@ public class AtePairingTests {
         Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
         testBasicProperties(pairing);
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
-        GroupElement p2 = pairing.getUnitRandomElementFromG2Group(), r2 = pairing.getUnitRandomElementFromG2Group();
+        GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
     
         GroupElement t1 = pairing.apply(p1, p2);
         pln(t1);
@@ -96,7 +95,7 @@ public class AtePairingTests {
     
     public void testBasicProperties(AbstractPairing pairing) {
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
-        GroupElement p2 = pairing.getUnitRandomElementFromG2Group(), r2 = pairing.getUnitRandomElementFromG2Group();
+        GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();;
         
         GroupElement t1, t2, t3, t4;
         
