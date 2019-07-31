@@ -46,7 +46,7 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
     @Override
     protected ExtensionFieldElement evaluateLine(FieldElement[] line, PairingSourceGroupElement P, PairingSourceGroupElement Q) {
         ExtensionField targetField = this.getGT().getFieldOfDefinition();
-        ExtensionField extField = (ExtensionField) Q.getFieldOfDefinition();
+        ExtensionField extField = (ExtensionField) P.getFieldOfDefinition();
 
         /*
          * G2 is a subgroup sextic twist E':y^2=x^3-b/v with xi^6=v from E'->E, phi:(x,y)->(x xi^2,y xi^3). GT is
@@ -60,18 +60,26 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
          * vertical lines are parameterized by [a_0,a_1]=[0,1].
          */
         // swante: xi = z (im BN paper)
+        // all signs are inverted in comparison with Naehrig paper, Tate did the same thing
         if (!P.isNormalized() || !Q.isNormalized()) {
             throw new IllegalArgumentException("Currently, only affine points are supported.");
         }
-
         FieldElement[] coefficients = new FieldElement[4];
-        coefficients[0] = extField.lift(P.getX().mul(line[1]).sub(P.getY().mul(line[0])));
-
-        coefficients[1] = extField.getZeroElement();
-        coefficients[2] = extField.lift(line[1]).mul(Q.getX()).neg();
-
-        coefficients[3] = Q.getY().mul(extField.lift(line[0]));
-
+        for (int i = 0; i < 4; i++) {
+            coefficients[i] = extField.getZeroElement();
+        }
+        /* lifting (transforming into higher level extension field)
+        needs only to be done for the elements from F_p, thus only Q
+        P, line[0] and line[1] are already in that "lifted" level
+         */
+        if (line[0].isZero()) { // vertical line
+            coefficients[0] = extField.lift(Q.getX().neg());
+            coefficients[2] = P.getX();
+        } else { // normal line
+            coefficients[0] = extField.lift(Q.getY());
+            coefficients[1] = extField.lift(Q.getX()).mul(line[1]).neg();
+            coefficients[3] = P.getX().mul(line[1]).sub(P.getY());
+        }
         return targetField.createElement(coefficients);
     }
     
@@ -107,9 +115,6 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
         while (true) {
             AbstractEllipticCurvePoint Q = (AbstractEllipticCurvePoint) bnMap.getG2().getUniformlyRandomElement();
             ExtensionField extField = ((ExtensionFieldElement) Q.getX()).getStructure();
-//            Q.setX(extField.lift(Q.getX())); // todo: doesn't work
-//            Q.setY(extField.lift(Q.getY()));
-//            Q.setZ(extField.lift(Q.getZ()));
             AbstractEllipticCurvePoint Qinv = Q.inv();
             Field structure = ((AbstractEllipticCurvePoint) bnMap.getG1().getGenerator()).getX().getStructure();
             BigInteger p = ((ExtensionField) structure).getBaseField().size();

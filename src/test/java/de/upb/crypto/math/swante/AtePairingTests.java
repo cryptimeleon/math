@@ -13,9 +13,11 @@ import de.upb.crypto.math.pairings.bn.MyBarretoNaehrigAtePairing;
 import de.upb.crypto.math.pairings.debug.DebugBilinearMap;
 import de.upb.crypto.math.pairings.generic.AbstractPairing;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
+import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroup;
 import de.upb.crypto.math.structures.ec.AbstractEllipticCurvePoint;
+import de.upb.crypto.math.structures.quotient.FiniteFieldExtension;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Assert;
@@ -26,6 +28,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static de.upb.crypto.math.swante.util.MyUtil.pln;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -33,6 +36,49 @@ import static org.junit.Assert.assertTrue;
  * My tests for the new ate pairing
  */
 public class AtePairingTests {
+    
+    
+    @Test
+    public void testAte() {
+        MyBarretoNaehrigAtePairing pairing = MyBarretoNaehrigAtePairing.createAtePairing(128);
+        BigInteger r = pairing.getG1().size();
+        Field structure = ((AbstractEllipticCurvePoint) pairing.getG1().getGenerator()).getX().getStructure();
+        BigInteger p = ((ExtensionField) structure).getBaseField().size();
+        GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
+        GroupElement p2 = pairing.getUnitRandomElementFromG2Group(), r2 = pairing.getUnitRandomElementFromG2Group();
+        GroupElement t1 = pairing.apply(p1, p2);
+        pln(t1);
+        Assert.assertEquals(r, pairing.getG2().size());
+        Assert.assertEquals(r, pairing.getGT().size());
+        testBasicProperties(pairing);
+        Assert.assertEquals(pairing.actualG2Generator.pow(p), pairing.getG2().getNeutralElement());
+        Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
+        Assert.assertEquals(pairing.actualG2Generator.pow(r), pairing.getG2().getNeutralElement());
+        Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
+        
+    }
+    
+    @Test
+    public void testHowPairingsWork() {
+        BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
+        BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(5, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
+        AbstractPairing pairing = (AbstractPairing)bnGroup.getBilinearMap();
+        BigInteger r = pairing.getG1().size();
+        Field structure = ((AbstractEllipticCurvePoint) pairing.getG1().getGenerator()).getX().getStructure();
+        ExtensionFieldElement finiteFieldElement = (ExtensionFieldElement) ((AbstractEllipticCurvePoint) pairing.getG2().getGenerator()).getX();
+        BigInteger p = ((ExtensionField) structure).getBaseField().size();
+        Assert.assertEquals(r, pairing.getG2().size());
+        Assert.assertEquals(r, pairing.getGT().size());
+        Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
+        Assert.assertEquals(pairing.getG2().getGenerator().pow(r), pairing.getG2().getNeutralElement());
+        Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
+        testBasicProperties(pairing);
+        GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
+        GroupElement p2 = pairing.getUnitRandomElementFromG2Group(), r2 = pairing.getUnitRandomElementFromG2Group();
+    
+        GroupElement t1 = pairing.apply(p1, p2);
+        pln(t1);
+    }
     
     @Test
     public void testTate() {
@@ -47,23 +93,6 @@ public class AtePairingTests {
         Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
         testBasicProperties((AbstractPairing) pairing);
     }
-    
-    @Test
-    public void testAte() {
-        MyBarretoNaehrigAtePairing pairing = MyBarretoNaehrigAtePairing.createAtePairing(128);
-        BigInteger r = pairing.getG1().size();
-        Assert.assertEquals(r, pairing.getG2().size());
-        Assert.assertEquals(r, pairing.getGT().size());
-        Field structure = ((AbstractEllipticCurvePoint) pairing.getG1().getGenerator()).getX().getStructure();
-        BigInteger p = ((ExtensionField) structure).getBaseField().size();
-        testBasicProperties(pairing);
-//        Assert.assertEquals(pairing.actualG2Generator.pow(p));
-        Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
-        Assert.assertEquals(pairing.actualG2Generator.pow(r), pairing.getG2().getNeutralElement());
-        Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
-        
-    }
-    
     
     public void testBasicProperties(AbstractPairing pairing) {
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
