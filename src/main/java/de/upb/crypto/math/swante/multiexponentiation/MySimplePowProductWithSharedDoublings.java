@@ -4,6 +4,11 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.math.BigInteger;
 
+/**
+ * Class for the simple doubling-squaring approach, without any caching.
+ * Equivalent to existing implementation using HashMaps, but simplified,
+ * using arrays.
+ */
 public class MySimplePowProductWithSharedDoublings extends MyBasicPowProduct {
     
     public MySimplePowProductWithSharedDoublings(GroupElement[] bases) {

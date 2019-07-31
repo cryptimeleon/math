@@ -5,6 +5,11 @@ import de.upb.crypto.math.swante.MySingleExponentiationAlgorithms;
 
 import java.math.BigInteger;
 
+/**
+ * Class for computing a multiexponentiation using the interleaving sliding window
+ * technique.
+ * See paper "Algorithms for multi-exponentiation" by Bodo Moeller
+ */
 public class MyInterleavingSlidingWindowPowProduct extends MyBasicPowProduct {
     
     private final GroupElement[][] smallOddPowers;

@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
+
 public class ThesisMultiExpo {
     public static void main(String[] args) {
         pln("=========================");
@@ -26,7 +27,7 @@ public class ThesisMultiExpo {
         pln(args);
         int bitLength = Integer.parseInt(args[0]);
         MyShortFormWeierstrassCurveParameters parameters = MyUtil.createBnWeierstrassCurveGroupParams(bitLength);
-        
+        pln(parameters.p, parameters.p.bitLength());
         Zp zp = new Zp(parameters.p);
         MyShortFormWeierstrassCurve curve = new MyProjectiveCurve(parameters);
         if (args[1].equals("jacobi")) {

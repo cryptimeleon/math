@@ -2,6 +2,10 @@ package de.upb.crypto.math.swante.util;
 
 import java.math.BigInteger;
 
+/**
+ * Utility class for simply storing relevant parameters for
+ * the short Weierstass curve
+ */
 public class MyShortFormWeierstrassCurveParameters {
     
     public final BigInteger p;

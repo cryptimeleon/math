@@ -8,6 +8,7 @@ import java.math.BigInteger;
 
 /**
  * Signed-window / wNAF interleaved pow product algorithm.
+ * See paper "Algorithms for multi-exponentiation" by Bodo Moeller
  */
 public class MyInterleavingSignedWindowPowProduct extends MyBasicPowProduct {
     

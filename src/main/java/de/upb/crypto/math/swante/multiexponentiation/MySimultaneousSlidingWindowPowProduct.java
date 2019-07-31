@@ -5,6 +5,10 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import java.math.BigInteger;
 import java.util.stream.IntStream;
 
+/**
+ * Computes a multiexponentiation using the simultaneous sliding window approach.
+ * See paper "Algorithms for multi-exponentiation" by Bodo Moeller
+ */
 public class MySimultaneousSlidingWindowPowProduct extends MyBasicPowProduct {
     
     private final GroupElement[] smallPowers;

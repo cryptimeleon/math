@@ -6,6 +6,13 @@ import java.math.BigInteger;
 
 import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
 
+/**
+ * This file contains an experiment of rewriting the existing main interface/class
+ * structure using generics, thereby avoiding type casts.
+ * It is not currently used and could just be deleted.
+ */
+
+
 interface Element<E extends Element> {
     Structure<E> getStructure();
     
@@ -555,7 +562,7 @@ class ExampleProjectiveCurve extends ExampleShortFormWeierstrassCurve<ExamplePro
     
 }
 
-public class MyExperiments {
+public class MyGenericsExperiments {
     public static void main(String[] args) {
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
         ExampleProjectiveCurve curve = new ExampleProjectiveCurve(parameters);

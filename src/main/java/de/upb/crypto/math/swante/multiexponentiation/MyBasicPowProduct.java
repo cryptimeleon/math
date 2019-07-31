@@ -57,7 +57,7 @@ public class MyBasicPowProduct {
     /**
      *
      * @param windowSize
-     * @return array containing all combinations of small powers of the bases, with given windowSize
+     * @return array containing all combinations of small powers of the bases, with given windowSize. Used for simultaneous multiexponentiations.
      */
     protected GroupElement[] computeAllSmallPowerProducts(int windowSize) {
         int numPrecomputedPowers = 1 << (windowSize * numBases);

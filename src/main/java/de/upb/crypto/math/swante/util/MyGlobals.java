@@ -1,5 +1,8 @@
 package de.upb.crypto.math.swante.util;
 
+/**
+ * Some global flags I used for testing certain functionalities.
+ */
 public class MyGlobals {
     
     public static boolean useCurvePointNormalizationPowOptimization = false;

@@ -14,6 +14,10 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Supplier;
 
+/**
+ * General utility class with static methods for certain bit operations,
+ * convenient outputting, and random numbers.
+ */
 public class MyUtil {
    
     /**

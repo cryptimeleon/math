@@ -4,6 +4,13 @@ import de.upb.crypto.math.swante.util.MyGlobals;
 
 import java.math.BigInteger;
 
+/**
+ * Here we implemented basic EC operations on points in projective coordinates,
+ * without using any of the existing library functionalities.
+ * This was done in order to show how much overhead existing wrapper classes
+ * produce, in particular with the (often unnecessary) mod operations that are performed
+ * in the constructor of Zn.ZnElement
+ */
 public class MyProjectiveTriple {
     public static final BigInteger zero = BigInteger.ZERO;
     public static final BigInteger one = BigInteger.ONE;
@@ -32,6 +39,9 @@ public class MyProjectiveTriple {
     }
     
     private BigInteger modp(BigInteger x) {
+        // this check does not particularly improve performance
+        // in this class because the way add/times2 are implemented
+        // most unnecessary calls of this method are already avoided
 //        if (x.compareTo(p) < 0 && x.signum() >= 0) {
 //            return x;
 //        }
@@ -99,6 +109,7 @@ public class MyProjectiveTriple {
         return new MyProjectiveTriple(p, curveParameterA, x.multiply(div).mod(p), y.multiply(div).mod(p), one);
     }
     
+    // uses the simple double-and-add algorithm
     public MyProjectiveTriple pow(BigInteger power) {
         if (power.signum() < 0)
             return pow(power.negate()).invert();

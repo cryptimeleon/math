@@ -2,6 +2,10 @@ package de.upb.crypto.math.swante.util;
 
 import java.util.ArrayList;
 
+/**
+ * Utility class for collecting measurements and computing some statistics
+ * on them.
+ */
 public class MyMetric {
     
     private ArrayList<Double> measurements = new ArrayList<>();

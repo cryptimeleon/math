@@ -38,7 +38,6 @@ public class MySingleExponentiationAlgorithms {
             result = result.square();
             if (exponent.testBit(i)) {
                 result = result.op(base);
-                powSimpleSquareAndMultiplyOpCounter++;
             }
         }
         return result;
@@ -135,7 +134,6 @@ public class MySingleExponentiationAlgorithms {
                 }
                 
                 y = y.op(smallOddPowersOfBase[smallExponent / 2]);
-                powSimpleSlidignWindowOpCounter++;
                 i = s - 1;
             } else {
                 y = y.square();
@@ -233,7 +231,6 @@ public class MySingleExponentiationAlgorithms {
                 smallPower = smallPower.inv();
             }
             A = A.op(smallPower);
-            powUsingLrSfwMethodOpCounter++;
         }
         return A;
     }
@@ -269,17 +266,11 @@ public class MySingleExponentiationAlgorithms {
         return bWithoutLeadingZeros;
     }
     
-    public static int powSimpleSquareAndMultiplyOpCounter = 0;
-    public static int powSimpleSlidignWindowOpCounter = 0;
-    public static int powSingleWNafOpCounter = 0;
-    public static int powUsingLrSfwMethodOpCounter = 0;
-    
     /**
-     * evaluate wNAF power
      * @param base original base
      * @param exponentDigits wNAF digits of the exponent (precomputed by above method)
-     * @param smallOddPowers small odd powers
-     * @return
+     * @param smallOddPowers small odd powers of the base
+     * @return base^exponent, usind the wNAF approach
      */
     public static GroupElement powUsingWNafMethod(GroupElement base, int[] exponentDigits, GroupElement[] smallOddPowers) {
         GroupElement A = base.getStructure().getNeutralElement();
@@ -294,7 +285,6 @@ public class MySingleExponentiationAlgorithms {
                     power = power.inv();
                 }
                 A = A.op(power);
-                powSingleWNafOpCounter++;
             }
         }
         return A;
