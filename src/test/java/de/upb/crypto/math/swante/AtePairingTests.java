@@ -29,6 +29,9 @@ import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * My tests for the new ate pairing
+ */
 public class AtePairingTests {
     
     @Test

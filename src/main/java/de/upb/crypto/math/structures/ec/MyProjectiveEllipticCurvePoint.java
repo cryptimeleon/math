@@ -5,8 +5,10 @@ import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.swante.util.MyGlobals;
 
-// a point on a short form weierstrass curve, in projective coordinates
-// representing the affine point (x/z, y/z)
+/**
+ * a point on a short form weierstrass curve, in projective coordinates
+ * representing the affine point (x/z, y/z)
+ */
 public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
     
     public MyProjectiveEllipticCurvePoint(WeierstrassCurve curve,
@@ -165,6 +167,8 @@ public class MyProjectiveEllipticCurvePoint extends AbstractEllipticCurvePoint {
         if (this.isNeutralElement() || p.isNeutralElement())
             return false;
         
+        // the equality check is a bit more tricky here, compared to affine
+        // coordinates, since Z has to be taken into account
         if (!this.x.mul(p.z).equals(p.x.mul(z)))
             return false;
         

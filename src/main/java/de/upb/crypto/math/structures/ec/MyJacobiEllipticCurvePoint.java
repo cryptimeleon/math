@@ -5,8 +5,10 @@ import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.swante.util.MyGlobals;
 
-// a point on a short form weierstrass curve, in Jacobian coordinates
-// representing the affine point (x/z^2, y/z^3)
+/**
+ * a point on a short form weierstrass curve, in Jacobian coordinates
+ * representing the affine point (x/z^2, y/z^3)
+ */
 public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
     
     public MyJacobiEllipticCurvePoint(WeierstrassCurve curve,
@@ -182,7 +184,9 @@ public class MyJacobiEllipticCurvePoint extends AbstractEllipticCurvePoint {
         
         if (this.isNeutralElement() || p.isNeutralElement())
             return false;
-        
+    
+        // the equality check is a bit more tricky here, compared to affine
+        // coordinates, since Z has to be taken into account
         if (!this.x.mul(p.z.square()).equals(p.x.mul(z.square())))
             return false;
         

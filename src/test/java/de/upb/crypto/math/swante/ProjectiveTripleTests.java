@@ -11,8 +11,9 @@ import java.math.BigInteger;
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
 
-
-
+/**
+ * Tests for the correctness of the MyProjectiveTriple class
+ */
 public class ProjectiveTripleTests {
     
     MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();

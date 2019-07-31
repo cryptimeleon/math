@@ -13,6 +13,9 @@ import java.util.stream.IntStream;
 
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
+/**
+ * Tests for all the multiexponentiation algorithms
+ */
 public class MultiExponentiationTests {
     
         MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();

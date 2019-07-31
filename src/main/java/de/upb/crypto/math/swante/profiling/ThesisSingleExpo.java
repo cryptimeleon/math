@@ -13,6 +13,11 @@ import static de.upb.crypto.math.swante.MySingleExponentiationAlgorithms.*;
 import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
+/**
+ * Class for testing performance of basic elliptic curve point operations via a Bash script
+ * Should be called like this:
+ * <security parameter (half of the curve's bit length)> <coordinate type (affine/projective/jacobi)> <number of different points used> <number of iterations> <window size> <used algorithm (1=normal square-and-multiply, 2=2^w-ary, 3=sliding-window, 4=wNAF)> <use caching> <used type of curve (BN/SECP)>
+ */
 public class ThesisSingleExpo {
     public static void main(String[] args) {
         pln("=========================");

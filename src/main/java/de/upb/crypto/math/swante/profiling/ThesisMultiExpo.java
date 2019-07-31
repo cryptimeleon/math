@@ -17,7 +17,11 @@ import java.math.BigInteger;
 import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
-
+/**
+ * Class for testing performance of basic elliptic curve point operations via a Bash script
+ * Should be called like this:
+ * <security parameter (half of the curve's bit length)> <coordinate type (affine/projective/jacobi)> <number of different bases> <number of iterations> <window size> <used algorithm (0=original version, 1=slow separate computation, 2=simplified original version with arrays, 3=simultaneous sliding window, 4=interleaving sliding window)> <use caching>
+ */
 public class ThesisMultiExpo {
     public static void main(String[] args) {
         pln("=========================");

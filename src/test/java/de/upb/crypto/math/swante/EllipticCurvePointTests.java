@@ -16,6 +16,9 @@ import java.util.Collection;
 
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
+/**
+ * Test correctness of the new projective and Jacobian coordinates.
+ */
 @RunWith(value = Parameterized.class)
 public class EllipticCurvePointTests {
     

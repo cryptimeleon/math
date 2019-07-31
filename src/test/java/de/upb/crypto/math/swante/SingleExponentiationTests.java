@@ -15,6 +15,9 @@ import java.util.stream.IntStream;
 import static de.upb.crypto.math.swante.MySingleExponentiationAlgorithms.*;
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
+/**
+ * correctness tests for all the single-exponentiation algorithms
+ */
 public class SingleExponentiationTests {
     
     MyShortFormWeierstrassCurveParameters parameters = MyShortFormWeierstrassCurveParameters.createSecp256r1CurveParameters();
@@ -66,7 +69,6 @@ public class SingleExponentiationTests {
                 }
             }
             pln(String.format("sliding window pow (without caching) -> %.2f ms", MyUtil.tick()));
-            powSimpleSlidignWindowOpCounter = 0;
             MyUtil.tick();
             for (int i = 0; i < numBases; i++) {
                 AbstractEllipticCurvePoint base = bases.get(i);
@@ -98,14 +100,6 @@ public class SingleExponentiationTests {
                 }
             }
             pln(String.format("signed digit fractional window pow (with caching of small base powers) -> %.2f ms", MyUtil.tick()));
-            pln("total #M, simple Squre&Multiply: " + powSimpleSquareAndMultiplyOpCounter);
-            pln("total #M, simple SlidingWindow: " + powSimpleSlidignWindowOpCounter);
-            pln("total #M, wNAF: " + powSingleWNafOpCounter);
-            pln("total #M, fractional windows: " + powUsingLrSfwMethodOpCounter);
-            powSimpleSquareAndMultiplyOpCounter = 0;
-            powSimpleSlidignWindowOpCounter = 0;
-            powSingleWNafOpCounter = 0;
-            powUsingLrSfwMethodOpCounter = 0;
         }
         
     }

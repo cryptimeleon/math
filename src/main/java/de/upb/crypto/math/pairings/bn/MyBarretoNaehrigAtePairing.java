@@ -17,7 +17,7 @@ import java.math.BigInteger;
 /**
  * Ate-pairing specific implementation of BN based pairings.
  * Just like the Tate pairing, but using t as parameter in the miller loop.
- * Also, since G2 must be limited, we add a special generator that will generate
+ * Also, since G2 is changed, we add a special generator that will generate
  * the desired subgroup from the original G2 of the Tate pairing.
  * @author sscholz
  */

@@ -15,6 +15,11 @@ import java.math.BigInteger;
 
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
+/**
+ * Class for testing performance of basic field operations via a Bash script
+ * Should be called like this:
+ * <operation index (1=add,2=sub,3=sqaure,4=mul,5=inv)> <w such that 2^w is the bit length of the exponent> <number of different values used> <number of iterations>
+ */
 public class ThesisBasicFieldOperations {
     public static void main(String[] args) {
         pln("=========================");

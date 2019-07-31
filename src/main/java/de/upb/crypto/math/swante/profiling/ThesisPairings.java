@@ -9,6 +9,11 @@ import de.upb.crypto.math.pairings.generic.AbstractPairing;
 import static de.upb.crypto.math.swante.util.MyUtil.myAssert;
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
+/**
+ * Class for testing performance of basic elliptic curve point operations via a Bash script
+ * Should be called like this:
+ * <security parameter (half of the curve's bit length)> <number of different points used> <number of iterations> <type of pairing (Tate/Ate)>
+ */
 public class ThesisPairings {
     public static void main(String[] args) {
         pln("=========================");

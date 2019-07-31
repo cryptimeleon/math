@@ -8,6 +8,11 @@ import de.upb.crypto.math.swante.util.MyUtil;
 
 import static de.upb.crypto.math.swante.util.MyUtil.pln;
 
+/**
+ * Class for testing performance of basic elliptic curve point operations via a Bash script
+ * Should be called like this:
+ * <security parameter (half of the curve's bit length)> <coordinate type (affine/projective/jacobi)> <number of different points used> <number of iterations> <used operation (1=add, 2=double, 3=mixed addition)>
+ */
 public class ThesisCoordTypeComparison {
     public static void main(String[] args) {
         pln("=========================");
