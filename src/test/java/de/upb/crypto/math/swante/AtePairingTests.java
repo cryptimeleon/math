@@ -41,42 +41,10 @@ public class AtePairingTests {
     @Test
     public void testAte() {
         MyBarretoNaehrigAtePairing pairing = MyBarretoNaehrigAtePairing.createAtePairing(128);
-        BigInteger r = pairing.getG1().size();
-        Field structure = ((AbstractEllipticCurvePoint) pairing.getG1().getGenerator()).getX().getStructure();
-        BigInteger p = ((ExtensionField) structure).getBaseField().size();
-        GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
-        GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
-        GroupElement t1 = pairing.apply(p1, p2);
-        pln(t1);
-        Assert.assertEquals(r, pairing.getG2().size());
-        Assert.assertEquals(r, pairing.getGT().size());
+//        BigInteger r = pairing.getG1().size();
+//        Field structure = ((AbstractEllipticCurvePoint) pairing.getG1().getGenerator()).getX().getStructure();
+//        BigInteger p = ((ExtensionField) structure).getBaseField().size();
         testBasicProperties(pairing);
-        Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
-        Assert.assertEquals(pairing.getG2().getGenerator().pow(r), pairing.getG2().getNeutralElement());
-        Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
-        
-    }
-    
-    @Test
-    public void testHowPairingsWork() {
-        BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
-        BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(5, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
-        AbstractPairing pairing = (AbstractPairing)bnGroup.getBilinearMap();
-        BigInteger r = pairing.getG1().size();
-        Field structure = ((AbstractEllipticCurvePoint) pairing.getG1().getGenerator()).getX().getStructure();
-        ExtensionFieldElement finiteFieldElement = (ExtensionFieldElement) ((AbstractEllipticCurvePoint) pairing.getG2().getGenerator()).getX();
-        BigInteger p = ((ExtensionField) structure).getBaseField().size();
-        Assert.assertEquals(r, pairing.getG2().size());
-        Assert.assertEquals(r, pairing.getGT().size());
-        Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
-        Assert.assertEquals(pairing.getG2().getGenerator().pow(r), pairing.getG2().getNeutralElement());
-        Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
-        testBasicProperties(pairing);
-        GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
-        GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
-    
-        GroupElement t1 = pairing.apply(p1, p2);
-        pln(t1);
     }
     
     @Test
@@ -84,16 +52,18 @@ public class AtePairingTests {
         BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
         BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
         BilinearMap pairing = bnGroup.getBilinearMap();
+        testBasicProperties((AbstractPairing) pairing);
+    }
+    
+    public void testBasicProperties(AbstractPairing pairing) {
         BigInteger r = pairing.getG1().size();
         Assert.assertEquals(r, pairing.getG2().size());
         Assert.assertEquals(r, pairing.getGT().size());
         Assert.assertEquals(pairing.getG1().getGenerator().pow(r), pairing.getG1().getNeutralElement());
         Assert.assertEquals(pairing.getG2().getGenerator().pow(r), pairing.getG2().getNeutralElement());
         Assert.assertEquals(pairing.getGT().getGenerator().pow(r), pairing.getGT().getNeutralElement());
-        testBasicProperties((AbstractPairing) pairing);
-    }
-    
-    public void testBasicProperties(AbstractPairing pairing) {
+        
+        
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
         GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();;
         

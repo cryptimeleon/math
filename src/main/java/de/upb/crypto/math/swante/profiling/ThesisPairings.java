@@ -18,7 +18,7 @@ public class ThesisPairings {
     public static void main(String[] args) {
         pln("=========================");
         if (args.length == 0) {
-            args = "128 1 5 Tate".split(" ");
+            args = "128 1 5 Ate".split(" ");
         }
         int bitLength = Integer.parseInt(args[0]);
         AbstractPairing pairing;
