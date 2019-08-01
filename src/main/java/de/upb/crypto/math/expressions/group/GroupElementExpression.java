@@ -1,42 +1,47 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.exponent.ExponentEmptyExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
-import de.upb.crypto.math.expressions.exponent.ExponentLiteralExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.interfaces.structures.FutureGroupElement;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
-import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * {@link Expression} that evaluates to a {@link GroupElement}.
  */
 public abstract class GroupElementExpression implements Expression {
     /**
-     * Default evaluator for this expression.
+     * This expression evaluates to an element of this group.
      */
-    protected final GroupElementExpressionEvaluator evaluator;
+    protected final Group group;
 
     public GroupElementExpression() {this(null);}
 
-    public GroupElementExpression(GroupElementExpressionEvaluator evaluator) {
-        this.evaluator = evaluator;
+    public GroupElementExpression(Group group) {
+        this.group = group;
     }
 
     public GroupElement evaluate() {
-        return evaluate(evaluator);
+        return evaluate(group == null ? null : group.getExpressionEvaluator());
     }
 
     public GroupElement evaluate(GroupElementExpressionEvaluator evaluator) {
         if (evaluator == null)
-            throw new IllegalArgumentException("Trying to evaluate expression that has no evaluator attached to it");
+            throw new IllegalArgumentException("Trying to evaluate expression that has no known group type attached to it");
         return evaluator.evaluate(this);
+    }
+
+    public GroupElement evaluate(Function<String, Expression> substitutionMap) {
+        return substitute(substitutionMap).evaluate(); //TODO implement more efficiently. Needs to be done for BooleanExpr and ExponentExpr, too.
     }
 
     /**
@@ -55,7 +60,7 @@ public abstract class GroupElementExpression implements Expression {
         return new GroupOpExpr(this, rhs);
     }
     public GroupElementExpression op(GroupElement rhs) {
-        return new GroupOpExpr(this, new GroupElementLiteralExpr(rhs));
+        return new GroupOpExpr(this, new GroupElementConstantExpr(rhs));
     }
     public GroupElementExpression op(String rhs) {
         return new GroupOpExpr(this, new GroupVariableExpr(rhs));
@@ -65,13 +70,13 @@ public abstract class GroupElementExpression implements Expression {
         return new GroupPowExpr(this, exponent);
     }
     public GroupElementExpression pow(BigInteger exponent) {
-        return new GroupPowExpr(this, new ExponentLiteralExpr(exponent));
+        return pow(new ExponentConstantExpr(exponent));
     }
     public GroupElementExpression pow(Zn.ZnElement exponent) {
-        return new GroupPowExpr(this, new ExponentLiteralExpr(exponent.getInteger()));
+        return pow(new ExponentConstantExpr(exponent.getInteger()));
     }
     public GroupElementExpression pow(String exponent) {
-        return new GroupPowExpr(this, new ExponentVariableExpr(exponent));
+        return pow(new ExponentVariableExpr(exponent));
     }
 
     public GroupElementExpression opPow(GroupElementExpression rhs, ExponentExpr exponentOfRhs) {
@@ -79,11 +84,11 @@ public abstract class GroupElementExpression implements Expression {
     }
 
     public GroupElementExpression opPow(GroupElementExpression rhs, BigInteger exponentOfRhs) {
-        return op(rhs.pow(new ExponentLiteralExpr(exponentOfRhs)));
+        return op(rhs.pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
     public GroupElementExpression opPow(GroupElementExpression rhs, Zn.ZnElement exponentOfRhs) {
-        return op(rhs.pow(new ExponentLiteralExpr(exponentOfRhs)));
+        return op(rhs.pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
     public GroupElementExpression opPow(GroupElement rhs, ExponentExpr exponentOfRhs) {
@@ -91,11 +96,11 @@ public abstract class GroupElementExpression implements Expression {
     }
 
     public GroupElementExpression opPow(GroupElement rhs, BigInteger exponentOfRhs) {
-        return op(rhs.expr().pow(new ExponentLiteralExpr(exponentOfRhs)));
+        return op(rhs.expr().pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
     public GroupElementExpression opPow(GroupElement rhs, Zn.ZnElement exponentOfRhs) {
-        return op(rhs.expr().pow(new ExponentLiteralExpr(exponentOfRhs)));
+        return op(rhs.expr().pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
     public GroupElementExpression inv() {
@@ -103,15 +108,34 @@ public abstract class GroupElementExpression implements Expression {
     }
 
     @Override
-    public abstract GroupElementExpression substitute(Map<String, ? extends Expression> substitutions);
+    public abstract GroupElementExpression substitute(Function<String, Expression> substitutionMap);
 
     public GroupElementExpression substitute(String variable, Expression substitution) {
-        Map<String, Expression> map = new HashMap<>();
-        map.put(variable, substitution);
-        return substitute(map);
+        return substitute(name -> name.equals(variable) ? substitution : null);
     }
 
-    public GroupElementExpressionEvaluator getDefaultEvaluator() {
-        return evaluator;
+    /**
+     * Returns the group s.t. this expression evaluates to an element of this group, or null if group is unknown
+     * (e.g., if expression consists only of variables)
+     */
+    public Group getGroup() {
+        return group;
     }
+
+    @Override
+    public GroupElementExpression precompute() {
+        return getGroup().getExpressionEvaluator().precompute(this);
+    }
+
+    /**
+     * Outputs an equivalent expression that's of the form \prod g_i^{x_i}
+     */
+    /*public GroupElementExpression linearize() {
+        return linearize(false, new ExponentEmptyExpr());
+    }*/
+
+    /**
+     * Returns a linearized expression equivalent to this^{(-1)^inverted exponent}
+     */
+    //protected abstract GroupElementExpression linearize(boolean inverted, ExponentExpr exponent);
 }

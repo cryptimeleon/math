@@ -1,5 +1,6 @@
 package de.upb.crypto.math.structures.zn;
 
+import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.interfaces.structures.Element;
@@ -71,6 +72,11 @@ public class Zn implements Ring {
     @Override
     public ZnElement getUniformlyRandomElement() throws UnsupportedOperationException {
         return createZnElement(RandomGeneratorSupplier.getRnd().getRandomElement(n));
+    }
+
+    @Override
+    public ZnElement getUniformlyRandomUnit() throws UnsupportedOperationException {
+        return (ZnElement) Ring.super.getUniformlyRandomUnit();
     }
 
     @Override
@@ -207,6 +213,9 @@ public class Zn implements Ring {
             return accumulator;
         }
 
+        public ExponentConstantExpr asExponentExpression() {
+            return new ExponentConstantExpr(this);
+        }
     }
 
     @Override

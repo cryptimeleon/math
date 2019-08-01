@@ -5,12 +5,13 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class GroupOpExpr extends GroupElementExpression {
     protected GroupElementExpression lhs, rhs;
 
     public GroupOpExpr(GroupElementExpression lhs, GroupElementExpression rhs) {
-        super(lhs.getDefaultEvaluator() != null ? lhs.getDefaultEvaluator() : rhs.getDefaultEvaluator());
+        super(lhs.getGroup() != null ? lhs.getGroup() : rhs.getGroup());
         this.lhs = lhs;
         this.rhs = rhs;
     }
@@ -21,8 +22,8 @@ public class GroupOpExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupOpExpr substitute(Map<String, ? extends Expression> substitutions) {
-        return new GroupOpExpr(lhs.substitute(substitutions), rhs.substitute(substitutions));
+    public GroupOpExpr substitute(Function<String, Expression> substitutionMap) {
+        return new GroupOpExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
     }
 
     public GroupElementExpression getLhs() {

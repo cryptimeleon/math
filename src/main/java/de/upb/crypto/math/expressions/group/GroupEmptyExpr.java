@@ -10,16 +10,9 @@ import de.upb.crypto.math.structures.zn.Zn;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class GroupEmptyExpr extends GroupElementExpression {
-
-    public GroupEmptyExpr(Group group) {
-        super(group.getExpressionEvaluator());
-    }
-
-    public GroupEmptyExpr(GroupElementExpressionEvaluator evaluator) {
-        super(evaluator);
-    }
 
     @Override
     public GroupElement evaluateNaive() {
@@ -33,7 +26,7 @@ public class GroupEmptyExpr extends GroupElementExpression {
 
     @Override
     public GroupElementExpression op(GroupElement rhs) {
-        return op(new GroupElementLiteralExpr(rhs));
+        return op(new GroupElementConstantExpr(rhs));
     }
 
     @Override
@@ -57,7 +50,7 @@ public class GroupEmptyExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupEmptyExpr substitute(Map<String, ? extends Expression> substitutions) {
+    public GroupEmptyExpr substitute(Function<String, Expression> substitutionMap) {
         return this;
     }
 

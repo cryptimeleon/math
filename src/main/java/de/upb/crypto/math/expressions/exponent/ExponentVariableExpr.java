@@ -9,6 +9,7 @@ import de.upb.crypto.math.structures.zn.Zn;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
     protected final String name;
@@ -22,16 +23,19 @@ public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
     }
 
     @Override
-    public Zn.ZnElement evaluateZn(Zn zn) {
+    public Zn.ZnElement evaluate(Zn zn) {
         throw new EvaluationException(this, "Variable cannot be evaluated");
     }
 
     @Override
-    public ExponentExpr substitute(Map<String, ? extends Expression> substitutions) {
-        if (substitutions.containsKey(name))
-            return (ExponentExpr) substitutions.get(name);
-        else
-            return this;
+    public ExponentExpr substitute(Function<String, Expression> substitutionMap) {
+        Expression result = substitutionMap.apply(name);
+        return result == null ? this : (ExponentExpr) result;
+    }
+
+    @Override
+    public ExponentExpr precompute() {
+        return this;
     }
 
     @Override

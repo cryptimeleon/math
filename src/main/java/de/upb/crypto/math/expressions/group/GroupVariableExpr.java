@@ -8,6 +8,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class GroupVariableExpr extends GroupElementExpression implements VariableExpression {
     protected final String name;
@@ -27,11 +28,9 @@ public class GroupVariableExpr extends GroupElementExpression implements Variabl
     }
 
     @Override
-    public GroupElementExpression substitute(Map<String, ? extends Expression> substitutions) {
-        if (substitutions.containsKey(name))
-            return (GroupElementExpression) substitutions.get(name);
-        else
-            return this;
+    public GroupElementExpression substitute(Function<String, Expression> substitutionMap) {
+        Expression result = substitutionMap.apply(name);
+        return result == null ? this : (GroupElementExpression) result;
     }
 
     @Override

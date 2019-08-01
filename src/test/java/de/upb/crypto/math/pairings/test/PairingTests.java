@@ -98,7 +98,7 @@ public class PairingTests {
         //Compute result using expression TODO
         GroupElementExpression expr = pairing.getGT().expr();
         for (int i = 0; i < g.length; i++) {
-            expr.op(pairing.expr(g[i], h[i]).pow(exp[i]));
+            expr = expr.op(pairing.expr(g[i], h[i]).pow(exp[i]));
         }
         GroupElement resultExpr = expr.evaluate();
 
@@ -126,7 +126,7 @@ public class PairingTests {
         //Try nested expressions: e(g[i] * g[i+1], h[i])^2
         expr = pairing.getGT().expr();
         for (int i = 0; i + 1 < g.length; i += 2) {
-            expr.opPow(pairing.expr(g[i].expr().op(g[i + 1]).pow(exp[i]), h[i].expr()), BigInteger.valueOf(2));
+            expr = expr.opPow(pairing.expr(g[i].expr().op(g[i + 1]).pow(exp[i]), h[i].expr()), BigInteger.valueOf(2));
         }
         resultExpr = expr.evaluate();
         naive = pairing.getGT().getNeutralElement();

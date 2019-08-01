@@ -6,13 +6,14 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class PairingExpr extends GroupElementExpression {
     protected GroupElementExpression lhs, rhs;
     protected BilinearMap map;
 
     public PairingExpr(BilinearMap map, GroupElementExpression lhs, GroupElementExpression rhs) {
-        super(lhs.getDefaultEvaluator());
+        super(map.getGT());
         this.map = map;
         this.lhs = lhs;
         this.rhs = rhs;
@@ -24,8 +25,8 @@ public class PairingExpr extends GroupElementExpression {
     }
 
     @Override
-    public PairingExpr substitute(Map<String, ? extends Expression> substitutions) {
-        return new PairingExpr(map, lhs.substitute(substitutions), rhs.substitute(substitutions));
+    public PairingExpr substitute(Function<String, Expression> substitutionMap) {
+        return new PairingExpr(map, lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
     }
 
     public BilinearMap getMap() {

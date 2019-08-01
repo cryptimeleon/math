@@ -1,5 +1,6 @@
 package de.upb.crypto.math.expressions.group;
 
+import de.upb.crypto.math.expressions.bool.BooleanExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 public class NaiveGroupElementExpressionEvaluator implements GroupElementExpressionEvaluator {
@@ -16,6 +17,11 @@ public class NaiveGroupElementExpressionEvaluator implements GroupElementExpress
 
     @Override
     public GroupElementExpression precompute(GroupElementExpression expr) {
+        return expr;
+    }
+
+    @Override
+    public BooleanExpression precompute(BooleanExpression expr) {
         return expr;
     }
 }

@@ -4,27 +4,33 @@ import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class GroupPowExpr extends GroupElementExpression {
     protected GroupElementExpression base;
     protected ExponentExpr exponent;
 
     public GroupPowExpr(GroupElementExpression base, ExponentExpr exponent) {
-        super(base.getDefaultEvaluator());
+        super(base.getGroup());
         this.base = base;
         this.exponent = exponent;
     }
 
     @Override
     public GroupElement evaluateNaive() {
-        return base.evaluateNaive().pow(exponent.evaluate());
+        BigInteger groupOrder = getGroup().size();
+        if (groupOrder == null)
+            return base.evaluateNaive().pow(exponent.evaluate());
+        else
+            return base.evaluateNaive().pow(exponent.evaluate(getGroup().getZn()));
     }
 
     @Override
-    public GroupPowExpr substitute(Map<String, ? extends Expression> substitutions) {
-        return new GroupPowExpr(base.substitute(substitutions), exponent.substitute(substitutions));
+    public GroupPowExpr substitute(Function<String, Expression> substitutionMap) {
+        return new GroupPowExpr(base.substitute(substitutionMap), exponent.substitute(substitutionMap));
     }
 
     @Override
@@ -32,5 +38,18 @@ public class GroupPowExpr extends GroupElementExpression {
         visitor.accept(this);
         base.treeWalk(visitor);
         exponent.treeWalk(visitor);
+    }
+
+    public GroupElementExpression getBase() {
+        return base;
+    }
+
+    public ExponentExpr getExponent() {
+        return exponent;
+    }
+
+    @Override
+    public GroupElementExpression pow(ExponentExpr exponent) {
+        return new GroupPowExpr(base, this.exponent.mul(exponent));
     }
 }

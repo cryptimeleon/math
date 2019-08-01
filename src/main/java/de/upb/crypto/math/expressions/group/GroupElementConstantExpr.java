@@ -1,17 +1,20 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-public class GroupElementLiteralExpr extends GroupElementExpression {
-    protected GroupElement value;
+public class GroupElementConstantExpr extends GroupElementExpression {
+    protected final GroupElement value;
 
-    public GroupElementLiteralExpr(@Nonnull GroupElement value) {
-        super(value.getStructure().getExpressionEvaluator());
+    public GroupElementConstantExpr(@Nonnull GroupElement value) {
+        super(value.getStructure());
         this.value = value;
     }
 
@@ -21,7 +24,7 @@ public class GroupElementLiteralExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElementLiteralExpr substitute(Map<String, ? extends Expression> substitutions) {
+    public GroupElementConstantExpr substitute(Function<String, Expression> substitutionMap) {
         return this;
     }
 

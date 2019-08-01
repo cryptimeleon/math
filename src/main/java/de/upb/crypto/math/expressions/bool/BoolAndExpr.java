@@ -4,6 +4,7 @@ import de.upb.crypto.math.expressions.Expression;
 
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class BoolAndExpr implements BooleanExpression {
     protected BooleanExpression lhs, rhs;
@@ -19,8 +20,13 @@ public class BoolAndExpr implements BooleanExpression {
     }
 
     @Override
-    public BoolAndExpr substitute(Map<String, ? extends Expression> substitutions) {
-        return new BoolAndExpr(lhs.substitute(substitutions), rhs.substitute(substitutions));
+    public BoolAndExpr substitute(Function<String, Expression> substitutionMap) {
+        return new BoolAndExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
+    }
+
+    @Override
+    public BooleanExpression precompute() {
+        return new BoolAndExpr(lhs.precompute(), rhs.precompute()); //TODO better implementation should expose multiple "and" expressions to relevant groups
     }
 
     @Override

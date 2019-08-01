@@ -4,6 +4,7 @@ import de.upb.crypto.math.expressions.Expression;
 
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class BoolOrExpr implements BooleanExpression {
     BooleanExpression lhs, rhs;
@@ -19,8 +20,13 @@ public class BoolOrExpr implements BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Map<String, ? extends Expression> substitutions) {
-        return new BoolOrExpr(lhs.substitute(substitutions), rhs.substitute(substitutions));
+    public BooleanExpression substitute(Function<String, Expression> substitutionMap) {
+        return new BoolOrExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
+    }
+
+    @Override
+    public BooleanExpression precompute() {
+        return new BoolOrExpr(lhs.precompute(), rhs.precompute());
     }
 
     @Override

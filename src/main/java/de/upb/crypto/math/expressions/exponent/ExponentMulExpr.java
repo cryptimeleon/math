@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ExponentSumExpr implements ExponentExpr {
-    protected final ExponentExpr lhs, rhs;
+public class ExponentMulExpr implements ExponentExpr {
+    protected ExponentExpr lhs, rhs;
 
-    public ExponentSumExpr(ExponentExpr lhs, ExponentExpr rhs) {
+    public ExponentMulExpr(ExponentExpr lhs, ExponentExpr rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
     }
@@ -26,22 +26,17 @@ public class ExponentSumExpr implements ExponentExpr {
 
     @Override
     public BigInteger evaluate() {
-        return lhs.evaluate().add(rhs.evaluate());
+        return lhs.evaluate().multiply(rhs.evaluate());
     }
 
     @Override
     public Zn.ZnElement evaluate(Zn zn) {
-        return lhs.evaluate(zn).add(rhs.evaluate(zn));
+        return lhs.evaluate(zn).mul(rhs.evaluate(zn));
     }
 
     @Override
-    public ExponentSumExpr substitute(Function<String, Expression> substitutionMap) {
-        return new ExponentSumExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
-    public ExponentExpr precompute() {
-        return new ExponentSumExpr(lhs.precompute(), rhs.precompute());
+    public ExponentExpr substitute(Function<String, Expression> substitutionMap) {
+        return new ExponentMulExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
     }
 
     @Override
@@ -49,5 +44,10 @@ public class ExponentSumExpr implements ExponentExpr {
         visitor.accept(this);
         lhs.treeWalk(visitor);
         rhs.treeWalk(visitor);
+    }
+
+    @Override
+    public ExponentExpr precompute() {
+        return new ExponentMulExpr(lhs.precompute(), rhs.precompute());
     }
 }

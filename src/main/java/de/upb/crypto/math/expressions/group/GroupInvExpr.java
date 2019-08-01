@@ -7,12 +7,13 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class GroupInvExpr extends GroupElementExpression {
     protected GroupElementExpression base;
 
     public GroupInvExpr(@Nonnull GroupElementExpression base) {
-        super(base.getDefaultEvaluator());
+        super(base.getGroup());
         this.base = base;
     }
 
@@ -22,8 +23,8 @@ public class GroupInvExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupInvExpr substitute(Map<String, ? extends Expression> substitutions) {
-        return new GroupInvExpr(base.substitute(substitutions));
+    public GroupInvExpr substitute(Function<String, Expression> substitutionMap) {
+        return new GroupInvExpr(base.substitute(substitutionMap));
     }
 
     public GroupElementExpression getBase() {
@@ -34,5 +35,10 @@ public class GroupInvExpr extends GroupElementExpression {
     public void treeWalk(Consumer<Expression> visitor) {
         visitor.accept(this);
         visitor.accept(base);
+    }
+
+    @Override
+    public GroupElementExpression inv() { //avoid double-inversion
+        return base;
     }
 }

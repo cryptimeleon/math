@@ -1,6 +1,6 @@
 package de.upb.crypto.math.interfaces.structures;
 
-import de.upb.crypto.math.expressions.group.GroupElementLiteralExpr;
+import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
@@ -34,7 +34,9 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     /**
      * Calculates the result of applying the group operation k times.
      * i.e. it computes k*this (additive group) or this^k (multiplicative group).
-     * For negative exponents k, computes this.inv().pow(-k)
+     * For negative exponents k, computes this.inv().pow(-k).
+     *
+     * Implementations wanting to override pow() behavior should override this method instead of the ZnELement and long overloads.
      */
     default GroupElement pow(BigInteger k) { //default implementation: square&multiply algorithm
         if (k.signum() < 0)
@@ -80,7 +82,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     /**
      * Returns a {@link de.upb.crypto.math.expressions.group.GroupElementExpression} containing exactly this group element.
      */
-    default GroupElementLiteralExpr expr() {
-        return new GroupElementLiteralExpr(this);
+    default GroupElementConstantExpr expr() {
+        return new GroupElementConstantExpr(this);
     }
 }

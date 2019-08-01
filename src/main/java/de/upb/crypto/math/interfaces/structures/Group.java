@@ -1,13 +1,14 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
-import de.upb.crypto.math.expressions.group.GroupElementLiteralExpr;
 import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
 import de.upb.crypto.math.expressions.group.NaiveGroupElementExpressionEvaluator;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
+import de.upb.crypto.math.structures.zn.Zn;
 
 import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -66,7 +67,7 @@ public interface Group extends Structure, RepresentationRestorer {
      * Returns a GroupElementExpression containing the neutral group element.
      */
     default GroupEmptyExpr expr() {
-        return new GroupEmptyExpr(this);
+        return new GroupEmptyExpr();
     }
 
     @Override
@@ -84,6 +85,31 @@ public interface Group extends Structure, RepresentationRestorer {
      */
     default GroupElementExpressionEvaluator getExpressionEvaluator() {
         return new NaiveGroupElementExpressionEvaluator();
+    }
+
+    /**
+     * Returns Zn, where n = size()
+     */
+    default Zn getZn() {
+        BigInteger size = size();
+        if (size == null)
+            throw new IllegalArgumentException("Infinitely large group - cannot output corresponding Zn");
+
+        return new Zn(size);
+    }
+
+    /**
+     * Returns a random integer between 0 and size()-1.
+     */
+    default Zn.ZnElement getUniformlyRandomExponent() {
+        return getZn().getUniformlyRandomElement();
+    }
+
+    /**
+     * Returns a random integer invertible mod size().
+     */
+    default Zn.ZnElement getUniformlyRandomUnitExponent() {
+        return getZn().getUniformlyRandomUnit();
     }
 }
 

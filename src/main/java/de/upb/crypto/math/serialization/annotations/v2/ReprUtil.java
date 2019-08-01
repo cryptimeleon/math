@@ -249,6 +249,17 @@ public class ReprUtil {
      * This is done statically, i.e. with static type information.
      */
     protected static RepresentationHandler getHandler(Type type, String restorerString) {
+        if (restorerString == null || restorerString.trim().length() == 0) //the distinction is basically made because each method recursively calls itself and we want consistent behavior depending on whether or not a restorer String was originally given (as opposed to a given String like "[] -> ", which eventually is broken down into an empty String but should be handled as a syntax error.)
+            return getHandlerWithoutRestorerString(type);
+        else
+            return getHandlerWithRestorerString(type, restorerString);
+    }
+
+    /**
+     * Derives the ReputationHandler for a certain Type (and restorerString).
+     * This is done statically, i.e. with static type information.
+     */
+    protected static RepresentationHandler getHandlerWithRestorerString(Type type, String restorerString) {
         if (StandaloneRepresentationHandler.canHandle(type))
             return new StandaloneRepresentationHandler((Class) type);
 
@@ -260,24 +271,56 @@ public class ReprUtil {
 
         if (ListAndSetRepresentationHandler.canHandle(type) && trimmedString.startsWith("[") && trimmedString.endsWith("]")) {
             Type elementType = ListAndSetRepresentationHandler.getElementType(type);
-            return new ListAndSetRepresentationHandler(getHandler(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
+            return new ListAndSetRepresentationHandler(getHandlerWithRestorerString(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
         }
 
         if (ArrayRepresentationHandler.canHandle(type) && trimmedString.startsWith("[") && trimmedString.endsWith("]")) {
             Type elementType = ArrayRepresentationHandler.getTypeOfElements(type);
-            return new ArrayRepresentationHandler(getHandler(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
+            return new ArrayRepresentationHandler(getHandlerWithRestorerString(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
         }
 
         int mapArrowIndex = findMapArrow(trimmedString);
         if (MapRepresentationHandler.canHandle(type) && mapArrowIndex != -1) {
             Type keyType = MapRepresentationHandler.getKeyType(type);
             Type valueType = MapRepresentationHandler.getValueType(type);
-            return new MapRepresentationHandler(getHandler(keyType, trimmedString.substring(0, mapArrowIndex)),
-                    getHandler(valueType, trimmedString.substring(mapArrowIndex+2)),
+            return new MapRepresentationHandler(getHandlerWithRestorerString(keyType, trimmedString.substring(0, mapArrowIndex)),
+                    getHandlerWithRestorerString(valueType, trimmedString.substring(mapArrowIndex+2)),
                     type);
         }
 
         throw new IllegalArgumentException("Don't know how to handle type "+type.getTypeName()+" using restorer String \""+restorerString+"\"");
+    }
+
+
+
+    /**
+     * Derives the ReputationHandler for a certain Type (for empty restorer string).
+     * This is done statically, i.e. with static type information.
+     */
+    protected static RepresentationHandler getHandlerWithoutRestorerString(Type type) {
+        if (StandaloneRepresentationHandler.canHandle(type))
+            return new StandaloneRepresentationHandler((Class) type);
+
+        if (DependentRepresentationHandler.canHandle(type))
+            return new DependentRepresentationHandler("", type);
+
+        if (ListAndSetRepresentationHandler.canHandle(type)) {
+            Type elementType = ListAndSetRepresentationHandler.getElementType(type);
+            return new ListAndSetRepresentationHandler(getHandlerWithoutRestorerString(elementType), type);
+        }
+
+        if (ArrayRepresentationHandler.canHandle(type)) {
+            Type elementType = ArrayRepresentationHandler.getTypeOfElements(type);
+            return new ArrayRepresentationHandler(getHandlerWithoutRestorerString(elementType), type);
+        }
+
+        if (MapRepresentationHandler.canHandle(type)) {
+            Type keyType = MapRepresentationHandler.getKeyType(type);
+            Type valueType = MapRepresentationHandler.getValueType(type);
+            return new MapRepresentationHandler(getHandlerWithoutRestorerString(keyType), getHandlerWithoutRestorerString(valueType), type);
+        }
+
+        throw new IllegalArgumentException("Don't know how to handle type "+type.getTypeName()+" using empty restorer String (you can add one within the @Represented annotation)");
     }
 
     /**
