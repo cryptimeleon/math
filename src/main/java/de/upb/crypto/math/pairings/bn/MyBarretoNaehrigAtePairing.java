@@ -59,7 +59,7 @@ public class MyBarretoNaehrigAtePairing extends AbstractPairing {
             coefficients[i] = extField.getZeroElement();
         }
         /* lifting (transforming into higher level extension field)
-        needs only to be done for the elements from F_p, thus only Q
+        needs only to be done for the elements from F_p, thus only Q.
         P, line[0] and line[1] are already in that "lifted" level
          */
         if (line[0].isZero()) { // vertical line
