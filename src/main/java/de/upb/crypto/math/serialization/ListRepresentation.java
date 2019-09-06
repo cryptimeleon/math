@@ -39,6 +39,10 @@ public class ListRepresentation extends Representation implements Iterable<Repre
         list.add(value);
     }
 
+    public void add(Representation value) {
+        put(value);
+    }
+
     public List<Representation> getList() {
         return Collections.unmodifiableList(list);
     }
