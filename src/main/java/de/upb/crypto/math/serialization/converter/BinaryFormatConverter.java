@@ -294,7 +294,7 @@ public class BinaryFormatConverter extends Converter<byte[]> {
 
         public String getStringFromConstants(int ptr) {
             if (ptr < 0)
-                return well_known_strings.get(-ptr+1);
+                return well_known_strings.get(-(ptr+1));
 
             return new String(data, ptr+constantsOffset+4, byteArrayToInt(data, ptr+constantsOffset), StandardCharsets.UTF_8);
         }
