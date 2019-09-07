@@ -36,8 +36,8 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Parameterized.class)
 public class GroupTests extends StructureTests {
-    private Group group;
-    private Supplier<GroupElement> elementSupplier;
+    protected Group group;
+    protected Supplier<GroupElement> elementSupplier;
 
     public GroupTests(TestParams params) {
         this.group = params.group;

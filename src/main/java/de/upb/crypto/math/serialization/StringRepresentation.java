@@ -7,7 +7,7 @@ public class StringRepresentation extends Representation {
     /**
      * Instantiates an empty String representation.
      */
-    public StringRepresentation() { //needed for Java serialization
+    private StringRepresentation() { //needed for Java serialization
 
     }
 

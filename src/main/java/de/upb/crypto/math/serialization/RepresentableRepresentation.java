@@ -1,5 +1,7 @@
 package de.upb.crypto.math.serialization;
 
+import de.upb.crypto.math.serialization.converter.JSONConverter;
+
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -89,5 +91,10 @@ public class RepresentableRepresentation extends Representation {
         if (representedTypeName == null) {
             return other.representedTypeName == null;
         } else return representedTypeName.equals(other.representedTypeName);
+    }
+
+    @Override
+    public String toString() {
+        return new JSONConverter().serialize(this);
     }
 }
