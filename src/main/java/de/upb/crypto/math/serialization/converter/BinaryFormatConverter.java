@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class CompressingConverter extends Converter<byte[]> {
+public class BinaryFormatConverter extends Converter<byte[]> {
     protected static final byte TYPE_OBJ = 0;
     protected static final byte TYPE_INT = 1;
     protected static final byte TYPE_INT_INLINE = 2;
@@ -25,7 +25,7 @@ public class CompressingConverter extends Converter<byte[]> {
     protected HashMap<String, Integer> well_known_string_indices = new HashMap<>();
     protected ArrayList<String> well_known_strings = new ArrayList<>();
 
-    public CompressingConverter() {
+    public BinaryFormatConverter() {
 
     }
 
@@ -34,7 +34,7 @@ public class CompressingConverter extends Converter<byte[]> {
      * (making it more shorter by omitting Strings from the byte[] result of serialization).
      * For serialization and deserialization, the lists passed here must be equal (in particular, the order of elements is important).
      */
-    public CompressingConverter(List<String> well_known_strings, List<Class> well_known_classes) {
+    public BinaryFormatConverter(List<String> well_known_strings, List<Class> well_known_classes) {
         int i=0;
         for (String str : well_known_strings) {
             this.well_known_string_indices.put(str, i++);

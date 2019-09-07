@@ -117,7 +117,7 @@ public class ConverterTest {
     public static Collection<Converter> getParams() {
         ArrayList<Converter> list = new ArrayList<>();
         list.add(new JSONConverter());
-        list.add(new CompressingConverter());
+        list.add(new BinaryFormatConverter());
         return list;
     }
 }
