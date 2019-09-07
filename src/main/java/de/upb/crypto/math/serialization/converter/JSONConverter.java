@@ -21,14 +21,14 @@ import java.util.Map.Entry;
  * (This allows this Converter to be used for, e.g,. HashRepresentationIntoStructure, and similar tasks that require a unique and consistent output)
  */
 public class JSONConverter extends Converter<String> {
-    protected static final String BIG_INTEGER_PREFIX = "I";
-    protected static final String BYTE_ARRAY_PREFIX = "B";
-    protected static final String STRING_PREFIX = "S";
+    protected static final String BIG_INTEGER_PREFIX = "INT:";
+    protected static final String BYTE_ARRAY_PREFIX = "BYTES:";
+    protected static final String STRING_PREFIX = "STRING:";
 
-    protected static final String OBJ_TYPE_KEY = "__t";
-    protected static final String MAP_OBJ_TYPE = "M";
-    protected static final String REPR_OBJ_TYPE = "R";
-    protected static final String OBJ_OBJ_TYPE = "O";
+    protected static final String OBJ_TYPE_KEY = "__type";
+    protected static final String MAP_OBJ_TYPE = "MAP";
+    protected static final String REPR_OBJ_TYPE = "REPR";
+    protected static final String OBJ_OBJ_TYPE = "OBJ";
 
     @Override
     public String serialize(Representation r) { // Dispatch by type of Representation
@@ -114,7 +114,7 @@ public class JSONConverter extends Converter<String> {
     }
 
     private String serializeString(StringRepresentation s) {
-        return s.get();
+        return STRING_PREFIX+s.get();
     }
 
     @Override
@@ -168,7 +168,7 @@ public class JSONConverter extends Converter<String> {
     }
 
     private StringRepresentation deserializeString(String o) {
-        return new StringRepresentation(o);
+        return new StringRepresentation(o.substring(STRING_PREFIX.length()));
     }
 
     private BigIntegerRepresentation deserializeBigInteger(String o) {
@@ -176,7 +176,7 @@ public class JSONConverter extends Converter<String> {
     }
 
     private ByteArrayRepresentation deserializeByteArray(String o) {
-        return new ByteArrayRepresentation(Base64.getDecoder().decode(o.substring(BIG_INTEGER_PREFIX.length())));
+        return new ByteArrayRepresentation(Base64.getDecoder().decode(o.substring(BYTE_ARRAY_PREFIX.length())));
     }
 
     private ListRepresentation deserializeArray(JSONArray o) {

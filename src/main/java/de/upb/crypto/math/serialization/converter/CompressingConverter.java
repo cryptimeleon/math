@@ -12,10 +12,11 @@ public class CompressingConverter extends Converter<byte[]> {
     protected static final byte TYPE_INT = 1;
     protected static final byte TYPE_INT_INLINE = 2;
     protected static final byte TYPE_STR = 3;
-    protected static final  byte TYPE_BYTES = 4;
-    protected static final  byte TYPE_REPR = 5;
-    protected static final  byte TYPE_LIST = 6;
-    protected static final  byte TYPE_MAP = 7;
+    protected static final byte TYPE_BYTES = 4;
+    protected static final byte TYPE_REPR = 5;
+    protected static final byte TYPE_LIST = 6;
+    protected static final byte TYPE_MAP = 7;
+    protected static final byte TYPE_NULL = 8;
 
     /**
      * Storing well-known strings (see constructor).
@@ -74,6 +75,9 @@ public class CompressingConverter extends Converter<byte[]> {
         // Formats are denoted, for example "type(1) || ptr(4)", meaning that the first byte indicates a type, the next four bytes are a pointer.
         // type is a byte indicating whether this is a String or a byte array or whatever, and
         // ptr is an index on the constants stream (where the bulk of the serialization is written, for basic deduplication and to keep the structure format simpler).
+        if (repr == null) { //Form: type(1)
+            structure.append(TYPE_NULL);
+        }
         if (repr instanceof StringRepresentation) { //Form: type(1) || ptr(4)
             structure.append(TYPE_STR);
             int ptr = addToConstants(repr.str().get(), constants, stringConstantPos);
@@ -191,6 +195,9 @@ public class CompressingConverter extends Converter<byte[]> {
         //Whatever the concrete type, it begins with type(1)
         byte type = data.readByte(0);
 
+        if (type == TYPE_NULL) { //Form: type(1)
+            return null;
+        }
         if (type == TYPE_BYTES) { //Form: type(1) || ptr(4)
             int ptr = data.readInt(1);
             return new ByteArrayRepresentation(data.getByteArrayFromConstants(ptr));
@@ -222,6 +229,8 @@ public class CompressingConverter extends Converter<byte[]> {
                 result.put(listItem);
                 offset += 4+len;
             }
+
+            return result;
         }
         if (type == TYPE_OBJ) { //format: type(1) || ( ptrToKey(4) || len(4) || repr(len) )*
             int offset = 1;
@@ -234,6 +243,8 @@ public class CompressingConverter extends Converter<byte[]> {
                 result.put(data.getStringFromConstants(ptrToKey), value);
                 offset += 8 + len;
             }
+
+            return result;
         }
         if (type == TYPE_MAP) { //format: type(1) || ( keyLen(4) || key(keyLen) || valueLen(4) || value(valueLen) )*
             int offset = 1;
@@ -250,6 +261,8 @@ public class CompressingConverter extends Converter<byte[]> {
 
                 result.put(key, value);
             }
+
+            return result;
         }
         throw new IllegalArgumentException("Don't know how to deserialize type marked with "+type);
     }
@@ -266,6 +279,7 @@ public class CompressingConverter extends Converter<byte[]> {
 
         public Input(byte[] data) {
             //Format of s: constantLen(4) || constants(len) || structure
+            this.data = data;
             constantsLen = byteArrayToInt(data, 0);
             substructureOffset = constantsOffset+ constantsLen;
             substructureLength = data.length-substructureOffset;
@@ -286,7 +300,7 @@ public class CompressingConverter extends Converter<byte[]> {
         }
 
         public byte[] getByteArrayFromConstants(int ptr) {
-            return Arrays.copyOfRange(data, ptr+constantsOffset+4, byteArrayToInt(data, ptr+constantsOffset));
+            return Arrays.copyOfRange(data, ptr+constantsOffset+4, (ptr+constantsOffset+4)+byteArrayToInt(data, ptr+constantsOffset));
         }
 
         public int readInt(int posInStructure) {
@@ -313,9 +327,14 @@ public class CompressingConverter extends Converter<byte[]> {
 
     protected static class ByteString {
         private int len = 0;
-        ByteStringListEntry firstPart = null;
-        ByteStringListEntry lastPart = null;
+        ByteStringListEntry firstPart;
+        ByteStringListEntry lastPart;
         boolean valid = true;
+
+        public ByteString() {
+            firstPart = new ByteStringListEntry(new byte[0]);
+            lastPart = firstPart;
+        }
 
         /**
          * Appends the given ByteString to this one.
@@ -325,13 +344,8 @@ public class CompressingConverter extends Converter<byte[]> {
             if (!valid)
                 throw new RuntimeException("Do not re-use ByteStrings that you've already appended to something.");
 
-            if (firstPart == null) {
-                firstPart = other.firstPart;
-                lastPart = other.lastPart;
-            } else {
-                lastPart.nextPart = other.firstPart;
-                lastPart = other.lastPart;
-            }
+            lastPart.nextPart = other.firstPart;
+            lastPart = other.lastPart;
 
             other.valid = false;
             len = len + other.len;
@@ -341,13 +355,8 @@ public class CompressingConverter extends Converter<byte[]> {
             if (!valid)
                 throw new RuntimeException("Do not re-use ByteStrings that you've already appended to something.");
 
-            if (firstPart == null) {
-                firstPart = new ByteStringListEntry(bytes);
-                lastPart = firstPart;
-            } else {
-                lastPart.nextPart = new ByteStringListEntry(bytes);
-                lastPart = lastPart.nextPart;
-            }
+            lastPart.nextPart = new ByteStringListEntry(bytes);
+            lastPart = lastPart.nextPart;
 
             len = len + bytes.length;
         }
@@ -380,10 +389,18 @@ public class CompressingConverter extends Converter<byte[]> {
             }
 
             protected void writeToByteArray(Object dest, int pos) {
-                System.arraycopy(thisPart, 0, dest, pos, thisPart.length);
+                if (thisPart.length != 0)
+                    System.arraycopy(thisPart, 0, dest, pos, thisPart.length);
                 if (nextPart != null)
-                    writeToByteArray(dest, pos+thisPart.length);
+                    nextPart.writeToByteArray(dest, pos+thisPart.length);
             }
+        }
+
+        @Override
+        public String toString() {
+            byte[] result = new byte[len];
+            firstPart.writeToByteArray(result, 0);
+            return Arrays.toString(result);
         }
     }
 }
