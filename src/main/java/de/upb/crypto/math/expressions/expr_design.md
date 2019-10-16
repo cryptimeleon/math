@@ -10,7 +10,9 @@
 
 ## Design:
 
-TODO: Take a look at more example constructions for design ideas.
+`TODO`: Take a look at more example constructions for design ideas.
+
+`TODO`: Look at jacobian vs projective coordinates also.
 
 Sliding window exponentiation needs precomputed group elements. These can be stored in the group. Then we can use
 the group as a singleton and other schemes will have access to the precomputation as well. So we need to add a
@@ -50,13 +52,21 @@ Not specifying an evaluator would then lead to default values used.
 In general, all configuration can be set for the evaluator. Then the evaulator can also be reused.
 One problem of this is that the evaluator is group specific. So you could not reuse the configuration for a different group.
 So perhaps we need a factory class where we can set configuration and set group and then it gives us evaluator.
-Then we can change the group and still reuse our configuration.
+Then we can only ever change the things we need to. Probably not useful to put a configuration into public parameters though, since
+there are still potentially large differences between, for example multiexponentiation, algorithms depending on use case.
 
 Possible things to configure:
 * Window size for exponentiation.
 * Which exact algorithm to use for exponentiation.
-* As discussed above, skipping store/loading of precomputed group elements for one-time exponentiation.
+* Whether caching is enabled for exponentiations and for multiexponentiation. How granular to make this? Just differentiate between single- and multiexponentiation?
 * Whether to use a simultaneous or interleaved method for multiexponentiation. Also the inner exponentiation algorithm.
+
+Default configuration:
+* For multiexponentiation, use Swante's recommendations which relies on number of bases and whether caching is enabled.
+* For single exponentiations, we can use wNAF in appropriate groups where inversion is easy and sliding window otherwise.
+    * If caching is disabled, use window size 4 as it seems to have best results in Swante's paper.
+    * If caching is enabled, use largest window size possible (need to find good specific value, infinite obviously impossible). Maybe we can look at 
+        system specs to decide this. Otherwise we need to use conservative value in case of low-power devices.
 
 ### Example application in constructions
 
