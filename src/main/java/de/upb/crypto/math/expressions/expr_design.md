@@ -45,16 +45,6 @@ In all other cases, the interleaving method is better, with a window size of abo
 
 ### Configuration
 
-How do we do configuration. So selection of window size for example. Most granular would be specifying it for each exponentiation.
-However, with caching, larger window size is generally better. So most likely, user would a large window size which
-does not use too much memory with the group. So perhaps we could put the configuration into the GroupElementExpressionEvaluator.
-Not specifying an evaluator would then lead to default values used.
-In general, all configuration can be set for the evaluator. Then the evaulator can also be reused.
-One problem of this is that the evaluator is group specific. So you could not reuse the configuration for a different group.
-So perhaps we need a factory class where we can set configuration and set group and then it gives us evaluator.
-Then we can only ever change the things we need to. Probably not useful to put a configuration into public parameters though, since
-there are still potentially large differences between, for example multiexponentiation, algorithms depending on use case.
-
 Possible things to configure:
 * Window size for exponentiation.
 * Which exact algorithm to use for exponentiation.
@@ -67,6 +57,58 @@ Default configuration:
     * If caching is disabled, use window size 4 as it seems to have best results in Swante's paper.
     * If caching is enabled, use largest window size possible (need to find good specific value, infinite obviously impossible). Maybe we can look at 
         system specs to decide this. Otherwise we need to use conservative value in case of low-power devices.
+
+How do we do configuration. So selection of window size for example. Most granular would be specifying it for each exponentiation.
+However, with caching, larger window size is generally better. So most likely, user would a large window size which
+does not use too much memory with the group. So perhaps we could put the configuration into the GroupElementExpressionEvaluator.
+Not specifying an evaluator would then lead to default values used.
+In general, all configuration can be set for the evaluator. Then the evaulator can also be reused.
+One problem of this is that the evaluator is group specific. So you could not reuse the configuration for a different group.
+So perhaps we need a factory class where we can set configuration and set group and then it gives us evaluator.
+Then we can only ever change the things we need to. Probably not useful to put a configuration into public parameters though, since
+there are still potentially large differences between, for example multiexponentiation, algorithms depending on use case.
+Problem is though, that the evaluator is obtained from the group directly. Don't think it makes sense to tie configuration to group.
+If you have a multiexponentiation in the same group, but one has 5 bases and the other has some arbitrary amount of bases, then
+it makes no sense to use same configuration.
+
+Keep in mind that an expression can contain multiple groups, e.g. for pairing expressions. So there might be configuration that
+needs to be changed depending on group the expression evaluates to. Or e.g. there is one multiexponentiation in a source group
+and then one in the target group. So one might want to use different configuration for these even though only one evaluator
+would be used. Maybe one could just use different evaluators? So the user would first compute e.g. left hand multiexponentiation with some evaluator.
+Then it can evaluate the PairingExpr with a different evaluator.
+
+So for default evaluate call:
+1. Calls `getExpressionEvaluator` on group. 
+2. The group then instantiates an evaluator with default settings. Since there can be multiple groups in an expression, we might not want
+    to set whether inversion is easy or hard here, and instead just tell the evaluator the group. Then it can make the decision which
+    algorithm to use based on the group for each expression. The configuration could then just be whether to use signed digit algorithms
+    if possible. In this case, getting evaluator from group makes no sense though.
+
+For user-configuration:
+* Multiexponentiation allows for a lot of configuration. For interleaved method, one could set different window sizes for different bases, for example.
+    Do we want to allow for such granular configuration? You could also enable caching for e.g. singleexponentiation per basis. So if you know one basis
+    has multiple single exponentiations, then you might want to enable caching just for that basis. Same for disabling.
+
+### Concrete Design Decisions
+
+Keep in mind we don't have to have every tiny bit of configuration available at start. Maybe just macro-scale ones to start off.
+
+User-configuration design:
+* If user wants different behaviour for different multiexponentiations, he can use multiple evaluators and just evaluate those parts of the expression
+    separately. The evaluator uses the given settings for all contained multiexponentiations etc.
+* Singleexponentiation: 
+    * Algorithm: Can set whether to use signed digit algorithms whenever possible or to never use them. Can also specify which algorithm to use
+    in either case. Regarding window size, allow specifying different window size for cached and non-cached algorithms.
+    * Caching: Can set default for caching, either cache as much as is useful or completely disabled.
+    Default would be to cache as much as is useful, and perhaps – since we are traversing the expression anway to detect multiexponentiations – we can disable caching if we
+    see some basis is only used for one exponentiation.
+* Multiexponentiation: 
+    * Algorithm: User can specific whether to use interleaved or simultaneous method and the exact singleexponentiation algorithm to use in there.
+    In case of interleaved, he can even specify the window size per basis. Default would be to select dynamically based on number of bases and wNAF/sliding window and to 
+    select window size as per Swante's recommendations. Can also allow user to specify maximum number of bases for simultaneous. Window size should also be configurable
+    depending on whether something is cached or not. 
+    * Caching: Similar to singleexponentiation, just also split into simultaneous and interleaved.
+    
 
 ### Example application in constructions
 
