@@ -82,7 +82,8 @@ So for default evaluate call:
 2. The group then instantiates an evaluator with default settings. Since there can be multiple groups in an expression, we might not want
     to set whether inversion is easy or hard here, and instead just tell the evaluator the group. Then it can make the decision which
     algorithm to use based on the group for each expression. The configuration could then just be whether to use signed digit algorithms
-    if possible. In this case, getting evaluator from group makes no sense though.
+    if possible. In this case, getting evaluator from group makes no sense though since the expression is given to the evaluator and so
+    it knows the group anyway.
 
 For user-configuration:
 * Multiexponentiation allows for a lot of configuration. For interleaved method, one could set different window sizes for different bases, for example.
@@ -108,6 +109,20 @@ User-configuration design:
     select window size as per Swante's recommendations. Can also allow user to specify maximum number of bases for simultaneous. Window size should also be configurable
     depending on whether something is cached or not. 
     * Caching: Similar to singleexponentiation, just also split into simultaneous and interleaved.
+
+Code flow for evaluate call:
+1. User can either just call evaluate such that default evaluator is used or construct a user-configured evaluator and use that.
+2. Evaluate then traverses the expression tree, mainly to find multiexponentiations, but it can also use this to find out whether bases have multiple exponentiations
+    such that it can make a decision whether to cache. Can skip this if precompute has done this already.
+3. Evalute using decision made in previous step.
+
+Precompute call:
+1. Should also be configurable what kind of precompuation is done. So add call where user can supply evaluator.
+2. Do 2nd step of evaluate as well but with more optimization (should be configurable).
+3. Regarding caching, we can only cache precomputed group elements in the group itself. So what about caching information about structure of expression tree?
+    Stuff that 2nd step of evaluate would compute should probably be stored in the expression itself. Also whether precompute has been called so we can
+    skip the 2nd step of evaluate. So 2nd step of evaluate should be modular and callable from both precompute and evalute, maybe with separate optimization 
+    levels.
     
 
 ### Example application in constructions
