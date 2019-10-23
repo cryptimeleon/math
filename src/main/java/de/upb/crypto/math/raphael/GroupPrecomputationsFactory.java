@@ -36,24 +36,29 @@ public class GroupPrecomputationsFactory {
         /**
          * Stores precomputed powers.
          */
-        @Represented(restorer = "G -> BigInt -> G")
+        @Represented(restorer = "G->BigInt->G")
         private Map<GroupElement, Map<BigInteger, GroupElement>> powers;
 
         /**
          * Group this object stores precomputations for.
          * TODO: How to serialize this?
          */
-        @Represented()
         private Group group;
 
-        private GroupPrecomputations(Group group) {
+        public GroupPrecomputations(Group group) {
             // TODO: Using this enough for thread safety?
             powers = new ConcurrentHashMap<>();
             this.group = group;
         }
 
+        public GroupPrecomputations(Representation repr, Group group) {
+            new ReprUtil(this).register(group, "G").deserialize(repr);
+            this.group = group;
+        }
+
         /**
          * Enter computed power in precomputation table.
+         * TODO: Should we offer this method? Allows inserting incorrect elements.
          *
          * @param base The base of the power.
          * @param exponent The exponent.
@@ -120,13 +125,21 @@ public class GroupPrecomputationsFactory {
     }
 
     /**
-     * Deserialize a group's precomputations from the representation and add to store. Makes
-     * sure that a precomputation object only exists once per group. So if
-     * there would be multiple objects after deserialization, their precomputed values are
-     * simply combined in a single object.
+     * Allows adding deserialized precomputations object to the store. Merges with existing
+     * precomputations if one already exists for the group.
+     * @param gp The precomputations to add to the store.
      */
-    public static void addFromRepresentation(Representation repr) {
-        // Need to reconstruct the group of the precomputation first to check if already exists.
-        System.out.println(repr);
+    public static void addGroupPrecomputations(GroupPrecomputations gp) {
+        synchronized (store) {
+            // Check if precomputations for the group exist
+            GroupPrecomputations result = store.get(gp.group);
+            if (result != null) {
+                // Combine them
+                // TODO: What if one map contains different entries than other?
+                result.powers.putAll(gp.powers);
+            } else {
+                store.put(gp.group, gp);
+            }
+        }
     }
 }
