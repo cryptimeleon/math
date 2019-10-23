@@ -123,7 +123,18 @@ Precompute call:
     Stuff that 2nd step of evaluate would compute should probably be stored in the expression itself. Also whether precompute has been called so we can
     skip the 2nd step of evaluate. So 2nd step of evaluate should be modular and callable from both precompute and evalute, maybe with separate optimization 
     levels.
-    
+4. Precompute gives new expression, so store some stuff in there. Where exactly in the expression? Expression is series of nested expressions.
+
+#### Group Singleton
+
+Problem that remains is how to make serialization work with singleton. Better not to change `Group` to singleton but instead add a singleton precomputation
+object to it. Then we can add a deserializer for it that checks whether a group with those parameters already exists and then retrieves the singleton if possible.
+Problem with singleton deserialization is that you cannot reinstantiate previous singleton state since you may already have singleton in another state. In this
+case, however, we don't need to reinstantiate, we can just add the state contained in the deserialized singleton to the existing one.
+
+
+1. 
+
 
 ### Example application in constructions
 
