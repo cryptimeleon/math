@@ -4,6 +4,8 @@ import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.Representable;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -26,18 +28,28 @@ public class GroupPrecomputationsFactory {
      * since since a precomputed values is either correct or not correct. So only adding
      * values needs aquisition of lock?
      *
-     * Also, does the interface as is provide enough performance?
+     * Also, does the interface as is provide enough performance since we just retrieve powers
+     * one by one?
      */
-    public static final class GroupPrecomputations {
+    public static final class GroupPrecomputations implements Representable {
 
         /**
          * Stores precomputed powers.
          */
+        @Represented(restorer = "G -> BigInt -> G")
         private Map<GroupElement, Map<BigInteger, GroupElement>> powers;
 
-        private GroupPrecomputations() {
+        /**
+         * Group this object stores precomputations for.
+         * TODO: How to serialize this?
+         */
+        @Represented()
+        private Group group;
+
+        private GroupPrecomputations(Group group) {
             // TODO: Using this enough for thread safety?
             powers = new ConcurrentHashMap<>();
+            this.group = group;
         }
 
         /**
@@ -81,6 +93,11 @@ public class GroupPrecomputationsFactory {
             }
             return result;
         }
+
+        @Override
+        public Representation getRepresentation() {
+            return ReprUtil.serialize(this);
+        }
     }
 
     /**
@@ -95,10 +112,21 @@ public class GroupPrecomputationsFactory {
         synchronized (store) {
             GroupPrecomputations result = store.get(group);
             if (result == null) {
-                result = new GroupPrecomputations();
+                result = new GroupPrecomputations(group);
                 store.put(group, result);
             }
             return result;
         }
+    }
+
+    /**
+     * Deserialize a group's precomputations from the representation and add to store. Makes
+     * sure that a precomputation object only exists once per group. So if
+     * there would be multiple objects after deserialization, their precomputed values are
+     * simply combined in a single object.
+     */
+    public static void addFromRepresentation(Representation repr) {
+        // Need to reconstruct the group of the precomputation first to check if already exists.
+        System.out.println(repr);
     }
 }

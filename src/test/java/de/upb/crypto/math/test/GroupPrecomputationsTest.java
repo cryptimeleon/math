@@ -4,6 +4,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingAdditiveGroup;
 import de.upb.crypto.math.interfaces.structures.RingUnitGroup;
 import de.upb.crypto.math.raphael.GroupPrecomputationsFactory;
+import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
 
@@ -96,5 +97,20 @@ public class GroupPrecomputationsTest {
         addPrecomputations.getPower(
                 addZp.getNeutralElement(), BigInteger.valueOf(2), false
         );
+    }
+
+    @Test
+    public void testRepresentation() {
+        Zp zp = new Zp(BigInteger.valueOf(101));
+
+        // Test for additive subgroup of Zp
+        RingAdditiveGroup addZp = zp.asAdditiveGroup();
+
+        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations =
+                GroupPrecomputationsFactory.get(addZp);
+
+        Representation repr = addPrecomputations.getRepresentation();
+
+        GroupPrecomputationsFactory.addFromRepresentation(repr);
     }
 }
