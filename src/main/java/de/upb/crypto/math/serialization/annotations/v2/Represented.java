@@ -23,6 +23,7 @@ public @interface Represented {
      * For a map, whose keys are handled by G1 and whose values by G2, write "G1 -> G2".
      *
      * These can be combined, e.g., "G1 -> [[G2]]" for a map whose keys are handled by G1 and whose values are lists of lists of G2.
+     * You can use parentheses to ensure precedence, e.g., "(G1 -> G2) -> G3" is a map whose keys are maps from G1 to G2.
      *
      * If the type is simple (i.e. StandaloneRepresentable, BigInteger, Integer, String, Boolean, or byte[]), this value is ignored.
      * This is again true for nested expressions, e.g., "FOO -> G2" works for a Map from String to GroupElement, as the String "FOO" is simply ignored.
