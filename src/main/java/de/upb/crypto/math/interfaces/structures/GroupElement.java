@@ -2,6 +2,8 @@ package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.raphael.GroupPrecomputationsFactory;
+import de.upb.crypto.math.raphael.GroupPrecomputationsFactory.GroupPrecomputations;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
 import java.math.BigInteger;
@@ -50,6 +52,60 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
                 result = result.op(operand);
         }
         return result;
+    }
+
+    default GroupElement[] precomputeSmallOddPowers(int maxExp) {
+        GroupElement[] res = new GroupElement[(maxExp+1)/2];
+        res[0] = this.getStructure().getNeutralElement();
+        for (int i = 1; i < res.length; i++) {
+            res[i] = res[i-1].op(this);
+        }
+        return res;
+    }
+
+    default GroupElement powSlidingWindow(BigInteger exponent, int windowSize,
+                                          boolean enableCaching) {
+        GroupElement[] smallOddPowersOfBase;
+        int oddPowersMaxExp = (1<<windowSize)-1;
+        if (enableCaching) {
+            GroupPrecomputations gp = GroupPrecomputationsFactory.get(this.getStructure());
+            smallOddPowersOfBase = gp.getOddPowers(this, oddPowersMaxExp);
+            // If not precomputed yet, we precompute
+            if (smallOddPowersOfBase == null) {
+                smallOddPowersOfBase = this.precomputeSmallOddPowers(oddPowersMaxExp);
+                gp.addOddPowers(this, smallOddPowersOfBase);
+            }
+        } else {
+            smallOddPowersOfBase = this.precomputeSmallOddPowers(oddPowersMaxExp);
+        }
+        GroupElement y = this.getStructure().getNeutralElement();
+        int l = exponent.bitLength();
+        int i = l - 1;
+        if (windowSize > 20) {
+            throw new IllegalArgumentException("too large windowSize");
+        }
+        while (i > -1) {
+            if (exponent.testBit(i)) {
+                int s = Math.max(0, i - windowSize + 1);
+                int smallExponent = 0;
+                while (!exponent.testBit(s)) {
+                    s++;
+                }
+                for (int h = s; h <= i; h++) {
+                    y = y.op(y);
+                    if (exponent.testBit(h)) {
+                        smallExponent += 1 << h - s;
+                    }
+                }
+
+                y = y.op(smallOddPowersOfBase[smallExponent / 2]);
+                i = s - 1;
+            } else {
+                y = y.op(y);
+                i--;
+            }
+        }
+        return y;
     }
 
     /**

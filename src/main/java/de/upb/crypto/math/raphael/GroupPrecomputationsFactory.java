@@ -35,8 +35,10 @@ public class GroupPrecomputationsFactory {
 
         /**
          * Stores precomputed powers.
+         *
+         * TODO: Do we even need BigInteger here? Makes no sense to cache really big powers.
          */
-        @Represented(restorer = "G->BigInt->G")
+        @Represented(restorer = "G->long->G")
         private Map<GroupElement, Map<BigInteger, GroupElement>> powers;
 
         /**
@@ -66,7 +68,7 @@ public class GroupPrecomputationsFactory {
          */
         public void addPower(GroupElement base, BigInteger exponent, GroupElement result) {
             Map<BigInteger, GroupElement> baseEntry =
-                    powers.computeIfAbsent(base, k -> new HashMap<>());
+                    powers.computeIfAbsent(base, k -> new ConcurrentHashMap<>());
             baseEntry.put(exponent, result);
         }
 
@@ -79,29 +81,74 @@ public class GroupPrecomputationsFactory {
          *
          * @param base Base of the power.
          * @param exponent Exponent of the power.
-         * @param precomputeIfMissing Whether to precompute if power is not precomputed yet.
-         * @return Power base^exponent.
+         * @param computeIfMissing Whether to precompute if power is not precomputed yet.
+         * @return Power base^exponent. Null if computeIfMissing set to false and power
+         *  not computed yet.
          */
         public GroupElement getPower(GroupElement base, BigInteger exponent,
-                                     boolean precomputeIfMissing) {
+                                     boolean computeIfMissing) {
             Map<BigInteger, GroupElement> baseEntry =
-                    powers.computeIfAbsent(base, k -> new HashMap<>());
+                    powers.computeIfAbsent(base, k -> new ConcurrentHashMap<>());
             GroupElement result = baseEntry.get(exponent);
-            if (result == null && precomputeIfMissing) {
+            if (result == null && computeIfMissing) {
+                // TODO: Should we even offer this? Seems weird for precomputations storage to do
+                //  computations itself. Better to let user always decide maybe?
                 result = base.pow(exponent);
                 baseEntry.put(exponent, result);
                 return result;
-            } else if (result == null) {
-                // TODO: Is this right behaviour if power is missing and should not precompute
-                //  ourselves?
-                throw new IllegalStateException("Missing power.");
             }
             return result;
+        }
+
+        /**
+         * Add precomputed odd powers to storage.
+         * @param base Base to add odd powers for.
+         * @param oddPowers Array of odd powers. Must contain base^1, base^3, ..., base^m for
+         *                  some uneven m. Otherwise powers map will be corrupted.
+         */
+        public void addOddPowers(GroupElement base, GroupElement[] oddPowers) {
+            Map<BigInteger, GroupElement> baseEntry =
+                    powers.computeIfAbsent(base, k -> new ConcurrentHashMap<>());
+            for (int i = 1; i < 2*oddPowers.length; i+=2) {
+                baseEntry.put(BigInteger.valueOf(i), oddPowers[i/2]);
+            }
+
+        }
+
+        /**
+         * Retrieve odd powers base^1, base^3, ..., base^maxExp (if maxExp is odd else maxExp-1).
+         *
+         * @param base
+         * @param maxExp
+         * @return
+         */
+        public GroupElement[] getOddPowers(GroupElement base, int maxExp) {
+            GroupElement[] oddPowers = new GroupElement[(maxExp+1)/2];
+            Map<BigInteger, GroupElement> baseEntry = powers.get(base);
+            // if no precomputations for entry yet,
+            if (baseEntry == null) {
+                return null;
+            }
+            GroupElement entry;
+            for (int i = 1; i < maxExp+1; i+=2) {
+                entry = baseEntry.get(BigInteger.valueOf(i));
+                if (entry == null)
+                    return null;
+                oddPowers[i/2] = entry;
+            }
+            return oddPowers;
         }
 
         @Override
         public Representation getRepresentation() {
             return ReprUtil.serialize(this);
+        }
+
+        /**
+         * Delete all precomputations.
+         */
+        public void reset() {
+            powers = new ConcurrentHashMap<>();
         }
     }
 

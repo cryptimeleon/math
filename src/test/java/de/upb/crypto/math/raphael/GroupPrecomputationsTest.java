@@ -1,53 +1,57 @@
-package de.upb.crypto.math.test;
+package de.upb.crypto.math.raphael;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingAdditiveGroup;
 import de.upb.crypto.math.interfaces.structures.RingUnitGroup;
-import de.upb.crypto.math.performance.group.GroupPerformanceTest;
-import de.upb.crypto.math.raphael.GroupPrecomputationsFactory;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.zn.Zp;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.math.BigInteger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GroupPrecomputationsTest {
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    private static final Zp zp = new Zp(BigInteger.valueOf(101));
+
+    private static final RingAdditiveGroup addZp = zp.asAdditiveGroup();
+    private static final RingUnitGroup mulZp = zp.asUnitGroup();
+
+    private static GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations;
+    private static GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations;
+
+    @Before
+    public void setup() {
+        addPrecomputations = GroupPrecomputationsFactory.get(addZp);
+        mulPrecomputations = GroupPrecomputationsFactory.get(mulZp);
+    }
+
+    @After
+    public void teardown() {
+        addPrecomputations.reset();
+        mulPrecomputations.reset();
+    }
 
     @Test
     public void testAddRetrieve() {
-        Zp zp = new Zp(BigInteger.valueOf(101));
-
         // Test for additive subgroup of Zp
-        RingAdditiveGroup addZp = zp.asAdditiveGroup();
-
-        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations =
-                GroupPrecomputationsFactory.get(addZp);
-
-
         addPrecomputations.addPower(
                 addZp.getNeutralElement(),
                 BigInteger.valueOf(2),
-                addZp.getNeutralElement().op(addZp.getNeutralElement())
+                zp.createZnElement(BigInteger.valueOf(2)).toAdditiveGroupElement()
         );
 
         assertEquals(
                 addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(2)),
-                addZp.getNeutralElement().op(addZp.getNeutralElement())
+                zp.createZnElement(BigInteger.valueOf(2)).toAdditiveGroupElement()
         );
 
         // Test for multiplicative subgroup of Zp
-        RingUnitGroup mulZp = zp.asUnitGroup();
-
-        GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations =
-                GroupPrecomputationsFactory.get(mulZp);
-
         GroupElement elem = mulZp.getUniformlyRandomNonNeutral();
         mulPrecomputations.addPower(
                 elem,
@@ -62,26 +66,14 @@ public class GroupPrecomputationsTest {
     }
 
     @Test
-    public void testRetrieveNoAddPrecomputeIfMissing() {
-        Zp zp = new Zp(BigInteger.valueOf(101));
-
+    public void testRetrieveNoAddComputeIfMissing() {
         // Test for additive subgroup of Zp
-        RingAdditiveGroup addZp = zp.asAdditiveGroup();
-
-        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations =
-                GroupPrecomputationsFactory.get(addZp);
-
         assertEquals(
                 addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(2)),
-                addZp.getNeutralElement().op(addZp.getNeutralElement())
+                zp.createZnElement(BigInteger.valueOf(0)).toAdditiveGroupElement()
         );
 
         // Test for multiplicative subgroup of Zp
-        RingUnitGroup mulZp = zp.asUnitGroup();
-
-        GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations =
-                GroupPrecomputationsFactory.get(mulZp);
-
         GroupElement elem = mulZp.getUniformlyRandomNonNeutral();
 
         assertEquals(
@@ -90,30 +82,14 @@ public class GroupPrecomputationsTest {
         );
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testRetrieveNoAddNoPrecomputeIfMissing() {
-        Zp zp = new Zp(BigInteger.valueOf(101));
-
-        // Test for additive subgroup of Zp
-        RingAdditiveGroup addZp = zp.asAdditiveGroup();
-
-        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations =
-                GroupPrecomputationsFactory.get(addZp);
-
-        addPrecomputations.getPower(
+    public void testRetrieveNoAddNoComputeIfMissing() {
+        assertNull(addPrecomputations.getPower(
                 addZp.getNeutralElement(), BigInteger.valueOf(2), false
-        );
+        ));
     }
 
     @Test
     public void testDeserializedSame() {
-        Zp zp = new Zp(BigInteger.valueOf(101));
-
-        RingAdditiveGroup addZp = zp.asAdditiveGroup();
-
-        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations =
-                GroupPrecomputationsFactory.get(addZp);
-
         for (int i = 0; i < 8; ++i) {
             addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(i));
         }
@@ -138,13 +114,6 @@ public class GroupPrecomputationsTest {
 
     @Test
     public void testDeserializeDifferentObjects() {
-        Zp zp = new Zp(BigInteger.valueOf(101));
-
-        RingAdditiveGroup addZp = zp.asAdditiveGroup();
-
-        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations =
-                GroupPrecomputationsFactory.get(addZp);
-
         for (int i = 0; i < 8; ++i) {
             addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(i));
         }
@@ -158,23 +127,16 @@ public class GroupPrecomputationsTest {
         addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(9));
 
         // only first one should have new element
-        exception.expect(IllegalStateException.class);
-        addPrecomputations2.getPower(
+        assertNull(addPrecomputations2.getPower(
                 addZp.getNeutralElement(), BigInteger.valueOf(9), false
-        );
+        ));
     }
 
     @Test
     public void testAddDeserializedGroupPrecomputationsToFactory() {
-        Zp zp = new Zp(BigInteger.valueOf(101));
-
-        RingAdditiveGroup addZp = zp.asAdditiveGroup();
-
-        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations =
-                GroupPrecomputationsFactory.get(addZp);
-
         for (int i = 0; i < 8; ++i) {
-            addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(i));
+            addPrecomputations.getPower(addZp.getUniformlyRandomNonNeutral(),
+                    BigInteger.valueOf(i));
         }
 
         Representation repr = addPrecomputations.getRepresentation();
@@ -193,4 +155,35 @@ public class GroupPrecomputationsTest {
         );
     }
 
+    @Test
+    public void testAddOddPowers() {
+        GroupElement base = zp.createZnElement(BigInteger.valueOf(2)).toAdditiveGroupElement();
+        // even max exponent
+        GroupElement[] oddPowers = base.precomputeSmallOddPowers(8);
+        addPrecomputations.addOddPowers(base, oddPowers);
+
+        for (int i = 1; i <= 8; i+=2) {
+            assertEquals(addPrecomputations.getPower(base, BigInteger.valueOf(i)), oddPowers[i/2]);
+        }
+
+        // uneven max exponent
+        oddPowers = base.precomputeSmallOddPowers(9);
+        addPrecomputations.addOddPowers(base, oddPowers);
+
+        for (int i = 1; i <= 9; i+=2) {
+            assertEquals(addPrecomputations.getPower(base, BigInteger.valueOf(i)), oddPowers[i/2]);
+        }
+    }
+
+    @Test
+    public void testGetOddPowers() {
+        GroupElement base = zp.createZnElement(BigInteger.valueOf(2)).toAdditiveGroupElement();
+        // even max exponent
+        GroupElement[] oddPowers = base.precomputeSmallOddPowers(8);
+        addPrecomputations.addOddPowers(base, oddPowers);
+        GroupElement[] retrievedOddPowers = addPrecomputations.getOddPowers(base, 8);
+        assertArrayEquals(oddPowers, retrievedOddPowers);
+        retrievedOddPowers = addPrecomputations.getOddPowers(base, 7);
+        assertArrayEquals(oddPowers, retrievedOddPowers);
+    }
 }
