@@ -4,13 +4,6 @@ public class StringRepresentation extends Representation {
     private static final long serialVersionUID = 4508386585732032537L;
     protected String s;
 
-    /**
-     * Instantiates an empty String representation.
-     */
-    public StringRepresentation() { //needed for Java serialization
-
-    }
-
     public StringRepresentation(String s) {
         this.s = s;
     }
