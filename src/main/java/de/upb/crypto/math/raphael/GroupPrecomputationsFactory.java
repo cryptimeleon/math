@@ -38,7 +38,7 @@ public class GroupPrecomputationsFactory {
          *
          * TODO: Do we even need BigInteger here? Makes no sense to cache really big powers.
          */
-        @Represented(restorer = "G->long->G")
+        @Represented(restorer = "G->(bigint->G)")
         private Map<GroupElement, Map<BigInteger, GroupElement>> powers;
 
         /**
