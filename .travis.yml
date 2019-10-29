@@ -23,10 +23,10 @@ jobs:
   - stage: build
     script: "./gradlew build -x test"
   - stage: snapshot
-    script: "./gradlew publish -x test -Dsnapshot=true -Dnexus.user=$NEXUS_USER -Dnexus.key=$NEXUS_KEY
+    script: "./gradlew publish -x test -Dnexus.user=$NEXUS_USER -Dnexus.key=$NEXUS_KEY
       -Dbuild.number=$TRAVIS_BUILD_NUMBER"
   - stage: release
-    script: "./gradlew publish -x test -Dnexus.user=$NEXUS_USER -Dnexus.key=$NEXUS_KEY
+    script: "./gradlew publish -x test -Ddisablesnapshot=true -Dnexus.user=$NEXUS_USER -Dnexus.key=$NEXUS_KEY
       -Dbuild.number=$TRAVIS_BUILD_NUMBER"
 deploy:
   provider: releases
