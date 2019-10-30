@@ -2,6 +2,8 @@ package de.upb.crypto.math.raphael;
 
 import com.github.noconnor.junitperf.JUnitPerfRule;
 import com.github.noconnor.junitperf.JUnitPerfTest;
+import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
@@ -9,6 +11,7 @@ import org.junit.*;
 
 import java.math.BigInteger;
 
+//@Ignore
 public class SingleExponentiationTest {
 
     @Rule
@@ -21,6 +24,9 @@ public class SingleExponentiationTest {
     static Zp.ZpElement base;
     static Zn.ZnElement[] exponents;
 
+    static BilinearGroup bilGroup;
+    static GroupElement bilBase;
+
     @BeforeClass
     public static void setup() {
         base = zp.getUniformlyRandomUnit();
@@ -28,12 +34,17 @@ public class SingleExponentiationTest {
         for (int i = 0; i < exponents.length; ++i) {
             exponents[i] = exponentZn.getUniformlyRandomElement();
         }
+        /*BilinearGroupFactory fac = new BilinearGroupFactory(256);
+        fac.setRequirements(BilinearGroup.Type.TYPE_3);
+        bilGroup = fac.createBilinearGroup();
+        bilBase = bilGroup.getG1().getUniformlyRandomNonNeutral();*/
     }
 
     @Test
     @JUnitPerfTest(durationMs = 10_000, warmUpMs = 5_000)
     public void defaultPow() {
         GroupElement result = base.toUnitGroupElement();
+        //GroupElement result = bilBase.op(bilGroup.getG1().getNeutralElement());
         for (Zn.ZnElement exp : exponents) {
             result = result.pow(exp.getInteger());
         }
@@ -44,6 +55,7 @@ public class SingleExponentiationTest {
     public void slidingPow() {
         // use optimal value 4
         GroupElement result = base.toUnitGroupElement();
+        //GroupElement result = bilBase.op(bilGroup.getG1().getNeutralElement());//
         for (Zn.ZnElement exp : exponents) {
             result = result.powSlidingWindow(exp.getInteger(), 4, false);
         }
@@ -54,6 +66,7 @@ public class SingleExponentiationTest {
     public void slidingPowCaching() {
         // use optimal value 4
         GroupElement result = base.toUnitGroupElement();
+        // GroupElement result = bilBase.op(bilGroup.getG1().getNeutralElement());
         for (Zn.ZnElement exp : exponents) {
             result = result.powSlidingWindow(exp.getInteger(), 8, true);
         }

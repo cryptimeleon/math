@@ -12,6 +12,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,152 +41,50 @@ public class GroupPrecomputationsTest {
     }
 
     @Test
-    public void testAddRetrieve() {
-        // Test for additive subgroup of Zp
-        addPrecomputations.addPower(
-                addZp.getNeutralElement(),
-                BigInteger.valueOf(2),
-                zp.createZnElement(BigInteger.valueOf(2)).toAdditiveGroupElement()
-        );
+    public void testAddGetOddPowersUnevenMaxExp() {
+        int maxExp = 5;
+        GroupElement base = mulZp.getUniformlyRandomNonNeutral();
+        System.out.println("Chose base: " + base.toString());
 
-        assertEquals(
-                addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(2)),
-                zp.createZnElement(BigInteger.valueOf(2)).toAdditiveGroupElement()
-        );
+        mulPrecomputations.addOddPowers(base, maxExp);
 
-        // Test for multiplicative subgroup of Zp
-        GroupElement elem = mulZp.getUniformlyRandomNonNeutral();
-        mulPrecomputations.addPower(
-                elem,
-                BigInteger.valueOf(10),
-                elem.pow(10)
-        );
+        List<GroupElement> correctOddPowers = new LinkedList<>();
+        correctOddPowers.add(base);
+        correctOddPowers.add(base.pow(3));
+        correctOddPowers.add(base.pow(5));
 
-        assertEquals(
-                mulPrecomputations.getPower(elem, BigInteger.valueOf(10)),
-                elem.pow(10)
+        System.out.println("Actual: " + Arrays.toString(
+                mulPrecomputations.getOddPowers(base, maxExp).toArray()));
+        System.out.println("Expected: " + Arrays.toString(
+                correctOddPowers.toArray()));
+
+        assertArrayEquals(
+                correctOddPowers.toArray(),
+                mulPrecomputations.getOddPowers(base, maxExp).toArray()
         );
     }
 
     @Test
-    public void testRetrieveNoAddComputeIfMissing() {
-        // Test for additive subgroup of Zp
-        assertEquals(
-                addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(2)),
-                zp.createZnElement(BigInteger.valueOf(0)).toAdditiveGroupElement()
+    public void testAddGetOddPowersEvenMaxExp() {
+        int maxExp = 6;
+        GroupElement base = mulZp.getUniformlyRandomNonNeutral();
+        System.out.println("Chose base: " + base.toString());
+
+        mulPrecomputations.addOddPowers(base, maxExp);
+
+        List<GroupElement> correctOddPowers = new LinkedList<>();
+        correctOddPowers.add(base);
+        correctOddPowers.add(base.pow(3));
+        correctOddPowers.add(base.pow(5));
+
+        System.out.println("Actual: " + Arrays.toString(
+                mulPrecomputations.getOddPowers(base, maxExp).toArray()));
+        System.out.println("Expected: " + Arrays.toString(
+                correctOddPowers.toArray()));
+
+        assertArrayEquals(
+                correctOddPowers.toArray(),
+                mulPrecomputations.getOddPowers(base, maxExp).toArray()
         );
-
-        // Test for multiplicative subgroup of Zp
-        GroupElement elem = mulZp.getUniformlyRandomNonNeutral();
-
-        assertEquals(
-                mulPrecomputations.getPower(elem, BigInteger.valueOf(10)),
-                elem.pow(10)
-        );
-    }
-
-    public void testRetrieveNoAddNoComputeIfMissing() {
-        assertNull(addPrecomputations.getPower(
-                addZp.getNeutralElement(), BigInteger.valueOf(2), false
-        ));
-    }
-
-    @Test
-    public void testDeserializedSame() {
-        for (int i = 0; i < 8; ++i) {
-            addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(i));
-        }
-
-        Representation repr = addPrecomputations.getRepresentation();
-
-        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations2 =
-                new GroupPrecomputationsFactory.GroupPrecomputations(repr, addZp);
-
-        // first check that deserialized precomputations contains same elements as before
-        for (int i = 0; i < 8; ++i) {
-            assertEquals(
-                    addPrecomputations2.getPower(
-                            addZp.getNeutralElement(), BigInteger.valueOf(i),false
-                    ),
-                    addPrecomputations.getPower(
-                            addZp.getNeutralElement(), BigInteger.valueOf(i),false
-                    )
-            );
-        }
-    }
-
-    @Test
-    public void testDeserializeDifferentObjects() {
-        for (int i = 0; i < 8; ++i) {
-            addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(i));
-        }
-
-        Representation repr = addPrecomputations.getRepresentation();
-
-        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations2 =
-                new GroupPrecomputationsFactory.GroupPrecomputations(repr, addZp);
-
-        // now add new element
-        addPrecomputations.getPower(addZp.getNeutralElement(), BigInteger.valueOf(9));
-
-        // only first one should have new element
-        assertNull(addPrecomputations2.getPower(
-                addZp.getNeutralElement(), BigInteger.valueOf(9), false
-        ));
-    }
-
-    @Test
-    public void testAddDeserializedGroupPrecomputationsToFactory() {
-        for (int i = 0; i < 8; ++i) {
-            addPrecomputations.getPower(addZp.getUniformlyRandomNonNeutral(),
-                    BigInteger.valueOf(i));
-        }
-
-        Representation repr = addPrecomputations.getRepresentation();
-
-        GroupPrecomputationsFactory.GroupPrecomputations addPrecomputations2 =
-                new GroupPrecomputationsFactory.GroupPrecomputations(repr, addZp);
-
-        // now add new element and insert into store
-        addPrecomputations2.getPower(addZp.getNeutralElement(), BigInteger.valueOf(9));
-
-        GroupPrecomputationsFactory.addGroupPrecomputations(addPrecomputations2);
-
-        // new element should now be added to permutations we obtained from store
-        addPrecomputations.getPower(
-                addZp.getNeutralElement(), BigInteger.valueOf(9), false
-        );
-    }
-
-    @Test
-    public void testAddOddPowers() {
-        GroupElement base = zp.createZnElement(BigInteger.valueOf(2)).toAdditiveGroupElement();
-        // even max exponent
-        GroupElement[] oddPowers = base.precomputeSmallOddPowers(8);
-        addPrecomputations.addOddPowers(base, oddPowers);
-
-        for (int i = 1; i <= 8; i+=2) {
-            assertEquals(addPrecomputations.getPower(base, BigInteger.valueOf(i)), oddPowers[i/2]);
-        }
-
-        // uneven max exponent
-        oddPowers = base.precomputeSmallOddPowers(9);
-        addPrecomputations.addOddPowers(base, oddPowers);
-
-        for (int i = 1; i <= 9; i+=2) {
-            assertEquals(addPrecomputations.getPower(base, BigInteger.valueOf(i)), oddPowers[i/2]);
-        }
-    }
-
-    @Test
-    public void testGetOddPowers() {
-        GroupElement base = zp.createZnElement(BigInteger.valueOf(2)).toAdditiveGroupElement();
-        // even max exponent
-        GroupElement[] oddPowers = base.precomputeSmallOddPowers(8);
-        addPrecomputations.addOddPowers(base, oddPowers);
-        GroupElement[] retrievedOddPowers = addPrecomputations.getOddPowers(base, 8);
-        assertArrayEquals(oddPowers, retrievedOddPowers);
-        retrievedOddPowers = addPrecomputations.getOddPowers(base, 7);
-        assertArrayEquals(oddPowers, retrievedOddPowers);
     }
 }

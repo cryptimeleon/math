@@ -7,6 +7,8 @@ import de.upb.crypto.math.raphael.GroupPrecomputationsFactory.GroupPrecomputatio
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Immutable objects representing elements of a group.
@@ -54,27 +56,23 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
         return result;
     }
 
-    default GroupElement[] precomputeSmallOddPowers(int maxExp) {
-        GroupElement[] res = new GroupElement[(maxExp+1)/2];
-        res[0] = this.getStructure().getNeutralElement();
-        for (int i = 1; i < res.length; i++) {
-            res[i] = res[i-1].op(this);
+    default List<GroupElement> precomputeSmallOddPowers(int maxExp) {
+        List<GroupElement> res = new ArrayList<>();
+        res.add(this.getStructure().getNeutralElement());
+        for (int i = 1; i < (maxExp+1)/2; i++) {
+            res.add(res.get(i-1).op(this));
         }
         return res;
     }
 
     default GroupElement powSlidingWindow(BigInteger exponent, int windowSize,
                                           boolean enableCaching) {
-        GroupElement[] smallOddPowersOfBase;
+        List<GroupElement> smallOddPowersOfBase;
         int oddPowersMaxExp = (1<<windowSize)-1;
         if (enableCaching) {
-            GroupPrecomputations gp = GroupPrecomputationsFactory.get(this.getStructure());
-            smallOddPowersOfBase = gp.getOddPowers(this, oddPowersMaxExp);
-            // If not precomputed yet, we precompute
-            if (smallOddPowersOfBase == null) {
-                smallOddPowersOfBase = this.precomputeSmallOddPowers(oddPowersMaxExp);
-                gp.addOddPowers(this, smallOddPowersOfBase);
-            }
+            GroupPrecomputations groupPrecomputations =
+                    GroupPrecomputationsFactory.get(this.getStructure());
+            smallOddPowersOfBase = groupPrecomputations.getOddPowers(this, oddPowersMaxExp);
         } else {
             smallOddPowersOfBase = this.precomputeSmallOddPowers(oddPowersMaxExp);
         }
@@ -98,7 +96,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
                     }
                 }
 
-                y = y.op(smallOddPowersOfBase[smallExponent / 2]);
+                y = y.op(smallOddPowersOfBase.get(smallExponent / 2));
                 i = s - 1;
             } else {
                 y = y.op(y);
