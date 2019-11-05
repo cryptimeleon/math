@@ -2,6 +2,7 @@ package de.upb.crypto.math.raphael;
 
 import de.upb.crypto.math.expressions.bool.BooleanExpression;
 import de.upb.crypto.math.expressions.group.*;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.math.BigInteger;
@@ -14,17 +15,89 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         EvalSearchMultiExpContext multiExpContext = new EvalSearchMultiExpContext();
         boolean inInversion = false;
         constructMultiExp(expr, inInversion, multiExpContext);
-        System.out.println(multiExpContext.toString());
 
         return evaluateMultiExp(multiExpContext);
     }
 
     private GroupElement evaluateMultiExp(EvalSearchMultiExpContext multiExpContext) {
-        return multiExpContext.bases.get(0);
+        return interleavingSlidingWindowMultiExp(multiExpContext, 4);
     }
 
-    public void constructMultiExp(GroupElementExpression expr, boolean inInversion,
-                                  EvalSearchMultiExpContext multiExpContext) {
+    private
+    GroupElement interleavingSlidingWindowMultiExp(EvalSearchMultiExpContext multiExpContext,
+                                                   int windowSize) {
+        // Enable caching by default for now
+        // TODO: we should not do any precompuations for bases with exponents 1
+        //  in other words, we should select window size individually
+        List<GroupElement> bases = multiExpContext.getBases();
+        List<BigInteger> exponents = multiExpContext.getExponents();
+        GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
+                GroupPrecomputationsFactory.get(bases.get(0).getStructure());
+        List<List<GroupElement>> oddPowers = new ArrayList<>();
+        for (GroupElement base : bases) {
+            oddPowers.add(groupPrecomputations.getOddPowers(base, (1 << windowSize) - 1));
+        }
+        int numBases = bases.size();
+        // make sure all exponents are positive
+        List<BigInteger> posExponents = new ArrayList<>();
+        for (int i = 0; i < exponents.size(); ++i) {
+            BigInteger exp = exponents.get(i);
+            if (exp.compareTo(BigInteger.ZERO) < 0) {
+                posExponents.add(exp.mod(bases.get(i).getStructure().size()));
+            } else {
+                posExponents.add(exp);
+            }
+        }
+
+        // we are assuming that every base has same underlying group
+        // TODO: this only works if every exponent has longer bit length than window size
+        GroupElement A = bases.get(0).getStructure().getNeutralElement();
+        int longestExponentBitLength = getLongestExponentBitLength(posExponents);
+        int[] wh = new int[numBases];
+        int[] e = new int[numBases];
+        for (int i = 0; i < numBases; i++) {
+            wh[i] = -1;
+        }
+        for (int j = longestExponentBitLength - 1; j >= 0; j--) {
+            if (j != longestExponentBitLength - 1) {
+                A = A.op(A);
+            }
+            for (int i = 0; i < numBases; i++) {
+                if (wh[i] == -1 && posExponents.get(i).testBit(j)) {
+                    int J = j - windowSize + 1;
+                    while (!posExponents.get(i).testBit(J)) {
+                        J++;
+                    }
+                    wh[i] = J;
+                    e[i] = 0;
+                    for (int k = j; k >= J; k--) {
+                        e[i] <<= 1;
+                        if (posExponents.get(i).testBit(k)) {
+                            e[i]++;
+                        }
+                    }
+                }
+                if (wh[i] == j) {
+                    A = A.op(oddPowers.get(i).get(e[i] / 2));
+                    wh[i] = -1;
+                }
+            }
+        }
+        return A;
+    }
+
+    private int getLongestExponentBitLength(List<BigInteger> exponents) {
+        int max = 1;
+        for (BigInteger exp : exponents) {
+            if (exp.bitLength() > max) {
+                max = exp.bitLength();
+            }
+        }
+        return max;
+    }
+
+    private void constructMultiExp(GroupElementExpression expr, boolean inInversion,
+                                   EvalSearchMultiExpContext multiExpContext) {
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr op_expr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
@@ -71,21 +144,29 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     protected static class EvalSearchMultiExpContext {
 
-        List<GroupElement> bases;
-        List<BigInteger> exponents;
+        private List<GroupElement> bases;
+        private List<BigInteger> exponents;
 
-        public EvalSearchMultiExpContext() {
+        EvalSearchMultiExpContext() {
             bases = new ArrayList<>();
             exponents = new ArrayList<>();
         }
 
-        public void addExponentiation(GroupElement base, BigInteger exponent, boolean inInversion) {
+        void addExponentiation(GroupElement base, BigInteger exponent, boolean inInversion) {
             bases.add(base);
             if (inInversion) {
                 exponents.add(BigInteger.ZERO.subtract(exponent));
             } else {
                 exponents.add(exponent);
             }
+        }
+
+        public List<GroupElement> getBases() {
+            return bases;
+        }
+
+        public List<BigInteger> getExponents() {
+            return exponents;
         }
 
         public String toString() {
