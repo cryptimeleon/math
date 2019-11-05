@@ -59,10 +59,24 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     default List<GroupElement> precomputeSmallOddPowers(int maxExp) {
         List<GroupElement> res = new ArrayList<>();
         res.add(this.getStructure().getNeutralElement());
+        GroupElement square = this.op(this);
         for (int i = 1; i < (maxExp+1)/2; i++) {
-            res.add(res.get(i-1).op(this));
+            res.add(res.get(i-1).op(square));
         }
         return res;
+    }
+
+    default GroupElement powSlidingWindow(BigInteger exponent) {
+        // Probably cannot assume that caching will be worth it by default
+        return powSlidingWindow(exponent, 4, false);
+    }
+
+    default GroupElement powSlidingWindow(BigInteger exponent, boolean enableCaching) {
+        if (enableCaching) {
+            return powSlidingWindow(exponent, 8, true);
+        } else {
+            return powSlidingWindow(exponent, 4, false);
+        }
     }
 
     default GroupElement powSlidingWindow(BigInteger exponent, int windowSize,

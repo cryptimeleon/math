@@ -5,6 +5,8 @@ import com.github.noconnor.junitperf.JUnitPerfTest;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.RingUnitGroup;
+import de.upb.crypto.math.standalone.test.ZpParams;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.*;
@@ -21,7 +23,7 @@ public class SingleExponentiationTest {
             "109869245232364730066609837018108561065242031153677";
     static final Zp zp = new Zp(new BigInteger(modulo));
     static final Zn exponentZn = new Zn(new BigInteger(modulo).subtract(BigInteger.ONE));
-    static Zp.ZpElement base;
+    static RingUnitGroup.RingUnitGroupElement[] bases;
     static Zn.ZnElement[] exponents;
 
     static BilinearGroup bilGroup;
@@ -29,8 +31,11 @@ public class SingleExponentiationTest {
 
     @BeforeClass
     public static void setup() {
-        base = zp.getUniformlyRandomUnit();
-        exponents = new Zn.ZnElement[20];
+        bases = new RingUnitGroup.RingUnitGroupElement[5];
+        for (int i = 0; i < bases.length; ++i) {
+            bases[i] = zp.getUniformlyRandomUnit().toUnitGroupElement();
+        }
+        exponents = new Zn.ZnElement[10];
         for (int i = 0; i < exponents.length; ++i) {
             exponents[i] = exponentZn.getUniformlyRandomElement();
         }
@@ -41,34 +46,35 @@ public class SingleExponentiationTest {
     }
 
     @Test
-    @JUnitPerfTest(durationMs = 10_000, warmUpMs = 5_000)
+    @JUnitPerfTest(durationMs = 30_000, warmUpMs = 5_000)
     public void defaultPow() {
-        GroupElement result = base.toUnitGroupElement();
         //GroupElement result = bilBase.op(bilGroup.getG1().getNeutralElement());
         for (Zn.ZnElement exp : exponents) {
-            result = result.pow(exp.getInteger());
+            for (RingUnitGroup.RingUnitGroupElement base : bases) {
+                base.pow(exp.getInteger());
+            }
         }
     }
 
     @Test
-    @JUnitPerfTest(durationMs = 10_000, warmUpMs = 5_000)
+    @JUnitPerfTest(durationMs = 30_000, warmUpMs = 5_000)
     public void slidingPow() {
         // use optimal value 4
-        GroupElement result = base.toUnitGroupElement();
-        //GroupElement result = bilBase.op(bilGroup.getG1().getNeutralElement());//
         for (Zn.ZnElement exp : exponents) {
-            result = result.powSlidingWindow(exp.getInteger(), 4, false);
+            for (RingUnitGroup.RingUnitGroupElement base : bases) {
+                base.powSlidingWindow(exp.getInteger(), 4 , false);
+            }
         }
     }
 
     @Test
-    @JUnitPerfTest(durationMs = 10_000, warmUpMs = 5_000)
+    @JUnitPerfTest(durationMs = 30_000, warmUpMs = 5_000)
     public void slidingPowCaching() {
         // use optimal value 4
-        GroupElement result = base.toUnitGroupElement();
-        // GroupElement result = bilBase.op(bilGroup.getG1().getNeutralElement());
         for (Zn.ZnElement exp : exponents) {
-            result = result.powSlidingWindow(exp.getInteger(), 8, true);
+            for (RingUnitGroup.RingUnitGroupElement base : bases) {
+                base.powSlidingWindow(exp.getInteger(), 8, true);
+            }
         }
     }
 }

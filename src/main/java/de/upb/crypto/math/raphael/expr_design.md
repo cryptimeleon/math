@@ -146,25 +146,3 @@ For [PS18]:
 
 
 
-## Material
-
-Singleton code (thread-safe):
-```Java
-public class Singleton {
-
-    private SingletonClass() {}
-
-    private static class InstanceHolder {
-
-        static final Singleton INSTANCE = new Singleton();
-
-    }
-
-    public static Singleton getInstance() {
-
-        return InstanceHolder.INSTANCE;
-
-    }
-
-}
-```
