@@ -58,7 +58,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
 
     default List<GroupElement> precomputeSmallOddPowers(int maxExp) {
         List<GroupElement> res = new ArrayList<>();
-        res.add(this.getStructure().getNeutralElement());
+        res.add(this);
         GroupElement square = this.op(this);
         for (int i = 1; i < (maxExp+1)/2; i++) {
             res.add(res.get(i-1).op(square));

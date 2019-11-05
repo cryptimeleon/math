@@ -87,4 +87,19 @@ public class GroupPrecomputationsTest {
                 mulPrecomputations.getOddPowers(base, maxExp).toArray()
         );
     }
+
+    @Test
+    public void testNotCachedOddPowers() {
+        int maxExp = 6;
+        GroupElement base = mulZp.getUniformlyRandomNonNeutral();
+        System.out.println("Chose base: " + base.toString());
+
+        List<GroupElement> correctOddPowers = new LinkedList<>();
+        correctOddPowers.add(base);
+        correctOddPowers.add(base.pow(3));
+        correctOddPowers.add(base.pow(5));
+
+        assertArrayEquals(correctOddPowers.toArray(),
+                base.precomputeSmallOddPowers(6).toArray());
+    }
 }
