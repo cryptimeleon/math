@@ -2,10 +2,12 @@ package de.upb.crypto.math.raphael;
 
 import de.upb.crypto.math.expressions.bool.BooleanExpression;
 import de.upb.crypto.math.expressions.group.*;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class OptGroupElementExpressionEvaluator implements GroupElementExpressionEvaluator {
 
@@ -17,21 +19,25 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     @Override
     public GroupElement evaluate(GroupElementExpression expr) {
-        EvalSearchMultiExpContext multiExpContext = new EvalSearchMultiExpContext();
+        MultiExpContext multiExpContext = new MultiExpContext();
         boolean inInversion = false;
-        extractMultiExpContext(expr, inInversion, multiExpContext);
+        MultiExpContext(expr, inInversion, multiExpContext);
+        if (!multiExpContext.allBasesSameGroup()) {
+            throw new IllegalArgumentException("Expression contains elements with different" +
+                    "groups outside of pairings.");
+        }
 
         return evaluateMultiExp(multiExpContext);
     }
 
-    private GroupElement evaluateMultiExp(EvalSearchMultiExpContext multiExpContext) {
+    private GroupElement evaluateMultiExp(MultiExpContext multiExpContext) {
         // use swantes recommendations
         if (enableCaching && multiExpContext.bases.size() < 10) {
-            // use interleaved
-            return interleavingSlidingWindowMultiExp(multiExpContext, 4);
+            // either 1 or 2 window size
+            return simultaneousSlidingWindowMulExp(multiExpContext, 1);
         } else {
             if (enableCaching) {
-                // TODO: as large as possible
+                // TODO: chose sensible large value but not too large
                 return interleavingSlidingWindowMultiExp(multiExpContext, 8);
             } else {
                 return interleavingSlidingWindowMultiExp(multiExpContext, 4);
@@ -39,12 +45,78 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
-    private
-    GroupElement interleavingSlidingWindowMultiExp(EvalSearchMultiExpContext multiExpContext,
-                                                   int windowSize) {
-        // Enable caching by default for now
-        // TODO: we should not do any precompuations for bases with exponents 1
-        //  in other words, we should select window size individually
+    private GroupElement simultaneousSlidingWindowMulExp(MultiExpContext multiExpContext,
+                                                         int windowSize) {
+        // TODO: we should not do any precomputations for bases with exponents 1
+        List<GroupElement> bases = multiExpContext.getBases();
+        List<BigInteger> exponents = multiExpContext.getExponents();
+        List<GroupElement> powerProducts = new ArrayList<>();
+        // we just assume caching is enabled since only precomputations class has method
+        // for computing product powers for now and this is only used when caching is enabled
+        GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
+                GroupPrecomputationsFactory.get(bases.get(0).getStructure());
+        powerProducts = groupPrecomputations.getPowerProducts(bases, windowSize);
+        int numBases = bases.size();
+        // make sure all exponents are positive
+        List<BigInteger> posExponents = new ArrayList<>();
+        for (int i = 0; i < exponents.size(); ++i) {
+            BigInteger exp = exponents.get(i);
+            if (exp.compareTo(BigInteger.ZERO) < 0) {
+                posExponents.add(exp.mod(bases.get(i).getStructure().size()));
+            } else {
+                posExponents.add(exp);
+            }
+        }
+
+        GroupElement A = bases.get(0).getStructure().getNeutralElement();
+        int j = getLongestExponentBitLength(exponents) - 1;
+        while (j >= 0) {
+            final int finalj = j;
+            if (IntStream.range(0, numBases)
+                    .noneMatch(it -> posExponents.get(it).testBit(finalj))) {
+                A = A.op(A);
+                j--;
+            } else {
+                int jNew = Math.max(j - windowSize, -1);
+                int J = jNew + 1;
+
+                while (true) {
+                    final int finalJ = J;
+                    if (IntStream.range(0, numBases)
+                            .anyMatch(it -> posExponents.get(it).testBit(finalJ))) {
+                        break;
+                    }
+                    J++;
+                }
+                int e = 0;
+                for (int i = numBases - 1; i >= 0; i--) {
+                    int ePart = 0;
+                    for (int k = j; k >= J; k--) {
+                        ePart <<= 1;
+                        if (posExponents.get(i).testBit(k)) {
+                            ePart++;
+                        }
+                    }
+                    e <<= windowSize;
+                    e |= ePart;
+                }
+                while (j >= J) {
+                    A = A.op(A);
+                    j--;
+                }
+                A = A.op(powerProducts.get(e));
+                while (j > jNew) {
+                    A = A.op(A);
+                    j--;
+                }
+            }
+        }
+        return A;
+    }
+
+    private GroupElement interleavingSlidingWindowMultiExp(MultiExpContext multiExpContext,
+                                                           int windowSize) {
+        // TODO: we should not do any precomputations for bases with exponents 1
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
         List<List<GroupElement>> oddPowers = new ArrayList<>();
@@ -124,20 +196,20 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         return max;
     }
 
-    private void extractMultiExpContext(GroupElementExpression expr, boolean inInversion,
-                                        EvalSearchMultiExpContext multiExpContext) {
+    private void MultiExpContext(GroupElementExpression expr, boolean inInversion,
+                                 MultiExpContext multiExpContext) {
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr op_expr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
             if (inInversion) {
-                extractMultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
-                extractMultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
+                MultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
+                MultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
             } else {
-                extractMultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
-                extractMultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
+                MultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
+                MultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
             }
         } else if (expr instanceof GroupInvExpr) {
-            extractMultiExpContext(((GroupInvExpr) expr).getBase(), !inInversion, multiExpContext);
+            MultiExpContext(((GroupInvExpr) expr).getBase(), !inInversion, multiExpContext);
         } else if (expr instanceof GroupPowExpr) {
             GroupPowExpr pow_expr = (GroupPowExpr) expr;
             // for now, just use evaluate naive on base and exponent
@@ -170,12 +242,12 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
-    protected static class EvalSearchMultiExpContext {
+    protected static class MultiExpContext {
 
         private List<GroupElement> bases;
         private List<BigInteger> exponents;
 
-        EvalSearchMultiExpContext() {
+        MultiExpContext() {
             bases = new ArrayList<>();
             exponents = new ArrayList<>();
         }
@@ -187,6 +259,16 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             } else {
                 exponents.add(exponent);
             }
+        }
+
+        boolean allBasesSameGroup() {
+            Group group = bases.get(0).getStructure();
+            for (GroupElement base : bases) {
+                if (base.getStructure() != group) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public List<GroupElement> getBases() {

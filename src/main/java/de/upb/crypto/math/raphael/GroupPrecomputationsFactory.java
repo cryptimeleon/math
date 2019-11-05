@@ -7,7 +7,6 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,6 +38,12 @@ public class GroupPrecomputationsFactory {
         private Map<GroupElement, List<GroupElement>> oddPowers;
 
         /**
+         * Stores power products for simultaneous multiexponentiation algorithm.
+         */
+        // TODO: How to do this representation?
+        private Map<PowerProductKey, List<GroupElement>> powerProducts;
+
+        /**
          * Group this object stores precomputations for.
          */
         private Group group;
@@ -47,6 +52,7 @@ public class GroupPrecomputationsFactory {
         public GroupPrecomputations(Group group) {
             // TODO: Using this enough for thread safety?
             oddPowers = new ConcurrentHashMap<>();
+            powerProducts = new ConcurrentHashMap<>();
             this.group = group;
         }
 
@@ -92,6 +98,84 @@ public class GroupPrecomputationsFactory {
             return baseOddPowers.subList(0, (maxExp+1)/2);
         }
 
+        /**
+         * Adds all power products of combinations of bases restricted by window size. Used
+         * for simultaneous multiexponentiation algorithm.
+         *
+         * @param bases
+         * @param windowSize
+         */
+        public void addPowerProducts(List<GroupElement> bases, int windowSize) {
+            int numPrecomputedPowers = 1 << (windowSize * bases.size());
+            PowerProductKey key = new PowerProductKey(bases, windowSize);
+            List<GroupElement> powerProductsEntry = powerProducts.
+                    computeIfAbsent(key, k -> new ArrayList<>(numPrecomputedPowers));
+            // prefill arraylist
+            for (int i = 0; i < numPrecomputedPowers; ++i) {
+                powerProductsEntry.add(group.getNeutralElement());
+            }
+
+            powerProductsEntry.set(0, group.getNeutralElement());
+            for (int i = 1; i < (1 << windowSize); i++) {
+                powerProductsEntry.set(i, powerProductsEntry.get(i-1).op(bases.get(0)));
+            }
+            for (int b = 1; b < bases.size(); b++) {
+                int shift = windowSize * b;
+                for (int e = 1; e < (1 << windowSize); e++) {
+                    int eShifted = e << shift;
+                    int previousEShifted = (e - 1) << shift;
+                    for (int i = 0; i < (1 << shift); i++) {
+                        powerProductsEntry.set(
+                                eShifted + i,
+                                powerProductsEntry.get(previousEShifted + i).op(bases.get(b))
+                        );
+                    }
+                }
+            }
+        }
+
+        /**
+         * Retreive power products for simultaneous multiexponentiation.
+         * @param bases
+         * @param windowSize
+         * @return
+         */
+        public List<GroupElement> getPowerProducts(List<GroupElement> bases, int windowSize) {
+            PowerProductKey key = new PowerProductKey(bases, windowSize);
+            List<GroupElement> powerProductsEntry = powerProducts.get(key);
+            if (powerProductsEntry == null) {
+                addPowerProducts(bases, windowSize);
+            }
+            return powerProducts.get(key);
+        }
+
+
+        private static class PowerProductKey {
+
+            private GroupElement[] bases;
+
+            private int windowSize;
+
+            PowerProductKey(List<GroupElement> bases, int windowSize) {
+                this.bases = bases.toArray(new GroupElement[0]);
+                this.windowSize = windowSize;
+            }
+
+            @Override
+            public int hashCode() {
+                return Arrays.hashCode(bases) + 31 * windowSize;
+            }
+
+            @Override
+            public boolean equals(Object other) {
+                if (!(other instanceof PowerProductKey)) {
+                    return false;
+                }
+                PowerProductKey otherPPK = (PowerProductKey) other;
+                return Arrays.equals(bases, otherPPK.bases) && windowSize == otherPPK.windowSize;
+            }
+        }
+
         @Override
         public Representation getRepresentation() {
             return ReprUtil.serialize(this);
@@ -102,6 +186,7 @@ public class GroupPrecomputationsFactory {
          */
         public void reset() {
             oddPowers = new ConcurrentHashMap<>();
+            powerProducts = new ConcurrentHashMap<>();
         }
     }
 

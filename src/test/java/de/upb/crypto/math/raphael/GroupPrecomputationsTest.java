@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -90,7 +91,6 @@ public class GroupPrecomputationsTest {
 
     @Test
     public void testNotCachedOddPowers() {
-        int maxExp = 6;
         GroupElement base = mulZp.getUniformlyRandomNonNeutral();
         System.out.println("Chose base: " + base.toString());
 
@@ -101,5 +101,17 @@ public class GroupPrecomputationsTest {
 
         assertArrayEquals(correctOddPowers.toArray(),
                 base.precomputeSmallOddPowers(6).toArray());
+    }
+
+    @Test
+    public void testAddGetPowerProducts() {
+        List<GroupElement> bases = new ArrayList<>();
+        int numBases = 3;
+        int windowSize = 2;
+        for (int i = 0; i < numBases; ++i) {
+            bases.add(mulZp.getUniformlyRandomNonNeutral());
+        }
+        List<GroupElement> powerProducts = mulPrecomputations.getPowerProducts(bases, windowSize);
+        assertNotEquals(null, powerProducts);
     }
 }
