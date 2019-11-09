@@ -36,15 +36,24 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     GroupElement op(Element e) throws IllegalArgumentException;
 
     /**
+     * @return this element "squared" (if op is an multiplication), or "doubled" (if op is an addition)
+     * If there is a more efficient algorithm for squaring (e.g. for elliptic curve points),
+     * these classes should override this method.
+     */
+    default GroupElement square() {
+        return this.op(this);
+    }
+
+    /**
      * Calculates the result of applying the group operation k times.
      * i.e. it computes k*this (additive group) or this^k (multiplicative group).
      * For negative exponents k, computes this.inv().pow(-k).
      *
      * Implementations wanting to override pow() behavior should override this method instead of the ZnELement and long overloads.
      */
-    default GroupElement pow(BigInteger k) { //default implementation: square&multiply algorithm
+    default GroupElement powOld(BigInteger k) { //default implementation: square&multiply algorithm
         if (k.signum() < 0)
-            return pow(k.negate()).inv();
+            return powOld(k.negate()).inv();
         GroupElement operand = this;
 
         GroupElement result = getStructure().getNeutralElement();
@@ -56,10 +65,35 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
         return result;
     }
 
+    default GroupElement pow(BigInteger exponent) {
+        return this.powNew(exponent, false);
+    }
+
+    /**
+     * Optimized implementation that automatically chooses correct algorithm.
+     * @param exponent
+     */
+    default GroupElement powNew(BigInteger exponent, boolean enableCaching) {
+        if (this.getStructure().estimateCostOfInvert() <= 100) {
+            // use signed digit WNAF method
+            if (enableCaching) {
+                return this.powWnaf(exponent, 8, enableCaching);
+            } else {
+                return this.powWnaf(exponent, 4, enableCaching);
+            }
+        } else {
+            if (enableCaching) {
+                return this.powSlidingWindow(exponent, 8, enableCaching);
+            } else {
+                return this.powSlidingWindow(exponent, 4, enableCaching);
+            }
+        }
+    }
+
     default List<GroupElement> precomputeSmallOddPowers(int maxExp) {
         List<GroupElement> res = new ArrayList<>();
         res.add(this);
-        GroupElement square = this.op(this);
+        GroupElement square = this.square();
         for (int i = 1; i < (maxExp+1)/2; i++) {
             res.add(res.get(i-1).op(square));
         }
@@ -93,9 +127,6 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
         GroupElement y = this.getStructure().getNeutralElement();
         int l = exponent.bitLength();
         int i = l - 1;
-        if (windowSize > 20) {
-            throw new IllegalArgumentException("too large windowSize");
-        }
         while (i > -1) {
             if (exponent.testBit(i)) {
                 int s = Math.max(0, i - windowSize + 1);
@@ -113,11 +144,73 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
                 y = y.op(smallOddPowersOfBase.get(smallExponent / 2));
                 i = s - 1;
             } else {
-                y = y.op(y);
+                y = y.square();
                 i--;
             }
         }
         return y;
+    }
+
+    /**
+     * @return Lowest n bits of i. Works for all n < 32.
+     */
+    default int getNLeastSignificantBits(int i, int numberOfLowBits) {
+        return i & ((1 << numberOfLowBits) - 1);
+    }
+
+    default int[] precomputeExponentDigitsForWNAF(BigInteger exponent, int windowSize) {
+        BigInteger c = exponent;
+        int[] bi = new int[exponent.bitLength()+1];
+        int i = 0;
+        while (c.signum() > 0) {
+            int b = 0;
+            if (c.testBit(0)) {
+                b = getNLeastSignificantBits(c.intValue(), windowSize+1);
+                if (b >= 1 << windowSize) {
+                    b -= 1 << (windowSize+1);
+                }
+                c = c.subtract(BigInteger.valueOf(b));
+            }
+            bi[i] = b;
+            i++;
+            c = c.shiftRight(1);
+        }
+        int[] bWithoutLeadingZeros = new int[i];
+        System.arraycopy(bi, 0, bWithoutLeadingZeros, 0, i);
+        return bWithoutLeadingZeros;
+    }
+
+    /**
+     * @return base^exponent in the group, using the wNAF approach
+     */
+    default GroupElement powWnaf(BigInteger exponent, int windowSize, boolean enableCaching) {
+        int oddPowersMaxExp = (1<<windowSize)-1;
+        int[] exponentDigits;
+        List<GroupElement> smallOddPowers;
+        if (enableCaching) {
+            GroupPrecomputations groupPrecomputations =
+                    GroupPrecomputationsFactory.get(this.getStructure());
+            smallOddPowers = groupPrecomputations.getOddPowers(this, oddPowersMaxExp);
+        } else {
+            smallOddPowers = this.precomputeSmallOddPowers(oddPowersMaxExp);
+        }
+        exponentDigits = precomputeExponentDigitsForWNAF(exponent, windowSize);
+
+        GroupElement A = this.getStructure().getNeutralElement();
+        for (int i = exponentDigits.length-1; i >= 0; i--) {
+            if (i != exponentDigits.length-1) {
+                A = A.square();
+            }
+            int exponentDigit = exponentDigits[i];
+            if (exponentDigit != 0) {
+                GroupElement power = smallOddPowers.get(Math.abs(exponentDigit) / 2);
+                if (exponentDigit < 0) {
+                    power = power.inv();
+                }
+                A = A.op(power);
+            }
+        }
+        return A;
     }
 
     /**
