@@ -15,7 +15,8 @@ import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 
-public class SingleExponentiationTest {
+@Ignore
+public class SingleExponentiationPerfTest {
 
     @Rule
     public JUnitPerfRule perfTestRule = new JUnitPerfRule();
