@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-//@Ignore
+@Ignore
 public class OptGroupElementExpressionEvaluatorBNPerfTest {
 
     @Rule
@@ -100,15 +100,24 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
     @Test
     public void testInterleavedCorrectnessNoCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCaching(false);
+        evaluator.setEnableCachingInterleaved(false);
         evaluator.setForcedMultiExpAlgorithm(
                 OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED);
         assertEquals(interleavedExprResult, interleavedPerfTestExpr.evaluate(evaluator));
     }
 
     @Test
-    public void testSimultaneousCorrectness() {
+    public void testSimultaneousCorrectnessCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setForcedMultiExpAlgorithm(
+                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS);
+        assertEquals(simultaneousExprResult, simultaneousPerfTestExpr.evaluate(evaluator));
+    }
+
+    @Test
+    public void testSimultaneousCorrectnessNoCaching() {
+        OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setEnableCachingSimultaneous(false);
         evaluator.setForcedMultiExpAlgorithm(
                 OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS);
         assertEquals(simultaneousExprResult, simultaneousPerfTestExpr.evaluate(evaluator));
@@ -127,7 +136,7 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
     @JUnitPerfTest(durationMs = 15_000, warmUpMs = 5_000)
     public void testInterleavedOptNoCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCaching(false);
+        evaluator.setEnableCachingInterleaved(false);
         evaluator.setForcedMultiExpAlgorithm(
                 OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED);
         interleavedPerfTestExpr.evaluate(evaluator);
@@ -141,8 +150,18 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
 
     @Test
     @JUnitPerfTest(durationMs = 15_000, warmUpMs = 5_000)
-    public void testSimultaneousPerf() {
+    public void testSimultaneousCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setForcedMultiExpAlgorithm(
+                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS);
+        simultaneousPerfTestExpr.evaluate(evaluator);
+    }
+
+    @Test
+    @JUnitPerfTest(durationMs = 15_000, warmUpMs = 5_000)
+    public void testSimultaneousNoCachingPerf() {
+        OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setEnableCachingSimultaneous(false);
         evaluator.setForcedMultiExpAlgorithm(
                 OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS);
         simultaneousPerfTestExpr.evaluate(evaluator);

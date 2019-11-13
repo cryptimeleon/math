@@ -11,12 +11,25 @@ import java.util.stream.IntStream;
 
 public class OptGroupElementExpressionEvaluator implements GroupElementExpressionEvaluator {
 
-    private boolean enableCaching;
+    private boolean enableCachingInterleaved;
+    private boolean enableCachingSimultaneous;
     private ForceMultiExpAlgorithmSetting forcedMultiExpAlgorithm;
+    private int windowSizeInterleavedCaching;
+    private int windowSizeInterleavedNoCaching;
+    private int windowSizeSimultaneousCaching;
+    private int windowSizeSimultaneousNoCaching;
+    private int simultaneousNumBasesCutoff;
 
     public OptGroupElementExpressionEvaluator() {
-        enableCaching = true;
+        // TODO: best default values here?
+        enableCachingInterleaved = true;
+        enableCachingSimultaneous = true;
         forcedMultiExpAlgorithm = ForceMultiExpAlgorithmSetting.DISABLED;
+        windowSizeInterleavedCaching = 8;
+        windowSizeInterleavedNoCaching = 4;
+        windowSizeSimultaneousCaching = 1;
+        windowSizeSimultaneousNoCaching = 1;
+        simultaneousNumBasesCutoff = 10;
     }
 
     @Override
@@ -34,19 +47,65 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     private GroupElement evaluateMultiExp(MultiExpContext multiExpContext) {
         // use swantes recommendations
-        if ((enableCaching && multiExpContext.getBases().size() < 10
+        if ((multiExpContext.getBases().size() < simultaneousNumBasesCutoff
                 || forcedMultiExpAlgorithm == ForceMultiExpAlgorithmSetting.SIMULTANEOUS)
                 && forcedMultiExpAlgorithm != ForceMultiExpAlgorithmSetting.INTERLEAVED) {
             // either 1 or 2 window size
-            return simultaneousSlidingWindowMulExp(multiExpContext, 1);
-        } else {
-            if (enableCaching) {
-                // TODO: chose sensible large value but not too large, is 8 good?
-                return interleavingSlidingWindowMultiExp(multiExpContext, 8);
+            if (enableCachingSimultaneous) {
+                return simultaneousSlidingWindowMulExp(
+                        multiExpContext,
+                        windowSizeSimultaneousCaching
+                );
             } else {
-                return interleavingSlidingWindowMultiExp(multiExpContext, 4);
+                return simultaneousSlidingWindowMulExp(
+                        multiExpContext,
+                        windowSizeSimultaneousNoCaching
+                );
+            }
+
+        } else {
+            if (enableCachingInterleaved) {
+                return interleavingSlidingWindowMultiExp(
+                        multiExpContext,
+                        windowSizeInterleavedCaching
+                );
+            } else {
+                return interleavingSlidingWindowMultiExp(
+                        multiExpContext,
+                        windowSizeInterleavedNoCaching
+                );
             }
         }
+    }
+
+    private List<GroupElement> computePowerProducts(List<GroupElement> bases, int windowSize) {
+        // TODO: Having this in two places (here and GroupPrecomputations) probably not ideal
+        int numPrecomputedPowers = 1 << (windowSize * bases.size());
+        List<GroupElement> powerProducts = new ArrayList<>(numPrecomputedPowers);
+        Group group = bases.get(0).getStructure();
+        // prefill arraylist
+        for (int i = 0; i < numPrecomputedPowers; ++i) {
+            powerProducts.add(group.getNeutralElement());
+        }
+
+        powerProducts.set(0, group.getNeutralElement());
+        for (int i = 1; i < (1 << windowSize); i++) {
+            powerProducts.set(i, powerProducts.get(i-1).op(bases.get(0)));
+        }
+        for (int b = 1; b < bases.size(); b++) {
+            int shift = windowSize * b;
+            for (int e = 1; e < (1 << windowSize); e++) {
+                int eShifted = e << shift;
+                int previousEShifted = (e - 1) << shift;
+                for (int i = 0; i < (1 << shift); i++) {
+                    powerProducts.set(
+                            eShifted + i,
+                            powerProducts.get(previousEShifted + i).op(bases.get(b))
+                    );
+                }
+            }
+        }
+        return powerProducts;
     }
 
     private GroupElement simultaneousSlidingWindowMulExp(MultiExpContext multiExpContext,
@@ -55,11 +114,13 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
         List<GroupElement> powerProducts = new ArrayList<>();
-        // we just assume caching is enabled since only precomputations class has method
-        // for computing product powers for now and this is only used when caching is enabled
-        GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
-                GroupPrecomputationsFactory.get(bases.get(0).getStructure());
-        powerProducts = groupPrecomputations.getPowerProducts(bases, windowSize);
+        if (enableCachingSimultaneous) {
+            GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
+                    GroupPrecomputationsFactory.get(bases.get(0).getStructure());
+            powerProducts = groupPrecomputations.getPowerProducts(bases, windowSize);
+        } else {
+            powerProducts = computePowerProducts(bases, windowSize);
+        }
         int numBases = bases.size();
         // make sure all exponents are positive
         List<BigInteger> posExponents = new ArrayList<>();
@@ -120,11 +181,10 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     private GroupElement interleavingSlidingWindowMultiExp(MultiExpContext multiExpContext,
                                                            int windowSize) {
-        // TODO: we should not do any precomputations for bases with exponents 1
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
         List<List<GroupElement>> oddPowers = new ArrayList<>();
-        if (enableCaching) {
+        if (enableCachingInterleaved) {
             GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
                     GroupPrecomputationsFactory.get(bases.get(0).getStructure());
             for (GroupElement base : bases) {
@@ -257,6 +317,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
 
         void addExponentiation(GroupElement base, BigInteger exponent, boolean inInversion) {
+            // TODO: bases with exponents one need extra handling to avoid precomputations
             bases.add(base);
             if (inInversion) {
                 exponents.add(BigInteger.ZERO.subtract(exponent));
@@ -304,12 +365,36 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         return expr;
     }
 
-    public void setEnableCaching(boolean newSetting) {
-        enableCaching = newSetting;
+    public void setEnableCachingInterleaved(boolean newSetting) {
+        enableCachingInterleaved = newSetting;
+    }
+
+    public void setEnableCachingSimultaneous(boolean newSetting) {
+        enableCachingSimultaneous = newSetting;
     }
 
     public void setForcedMultiExpAlgorithm(ForceMultiExpAlgorithmSetting newSetting) {
         forcedMultiExpAlgorithm = newSetting;
+    }
+
+    public void setWindowSizeInterleavedCaching(int newSetting) {
+        windowSizeInterleavedCaching = newSetting;
+    }
+
+    public void setWindowSizeInterleavedNoCaching(int newSetting) {
+        this.windowSizeInterleavedNoCaching = newSetting;
+    }
+
+    public void setWindowSizeSimultaneousCaching(int newSetting) {
+        windowSizeSimultaneousCaching = newSetting;
+    }
+
+    public void setWindowSizeSimultaneousNoCaching(int newSetting) {
+        windowSizeSimultaneousNoCaching = newSetting;
+    }
+
+    public void setSimultaneousNumBasesCutoff(int newSetting) {
+        this.simultaneousNumBasesCutoff = newSetting;
     }
 
     public enum ForceMultiExpAlgorithmSetting {
