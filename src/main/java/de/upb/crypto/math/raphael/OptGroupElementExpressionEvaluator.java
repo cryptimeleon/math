@@ -4,6 +4,7 @@ import de.upb.crypto.math.expressions.bool.BooleanExpression;
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.RingAdditiveGroup;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -122,23 +123,13 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             powerProducts = computePowerProducts(bases, windowSize);
         }
         int numBases = bases.size();
-        // make sure all exponents are positive
-        List<BigInteger> posExponents = new ArrayList<>();
-        for (int i = 0; i < exponents.size(); ++i) {
-            BigInteger exp = exponents.get(i);
-            if (exp.compareTo(BigInteger.ZERO) < 0) {
-                posExponents.add(exp.mod(bases.get(i).getStructure().size()));
-            } else {
-                posExponents.add(exp);
-            }
-        }
 
         GroupElement A = bases.get(0).getStructure().getNeutralElement();
         int j = getLongestExponentBitLength(exponents) - 1;
         while (j >= 0) {
             final int finalj = j;
             if (IntStream.range(0, numBases)
-                    .noneMatch(it -> posExponents.get(it).testBit(finalj))) {
+                    .noneMatch(it -> exponents.get(it).testBit(finalj))) {
                 A = A.op(A);
                 j--;
             } else {
@@ -148,7 +139,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                 while (true) {
                     final int finalJ = J;
                     if (IntStream.range(0, numBases)
-                            .anyMatch(it -> posExponents.get(it).testBit(finalJ))) {
+                            .anyMatch(it -> exponents.get(it).testBit(finalJ))) {
                         break;
                     }
                     J++;
@@ -158,7 +149,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                     int ePart = 0;
                     for (int k = j; k >= J; k--) {
                         ePart <<= 1;
-                        if (posExponents.get(i).testBit(k)) {
+                        if (exponents.get(i).testBit(k)) {
                             ePart++;
                         }
                     }
@@ -196,20 +187,10 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             }
         }
         int numBases = bases.size();
-        // make sure all exponents are positive
-        List<BigInteger> posExponents = new ArrayList<>();
-        for (int i = 0; i < exponents.size(); ++i) {
-            BigInteger exp = exponents.get(i);
-            if (exp.compareTo(BigInteger.ZERO) < 0) {
-                posExponents.add(exp.mod(bases.get(i).getStructure().size()));
-            } else {
-                posExponents.add(exp);
-            }
-        }
 
         // we are assuming that every base has same underlying group
         GroupElement A = bases.get(0).getStructure().getNeutralElement();
-        int longestExponentBitLength = getLongestExponentBitLength(posExponents);
+        int longestExponentBitLength = getLongestExponentBitLength(exponents);
         int[] wh = new int[numBases];
         int[] e = new int[numBases];
         for (int i = 0; i < numBases; i++) {
@@ -220,16 +201,16 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                 A = A.op(A);
             }
             for (int i = 0; i < numBases; i++) {
-                if (wh[i] == -1 && posExponents.get(i).testBit(j)) {
+                if (wh[i] == -1 && exponents.get(i).testBit(j)) {
                     int J = j - windowSize + 1;
-                    while (!testBit(posExponents.get(i), J)) {
+                    while (!testBit(exponents.get(i), J)) {
                         J++;
                     }
                     wh[i] = J;
                     e[i] = 0;
                     for (int k = j; k >= J; k--) {
                         e[i] <<= 1;
-                        if (testBit(posExponents.get(i), k)) {
+                        if (testBit(exponents.get(i), k)) {
                             e[i]++;
                         }
                     }
@@ -265,6 +246,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr op_expr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
+            // TODO: this only works for multiplicative groups, other rules for additive
             if (inInversion) {
                 extractMultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
                 extractMultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
@@ -290,8 +272,8 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         } else if (expr instanceof PairingExpr) {
             PairingExpr pair_expr = (PairingExpr) expr;
             // TODO: Can do this in parallel
-            GroupElement lhs = pair_expr.evaluate(this);
-            GroupElement rhs = pair_expr.evaluate(this);
+            GroupElement lhs = pair_expr.getLhs().evaluate(this);
+            GroupElement rhs = pair_expr.getRhs().evaluate(this);
             GroupElement pair_result = pair_expr.getMap().apply(lhs, rhs);
             // Also use this as basis for multiexp
             multiExpContext.addExponentiation(pair_result, BigInteger.ONE, inInversion);
@@ -318,11 +300,21 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
         void addExponentiation(GroupElement base, BigInteger exponent, boolean inInversion) {
             // TODO: bases with exponents one need extra handling to avoid precomputations
-            bases.add(base);
-            if (inInversion) {
-                exponents.add(BigInteger.ZERO.subtract(exponent));
-            } else {
+            // TODO: extra handling for additive groups, this is not great testing for that though
+            if (base.getStructure() instanceof RingAdditiveGroup) {
+                if (inInversion) {
+                    bases.add(base.inv());
+                } else {
+                    bases.add(base);
+                }
                 exponents.add(exponent);
+            } else {
+                bases.add(base);
+                if (inInversion) {
+                    exponents.add(BigInteger.ZERO.subtract(exponent).mod(base.getStructure().size()));
+                } else {
+                    exponents.add(exponent);
+                }
             }
         }
 
