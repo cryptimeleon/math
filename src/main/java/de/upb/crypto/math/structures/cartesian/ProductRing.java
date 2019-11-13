@@ -97,4 +97,26 @@ public class ProductRing implements Ring {
     public static ProductRingElement valueOf(RingElement... elems) {
         return new ProductRingElement(elems);
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof ProductRing)) {
+            return false;
+        }
+        ProductRing otherRing = (ProductRing) other;
+        if (this.rings.length != otherRing.rings.length) {
+            return false;
+        }
+        for (int i = 0; i < this.rings.length; ++i) {
+            if (this.rings[i] != otherRing.rings[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(this.rings);
+    }
 }

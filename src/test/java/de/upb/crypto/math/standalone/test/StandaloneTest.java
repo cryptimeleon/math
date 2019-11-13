@@ -1,7 +1,9 @@
 package de.upb.crypto.math.standalone.test;
 
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
+import de.upb.crypto.math.structures.cartesian.ProductGroup;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -13,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -128,6 +131,9 @@ public class StandaloneTest {
         toReturn.add(NullTestParams.get());
         toReturn.add(RepresentedEnumParams.get());
         toReturn.addAll(LazyGroupParams.get());
+        toReturn.add(BooleanStructureParams.get());
+        toReturn.add(ProductRingParams.get());
+        toReturn.add(ProductGroupParams.get());
         // remove all provided params
         for (StandaloneTestParams stp : toReturn) {
             classes.remove(stp.toTest);

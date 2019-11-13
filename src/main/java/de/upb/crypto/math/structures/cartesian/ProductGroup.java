@@ -74,4 +74,26 @@ public class ProductGroup implements Group {
     public static ProductGroupElement valueOf(GroupElement... elems) {
         return new ProductGroupElement(elems);
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof ProductGroup)) {
+            return false;
+        }
+        ProductGroup otherGroup = (ProductGroup) other;
+        if (this.groups.length != otherGroup.groups.length) {
+            return false;
+        }
+        for (int i = 0; i < this.groups.length; ++i) {
+            if (this.groups[i] != otherGroup.groups[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(this.groups);
+    }
 }

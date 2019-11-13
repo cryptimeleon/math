@@ -7,11 +7,19 @@ import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 
 import java.math.BigInteger;
 import java.util.Optional;
 
 public class BooleanStructure implements Ring {
+
+    /**
+     * These constructors only exist to appease the standalone tests.
+     */
+    public BooleanStructure() { }
+
+    public BooleanStructure(Representation repr) { new ReprUtil(this).deserialize(repr);}
 
     @Override
     public BigInteger sizeUnitGroup() throws UnsupportedOperationException {
@@ -65,6 +73,17 @@ public class BooleanStructure implements Ring {
 
     @Override
     public Representation getRepresentation() {
-        return new ObjectRepresentation();
+        return ReprUtil.serialize(this);
     }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof BooleanStructure;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getClass().toString().hashCode();
+    }
+
 }

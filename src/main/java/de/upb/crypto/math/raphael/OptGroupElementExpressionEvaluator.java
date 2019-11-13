@@ -10,6 +10,12 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.IntStream;
 
+/**
+ * Class for optimized evaluation of expressions. Can recognize multi-exponentiations in
+ * expression trees and evaluates them using some appropriate multi-exponentiation algorithm.
+ *
+ * @author Raphael Heitjohann
+ */
 public class OptGroupElementExpressionEvaluator implements GroupElementExpressionEvaluator {
 
     private boolean enableCachingInterleaved;
