@@ -8,6 +8,7 @@ import de.upb.crypto.math.interfaces.structures.RingUnitGroup;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -15,7 +16,8 @@ import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 
-public class OptGroupElementExpressionEvaluatorPerfTest {
+@Ignore
+public class OptGroupElementExpressionEvaluatorZpPerfTest {
 
     @Rule
     public JUnitPerfRule perfTestRule = new JUnitPerfRule();
@@ -36,8 +38,8 @@ public class OptGroupElementExpressionEvaluatorPerfTest {
 
     @BeforeClass
     public static void setupPerfTest() {
-        int interleavedNumBases = 13;
-        int interleavedNumExponents = 20;
+        int interleavedNumBases = 4;
+        int interleavedNumExponents = 30;
         interleavedBases = new RingUnitGroup.RingUnitGroupElement[interleavedNumBases];
         for (int i = 0; i < interleavedBases.length; ++i) {
             interleavedBases[i] = zp.getUniformlyRandomUnit().toUnitGroupElement();
@@ -49,12 +51,12 @@ public class OptGroupElementExpressionEvaluatorPerfTest {
         interleavedPerfTestExpr = new GroupPowExpr(interleavedBases[0].expr(),
                 interleavedExponents[0].asExponentExpression());
         for (int i = 1; i < interleavedExponents.length; ++i) {
-            interleavedPerfTestExpr.opPow(interleavedBases[i % interleavedNumBases],
-                    interleavedExponents[i]);
+            interleavedPerfTestExpr = interleavedPerfTestExpr
+                    .opPow(interleavedBases[i % interleavedNumBases], interleavedExponents[i]);
         }
 
         int simultaneousNumBases = 4;
-        int simultaneousNumExponents = 20;
+        int simultaneousNumExponents = 30;
         simultaneousBases = new RingUnitGroup.RingUnitGroupElement[simultaneousNumBases];
         for (int i = 0; i < simultaneousBases.length; ++i) {
             simultaneousBases[i] = zp.getUniformlyRandomUnit().toUnitGroupElement();
@@ -66,8 +68,8 @@ public class OptGroupElementExpressionEvaluatorPerfTest {
         simultaneousPerfTestExpr = new GroupPowExpr(simultaneousBases[0].expr(),
                 simultaneousExponents[0].asExponentExpression());
         for (int i = 1; i < simultaneousExponents.length; ++i) {
-            simultaneousPerfTestExpr.opPow(simultaneousBases[i % simultaneousNumBases],
-                    simultaneousExponents[i]);
+            simultaneousPerfTestExpr = simultaneousPerfTestExpr
+                    .opPow(simultaneousBases[i % simultaneousNumBases], simultaneousExponents[i]);
         }
     }
 

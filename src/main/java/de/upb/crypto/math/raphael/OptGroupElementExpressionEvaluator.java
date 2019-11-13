@@ -12,16 +12,18 @@ import java.util.stream.IntStream;
 public class OptGroupElementExpressionEvaluator implements GroupElementExpressionEvaluator {
 
     private boolean enableCaching;
+    private ForceMultiExpAlgorithmSetting forcedMultiExpAlgorithm;
 
     public OptGroupElementExpressionEvaluator() {
         enableCaching = true;
+        forcedMultiExpAlgorithm = ForceMultiExpAlgorithmSetting.DISABLED;
     }
 
     @Override
     public GroupElement evaluate(GroupElementExpression expr) {
         MultiExpContext multiExpContext = new MultiExpContext();
         boolean inInversion = false;
-        MultiExpContext(expr, inInversion, multiExpContext);
+        extractMultiExpContext(expr, inInversion, multiExpContext);
         if (!multiExpContext.allBasesSameGroup()) {
             throw new IllegalArgumentException("Expression contains elements with different" +
                     "groups outside of pairings.");
@@ -32,12 +34,14 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     private GroupElement evaluateMultiExp(MultiExpContext multiExpContext) {
         // use swantes recommendations
-        if (enableCaching && multiExpContext.bases.size() < 10) {
+        if ((enableCaching && multiExpContext.getBases().size() < 10
+                || forcedMultiExpAlgorithm == ForceMultiExpAlgorithmSetting.SIMULTANEOUS)
+                && forcedMultiExpAlgorithm != ForceMultiExpAlgorithmSetting.INTERLEAVED) {
             // either 1 or 2 window size
             return simultaneousSlidingWindowMulExp(multiExpContext, 1);
         } else {
             if (enableCaching) {
-                // TODO: chose sensible large value but not too large
+                // TODO: chose sensible large value but not too large, is 8 good?
                 return interleavingSlidingWindowMultiExp(multiExpContext, 8);
             } else {
                 return interleavingSlidingWindowMultiExp(multiExpContext, 4);
@@ -196,20 +200,20 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         return max;
     }
 
-    private void MultiExpContext(GroupElementExpression expr, boolean inInversion,
-                                 MultiExpContext multiExpContext) {
+    private void extractMultiExpContext(GroupElementExpression expr, boolean inInversion,
+                                        MultiExpContext multiExpContext) {
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr op_expr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
             if (inInversion) {
-                MultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
-                MultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
+                extractMultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
+                extractMultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
             } else {
-                MultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
-                MultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
+                extractMultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
+                extractMultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
             }
         } else if (expr instanceof GroupInvExpr) {
-            MultiExpContext(((GroupInvExpr) expr).getBase(), !inInversion, multiExpContext);
+            extractMultiExpContext(((GroupInvExpr) expr).getBase(), !inInversion, multiExpContext);
         } else if (expr instanceof GroupPowExpr) {
             GroupPowExpr pow_expr = (GroupPowExpr) expr;
             // for now, just use evaluate naive on base and exponent
@@ -302,5 +306,13 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     public void setEnableCaching(boolean newSetting) {
         enableCaching = newSetting;
+    }
+
+    public void setForcedMultiExpAlgorithm(ForceMultiExpAlgorithmSetting newSetting) {
+        forcedMultiExpAlgorithm = newSetting;
+    }
+
+    public enum ForceMultiExpAlgorithmSetting {
+        DISABLED, INTERLEAVED, SIMULTANEOUS
     }
 }

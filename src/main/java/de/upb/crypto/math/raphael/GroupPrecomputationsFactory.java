@@ -108,8 +108,8 @@ public class GroupPrecomputationsFactory {
         public void addPowerProducts(List<GroupElement> bases, int windowSize) {
             int numPrecomputedPowers = 1 << (windowSize * bases.size());
             PowerProductKey key = new PowerProductKey(bases, windowSize);
-            List<GroupElement> powerProductsEntry = powerProducts.
-                    computeIfAbsent(key, k -> new ArrayList<>(numPrecomputedPowers));
+            List<GroupElement> powerProductsEntry = powerProducts
+                    .computeIfAbsent(key, k -> new ArrayList<>(numPrecomputedPowers));
             // prefill arraylist
             for (int i = 0; i < numPrecomputedPowers; ++i) {
                 powerProductsEntry.add(group.getNeutralElement());
@@ -135,7 +135,7 @@ public class GroupPrecomputationsFactory {
         }
 
         /**
-         * Retreive power products for simultaneous multiexponentiation.
+         * Retrieve power products for simultaneous multi-exponentiation.
          * @param bases
          * @param windowSize
          * @return

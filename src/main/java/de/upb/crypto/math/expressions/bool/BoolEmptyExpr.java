@@ -1,6 +1,5 @@
 package de.upb.crypto.math.expressions.bool;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import de.upb.crypto.math.expressions.Expression;
 
 import java.util.function.Consumer;
