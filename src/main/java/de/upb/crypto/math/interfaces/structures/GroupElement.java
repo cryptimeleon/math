@@ -115,6 +115,8 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
 
     default GroupElement powSlidingWindow(BigInteger exponent, int windowSize,
                                           boolean enableCaching) {
+        if (exponent.signum() < 0)
+            return powSlidingWindow(exponent.negate(), windowSize, enableCaching).inv();
         List<GroupElement> smallOddPowersOfBase;
         int oddPowersMaxExp = (1<<windowSize)-1;
         if (enableCaching) {
@@ -184,6 +186,8 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * @return base^exponent in the group, using the wNAF approach
      */
     default GroupElement powWnaf(BigInteger exponent, int windowSize, boolean enableCaching) {
+        if (exponent.signum() < 0)
+            return powWnaf(exponent.negate(), windowSize, enableCaching).inv();
         int oddPowersMaxExp = (1<<windowSize)-1;
         int[] exponentDigits;
         List<GroupElement> smallOddPowers;
