@@ -2,18 +2,42 @@ package de.upb.crypto.math.performance.expressions;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator
+        .ForceMultiExpAlgorithmSetting;
 import de.upb.crypto.math.expressions.group.PairingExpr;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Parameterized.class)
 public class OptGroupElementExpressionEvaluatorTest {
+
+    @Parameterized.Parameters
+    public static Iterable<ForceMultiExpAlgorithmSetting>
+    algs() {
+        return Arrays.asList(
+                ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING,
+                ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF,
+                ForceMultiExpAlgorithmSetting.SIMULTANEOUS
+        );
+    }
+
+    @Parameterized.Parameter
+    public ForceMultiExpAlgorithmSetting algSetting;
+
+    @Test
+    public void printAlgSetting() {
+        System.out.println("Using algorithm setting " + algSetting);
+    }
 
     @Test
     public void testAddOpPowInv() {
@@ -25,6 +49,7 @@ public class OptGroupElementExpressionEvaluatorTest {
         expr = expr.inv();
         expr = expr.opPow(elem.pow(3), BigInteger.valueOf(3));
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
         assertEquals(expr.evaluate(), expr.evaluate(evaluator));
     }
 
@@ -38,6 +63,7 @@ public class OptGroupElementExpressionEvaluatorTest {
         expr = expr.inv();
         expr = expr.opPow(elem.pow(3), BigInteger.valueOf(3));
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
         assertEquals(expr.evaluate(), expr.evaluate(evaluator));
     }
 
@@ -50,7 +76,7 @@ public class OptGroupElementExpressionEvaluatorTest {
         GroupElement leftElem = bilGroup.getG1().getUniformlyRandomElement();
         System.out.println("Left Element: " + leftElem);
         GroupElement rightElem = bilGroup.getG2().getUniformlyRandomElement();
-        System.out.println("Left Element: " + rightElem);
+        System.out.println("Right Element: " + rightElem);
 
         GroupElementExpression leftExpr = leftElem.expr();
         leftExpr = leftExpr.opPow(leftElem.pow(2), BigInteger.valueOf(2));
@@ -61,6 +87,7 @@ public class OptGroupElementExpressionEvaluatorTest {
         GroupElementExpression expr = new PairingExpr(bilGroup.getBilinearMap(), leftExpr, rightExpr);
 
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
         assertEquals(expr.evaluate(), expr.evaluate(evaluator));
     }
 }

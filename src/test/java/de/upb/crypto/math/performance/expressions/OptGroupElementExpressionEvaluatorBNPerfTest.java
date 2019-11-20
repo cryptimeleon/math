@@ -14,28 +14,52 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
+/**
+ * Performance tests for multi-exponentiation algorithms using group 1 for a BN pairing.
+ */
+//@Ignore
+@RunWith(Parameterized.class)
 public class OptGroupElementExpressionEvaluatorBNPerfTest {
+
+    @Parameterized.Parameters(name= "{index}: algorithm={0}")
+    public static Iterable<OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting>
+    algs() {
+        return Arrays.asList(
+                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING,
+                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF,
+                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS
+        );
+    }
+
+    @Parameterized.Parameter
+    public OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting algSetting;
 
     @Rule
     public JUnitPerfRule perfTestRule = new JUnitPerfRule();
+    public final int perfDuration = 10_000;
+    public final int warmupDuration = 4_000;
 
     static Zn exponentZn;
 
-    static GroupElement[] interleavedBases;
-    static Zn.ZnElement[] interleavedExponents;
-    static GroupElementExpression interleavedPerfTestExpr;
-    static GroupElement interleavedExprResult;
+    /**
+     * Test data for expression with many different bases, so bad for simultaneous
+     */
+    static GroupElement[] manyBases;
+    static Zn.ZnElement[] manyExponents;
+    static GroupElementExpression manyPerfTestExpr;
+    static GroupElement manyExprResult;
 
-    static GroupElement[] simultaneousBases;
-    static Zn.ZnElement[] simultaneousExponents;
-    static GroupElementExpression simultaneousPerfTestExpr;
-    static GroupElement simultaneousExprResult;
+    static GroupElement[] fewBases;
+    static Zn.ZnElement[] fewExponents;
+    static GroupElementExpression fewPerfTestExpr;
+    static GroupElement fewExprResult;
 
     static BilinearGroup bilGroup;
 
@@ -46,133 +70,117 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
         fac.setRequirements(BilinearGroup.Type.TYPE_3);
         bilGroup = fac.createBilinearGroup();
         exponentZn = bilGroup.getG1().getZn();
-        int interleavedNumBases = 11;
-        int interleavedNumExponents = 11;
-        interleavedBases = new GroupElement[interleavedNumBases];
-        for (int i = 0; i < interleavedBases.length; ++i) {
-            interleavedBases[i] = bilGroup.getG1().getUniformlyRandomNonNeutral();
+        int manyNumBases = 11;
+        int manyNumExponents = 11;
+        manyBases = new GroupElement[manyNumBases];
+        for (int i = 0; i < manyBases.length; ++i) {
+            manyBases[i] = bilGroup.getG1().getUniformlyRandomNonNeutral();
             // Do precomputations before
             GroupPrecomputationsFactory
                     .get(bilGroup.getG1())
-                    .getOddPowers(interleavedBases[i], (1<<8)-1);
-        }
-        interleavedExponents = new Zn.ZnElement[interleavedNumExponents];
-        for (int i = 0; i < interleavedExponents.length; ++i) {
-            interleavedExponents[i] = exponentZn.getUniformlyRandomElement();
-        }
-        interleavedPerfTestExpr = new GroupPowExpr(interleavedBases[0].expr(),
-                interleavedExponents[0].asExponentExpression());
-        for (int i = 1; i < interleavedExponents.length; ++i) {
-            interleavedPerfTestExpr = interleavedPerfTestExpr
-                    .opPow(interleavedBases[i % interleavedNumBases], interleavedExponents[i]);
-        }
-        interleavedExprResult = interleavedPerfTestExpr.evaluate();
-
-        int simultaneousNumBases = 6;
-        int simultaneousNumExponents = 6;
-        simultaneousBases = new GroupElement[simultaneousNumBases];
-        for (int i = 0; i < simultaneousBases.length; ++i) {
-            simultaneousBases[i] = bilGroup.getG1().getUniformlyRandomNonNeutral();
+                    .getOddPowers(manyBases[i], (1<<8)-1);
         }
         // Do precomputations before
         GroupPrecomputationsFactory
                 .get(bilGroup.getG1())
-                .getPowerProducts(Arrays.asList(simultaneousBases), 1);
-        simultaneousExponents = new Zn.ZnElement[simultaneousNumExponents];
-        for (int i = 0; i < simultaneousExponents.length; ++i) {
-            simultaneousExponents[i] = exponentZn.getUniformlyRandomElement();
+                .getPowerProducts(Arrays.asList(manyBases), 1);
+        manyExponents = new Zn.ZnElement[manyNumExponents];
+        for (int i = 0; i < manyExponents.length; ++i) {
+            manyExponents[i] = exponentZn.getUniformlyRandomElement();
         }
-        simultaneousPerfTestExpr = new GroupPowExpr(simultaneousBases[0].expr(),
-                simultaneousExponents[0].asExponentExpression());
-        for (int i = 1; i < simultaneousExponents.length; ++i) {
-            simultaneousPerfTestExpr = simultaneousPerfTestExpr
-                    .opPow(simultaneousBases[i % simultaneousNumBases], simultaneousExponents[i]);
+        manyPerfTestExpr = new GroupPowExpr(manyBases[0].expr(),
+                manyExponents[0].asExponentExpression());
+        for (int i = 1; i < manyExponents.length; ++i) {
+            manyPerfTestExpr = manyPerfTestExpr
+                    .opPow(manyBases[i % manyNumBases], manyExponents[i]);
         }
-        simultaneousExprResult = simultaneousPerfTestExpr.evaluate();
+        manyExprResult = manyPerfTestExpr.evaluate();
+
+        int fewNumBases = 6;
+        int fewNumExponents = 6;
+        fewBases = new GroupElement[fewNumBases];
+        for (int i = 0; i < fewBases.length; ++i) {
+            fewBases[i] = bilGroup.getG1().getUniformlyRandomNonNeutral();
+            GroupPrecomputationsFactory
+                    .get(bilGroup.getG1())
+                    .getOddPowers(fewBases[i], (1<<8)-1);
+        }
+        // Do precomputations before
+        GroupPrecomputationsFactory
+                .get(bilGroup.getG1())
+                .getPowerProducts(Arrays.asList(fewBases), 1);
+        fewExponents = new Zn.ZnElement[fewNumExponents];
+        for (int i = 0; i < fewExponents.length; ++i) {
+            fewExponents[i] = exponentZn.getUniformlyRandomElement();
+        }
+        fewPerfTestExpr = new GroupPowExpr(fewBases[0].expr(),
+                fewExponents[0].asExponentExpression());
+        for (int i = 1; i < fewExponents.length; ++i) {
+            fewPerfTestExpr = fewPerfTestExpr
+                    .opPow(fewBases[i % fewNumBases], fewExponents[i]);
+        }
+        fewExprResult = fewPerfTestExpr.evaluate();
     }
 
     @Test
-    public void testInterleavedCorrectnessCaching() {
+    public void testCorrectnessCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED);
-        assertEquals(interleavedExprResult, interleavedPerfTestExpr.evaluate(evaluator));
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        assertEquals(manyExprResult, manyPerfTestExpr.evaluate(evaluator));
     }
 
     @Test
-    public void testInterleavedCorrectnessNoCaching() {
+    public void testCorrectnessNoCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCachingInterleaved(false);
-        evaluator.setForcedMultiExpAlgorithm(
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED);
-        assertEquals(interleavedExprResult, interleavedPerfTestExpr.evaluate(evaluator));
+        evaluator.setEnableCachingForAlg(algSetting, false);
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        assertEquals(manyExprResult, manyPerfTestExpr.evaluate(evaluator));
     }
 
     @Test
-    public void testSimultaneousCorrectnessCaching() {
+    @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
+    public void testManyBasesOptCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS);
-        assertEquals(simultaneousExprResult, simultaneousPerfTestExpr.evaluate(evaluator));
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        manyPerfTestExpr.evaluate(evaluator);
     }
 
     @Test
-    public void testSimultaneousCorrectnessNoCaching() {
+    @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
+    public void testManyBasesOptNoCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCachingSimultaneous(false);
-        evaluator.setForcedMultiExpAlgorithm(
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS);
-        assertEquals(simultaneousExprResult, simultaneousPerfTestExpr.evaluate(evaluator));
+        evaluator.setEnableCachingForAlg(algSetting, false);
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        manyPerfTestExpr.evaluate(evaluator);
     }
 
     @Test
-    @JUnitPerfTest(durationMs = 15_000, warmUpMs = 5_000)
-    public void testInterleavedOptCachingPerf() {
+    @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
+    public void testFewBasesOptCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED);
-        interleavedPerfTestExpr.evaluate(evaluator);
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        fewPerfTestExpr.evaluate(evaluator);
     }
 
     @Test
-    @JUnitPerfTest(durationMs = 15_000, warmUpMs = 5_000)
-    public void testInterleavedOptNoCachingPerf() {
+    @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
+    public void testFewBasesOptNoCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCachingInterleaved(false);
-        evaluator.setForcedMultiExpAlgorithm(
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED);
-        interleavedPerfTestExpr.evaluate(evaluator);
+        evaluator.setEnableCachingForAlg(algSetting, false);
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        fewPerfTestExpr.evaluate(evaluator);
     }
 
     @Test
-    @JUnitPerfTest(durationMs = 15_000, warmUpMs = 5_000)
-    public void testInterleavedNaivePerf() {
-        interleavedPerfTestExpr.evaluate();
+    @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
+    public void testManyBasesNaivePerf() {
+        manyPerfTestExpr.evaluate();
     }
 
     @Test
-    @JUnitPerfTest(durationMs = 15_000, warmUpMs = 5_000)
-    public void testSimultaneousCachingPerf() {
-        OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS);
-        simultaneousPerfTestExpr.evaluate(evaluator);
-    }
-
-    @Test
-    @JUnitPerfTest(durationMs = 15_000, warmUpMs = 5_000)
-    public void testSimultaneousNoCachingPerf() {
-        OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCachingSimultaneous(false);
-        evaluator.setForcedMultiExpAlgorithm(
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS);
-        simultaneousPerfTestExpr.evaluate(evaluator);
-    }
-
-    @Test
-    @JUnitPerfTest(durationMs = 15_000, warmUpMs = 5_000)
-    public void testSimultaneousNaivePerf() {
-        simultaneousPerfTestExpr.evaluate();
+    @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
+    public void testFewBasesNaivePerf() {
+        fewPerfTestExpr.evaluate();
     }
 }
 

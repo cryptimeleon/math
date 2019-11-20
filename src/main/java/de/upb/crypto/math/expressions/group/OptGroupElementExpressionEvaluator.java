@@ -15,25 +15,38 @@ import java.util.stream.IntStream;
  */
 public class OptGroupElementExpressionEvaluator implements GroupElementExpressionEvaluator {
 
-    private boolean enableCachingInterleaved;
+    private boolean enableCachingInterleavedSliding;
     private boolean enableCachingSimultaneous;
+    private boolean enableCachingInterleavedWnaf;
     private ForceMultiExpAlgorithmSetting forcedMultiExpAlgorithm;
-    private int windowSizeInterleavedCaching;
-    private int windowSizeInterleavedNoCaching;
+    private int windowSizeInterleavedSlidingCaching;
+    private int windowSizeInterleavedSlidingNoCaching;
+    private int windowSizeInterleavedWnafCaching;
+    private int windowSizeInterleavedWnafNoCaching;
     private int windowSizeSimultaneousCaching;
     private int windowSizeSimultaneousNoCaching;
     private int simultaneousNumBasesCutoff;
+    /**
+     * When to use Wnaf. Default is 100 which means that 100 inversions in the group cost as much
+     * as 100 group operations. Smaller values mean that inversions are even cheaper. Wnaf will be
+     * used if the groups cost of inversion is <= than this value.
+     */
+    private int useWnafCostInversion;
 
     public OptGroupElementExpressionEvaluator() {
         // TODO: best default values here?
-        enableCachingInterleaved = true;
+        enableCachingInterleavedSliding = true;
         enableCachingSimultaneous = true;
+        enableCachingInterleavedWnaf = true;
         forcedMultiExpAlgorithm = ForceMultiExpAlgorithmSetting.DISABLED;
-        windowSizeInterleavedCaching = 8;
-        windowSizeInterleavedNoCaching = 4;
+        windowSizeInterleavedSlidingCaching = 8;
+        windowSizeInterleavedSlidingNoCaching = 4;
+        windowSizeInterleavedWnafCaching = 8;
+        windowSizeInterleavedWnafNoCaching = 4;
         windowSizeSimultaneousCaching = 1;
         windowSizeSimultaneousNoCaching = 1;
         simultaneousNumBasesCutoff = 10;
+        useWnafCostInversion = 100;
     }
 
     @Override
@@ -50,36 +63,26 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     }
 
     private GroupElement evaluateMultiExp(MultiExpContext multiExpContext) {
-        // use swantes recommendations
-        if ((multiExpContext.getBases().size() < simultaneousNumBasesCutoff
-                || forcedMultiExpAlgorithm == ForceMultiExpAlgorithmSetting.SIMULTANEOUS)
-                && forcedMultiExpAlgorithm != ForceMultiExpAlgorithmSetting.INTERLEAVED) {
-            // either 1 or 2 window size
-            if (enableCachingSimultaneous) {
-                return simultaneousSlidingWindowMulExp(
-                        multiExpContext,
-                        windowSizeSimultaneousCaching
-                );
-            } else {
-                return simultaneousSlidingWindowMulExp(
-                        multiExpContext,
-                        windowSizeSimultaneousNoCaching
-                );
-            }
-
-        } else {
-            if (enableCachingInterleaved) {
-                return interleavingSlidingWindowMultiExp(
-                        multiExpContext,
-                        windowSizeInterleavedCaching
-                );
-            } else {
-                return interleavingSlidingWindowMultiExp(
-                        multiExpContext,
-                        windowSizeInterleavedNoCaching
-                );
-            }
+        switch (forcedMultiExpAlgorithm) {
+            case SIMULTANEOUS:
+                return simultaneousSlidingWindowMulExpWrapper(multiExpContext);
+            case INTERLEAVED_SLIDING:
+                return interleavingSlidingWindowMultiExpWrapper(multiExpContext);
+            case INTERLEAVED_WNAF:
+                return interleavingWnafWindowMultiExpWrapper(multiExpContext);
+            case DISABLED:
+                // select algorithm based on swante scholz's recommendations
+                if (multiExpContext.getBases().size() < simultaneousNumBasesCutoff
+                    && enableCachingSimultaneous) {
+                    return simultaneousSlidingWindowMulExpWrapper(multiExpContext);
+                } else if (multiExpContext.getBases().get(0).getStructure().estimateCostOfInvert()
+                    <= useWnafCostInversion) {
+                    return interleavingWnafWindowMultiExpWrapper(multiExpContext);
+                } else {
+                    return interleavingSlidingWindowMultiExpWrapper(multiExpContext);
+                }
         }
+        throw new IllegalArgumentException("Unsupported forcedMultiExpAlgorithm value");
     }
 
     private List<GroupElement> computePowerProducts(List<GroupElement> bases, int windowSize) {
@@ -112,13 +115,29 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         return powerProducts;
     }
 
+    private GroupElement simultaneousSlidingWindowMulExpWrapper(MultiExpContext multiExpContext) {
+        if (enableCachingSimultaneous) {
+            return simultaneousSlidingWindowMulExp(
+                    multiExpContext,
+                    windowSizeSimultaneousCaching,
+                    true
+            );
+        } else {
+            return simultaneousSlidingWindowMulExp(
+                    multiExpContext,
+                    windowSizeSimultaneousNoCaching,
+                    false
+            );
+        }
+    }
+
     private GroupElement simultaneousSlidingWindowMulExp(MultiExpContext multiExpContext,
-                                                         int windowSize) {
+                                                         int windowSize, boolean enableCaching) {
         // TODO: we should not do any precomputations for bases with exponents 1
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
         List<GroupElement> powerProducts = new ArrayList<>();
-        if (enableCachingSimultaneous) {
+        if (enableCaching) {
             GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
                     GroupPrecomputationsFactory.get(bases.get(0).getStructure());
             powerProducts = groupPrecomputations.getPowerProducts(bases, windowSize);
@@ -173,21 +192,38 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         return A;
     }
 
+    private GroupElement interleavingSlidingWindowMultiExpWrapper(MultiExpContext multiExpContext) {
+        if (enableCachingInterleavedSliding) {
+            return interleavingSlidingWindowMultiExp(
+                    multiExpContext,
+                    windowSizeInterleavedSlidingCaching,
+                    true
+            );
+        } else {
+            return interleavingSlidingWindowMultiExp(
+                    multiExpContext,
+                    windowSizeInterleavedSlidingNoCaching,
+                    false
+            );
+        }
+    }
+
     private GroupElement interleavingSlidingWindowMultiExp(MultiExpContext multiExpContext,
-                                                           int windowSize) {
+                                                           int windowSize, boolean enableCaching) {
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
         List<List<GroupElement>> oddPowers = new ArrayList<>();
-        if (enableCachingInterleaved) {
+        int maxExp = (1 << windowSize) - 1;
+        if (enableCaching) {
             GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
                     GroupPrecomputationsFactory.get(bases.get(0).getStructure());
             for (GroupElement base : bases) {
-                oddPowers.add(groupPrecomputations.getOddPowers(base, (1 << windowSize) - 1));
+                oddPowers.add(groupPrecomputations.getOddPowers(base, maxExp));
             }
         } else {
             for (GroupElement base : bases) {
                 oddPowers.add(UncachedGroupPrecomputations
-                        .precomputeSmallOddPowers(base, (1 << windowSize) - 1));
+                        .precomputeSmallOddPowers(base, maxExp));
             }
         }
         int numBases = bases.size();
@@ -222,6 +258,78 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                 if (wh[i] == j) {
                     A = A.op(oddPowers.get(i).get(e[i] / 2));
                     wh[i] = -1;
+                }
+            }
+        }
+        return A;
+    }
+
+    private GroupElement interleavingWnafWindowMultiExpWrapper(MultiExpContext multiExpContext) {
+        if (enableCachingInterleavedWnaf) {
+            return interleavingWnafMultiExp(
+                    multiExpContext,
+                    windowSizeInterleavedWnafCaching,
+                    true
+            );
+        } else {
+            return interleavingWnafMultiExp(
+                    multiExpContext,
+                    windowSizeInterleavedWnafNoCaching,
+                    false
+            );
+        }
+    }
+
+    private GroupElement interleavingWnafMultiExp(MultiExpContext multiExpContext, int windowSize,
+                                                  boolean enableCaching) {
+        List<GroupElement> bases = multiExpContext.getBases();
+        List<BigInteger> exponents = multiExpContext.getExponents();
+        List<List<GroupElement>> oddPowers = new ArrayList<>();
+        int maxExp = (1 << windowSize) - 1;
+        if (enableCaching) {
+            GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
+                    GroupPrecomputationsFactory.get(bases.get(0).getStructure());
+            for (GroupElement base : bases) {
+                oddPowers.add(groupPrecomputations.getOddPowers(base, maxExp));
+            }
+        } else {
+            for (GroupElement base : bases) {
+                oddPowers.add(UncachedGroupPrecomputations.precomputeSmallOddPowers(base, maxExp));
+            }
+        }
+        int longestExponentDigitLength = 0;
+        int[][] exponentDigits = new int[bases.size()][];
+        for (int i = 0; i < bases.size(); ++i) {
+            exponentDigits[i] = UncachedGroupPrecomputations.precomputeExponentDigitsForWNAF(
+                    exponents.get(i),
+                    windowSize
+            );
+            longestExponentDigitLength = Math.max(
+                    longestExponentDigitLength,
+                    exponentDigits[i].length
+            );
+        }
+        // padding with zeros
+        for (int i = 0; i < bases.size(); ++i) {
+            int[] paddedArray = new int[longestExponentDigitLength];
+            System.arraycopy(exponentDigits[i], 0, paddedArray, 0, exponentDigits[i].length);
+            exponentDigits[i] = paddedArray;
+        }
+        // now evaluate
+        Group group = bases.get(0).getStructure();
+        GroupElement A = group.getNeutralElement();
+        for (int j = longestExponentDigitLength - 1; j >= 0; j--) {
+            if (j != longestExponentDigitLength - 1) {
+                A = A.square();
+            }
+            for (int i = 0; i < bases.size(); i++) {
+                int exponentDigit = exponentDigits[i][j];
+                if (exponentDigit != 0) {
+                    GroupElement power = oddPowers.get(i).get(Math.abs(exponentDigit) / 2);
+                    if (exponentDigit < 0) {
+                        power = power.inv();
+                    }
+                    A = A.op(power);
                 }
             }
         }
@@ -353,24 +461,48 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         return expr;
     }
 
-    public void setEnableCachingInterleaved(boolean newSetting) {
-        enableCachingInterleaved = newSetting;
+    public void setEnableCachingInterleavedSliding(boolean newSetting) {
+        enableCachingInterleavedSliding = newSetting;
     }
 
     public void setEnableCachingSimultaneous(boolean newSetting) {
         enableCachingSimultaneous = newSetting;
     }
 
+    public void setEnableCachingInterleavedWnaf(boolean newSetting) {
+        enableCachingInterleavedWnaf = newSetting;
+    }
+
+    /**
+     * Enable/Disable caching for specified algorithm.
+     * @param alg The algorithm to enable/disable caching for.
+     * @param newSetting Whether caching should be enabled or disabled.
+     */
+    public void setEnableCachingForAlg(ForceMultiExpAlgorithmSetting alg, boolean newSetting) {
+        switch (alg) {
+            case INTERLEAVED_SLIDING:
+                setEnableCachingInterleavedSliding(newSetting);
+                return;
+            case INTERLEAVED_WNAF:
+                setEnableCachingInterleavedWnaf(newSetting);
+                return;
+            case SIMULTANEOUS:
+                setEnableCachingSimultaneous(newSetting);
+                return;
+        }
+        throw new IllegalArgumentException("Unsupported ForceMultiExpAlgorithmSetting value.");
+    }
+
     public void setForcedMultiExpAlgorithm(ForceMultiExpAlgorithmSetting newSetting) {
         forcedMultiExpAlgorithm = newSetting;
     }
 
-    public void setWindowSizeInterleavedCaching(int newSetting) {
-        windowSizeInterleavedCaching = newSetting;
+    public void setWindowSizeInterleavedSlidingCaching(int newSetting) {
+        windowSizeInterleavedSlidingCaching = newSetting;
     }
 
-    public void setWindowSizeInterleavedNoCaching(int newSetting) {
-        this.windowSizeInterleavedNoCaching = newSetting;
+    public void setWindowSizeInterleavedSlidingNoCaching(int newSetting) {
+        this.windowSizeInterleavedSlidingNoCaching = newSetting;
     }
 
     public void setWindowSizeSimultaneousCaching(int newSetting) {
@@ -385,7 +517,11 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         this.simultaneousNumBasesCutoff = newSetting;
     }
 
+    public void setUseWnafCostInversion(int newSetting) {
+        this.useWnafCostInversion = newSetting;
+    }
+
     public enum ForceMultiExpAlgorithmSetting {
-        DISABLED, INTERLEAVED, SIMULTANEOUS
+        DISABLED, INTERLEAVED_SLIDING, INTERLEAVED_WNAF, SIMULTANEOUS
     }
 }
