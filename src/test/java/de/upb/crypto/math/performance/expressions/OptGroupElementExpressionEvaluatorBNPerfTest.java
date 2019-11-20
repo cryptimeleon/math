@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Performance tests for multi-exponentiation algorithms using group 1 for a BN pairing.
  */
-//@Ignore
+@Ignore
 @RunWith(Parameterized.class)
 public class OptGroupElementExpressionEvaluatorBNPerfTest {
 
