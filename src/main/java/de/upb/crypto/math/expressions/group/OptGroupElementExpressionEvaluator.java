@@ -1,10 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.bool.BooleanExpression;
-import de.upb.crypto.math.interfaces.structures.Group;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.RingAdditiveGroup;
-import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
+import de.upb.crypto.math.interfaces.structures.*;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -189,7 +186,8 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             }
         } else {
             for (GroupElement base : bases) {
-                oddPowers.add(base.precomputeSmallOddPowers((1 << windowSize) - 1));
+                oddPowers.add(UncachedGroupPrecomputations
+                        .precomputeSmallOddPowers(base, (1 << windowSize) - 1));
             }
         }
         int numBases = bases.size();
