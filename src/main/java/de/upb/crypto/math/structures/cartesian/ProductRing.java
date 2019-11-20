@@ -108,7 +108,7 @@ public class ProductRing implements Ring {
             return false;
         }
         for (int i = 0; i < this.rings.length; ++i) {
-            if (this.rings[i] != otherRing.rings[i]) {
+            if (!this.rings[i].equals(otherRing.rings[i])) {
                 return false;
             }
         }

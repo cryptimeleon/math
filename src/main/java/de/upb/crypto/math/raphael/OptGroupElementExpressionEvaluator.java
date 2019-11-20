@@ -271,9 +271,12 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                     inInversion
             );
         } else if (expr instanceof GroupElementConstantExpr) {
-            GroupElementConstantExpr const_expr = (GroupElementConstantExpr) expr;
             // count this as basis too, multiexp algorithm can distinguish
-            multiExpContext.addExponentiation(const_expr.evaluateNaive(), BigInteger.ONE,
+            multiExpContext.addExponentiation(expr.evaluateNaive(), BigInteger.ONE,
+                    inInversion);
+        } else if (expr instanceof GroupEmptyExpr) {
+            // count this as basis too, multiexp algorithm can distinguish
+            multiExpContext.addExponentiation(expr.evaluateNaive(), BigInteger.ONE,
                     inInversion);
         } else if (expr instanceof PairingExpr) {
             PairingExpr pair_expr = (PairingExpr) expr;
@@ -286,8 +289,6 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         } else if (expr instanceof GroupVariableExpr) {
             throw new IllegalArgumentException("Cannot evaluate variable expression. " +
                     "Insert value first");
-        } else if (expr instanceof GroupEmptyExpr) {
-            throw new IllegalArgumentException("Cannot evaluate empty expression.");
         } else {
             throw new IllegalArgumentException("Found something in expression tree that" +
                     "is not a proper expression.");

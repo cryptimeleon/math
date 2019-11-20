@@ -85,7 +85,7 @@ public class ProductGroup implements Group {
             return false;
         }
         for (int i = 0; i < this.groups.length; ++i) {
-            if (this.groups[i] != otherGroup.groups[i]) {
+            if (!this.groups[i].equals(otherGroup.groups[i])) {
                 return false;
             }
         }

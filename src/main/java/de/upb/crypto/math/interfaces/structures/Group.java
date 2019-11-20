@@ -65,7 +65,7 @@ public interface Group extends Structure, RepresentationRestorer {
      * Returns a GroupElementExpression containing the neutral group element.
      */
     default GroupElementExpression expr() {
-        return new GroupElementConstantExpr(this.getNeutralElement());
+        return new GroupEmptyExpr(this);
     }
 
     @Override

@@ -17,13 +17,14 @@ public class LazyGroupElement implements GroupElement {
      */
     protected GroupElementExpression expr;
 
-    protected LazyGroupElement(LazyGroup group, GroupElementExpression expr) {
+    protected LazyGroupElement(LazyGroup group) {
         this.group = group;
-        this.expr = expr;
+        this.expr = group.baseGroup.expr();
     }
 
-    protected LazyGroupElement(LazyGroup group) {
-        this(group, group.baseGroup.getNeutralElement());
+    protected LazyGroupElement(LazyGroup group, GroupElementExpression expr) {
+        this(group);
+        this.expr = expr;
     }
 
     protected LazyGroupElement(LazyGroup group, GroupElement elem) {

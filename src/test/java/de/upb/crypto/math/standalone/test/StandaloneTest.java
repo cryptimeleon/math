@@ -4,6 +4,7 @@ import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import de.upb.crypto.math.structures.cartesian.ProductGroup;
+import de.upb.crypto.math.structures.cartesian.ProductRing;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
