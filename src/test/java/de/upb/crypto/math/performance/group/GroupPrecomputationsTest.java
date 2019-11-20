@@ -1,15 +1,13 @@
-package de.upb.crypto.math.raphael;
+package de.upb.crypto.math.performance.group;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingAdditiveGroup;
 import de.upb.crypto.math.interfaces.structures.RingUnitGroup;
-import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

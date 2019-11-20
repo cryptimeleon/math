@@ -1,10 +1,10 @@
-package de.upb.crypto.math.raphael;
+package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.bool.BooleanExpression;
-import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingAdditiveGroup;
+import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -307,22 +307,13 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
         void addExponentiation(GroupElement base, BigInteger exponent, boolean inInversion) {
             // TODO: bases with exponents one need extra handling to avoid precomputations
-            // TODO: extra handling for additive groups, this is not great testing for that though
-            if (base.getStructure() instanceof RingAdditiveGroup) {
-                if (inInversion) {
-                    bases.add(base.inv());
-                } else {
-                    bases.add(base);
-                }
-                exponents.add(exponent);
+            bases.add(base);
+            if (inInversion) {
+                exponents.add(BigInteger.ZERO.subtract(exponent).mod(base.getStructure().size()));
             } else {
-                bases.add(base);
-                if (inInversion) {
-                    exponents.add(BigInteger.ZERO.subtract(exponent).mod(base.getStructure().size()));
-                } else {
-                    exponents.add(exponent);
-                }
+                exponents.add(exponent);
             }
+
         }
 
         boolean allBasesSameGroup() {

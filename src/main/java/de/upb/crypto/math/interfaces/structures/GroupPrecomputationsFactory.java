@@ -1,4 +1,4 @@
-package de.upb.crypto.math.raphael;
+package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -22,12 +22,7 @@ public class GroupPrecomputationsFactory {
             new HashMap<Group, GroupPrecomputations>();
 
     /**
-     * Need to keep thread-safety in mind. There should never be a need to update any values,
-     * since since a precomputed values is either correct or not correct. So only adding
-     * values needs aquisition of lock?
-     *
-     * Also, does the interface as is provide enough performance since we just retrieve powers
-     * one by one?
+     * Class that stores precomputed group elements for a specific group.
      */
     public static final class GroupPrecomputations implements Representable {
 
@@ -106,6 +101,7 @@ public class GroupPrecomputationsFactory {
          * @param windowSize
          */
         public void addPowerProducts(List<GroupElement> bases, int windowSize) {
+            // TODO: prevent computing already computed power products
             int numPrecomputedPowers = 1 << (windowSize * bases.size());
             PowerProductKey key = new PowerProductKey(bases, windowSize);
             List<GroupElement> powerProductsEntry = powerProducts

@@ -1,17 +1,13 @@
-package de.upb.crypto.math.raphael;
+package de.upb.crypto.math.performance.group;
 
 import com.github.noconnor.junitperf.JUnitPerfRule;
 import com.github.noconnor.junitperf.JUnitPerfTest;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.RingUnitGroup;
-import de.upb.crypto.math.standalone.test.ZpParams;
+import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
 import de.upb.crypto.math.structures.zn.Zn;
-import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.*;
-
-import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 
