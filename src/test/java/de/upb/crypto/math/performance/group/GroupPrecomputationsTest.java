@@ -1,9 +1,6 @@
 package de.upb.crypto.math.performance.group;
 
-import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.RingAdditiveGroup;
-import de.upb.crypto.math.interfaces.structures.RingUnitGroup;
-import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
+import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.After;
 import org.junit.Before;
@@ -98,7 +95,7 @@ public class GroupPrecomputationsTest {
         correctOddPowers.add(base.pow(5));
 
         assertArrayEquals(correctOddPowers.toArray(),
-                base.precomputeSmallOddPowers(6).toArray());
+                UncachedGroupPrecomputations.precomputeSmallOddPowers(base, 6).toArray());
     }
 
     @Test
