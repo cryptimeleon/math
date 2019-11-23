@@ -11,6 +11,8 @@ import java.util.stream.IntStream;
  * Class for optimized evaluation of expressions. Can recognize multi-exponentiations in
  * expression trees and evaluates them using some appropriate multi-exponentiation algorithm.
  *
+ * For explanation of algorithms see Swante Scholz's master thesis.
+ *
  * @author Raphael Heitjohann
  */
 public class OptGroupElementExpressionEvaluator implements GroupElementExpressionEvaluator {
@@ -62,6 +64,11 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         return evaluateMultiExp(multiExpContext);
     }
 
+    /**
+     * Evaluate multi-exponentiation using configured/default algorithms.
+     * @param multiExpContext The multiexponentiation to evaluate.
+     * @return Result of evaluation of multi-exponentiation.
+     */
     private GroupElement evaluateMultiExp(MultiExpContext multiExpContext) {
         switch (forcedMultiExpAlgorithm) {
             case SIMULTANEOUS:
@@ -85,8 +92,15 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         throw new IllegalArgumentException("Unsupported forcedMultiExpAlgorithm value");
     }
 
+    /**
+     * Compute power products for bases with window size. A power product is a term of the form
+     * e.g. (for 3 bases) T_{i,j,k} = b_1^i * b_2^j * b_3^k. This function computes all
+     * power products for the given window size. Used by simultaneous multi-exponentiation alg.
+     * @param bases List of bases to compute power products for.
+     * @param windowSize Limit on powers to compute.
+     * @return List of power products.
+     */
     private List<GroupElement> computePowerProducts(List<GroupElement> bases, int windowSize) {
-        // TODO: Having this in two places (here and GroupPrecomputations) probably not ideal
         int numPrecomputedPowers = 1 << (windowSize * bases.size());
         List<GroupElement> powerProducts = new ArrayList<>(numPrecomputedPowers);
         Group group = bases.get(0).getStructure();
@@ -131,6 +145,17 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
+    /**
+     * Evaluates a multi-exponentiation using simultaneous sliding window approach. Uses power
+     * products. Only useful for higher number of bases if the power products are cached as
+     * computing power products for more than ~10 basis very expensive. Cached power products
+     * can also not necessarily be reused in other multi-exponentiation as they only work
+     * for that specific set of bases.
+     * @param multiExpContext Multi-exponentiation to evaluate.
+     * @param windowSize Window size for power products.
+     * @param enableCaching Whether to cache power products.
+     * @return Result of multi-exponentiation.
+     */
     private GroupElement simultaneousSlidingWindowMulExp(MultiExpContext multiExpContext,
                                                          int windowSize, boolean enableCaching) {
         // TODO: we should not do any precomputations for bases with exponents 1
@@ -208,6 +233,17 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
+    /**
+     * Evaluates a multi-exponentiation using the interleaved sliding window algorithm.
+     * Powers are computed per basis, instead of for all basis together like for the simultaneous
+     * approach. This means that cached powers can be reused in other multi-exponentiations, and,
+     * for a large amount of bases, the precomputation is a lot cheaper than in the simultaneous
+     * approach.
+     * @param multiExpContext Multi-exponentiation to evaluate.
+     * @param windowSize Window size for precomputed odd powers.
+     * @param enableCaching Whether to cache precomputed odd powers.
+     * @return Result of multi-exponentiation.
+     */
     private GroupElement interleavingSlidingWindowMultiExp(MultiExpContext multiExpContext,
                                                            int windowSize, boolean enableCaching) {
         List<GroupElement> bases = multiExpContext.getBases();
@@ -280,6 +316,15 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
+    /**
+     * Evaluates a multi-exponentiation using an interleaved WNAF-bases algorithm. Useful in groups
+     * where inversion is as cheap or cheaper than the group operation itself, such as elliptic
+     * curves.
+     * @param multiExpContext Multi-exponentiation to evaluate.
+     * @param windowSize Window size for precomputed odd powers.
+     * @param enableCaching Whether to cache precomputed odd powers.
+     * @return Result of multi-exponentiation.
+     */
     private GroupElement interleavingWnafMultiExp(MultiExpContext multiExpContext, int windowSize,
                                                   boolean enableCaching) {
         List<GroupElement> bases = multiExpContext.getBases();
@@ -353,6 +398,13 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         return max;
     }
 
+    /**
+     * Takes an expression tree and flattens it into a multi-exponentiation using a simple
+     * depth-first approach.
+     * @param expr Expression to extract multi-exponentiation from.
+     * @param inInversion Whether we currently are in an uneven level of inversion.
+     * @param multiExpContext Storage for extracted multi-exponentiation.
+     */
     private void extractMultiExpContext(GroupElementExpression expr, boolean inInversion,
                                         MultiExpContext multiExpContext) {
         if (expr instanceof GroupOpExpr) {
@@ -401,6 +453,9 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
+    /**
+     * Class for storing a multi-exponentiation.
+     */
     protected static class MultiExpContext {
 
         private List<GroupElement> bases;
@@ -459,6 +514,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     @Override
     public BooleanExpression precompute(BooleanExpression expr) {
         return expr;
+
     }
 
     public void setEnableCachingInterleavedSliding(boolean newSetting) {
@@ -513,10 +569,24 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         windowSizeSimultaneousNoCaching = newSetting;
     }
 
+    /**
+     * Upper bound for number of bases below which the simultaneous multi-exponentiation
+     * approach may be used. Increasing this value too much can lead to full heap memory errors if
+     * the precomputed power products take up too much space. Caching should then also be enabled
+     * for the simultaneous algorithm to avoid the expensive repeated precomputation of
+     * power products.
+     * @param newSetting New upper bound for simultaneous algorithm usage.
+     */
     public void setSimultaneousNumBasesCutoff(int newSetting) {
         this.simultaneousNumBasesCutoff = newSetting;
     }
 
+    /**
+     * Upper bound for cost of inversion in the group below the evaluator should use a WNAF-bases
+     * multi-exponentiation algorithm. A value of 100 means that if 100 inversions cost as much or
+     * less than 100 group operations, then the WNAF-based algorithm will be used.
+     * @param newSetting New upper bound for WNAF usage.
+     */
     public void setUseWnafCostInversion(int newSetting) {
         this.useWnafCostInversion = newSetting;
     }
