@@ -70,26 +70,44 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      * @return Result of evaluation of multi-exponentiation.
      */
     private GroupElement evaluateMultiExp(MultiExpContext multiExpContext) {
-        switch (forcedMultiExpAlgorithm) {
+        switch (getCurrentlyChosenMultiExpALgorithm(multiExpContext.getBases().size(),
+                multiExpContext.getBases().get(0).getStructure().estimateCostOfInvert())) {
             case SIMULTANEOUS:
                 return simultaneousSlidingWindowMulExpWrapper(multiExpContext);
             case INTERLEAVED_SLIDING:
                 return interleavingSlidingWindowMultiExpWrapper(multiExpContext);
             case INTERLEAVED_WNAF:
                 return interleavingWnafWindowMultiExpWrapper(multiExpContext);
+        }
+        throw new IllegalArgumentException("Unsupported MultiExpAlgorithm value.");
+    }
+
+    /**
+     * Calculates which multi-exponentiation algorithm to use according to chosen settings.
+     * @param numBases Number of bases in multi-exponentiation to evaluate.
+     * @param costInversion Cost of inversion in group of multi-exponentiation.
+     * @return The multi-exponentiation algorithm that would be chosen.
+     */
+    private MultiExpAlgorithm getCurrentlyChosenMultiExpALgorithm(int numBases, int costInversion) {
+        switch (forcedMultiExpAlgorithm) {
+            case SIMULTANEOUS:
+                return MultiExpAlgorithm.SIMULTANEOUS;
+            case INTERLEAVED_SLIDING:
+                return MultiExpAlgorithm.INTERLEAVED_SLIDING;
+            case INTERLEAVED_WNAF:
+                return MultiExpAlgorithm.INTERLEAVED_WNAF;
             case DISABLED:
                 // select algorithm based on swante scholz's recommendations
-                if (multiExpContext.getBases().size() < simultaneousNumBasesCutoff
-                    && enableCachingSimultaneous) {
-                    return simultaneousSlidingWindowMulExpWrapper(multiExpContext);
-                } else if (multiExpContext.getBases().get(0).getStructure().estimateCostOfInvert()
-                    <= useWnafCostInversion) {
-                    return interleavingWnafWindowMultiExpWrapper(multiExpContext);
+                if (numBases < simultaneousNumBasesCutoff
+                        && enableCachingSimultaneous) {
+                    return MultiExpAlgorithm.SIMULTANEOUS;
+                } else if (costInversion <= useWnafCostInversion) {
+                    return MultiExpAlgorithm.INTERLEAVED_WNAF;
                 } else {
-                    return interleavingSlidingWindowMultiExpWrapper(multiExpContext);
+                    return MultiExpAlgorithm.INTERLEAVED_SLIDING;
                 }
         }
-        throw new IllegalArgumentException("Unsupported forcedMultiExpAlgorithm value");
+        throw new IllegalArgumentException("Unsupported forcedMultiExpAlgorithm value.");
     }
 
     /**
@@ -508,7 +526,107 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     @Override
     public GroupElementExpression precompute(GroupElementExpression expr) {
+        // This object contains information about each expression in the expression tree.
+        // It is continually manipulated in the analysis stage and will be used to compute
+        // a new optimized expression in the optimization stage. The mutation approach is
+        // chosen for better performance.
+        Map<GroupElementExpression, ExprInfo> exprToInfo = new HashMap<>();
+        analyzeGExpr(expr, exprToInfo);
+        // This current appraoach would not allow optimization across pairing groups.
+        // So we might need another step if we want optimization across pairings.
+        return optimizeGExpr(expr, exprToInfo);
+    }
+
+    /**
+     * Analyzes given expression tree to extract information for later optimization step.
+     * @param expr Expression to analyze.
+     * @param exprToInfo Information about expression and contained subexpressions.
+     */
+    private void analyzeGExpr(GroupElementExpression expr,
+                              Map<GroupElementExpression, ExprInfo> exprToInfo) {
+        findContainedBases(expr, exprToInfo);
+    }
+
+    /**
+     * Finds all bases contained in the expr and stores it as information.
+     * @param expr Expression to find bases in.
+     * @param exprToInfo Information about expression and contained subexpressions.
+     */
+    private void findContainedBases(GroupElementExpression expr,
+                                    Map<GroupElementExpression, ExprInfo> exprToInfo) {
+
+    }
+
+    /**
+     * Optimizes given expression using the expression information gathered in the analysis
+     * step.
+     * @param expr Expression to optimize.
+     * @param exprToInfo Information about expression and contained subexpressions.
+     * @return Optimized expression.
+     */
+    private GroupElementExpression optimizeGExpr(GroupElementExpression expr,
+                                                 Map<GroupElementExpression, ExprInfo> exprToInfo) {
+        // need to clone the expression before changing it
+        cacheWindows(expr, exprToInfo);
         return expr;
+    }
+
+    /**
+     * Precomputes and caches odd powers/power products for later multi-exponentiation. Which is
+     * done depends on the algorithm that would be selected for evaluation with the current
+     * settings.
+     * @param expr Expression to cache powers for.
+     * @param exprToInfo Information about expression and contained subexpressions.
+     */
+    private void cacheWindows(GroupElementExpression expr,
+                              Map<GroupElementExpression, ExprInfo> exprToInfo) {
+        // Find out which algorithm would be used with current settings and do precomputation
+        // for that algorithm.
+        ExprInfo rootExprInfo = exprToInfo.get(expr);
+        Set<GroupElement> rootBases = rootExprInfo.getContainedBases();
+        int rootNumBases = rootBases.size();
+        int costOfInversion = rootBases.iterator().next().getStructure().estimateCostOfInvert();
+        MultiExpAlgorithm alg = getCurrentlyChosenMultiExpALgorithm(rootNumBases, costOfInversion);
+        // Precompute powers, we always use caching window size.
+        switch (alg) {
+            case INTERLEAVED_WNAF:
+                // precompute odd powers
+                int maxExp = (1 << windowSizeInterleavedWnafCaching) - 1;
+                GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
+                        GroupPrecomputationsFactory.get(rootBases.iterator().next().getStructure());
+                for (GroupElement base : rootBases) {
+                    groupPrecomputations.getOddPowers(base, maxExp);
+                }
+                return;
+            case INTERLEAVED_SLIDING:
+                // precompute odd powers
+                maxExp = (1 << windowSizeInterleavedSlidingCaching) - 1;
+                groupPrecomputations = GroupPrecomputationsFactory
+                        .get(rootBases.iterator().next().getStructure());
+                for (GroupElement base : rootBases) {
+                    groupPrecomputations.getOddPowers(base, maxExp);
+                }
+                return;
+            case SIMULTANEOUS:
+                // precompute power products
+                // TODO: power products needs to consider order of bases
+        }
+    }
+
+    /**
+     * Information about an expression gathered while analyzing the expression in the precompute
+     * method. Later used in optimization step.
+     */
+    private static class ExprInfo {
+        private Set<GroupElement> containedBases;
+
+        public ExprInfo() {
+            this.containedBases = new HashSet<>();
+        }
+
+        public Set<GroupElement> getContainedBases() {
+            return containedBases;
+        }
     }
 
     @Override
@@ -593,5 +711,9 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     public enum ForceMultiExpAlgorithmSetting {
         DISABLED, INTERLEAVED_SLIDING, INTERLEAVED_WNAF, SIMULTANEOUS
+    }
+
+    private enum MultiExpAlgorithm {
+        INTERLEAVED_SLIDING, INTERLEAVED_WNAF, SIMULTANEOUS
     }
 }
