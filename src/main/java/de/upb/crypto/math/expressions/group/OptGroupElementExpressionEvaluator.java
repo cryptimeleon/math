@@ -485,6 +485,8 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
         void addExponentiation(GroupElement base, BigInteger exponent, boolean inInversion) {
             // TODO: bases with exponents one need extra handling to avoid precomputations
+            //  problem with that is if those constants are inbetween other bases
+            //  dont want to split any multi-exponentiations
             bases.add(base);
             if (inInversion) {
                 exponents.add(BigInteger.ZERO.subtract(exponent).mod(base.getStructure().size()));

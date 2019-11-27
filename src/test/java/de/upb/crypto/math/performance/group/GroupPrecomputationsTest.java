@@ -142,4 +142,37 @@ public class GroupPrecomputationsTest {
                 new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
         assertEquals(mulPrecomputations2, mulPrecomputations);
     }
+
+    @Test
+    public void testAddGroupPrecomputationsExisting() {
+        List<GroupElement> bases = new ArrayList<>();
+        int windowSize = 2;
+        bases.add(zp.createZnElement(BigInteger.valueOf(4)).toUnitGroupElement());
+        bases.add(zp.createZnElement(BigInteger.valueOf(3)).toUnitGroupElement());
+        mulPrecomputations.addPowerProducts(bases, windowSize);
+        mulPrecomputations.addOddPowers(bases.get(0), windowSize);
+
+        Representation repr = mulPrecomputations.getRepresentation();
+        GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations2 =
+                new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
+        mulPrecomputations2.addOddPowers(bases.get(1), windowSize);
+        GroupPrecomputationsFactory.addGroupPrecomputations(mulPrecomputations2);
+        assertEquals(mulPrecomputations2, mulPrecomputations);
+    }
+
+    @Test
+    public void testAddGroupPrecomputationsNotExisting() {
+        Representation repr = mulPrecomputations.getRepresentation();
+        GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations2 =
+                new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
+        List<GroupElement> bases = new ArrayList<>();
+        int windowSize = 2;
+        bases.add(zp.createZnElement(BigInteger.valueOf(4)).toUnitGroupElement());
+        bases.add(zp.createZnElement(BigInteger.valueOf(3)).toUnitGroupElement());
+        mulPrecomputations2.addPowerProducts(bases, windowSize);
+        mulPrecomputations2.addOddPowers(bases.get(0), windowSize);
+        mulPrecomputations2.addOddPowers(bases.get(1), windowSize);
+        GroupPrecomputationsFactory.addGroupPrecomputations(mulPrecomputations2);
+        assertEquals(mulPrecomputations2, mulPrecomputations);
+    }
 }

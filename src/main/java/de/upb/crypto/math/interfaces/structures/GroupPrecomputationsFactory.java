@@ -297,8 +297,8 @@ public class GroupPrecomputationsFactory {
             GroupPrecomputations result = store.get(gp.group);
             if (result != null) {
                 // Combine them
-                // TODO: What if one map contains different entries than other?
                 result.oddPowers.putAll(gp.oddPowers);
+                result.powerProducts.putAll(gp.powerProducts);
             } else {
                 store.put(gp.group, gp);
             }
