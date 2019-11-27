@@ -18,8 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GroupPrecomputationsFactory {
 
-    private static final Map<Group, GroupPrecomputations> store =
-            new HashMap<Group, GroupPrecomputations>();
+    private static final Map<Group, GroupPrecomputations> store = new HashMap<>();
 
     /**
      * Class that stores precomputed group elements for a specific group.
@@ -44,7 +43,7 @@ public class GroupPrecomputationsFactory {
         private Group group;
 
 
-        public GroupPrecomputations(Group group) {
+        GroupPrecomputations(Group group) {
             // TODO: Using this enough for thread safety?
             oddPowers = new ConcurrentHashMap<>();
             powerProducts = new ConcurrentHashMap<>();
@@ -79,16 +78,36 @@ public class GroupPrecomputationsFactory {
          * Retrieve odd powers base^1, base^3, ..., base^maxExp (if maxExp is odd else maxExp-1).
          * If they are not computed yet, then it computes them first.
          *
-         * @param base
-         * @param maxExp
-         * @return
+         * @param base Base to retrieve odd powers for.
+         * @param maxExp Maximum (inclusive) exponent to retrieve odd powers up to.
+         * @return List of precomputed odd powers sorted ascending by exponent.
          */
         public List<GroupElement> getOddPowers(GroupElement base, int maxExp) {
+            return getOddPowers(base, maxExp, true);
+        }
+
+        /**
+         * Retrieve odd powers base^1, base^3, ..., base^maxExp (if maxExp is odd else maxExp-1).
+         * If they are not computed yet, then it computes them first.
+         *
+         * @param base Base to retrieve odd powers for.
+         * @param maxExp Maximum (inclusive) exponent to retrieve odd powers up to.
+         * @param computeIfMissing Whether to compute odd powers if they have not been precomputed
+         *                         yet.
+         * @return List of precomputed odd powers sorted ascending by exponent.
+         */
+        public List<GroupElement> getOddPowers(GroupElement base, int maxExp,
+                                               boolean computeIfMissing) {
             List<GroupElement> baseOddPowers =
                     this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>());
-            // if we are missing some powers, compute them first
+            // if we are missing some powers, compute them first if advised
             if (baseOddPowers.size() < (maxExp+1)/2) {
-                this.addOddPowers(base, maxExp);
+                if (computeIfMissing) {
+                    this.addOddPowers(base, maxExp);
+                } else {
+                    throw new IllegalStateException("Missing precomputed odd powers for "
+                            + base + " .");
+                }
             }
             return baseOddPowers.subList(0, (maxExp+1)/2);
         }
@@ -97,8 +116,8 @@ public class GroupPrecomputationsFactory {
          * Adds all power products of combinations of bases restricted by window size. Used
          * for simultaneous multiexponentiation algorithm.
          *
-         * @param bases
-         * @param windowSize
+         * @param bases Bases to precompute and cache power products for.
+         * @param windowSize Used to calculate maximum exponent for powers.
          */
         public void addPowerProducts(List<GroupElement> bases, int windowSize) {
             // TODO: prevent computing already computed power products
@@ -132,15 +151,32 @@ public class GroupPrecomputationsFactory {
 
         /**
          * Retrieve power products for simultaneous multi-exponentiation.
-         * @param bases
-         * @param windowSize
-         * @return
+         * @param bases Bases to retrieve power products for.
+         * @param windowSize Used to calculate maximum exponent for powers.
+         * @return List of power products.
          */
         public List<GroupElement> getPowerProducts(List<GroupElement> bases, int windowSize) {
+            return getPowerProducts(bases, windowSize, true);
+        }
+
+        /**
+         * Retrieve power products for simultaneous multi-exponentiation.
+         * @param bases Bases to retrieve power products for.
+         * @param windowSize Used to calculate maximum exponent for powers.
+         * @param computeIfMissing Whether to compute power products if they are missing.
+         * @return List of power products.
+         */
+        public List<GroupElement> getPowerProducts(List<GroupElement> bases, int windowSize,
+                                                   boolean computeIfMissing) {
             PowerProductKey key = new PowerProductKey(bases, windowSize);
             List<GroupElement> powerProductsEntry = powerProducts.get(key);
             if (powerProductsEntry == null) {
-                addPowerProducts(bases, windowSize);
+                if (computeIfMissing) {
+                    addPowerProducts(bases, windowSize);
+                } else {
+                    throw new IllegalStateException("Missing precomputed product powers for "
+                            + key);
+                }
             }
             return powerProducts.get(key);
         }
@@ -169,6 +205,12 @@ public class GroupPrecomputationsFactory {
                 }
                 PowerProductKey otherPPK = (PowerProductKey) other;
                 return Arrays.equals(bases, otherPPK.bases) && windowSize == otherPPK.windowSize;
+            }
+
+            @Override
+            public String toString() {
+                return "PowerProductKey for bases " + Arrays.toString(bases) + " and window size "
+                        + windowSize;
             }
         }
 

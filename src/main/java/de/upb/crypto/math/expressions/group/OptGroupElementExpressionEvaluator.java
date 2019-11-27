@@ -428,7 +428,6 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr op_expr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
-            // TODO: this only works for multiplicative groups, other rules for additive
             if (inInversion) {
                 extractMultiExpContext(op_expr.getRhs(), inInversion, multiExpContext);
                 extractMultiExpContext(op_expr.getLhs(), inInversion, multiExpContext);
@@ -532,7 +531,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         // chosen for better performance.
         Map<GroupElementExpression, ExprInfo> exprToInfo = new HashMap<>();
         analyzeGExpr(expr, exprToInfo);
-        // This current appraoach would not allow optimization across pairing groups.
+        // This current approach would not allow optimization across pairing groups.
         // So we might need another step if we want optimization across pairings.
         return optimizeGExpr(expr, exprToInfo);
     }
@@ -544,7 +543,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      */
     private void analyzeGExpr(GroupElementExpression expr,
                               Map<GroupElementExpression, ExprInfo> exprToInfo) {
-        findContainedBases(expr, exprToInfo);
+        findContainedBases(expr, false, exprToInfo);
     }
 
     /**
@@ -552,9 +551,61 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      * @param expr Expression to find bases in.
      * @param exprToInfo Information about expression and contained subexpressions.
      */
-    private void findContainedBases(GroupElementExpression expr,
+    private void findContainedBases(GroupElementExpression expr, boolean inInversion,
                                     Map<GroupElementExpression, ExprInfo> exprToInfo) {
-
+        if (expr instanceof GroupOpExpr) {
+            GroupOpExpr op_expr = (GroupOpExpr) expr;
+            // group not necessarily commutative, so if we are in inversion, switch order
+            if (inInversion) {
+                findContainedBases(op_expr.getRhs(), inInversion, exprToInfo);
+                findContainedBases(op_expr.getLhs(), inInversion, exprToInfo);
+                ExprInfo expr_info_right = exprToInfo.computeIfAbsent(op_expr.getRhs(),
+                        k -> new ExprInfo());
+                ExprInfo expr_info_left = exprToInfo.computeIfAbsent(op_expr.getLhs(),
+                        k -> new ExprInfo());
+                ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
+                expr_info.getContainedBases().addAll(expr_info_right.getContainedBases());
+                expr_info.getContainedBases().addAll(expr_info_left.getContainedBases());
+            } else {
+                findContainedBases(op_expr.getLhs(), inInversion, exprToInfo);
+                findContainedBases(op_expr.getRhs(), inInversion, exprToInfo);
+                ExprInfo expr_info_left = exprToInfo.computeIfAbsent(op_expr.getLhs(),
+                        k -> new ExprInfo());
+                ExprInfo expr_info_right = exprToInfo.computeIfAbsent(op_expr.getRhs(),
+                        k -> new ExprInfo());
+                ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
+                expr_info.getContainedBases().addAll(expr_info_left.getContainedBases());
+                expr_info.getContainedBases().addAll(expr_info_right.getContainedBases());
+            }
+        } else if (expr instanceof GroupInvExpr) {
+            GroupElementExpression inv_base = ((GroupInvExpr) expr).getBase();
+            findContainedBases(inv_base, !inInversion, exprToInfo);
+            // propagate found bases from base to inv expression
+            ExprInfo expr_info_inv_base = exprToInfo.computeIfAbsent(inv_base, k -> new ExprInfo());
+            ExprInfo expr_info_inv = exprToInfo.computeIfAbsent(expr, k ->  new ExprInfo());
+            expr_info_inv.getContainedBases().addAll(expr_info_inv_base.getContainedBases());
+        } else if (expr instanceof GroupPowExpr) {
+            GroupPowExpr pow_expr = (GroupPowExpr) expr;
+            // for now, just use evaluate naive on base and exponent
+            ExprInfo expr_info = exprToInfo.computeIfAbsent(pow_expr, k -> new ExprInfo());
+            // change this if we change multiexp algorithm to be smarter
+            expr_info.getContainedBases().add(pow_expr.base.evaluate());
+        } else if (expr instanceof GroupElementConstantExpr) {
+            // count this as basis too for now since multiexp does it too
+            ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
+            expr_info.getContainedBases().add(expr.evaluateNaive());
+        } else if (expr instanceof GroupEmptyExpr) {
+            // count this as basis too for now since multiexp does it too
+            ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
+            expr_info.getContainedBases().add(expr.evaluateNaive());
+        } else if (expr instanceof PairingExpr) {
+            // Dont handle pairing here
+        } else if (expr instanceof GroupVariableExpr) {
+            // Dont handle variable here
+        } else {
+            throw new IllegalArgumentException("Found something in expression tree that" +
+                    "is not a proper expression.");
+        }
     }
 
     /**
@@ -583,9 +634,10 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         // Find out which algorithm would be used with current settings and do precomputation
         // for that algorithm.
         ExprInfo rootExprInfo = exprToInfo.get(expr);
-        Set<GroupElement> rootBases = rootExprInfo.getContainedBases();
+        List<GroupElement> rootBases = rootExprInfo.getContainedBases();
+        System.out.println("Found bases: " + Arrays.toString(rootBases.toArray()));
         int rootNumBases = rootBases.size();
-        int costOfInversion = rootBases.iterator().next().getStructure().estimateCostOfInvert();
+        int costOfInversion = rootBases.get(0).getStructure().estimateCostOfInvert();
         MultiExpAlgorithm alg = getCurrentlyChosenMultiExpALgorithm(rootNumBases, costOfInversion);
         // Precompute powers, we always use caching window size.
         switch (alg) {
@@ -593,23 +645,27 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                 // precompute odd powers
                 int maxExp = (1 << windowSizeInterleavedWnafCaching) - 1;
                 GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
-                        GroupPrecomputationsFactory.get(rootBases.iterator().next().getStructure());
+                        GroupPrecomputationsFactory.get(rootBases.get(0).getStructure());
                 for (GroupElement base : rootBases) {
-                    groupPrecomputations.getOddPowers(base, maxExp);
+                    groupPrecomputations.addOddPowers(base, maxExp);
                 }
                 return;
             case INTERLEAVED_SLIDING:
                 // precompute odd powers
                 maxExp = (1 << windowSizeInterleavedSlidingCaching) - 1;
                 groupPrecomputations = GroupPrecomputationsFactory
-                        .get(rootBases.iterator().next().getStructure());
+                        .get(rootBases.get(0).getStructure());
                 for (GroupElement base : rootBases) {
-                    groupPrecomputations.getOddPowers(base, maxExp);
+                    groupPrecomputations.addOddPowers(base, maxExp);
                 }
                 return;
             case SIMULTANEOUS:
                 // precompute power products
-                // TODO: power products needs to consider order of bases
+                // power products depends on order of bases, so they should be left to right as
+                // in multiexp finding alg (sorting does not work if commutativity not given)
+                groupPrecomputations = GroupPrecomputationsFactory
+                        .get(rootBases.iterator().next().getStructure());
+                groupPrecomputations.addPowerProducts(rootBases, windowSizeSimultaneousCaching);
         }
     }
 
@@ -618,13 +674,13 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      * method. Later used in optimization step.
      */
     private static class ExprInfo {
-        private Set<GroupElement> containedBases;
+        private List<GroupElement> containedBases;
 
         public ExprInfo() {
-            this.containedBases = new HashSet<>();
+            this.containedBases = new ArrayList<>();
         }
 
-        public Set<GroupElement> getContainedBases() {
+        public List<GroupElement> getContainedBases() {
             return containedBases;
         }
     }
@@ -715,5 +771,54 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     private enum MultiExpAlgorithm {
         INTERLEAVED_SLIDING, INTERLEAVED_WNAF, SIMULTANEOUS
+    }
+
+
+    public boolean isEnableCachingInterleavedSliding() {
+        return enableCachingInterleavedSliding;
+    }
+
+    public boolean isEnableCachingSimultaneous() {
+        return enableCachingSimultaneous;
+    }
+
+    public boolean isEnableCachingInterleavedWnaf() {
+        return enableCachingInterleavedWnaf;
+    }
+
+    public ForceMultiExpAlgorithmSetting getForcedMultiExpAlgorithm() {
+        return forcedMultiExpAlgorithm;
+    }
+
+    public int getWindowSizeInterleavedSlidingCaching() {
+        return windowSizeInterleavedSlidingCaching;
+    }
+
+    public int getWindowSizeInterleavedSlidingNoCaching() {
+        return windowSizeInterleavedSlidingNoCaching;
+    }
+
+    public int getWindowSizeInterleavedWnafCaching() {
+        return windowSizeInterleavedWnafCaching;
+    }
+
+    public int getWindowSizeInterleavedWnafNoCaching() {
+        return windowSizeInterleavedWnafNoCaching;
+    }
+
+    public int getWindowSizeSimultaneousCaching() {
+        return windowSizeSimultaneousCaching;
+    }
+
+    public int getWindowSizeSimultaneousNoCaching() {
+        return windowSizeSimultaneousNoCaching;
+    }
+
+    public int getSimultaneousNumBasesCutoff() {
+        return simultaneousNumBasesCutoff;
+    }
+
+    public int getUseWnafCostInversion() {
+        return useWnafCostInversion;
     }
 }
