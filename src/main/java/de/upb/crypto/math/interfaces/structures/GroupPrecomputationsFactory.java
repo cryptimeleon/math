@@ -17,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Then we can just serialize the precomputations for a specific group if we want.
  * When deserializing, we can look into the store to see if the object exists already and
  * just update it with the deserialized precomputations.
+ *
+ * @author Raphael Heitjohann
  */
 public class GroupPrecomputationsFactory {
 
@@ -47,7 +49,6 @@ public class GroupPrecomputationsFactory {
 
 
         GroupPrecomputations(Group group) {
-            // TODO: Using this enough for thread safety?
             oddPowers = new ConcurrentHashMap<>();
             powerProducts = new ConcurrentHashMap<>();
             this.group = group;
@@ -196,7 +197,10 @@ public class GroupPrecomputationsFactory {
             }
         }
 
-
+        /**
+         * A key for the power products map. Represents a set of power products by the bases
+         * and the window size.
+         */
         private static class PowerProductKey implements Representable {
 
             @Represented(restorer="[G]")
