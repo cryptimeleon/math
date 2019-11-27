@@ -123,7 +123,7 @@ public interface Ring extends Structure, RepresentationRestorer {
      * @returns [x, y, gcd(a,b)]
      */
     public default RingElement[] extendedEuclideanAlgorithm(RingElement a, RingElement b) {
-        //VariableExpression names and algorithm taken from http://anh.cs.luc.edu/331/notes/xgcd.pdf
+        //Variable names and algorithm taken from http://anh.cs.luc.edu/331/notes/xgcd.pdf
         RingElement x = getZeroElement(), prevx = getOneElement();
         RingElement y = getOneElement(), prevy = getZeroElement();
 
