@@ -553,6 +553,8 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      */
     private void findContainedBases(GroupElementExpression expr, boolean inInversion,
                                     Map<GroupElementExpression, ExprInfo> exprToInfo) {
+        // TODO: many methods will use this approach, so we could refactor it into a
+        //  Visitor pattern.
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr op_expr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
@@ -635,7 +637,6 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         // for that algorithm.
         ExprInfo rootExprInfo = exprToInfo.get(expr);
         List<GroupElement> rootBases = rootExprInfo.getContainedBases();
-        System.out.println("Found bases: " + Arrays.toString(rootBases.toArray()));
         int rootNumBases = rootBases.size();
         int costOfInversion = rootBases.get(0).getStructure().estimateCostOfInvert();
         MultiExpAlgorithm alg = getCurrentlyChosenMultiExpALgorithm(rootNumBases, costOfInversion);

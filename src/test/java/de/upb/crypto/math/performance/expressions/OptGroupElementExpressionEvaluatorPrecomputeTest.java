@@ -1,5 +1,6 @@
 package de.upb.crypto.math.performance.expressions;
 
+import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator
@@ -58,9 +59,9 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
         GroupElement elem = bilGroup.getGT().getUniformlyRandomNonNeutral();
         System.out.println("Element: " + elem);
         GroupElementExpression expr = elem.expr();
-        expr = expr.opPow(elem.pow(2), BigInteger.valueOf(2));
+        expr = expr.opPow(elem.pow(2), new ExponentVariableExpr("x"));
         expr = expr.inv();
-        expr = expr.opPow(elem.pow(3), BigInteger.valueOf(3));
+        expr = expr.opPow(elem.pow(3), new ExponentVariableExpr("y"));
 
         expr = expr.op(new PairingExpr(bilGroup.getBilinearMap(), leftExpr, rightExpr));
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
