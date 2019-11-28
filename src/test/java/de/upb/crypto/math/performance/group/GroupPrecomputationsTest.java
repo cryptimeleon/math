@@ -1,6 +1,7 @@
 package de.upb.crypto.math.performance.group;
 
 import de.upb.crypto.math.interfaces.structures.*;
+import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.After;
 import org.junit.Before;
@@ -101,12 +102,77 @@ public class GroupPrecomputationsTest {
     @Test
     public void testAddGetPowerProducts() {
         List<GroupElement> bases = new ArrayList<>();
-        int numBases = 3;
         int windowSize = 2;
-        for (int i = 0; i < numBases; ++i) {
-            bases.add(mulZp.getUniformlyRandomNonNeutral());
-        }
+        bases.add(zp.createZnElement(BigInteger.valueOf(4)).toUnitGroupElement());
+        bases.add(zp.createZnElement(BigInteger.valueOf(3)).toUnitGroupElement());
         List<GroupElement> powerProducts = mulPrecomputations.getPowerProducts(bases, windowSize);
-        assertNotEquals(null, powerProducts);
+        GroupElement[] expectedPowerProducts = new GroupElement[] {
+                zp.createZnElement(BigInteger.valueOf(1)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(4)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(16)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(64)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(3)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(4 * 3)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(16 * 3)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(64 * 3)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(9)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(4 * 9)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(16 * 9)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(64 * 9)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(27)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(4 * 27)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(16 * 27)).toUnitGroupElement(),
+                zp.createZnElement(BigInteger.valueOf(64 * 27)).toUnitGroupElement()
+        };
+        assertArrayEquals(expectedPowerProducts, powerProducts.toArray());
+    }
+
+    @Test
+    public void testRepresentation() {
+        List<GroupElement> bases = new ArrayList<>();
+        int windowSize = 2;
+        bases.add(zp.createZnElement(BigInteger.valueOf(4)).toUnitGroupElement());
+        bases.add(zp.createZnElement(BigInteger.valueOf(3)).toUnitGroupElement());
+        mulPrecomputations.addPowerProducts(bases, windowSize);
+        mulPrecomputations.addOddPowers(bases.get(0), windowSize);
+        mulPrecomputations.addOddPowers(bases.get(1), windowSize);
+
+        Representation repr = mulPrecomputations.getRepresentation();
+        GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations2 =
+                new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
+        assertEquals(mulPrecomputations2, mulPrecomputations);
+    }
+
+    @Test
+    public void testAddGroupPrecomputationsExisting() {
+        List<GroupElement> bases = new ArrayList<>();
+        int windowSize = 2;
+        bases.add(zp.createZnElement(BigInteger.valueOf(4)).toUnitGroupElement());
+        bases.add(zp.createZnElement(BigInteger.valueOf(3)).toUnitGroupElement());
+        mulPrecomputations.addPowerProducts(bases, windowSize);
+        mulPrecomputations.addOddPowers(bases.get(0), windowSize);
+
+        Representation repr = mulPrecomputations.getRepresentation();
+        GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations2 =
+                new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
+        mulPrecomputations2.addOddPowers(bases.get(1), windowSize);
+        GroupPrecomputationsFactory.addGroupPrecomputations(mulPrecomputations2);
+        assertEquals(mulPrecomputations2, mulPrecomputations);
+    }
+
+    @Test
+    public void testAddGroupPrecomputationsNotExisting() {
+        Representation repr = mulPrecomputations.getRepresentation();
+        GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations2 =
+                new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
+        List<GroupElement> bases = new ArrayList<>();
+        int windowSize = 2;
+        bases.add(zp.createZnElement(BigInteger.valueOf(4)).toUnitGroupElement());
+        bases.add(zp.createZnElement(BigInteger.valueOf(3)).toUnitGroupElement());
+        mulPrecomputations2.addPowerProducts(bases, windowSize);
+        mulPrecomputations2.addOddPowers(bases.get(0), windowSize);
+        mulPrecomputations2.addOddPowers(bases.get(1), windowSize);
+        GroupPrecomputationsFactory.addGroupPrecomputations(mulPrecomputations2);
+        assertEquals(mulPrecomputations2, mulPrecomputations);
     }
 }

@@ -5,8 +5,10 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.Representable;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,16 +17,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * Then we can just serialize the precomputations for a specific group if we want.
  * When deserializing, we can look into the store to see if the object exists already and
  * just update it with the deserialized precomputations.
+ *
+ * @author Raphael Heitjohann
  */
 public class GroupPrecomputationsFactory {
 
-    private static final Map<Group, GroupPrecomputations> store =
-            new HashMap<Group, GroupPrecomputations>();
+    private static final Map<Group, GroupPrecomputations> store = new HashMap<>();
 
     /**
      * Class that stores precomputed group elements for a specific group.
      */
-    public static final class GroupPrecomputations implements Representable {
+    public static final class GroupPrecomputations implements Representable,
+            RepresentationRestorer {
 
         /**
          * Stores precomputed odd powers per base.
@@ -35,7 +39,7 @@ public class GroupPrecomputationsFactory {
         /**
          * Stores power products for simultaneous multiexponentiation algorithm.
          */
-        // TODO: How to do this representation?
+        @Represented(restorer = "P->[G]")
         private Map<PowerProductKey, List<GroupElement>> powerProducts;
 
         /**
@@ -44,16 +48,16 @@ public class GroupPrecomputationsFactory {
         private Group group;
 
 
-        public GroupPrecomputations(Group group) {
-            // TODO: Using this enough for thread safety?
+        GroupPrecomputations(Group group) {
             oddPowers = new ConcurrentHashMap<>();
             powerProducts = new ConcurrentHashMap<>();
             this.group = group;
         }
 
         public GroupPrecomputations(Representation repr, Group group) {
-            new ReprUtil(this).register(group, "G").deserialize(repr);
             this.group = group;
+            new ReprUtil(this).register(group, "G")
+                    .register(this, "P").deserialize(repr);
         }
 
         /**
@@ -79,16 +83,36 @@ public class GroupPrecomputationsFactory {
          * Retrieve odd powers base^1, base^3, ..., base^maxExp (if maxExp is odd else maxExp-1).
          * If they are not computed yet, then it computes them first.
          *
-         * @param base
-         * @param maxExp
-         * @return
+         * @param base Base to retrieve odd powers for.
+         * @param maxExp Maximum (inclusive) exponent to retrieve odd powers up to.
+         * @return List of precomputed odd powers sorted ascending by exponent.
          */
         public List<GroupElement> getOddPowers(GroupElement base, int maxExp) {
+            return getOddPowers(base, maxExp, true);
+        }
+
+        /**
+         * Retrieve odd powers base^1, base^3, ..., base^maxExp (if maxExp is odd else maxExp-1).
+         * If they are not computed yet, then it computes them first.
+         *
+         * @param base Base to retrieve odd powers for.
+         * @param maxExp Maximum (inclusive) exponent to retrieve odd powers up to.
+         * @param computeIfMissing Whether to compute odd powers if they have not been precomputed
+         *                         yet.
+         * @return List of precomputed odd powers sorted ascending by exponent.
+         */
+        public List<GroupElement> getOddPowers(GroupElement base, int maxExp,
+                                               boolean computeIfMissing) {
             List<GroupElement> baseOddPowers =
                     this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>());
-            // if we are missing some powers, compute them first
+            // if we are missing some powers, compute them first if advised
             if (baseOddPowers.size() < (maxExp+1)/2) {
-                this.addOddPowers(base, maxExp);
+                if (computeIfMissing) {
+                    this.addOddPowers(base, maxExp);
+                } else {
+                    throw new IllegalStateException("Missing precomputed odd powers for "
+                            + base + " .");
+                }
             }
             return baseOddPowers.subList(0, (maxExp+1)/2);
         }
@@ -97,11 +121,12 @@ public class GroupPrecomputationsFactory {
          * Adds all power products of combinations of bases restricted by window size. Used
          * for simultaneous multiexponentiation algorithm.
          *
-         * @param bases
-         * @param windowSize
+         * @param bases Bases to precompute and cache power products for.
+         * @param windowSize Used to calculate maximum exponent for powers.
          */
         public void addPowerProducts(List<GroupElement> bases, int windowSize) {
-            // TODO: prevent computing already computed power products
+            // TODO: reuse already computed power products for smaller window sizes
+            //  difficult because of ordering of existing ones (see test for this method)
             int numPrecomputedPowers = 1 << (windowSize * bases.size());
             PowerProductKey key = new PowerProductKey(bases, windowSize);
             List<GroupElement> powerProductsEntry = powerProducts
@@ -111,7 +136,7 @@ public class GroupPrecomputationsFactory {
                 powerProductsEntry.add(group.getNeutralElement());
             }
 
-            powerProductsEntry.set(0, group.getNeutralElement());
+            //powerProductsEntry.set(0, group.getNeutralElement());
             for (int i = 1; i < (1 << windowSize); i++) {
                 powerProductsEntry.set(i, powerProductsEntry.get(i-1).op(bases.get(0)));
             }
@@ -132,29 +157,65 @@ public class GroupPrecomputationsFactory {
 
         /**
          * Retrieve power products for simultaneous multi-exponentiation.
-         * @param bases
-         * @param windowSize
-         * @return
+         * @param bases Bases to retrieve power products for.
+         * @param windowSize Used to calculate maximum exponent for powers.
+         * @return List of power products.
          */
         public List<GroupElement> getPowerProducts(List<GroupElement> bases, int windowSize) {
+            return getPowerProducts(bases, windowSize, true);
+        }
+
+        /**
+         * Retrieve power products for simultaneous multi-exponentiation.
+         * @param bases Bases to retrieve power products for.
+         * @param windowSize Used to calculate maximum exponent for powers.
+         * @param computeIfMissing Whether to compute power products if they are missing.
+         * @return List of power products.
+         */
+        public List<GroupElement> getPowerProducts(List<GroupElement> bases, int windowSize,
+                                                   boolean computeIfMissing) {
             PowerProductKey key = new PowerProductKey(bases, windowSize);
             List<GroupElement> powerProductsEntry = powerProducts.get(key);
             if (powerProductsEntry == null) {
-                addPowerProducts(bases, windowSize);
+                if (computeIfMissing) {
+                    addPowerProducts(bases, windowSize);
+                } else {
+                    throw new IllegalStateException("Missing precomputed product powers for "
+                            + key);
+                }
             }
             return powerProducts.get(key);
         }
 
+        @Override
+        public Object recreateFromRepresentation(Type type, Representation repr) {
+            if (type == PowerProductKey.class) {
+                return new PowerProductKey(repr, this.group);
+            } else {
+                throw new IllegalArgumentException("Dont know how to handle type "
+                        + type.getTypeName());
+            }
+        }
 
-        private static class PowerProductKey {
+        /**
+         * A key for the power products map. Represents a set of power products by the bases
+         * and the window size.
+         */
+        private static class PowerProductKey implements Representable {
 
+            @Represented(restorer="[G]")
             private GroupElement[] bases;
 
-            private int windowSize;
+            @Represented(restorer="Int")
+            private Integer windowSize;
 
             PowerProductKey(List<GroupElement> bases, int windowSize) {
                 this.bases = bases.toArray(new GroupElement[0]);
                 this.windowSize = windowSize;
+            }
+
+            PowerProductKey(Representation repr, Group group) {
+                new ReprUtil(this).register(group, "G").deserialize(repr);
             }
 
             @Override
@@ -168,7 +229,19 @@ public class GroupPrecomputationsFactory {
                     return false;
                 }
                 PowerProductKey otherPPK = (PowerProductKey) other;
-                return Arrays.equals(bases, otherPPK.bases) && windowSize == otherPPK.windowSize;
+                return Arrays.equals(bases, otherPPK.bases)
+                        && windowSize.equals(otherPPK.windowSize);
+            }
+
+            @Override
+            public String toString() {
+                return "PowerProductKey for bases " + Arrays.toString(bases) + " and window size "
+                        + windowSize;
+            }
+
+            @Override
+            public Representation getRepresentation() {
+                return ReprUtil.serialize(this);
             }
         }
 
@@ -183,6 +256,14 @@ public class GroupPrecomputationsFactory {
         public void reset() {
             oddPowers = new ConcurrentHashMap<>();
             powerProducts = new ConcurrentHashMap<>();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            GroupPrecomputations gp = (GroupPrecomputations) other;
+            return this.group.equals(gp.group)
+                    && this.oddPowers.equals(gp.oddPowers)
+                    && this.powerProducts.equals(gp.powerProducts);
         }
     }
 
@@ -216,8 +297,8 @@ public class GroupPrecomputationsFactory {
             GroupPrecomputations result = store.get(gp.group);
             if (result != null) {
                 // Combine them
-                // TODO: What if one map contains different entries than other?
                 result.oddPowers.putAll(gp.oddPowers);
+                result.powerProducts.putAll(gp.powerProducts);
             } else {
                 store.put(gp.group, gp);
             }

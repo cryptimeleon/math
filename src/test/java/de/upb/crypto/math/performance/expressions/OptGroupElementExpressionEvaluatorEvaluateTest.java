@@ -19,9 +19,9 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class OptGroupElementExpressionEvaluatorTest {
+public class OptGroupElementExpressionEvaluatorEvaluateTest {
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name= "{index}: algorithm={0}")
     public static Iterable<ForceMultiExpAlgorithmSetting>
     algs() {
         return Arrays.asList(
@@ -33,11 +33,6 @@ public class OptGroupElementExpressionEvaluatorTest {
 
     @Parameterized.Parameter
     public ForceMultiExpAlgorithmSetting algSetting;
-
-    @Test
-    public void printAlgSetting() {
-        System.out.println("Using algorithm setting " + algSetting);
-    }
 
     @Test
     public void testAddOpPowInv() {
