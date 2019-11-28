@@ -29,7 +29,7 @@ public class GroupPrecomputationsFactory {
         /**
          * Stores precomputed odd powers per base.
          */
-        @Represented(restorer = "G->[G]]")
+        @Represented(restorer = "G->[G]")
         private Map<GroupElement, List<GroupElement>> oddPowers;
 
         /**
