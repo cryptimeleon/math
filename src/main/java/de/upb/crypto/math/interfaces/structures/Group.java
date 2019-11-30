@@ -1,6 +1,8 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.expressions.group.*;
+import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.group.NaiveGroupElementExpressionEvaluator;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 import de.upb.crypto.math.structures.zn.Zn;

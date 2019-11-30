@@ -3,15 +3,11 @@ package de.upb.crypto.math.performance.expressions;
 import com.github.noconnor.junitperf.JUnitPerfRule;
 import com.github.noconnor.junitperf.JUnitPerfTest;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.expressions.group.GroupPowExpr;
 import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
-import de.upb.crypto.math.structures.zn.Zn;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Performance tests for multi-exponentiation algorithms using group 1 for a BN pairing.
  */
-@Ignore
+//@Ignore
 @RunWith(Parameterized.class)
 public class OptGroupElementExpressionEvaluatorBNPerfTest {
 
@@ -43,98 +39,69 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
 
     @Rule
     public JUnitPerfRule perfTestRule = new JUnitPerfRule();
-    public final int perfDuration = 10_000;
-    public final int warmupDuration = 4_000;
-
-    static Zn exponentZn;
+    private final int perfDuration = 10_000;
+    private final int warmupDuration = 4_000;
 
     /**
-     * Test data for expression with many different bases, so bad for simultaneous
+     * Test data for expression with many different bases, so bad for simultaneous.
      */
-    static GroupElement[] manyBases;
-    static Zn.ZnElement[] manyExponents;
-    static GroupElementExpression manyPerfTestExpr;
-    static GroupElement manyExprResult;
+    private static GroupElementExpression manyPerfTestExpr;
+    private static GroupElement manyExprResult;
 
-    static GroupElement[] fewBases;
-    static Zn.ZnElement[] fewExponents;
-    static GroupElementExpression fewPerfTestExpr;
-    static GroupElement fewExprResult;
-
-    static BilinearGroup bilGroup;
+    /**
+     * Test data for expression with fewer bases, so good for simultaneous.
+     */
+    private static GroupElementExpression fewPerfTestExpr;
+    private static GroupElement fewExprResult;
 
 
     @BeforeClass
     public static void setupPerfTest() {
         BilinearGroupFactory fac = new BilinearGroupFactory(60);
         fac.setRequirements(BilinearGroup.Type.TYPE_3);
-        bilGroup = fac.createBilinearGroup();
-        exponentZn = bilGroup.getG1().getZn();
-        int manyNumBases = 11;
-        int manyNumExponents = 11;
-        manyBases = new GroupElement[manyNumBases];
-        for (int i = 0; i < manyBases.length; ++i) {
-            manyBases[i] = bilGroup.getG1().getUniformlyRandomNonNeutral();
-            // Do precomputations before
-            GroupPrecomputationsFactory
-                    .get(bilGroup.getG1())
-                    .getOddPowers(manyBases[i], (1<<8)-1);
-        }
-        // Do precomputations before
-        GroupPrecomputationsFactory
-                .get(bilGroup.getG1())
-                .getPowerProducts(Arrays.asList(manyBases), 1);
-        manyExponents = new Zn.ZnElement[manyNumExponents];
-        for (int i = 0; i < manyExponents.length; ++i) {
-            manyExponents[i] = exponentZn.getUniformlyRandomElement();
-        }
-        manyPerfTestExpr = new GroupPowExpr(manyBases[0].expr(),
-                manyExponents[0].asExponentExpression());
-        for (int i = 1; i < manyExponents.length; ++i) {
-            manyPerfTestExpr = manyPerfTestExpr
-                    .opPow(manyBases[i % manyNumBases], manyExponents[i]);
-        }
+        BilinearGroup bilGroup = fac.createBilinearGroup();
+        manyPerfTestExpr = ExpressionGenerator
+                .genMultiExponentiation(bilGroup.getG1(), 11, 11);
+        fewPerfTestExpr = ExpressionGenerator
+                .genMultiExponentiation(bilGroup.getG1(), 6, 6);
+        // Do precomputation beforehand
+        OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.precompute(manyPerfTestExpr);
+        evaluator.precompute(fewPerfTestExpr);
         manyExprResult = manyPerfTestExpr.evaluate();
-
-        int fewNumBases = 6;
-        int fewNumExponents = 6;
-        fewBases = new GroupElement[fewNumBases];
-        for (int i = 0; i < fewBases.length; ++i) {
-            fewBases[i] = bilGroup.getG1().getUniformlyRandomNonNeutral();
-            GroupPrecomputationsFactory
-                    .get(bilGroup.getG1())
-                    .getOddPowers(fewBases[i], (1<<8)-1);
-        }
-        // Do precomputations before
-        GroupPrecomputationsFactory
-                .get(bilGroup.getG1())
-                .getPowerProducts(Arrays.asList(fewBases), 1);
-        fewExponents = new Zn.ZnElement[fewNumExponents];
-        for (int i = 0; i < fewExponents.length; ++i) {
-            fewExponents[i] = exponentZn.getUniformlyRandomElement();
-        }
-        fewPerfTestExpr = new GroupPowExpr(fewBases[0].expr(),
-                fewExponents[0].asExponentExpression());
-        for (int i = 1; i < fewExponents.length; ++i) {
-            fewPerfTestExpr = fewPerfTestExpr
-                    .opPow(fewBases[i % fewNumBases], fewExponents[i]);
-        }
         fewExprResult = fewPerfTestExpr.evaluate();
+
+
     }
 
     @Test
-    public void testCorrectnessCaching() {
+    public void testManyCorrectnessCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         evaluator.setForcedMultiExpAlgorithm(algSetting);
         assertEquals(manyExprResult, manyPerfTestExpr.evaluate(evaluator));
     }
 
     @Test
-    public void testCorrectnessNoCaching() {
+    public void testManyCorrectnessNoCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         evaluator.setEnableCachingForAlg(algSetting, false);
         evaluator.setForcedMultiExpAlgorithm(algSetting);
         assertEquals(manyExprResult, manyPerfTestExpr.evaluate(evaluator));
+    }
+
+    @Test
+    public void testFewCorrectnessCaching() {
+        OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        assertEquals(fewExprResult, fewPerfTestExpr.evaluate(evaluator));
+    }
+
+    @Test
+    public void testFewCorrectnessNoCaching() {
+        OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setEnableCachingForAlg(algSetting, false);
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        assertEquals(fewExprResult, fewPerfTestExpr.evaluate(evaluator));
     }
 
     @Test

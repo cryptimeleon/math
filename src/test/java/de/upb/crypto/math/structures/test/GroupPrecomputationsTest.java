@@ -1,4 +1,4 @@
-package de.upb.crypto.math.performance.group;
+package de.upb.crypto.math.structures.test;
 
 import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.serialization.Representation;

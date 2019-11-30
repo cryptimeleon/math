@@ -1,7 +1,6 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.exponent.ExponentEmptyExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
@@ -11,8 +10,6 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 /**

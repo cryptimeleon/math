@@ -5,6 +5,9 @@ import de.upb.crypto.math.interfaces.structures.*;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.IntStream;
 
 /**
@@ -20,6 +23,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     private boolean enableCachingInterleavedSliding;
     private boolean enableCachingSimultaneous;
     private boolean enableCachingInterleavedWnaf;
+    private boolean enableMultithreadedPairingEvaluation;
     private ForceMultiExpAlgorithmSetting forcedMultiExpAlgorithm;
     private int windowSizeInterleavedSlidingCaching;
     private int windowSizeInterleavedSlidingNoCaching;
@@ -35,8 +39,10 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      */
     private int useWnafCostInversion;
 
+    private ThreadPoolExecutor pairingExecutor;
+
     public OptGroupElementExpressionEvaluator() {
-        // TODO: best default values here?
+        // TODO: best default values here? Could use even more finetuning
         enableCachingInterleavedSliding = true;
         enableCachingSimultaneous = true;
         enableCachingInterleavedWnaf = true;
@@ -49,13 +55,27 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         windowSizeSimultaneousNoCaching = 1;
         simultaneousNumBasesCutoff = 10;
         useWnafCostInversion = 100;
+
+        // For parallel evaluation of both sides of a pariring
+        // In the case of expensive pairings such as the BN pairing, this
+        // seems to really only be worth it if the multi-exponentiation is very big,
+        // and even then, the difference is not really noticable at all since the pairing
+        // is so expensive.
+        pairingExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+        enableMultithreadedPairingEvaluation = true;
     }
 
     @Override
     public GroupElement evaluate(GroupElementExpression expr) {
         MultiExpContext multiExpContext = new MultiExpContext();
         boolean inInversion = false;
-        extractMultiExpContext(expr, inInversion, multiExpContext);
+        try {
+            extractMultiExpContext(expr, inInversion, multiExpContext);
+        } catch (InterruptedException e) {
+            throw new IllegalStateException("A pairing evaluation thread was interrupted " +
+                    "unexpectedly: " + e.getMessage());
+        }
+
         if (!multiExpContext.allBasesSameGroup()) {
             throw new IllegalArgumentException("Expression contains elements with different" +
                     "groups outside of pairings.");
@@ -179,7 +199,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         // TODO: we should not do any precomputations for bases with exponents 1
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
-        List<GroupElement> powerProducts = new ArrayList<>();
+        List<GroupElement> powerProducts;
         if (enableCaching) {
             GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
                     GroupPrecomputationsFactory.get(bases.get(0).getStructure());
@@ -424,7 +444,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      * @param multiExpContext Storage for extracted multi-exponentiation.
      */
     private void extractMultiExpContext(GroupElementExpression expr, boolean inInversion,
-                                        MultiExpContext multiExpContext) {
+                                        MultiExpContext multiExpContext) throws InterruptedException {
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr op_expr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
@@ -455,10 +475,20 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                     inInversion);
         } else if (expr instanceof PairingExpr) {
             PairingExpr pair_expr = (PairingExpr) expr;
-            // TODO: Can do this in parallel
-            GroupElement lhs = pair_expr.getLhs().evaluate(this);
-            GroupElement rhs = pair_expr.getRhs().evaluate(this);
-            GroupElement pair_result = pair_expr.getMap().apply(lhs, rhs);
+            final GroupElement[] lhs = new GroupElement[1];
+            final GroupElement[] rhs = new GroupElement[1];
+            if (enableMultithreadedPairingEvaluation) {
+                GroupElementExpressionEvaluator thisEval = this;
+                Future<Object> leftResult = pairingExecutor.submit(
+                        () -> lhs[0] = pair_expr.getLhs().evaluate(thisEval));
+                Future<Object> rightResult = pairingExecutor.submit(
+                        () -> rhs[0] = pair_expr.getRhs().evaluate(thisEval));
+                while (!leftResult.isDone() || !rightResult.isDone()) {}
+            } else {
+                lhs[0] = pair_expr.getLhs().evaluate(this);
+                rhs[0] = pair_expr.getRhs().evaluate(this);
+            }
+            GroupElement pair_result = pair_expr.getMap().apply(lhs[0], rhs[0]);
             // Also use this as basis for multiexp
             multiExpContext.addExponentiation(pair_result, BigInteger.ONE, inInversion);
         } else if (expr instanceof GroupVariableExpr) {
@@ -555,8 +585,8 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      */
     private void findContainedBases(GroupElementExpression expr, boolean inInversion,
                                     Map<GroupElementExpression, ExprInfo> exprToInfo) {
-        // TODO: many methods will use this approach, so we could refactor it into a
-        //  Visitor pattern.
+        // TODO: Would be nice to refactor this pattern,
+        //  but recursion is required for inversion handling
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr op_expr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
@@ -593,7 +623,10 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             // for now, just use evaluate naive on base and exponent
             ExprInfo expr_info = exprToInfo.computeIfAbsent(pow_expr, k -> new ExprInfo());
             // change this if we change multiexp algorithm to be smarter
-            expr_info.getContainedBases().add(pow_expr.base.evaluate());
+            // if variable in there we cannot precompute easily
+            if (!containsVariableExpr(pow_expr)) {
+                expr_info.getContainedBases().add(pow_expr.base.evaluate());
+            }
         } else if (expr instanceof GroupElementConstantExpr) {
             // count this as basis too for now since multiexp does it too
             ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
@@ -603,9 +636,41 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
             expr_info.getContainedBases().add(expr.evaluateNaive());
         } else if (expr instanceof PairingExpr) {
-            // Dont handle pairing here
+            // Dont handle pairing here, need to call precompute on both sides but not here
         } else if (expr instanceof GroupVariableExpr) {
             // Dont handle variable here
+        } else {
+            throw new IllegalArgumentException("Found something in expression tree that" +
+                    "is not a proper expression.");
+        }
+    }
+
+    /**
+     * Checks whether expression contains a variable expression.
+     * @param expr Expression to check.
+     * @return true if expression contains a variable expression, else false.
+     */
+    private boolean containsVariableExpr(GroupElementExpression expr) {
+        if (expr instanceof GroupOpExpr) {
+            GroupOpExpr opExpr = (GroupOpExpr) expr;
+            return containsVariableExpr(opExpr.getLhs())
+                    || containsVariableExpr(opExpr.getRhs());
+        } else if (expr instanceof GroupInvExpr) {
+            GroupInvExpr invExpr = (GroupInvExpr) expr;
+            return containsVariableExpr(invExpr.getBase());
+        } else if (expr instanceof GroupPowExpr) {
+            GroupPowExpr powExpr = (GroupPowExpr) expr;
+            return containsVariableExpr(powExpr.getBase());
+        } else if (expr instanceof GroupElementConstantExpr) {
+            return false;
+        } else if (expr instanceof GroupEmptyExpr) {
+            return false;
+        } else if (expr instanceof PairingExpr) {
+            PairingExpr pairingExpr = (PairingExpr) expr;
+            return containsVariableExpr(pairingExpr.getLhs())
+                    || containsVariableExpr(pairingExpr.getRhs());
+        } else if (expr instanceof GroupVariableExpr) {
+            return true;
         } else {
             throw new IllegalArgumentException("Found something in expression tree that" +
                     "is not a proper expression.");
@@ -676,7 +741,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      * Information about an expression gathered while analyzing the expression in the precompute
      * method. Later used in optimization step.
      */
-    private static class ExprInfo {
+    public static class ExprInfo {
         private List<GroupElement> containedBases;
 
         public ExprInfo() {
@@ -707,7 +772,9 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     }
 
     /**
-     * Enable/Disable caching for specified algorithm.
+     * Enable/Disable caching for specified algorithm. Can be useful if you know a base
+     * will only be used once. Otherwise (especially for the simultaneous algorithm) caching
+     * should be enabled.
      * @param alg The algorithm to enable/disable caching for.
      * @param newSetting Whether caching should be enabled or disabled.
      */
@@ -726,6 +793,16 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         throw new IllegalArgumentException("Unsupported ForceMultiExpAlgorithmSetting value.");
     }
 
+    public void setEnableMultithreadedPairingEvaluation(boolean newSetting) {
+        enableMultithreadedPairingEvaluation = newSetting;
+    }
+
+    /**
+     * Allows forcing a specific multi-exponentiation algorithm to be used.
+     * Inappropriate usage (such as forcing simultaneous without caching) can lead
+     * to terrible performance.
+     * @param newSetting Algorithm to force usage of.
+     */
     public void setForcedMultiExpAlgorithm(ForceMultiExpAlgorithmSetting newSetting) {
         forcedMultiExpAlgorithm = newSetting;
     }
@@ -787,6 +864,10 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     public boolean isEnableCachingInterleavedWnaf() {
         return enableCachingInterleavedWnaf;
+    }
+
+    public boolean isEnableMultithreadedPairingEvaluation() {
+        return enableMultithreadedPairingEvaluation;
     }
 
     public ForceMultiExpAlgorithmSetting getForcedMultiExpAlgorithm() {
