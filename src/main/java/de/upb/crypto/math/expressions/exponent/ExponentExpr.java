@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.bool.ExponentEqualityExpr;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -35,5 +36,17 @@ public interface ExponentExpr extends Expression {
 
     default ExponentExpr mul(ExponentExpr other) {
         return new ExponentMulExpr(this, other);
+    }
+
+    default ExponentEqualityExpr isEqualTo(ExponentExpr other) {
+        return new ExponentEqualityExpr(this, other);
+    }
+
+    default ExponentEqualityExpr isEqualTo(Zn.ZnElement other) {
+        return new ExponentEqualityExpr(this, other.asExponentExpression());
+    }
+
+    default ExponentEqualityExpr isEqualTo(BigInteger other) {
+        return new ExponentEqualityExpr(this, new ExponentConstantExpr(other));
     }
 }

@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.bool.GroupEqualityExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
@@ -102,6 +103,14 @@ public abstract class GroupElementExpression implements Expression {
 
     public GroupElementExpression inv() {
         return new GroupInvExpr(this);
+    }
+
+    public GroupEqualityExpr isEqualTo(GroupElementExpression other) {
+        return new GroupEqualityExpr(this, other);
+    }
+
+    public GroupEqualityExpr isEqualTo(GroupElement other) {
+        return new GroupEqualityExpr(this, other.expr());
     }
 
     @Override
