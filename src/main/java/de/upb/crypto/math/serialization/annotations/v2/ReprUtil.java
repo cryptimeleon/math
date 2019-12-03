@@ -142,6 +142,7 @@ public class ReprUtil {
         ObjectRepresentation result = new ObjectRepresentation();
         forEachField(field -> {
             try {
+                field.setAccessible(true);
                 result.put(field.getName(), getHandler(field.getGenericType(), getRestorerStringOfField(field)).serializeToRepresentation(field.get(instance)));
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -175,6 +176,7 @@ public class ReprUtil {
      */
     Object restoreField(Field field, Representation topLevelRepr) {
         try {
+            field.setAccessible(true);
             Object value = field.get(instance);
             if (value != null)
                 return value;
