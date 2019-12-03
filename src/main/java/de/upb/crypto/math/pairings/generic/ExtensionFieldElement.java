@@ -239,7 +239,7 @@ public class ExtensionFieldElement implements FieldElement, UniqueByteRepresenta
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
         Consumer<UniqueByteRepresentable> accumulationMethod;
         if (!field.getUniqueByteLength().isPresent()) { //underlying field does not offer a constant length ubr
-            accumulationMethod = accumulator::escapeAndAppendAndSeparate;
+            accumulationMethod = accumulator::escapeAndSeparate;
         } else { //underlying field has fixed length representations
             accumulationMethod = accumulator::append;
         }

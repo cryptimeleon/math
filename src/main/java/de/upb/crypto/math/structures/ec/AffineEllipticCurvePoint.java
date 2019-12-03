@@ -315,9 +315,9 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
         AffineEllipticCurvePoint normalized = normalize();
         if (!getStructure().getFieldOfDefinition().getUniqueByteLength().isPresent()) {
-            accumulator.escapeAndAppendAndSeparate(normalized.getX());
-            accumulator.escapeAndAppendAndSeparate(normalized.getY());
-            accumulator.escapeAndAppendAndSeparate(normalized.getZ());
+            accumulator.escapeAndSeparate(normalized.getX());
+            accumulator.escapeAndSeparate(normalized.getY());
+            accumulator.escapeAndSeparate(normalized.getZ());
         } else {
             accumulator.append(normalized.getX());
             accumulator.append(normalized.getY());

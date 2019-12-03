@@ -70,15 +70,6 @@ public abstract class ByteAccumulator {
     }
 
     /**
-     * Escapes any occurrence of the separator symbol, appends the escaped string
-     * to the byte accumulator, and then appends a separator symbol.
-     */
-    public void escapeAndAppendAndSeparate(UniqueByteRepresentable ubr) {
-        escapeAndAppend(ubr);
-        appendSeperator();
-    }
-
-    /**
      * Escapes the separator symbol, appends the escaped bytes, then appends a separator symbol
      */
     public void escapeAndSeparate(byte[] bytes) {
