@@ -113,7 +113,7 @@ public class ProductRingElement implements RingElement {
             });
         }
         else {
-            Arrays.stream(elems).forEachOrdered(accumulator::escapeAndAppendAndSeparate);
+            Arrays.stream(elems).forEachOrdered(accumulator::escapeAndSeparate);
         }
 
         return accumulator;
