@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.test;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.NaiveGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator
         .ForceMultiExpAlgorithmSetting;
@@ -40,7 +41,8 @@ public class OptGroupElementExpressionEvaluatorEvaluateTest {
                 .genMultiExponentiation(zp.asAdditiveGroup(), 10, 15);
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         evaluator.setForcedMultiExpAlgorithm(algSetting);
-        assertEquals(expr.evaluate(), expr.evaluate(evaluator));
+        NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
+        assertEquals(expr.evaluate(naiveEval), expr.evaluate(evaluator));
     }
 
     @Test
@@ -50,7 +52,8 @@ public class OptGroupElementExpressionEvaluatorEvaluateTest {
                 .genMultiExponentiation(zp.asUnitGroup(), 10, 15);
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         evaluator.setForcedMultiExpAlgorithm(algSetting);
-        assertEquals(expr.evaluate(), expr.evaluate(evaluator));
+        NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
+        assertEquals(expr.evaluate(naiveEval), expr.evaluate(evaluator));
     }
 
     @Test
@@ -68,7 +71,8 @@ public class OptGroupElementExpressionEvaluatorEvaluateTest {
 
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         evaluator.setForcedMultiExpAlgorithm(algSetting);
-        assertEquals(expr.evaluate(), expr.evaluate(evaluator));
+        NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
+        assertEquals(expr.evaluate(naiveEval), expr.evaluate(evaluator));
     }
 
     @Test
@@ -87,6 +91,7 @@ public class OptGroupElementExpressionEvaluatorEvaluateTest {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         evaluator.setForcedMultiExpAlgorithm(algSetting);
         evaluator.setEnableMultithreadedPairingEvaluation(false);
-        assertEquals(expr.evaluate(), expr.evaluate(evaluator));
+        NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
+        assertEquals(expr.evaluate(naiveEval), expr.evaluate(evaluator));
     }
 }

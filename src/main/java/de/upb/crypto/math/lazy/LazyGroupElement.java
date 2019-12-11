@@ -81,7 +81,9 @@ public class LazyGroupElement implements GroupElement {
 
     @Override
     public int hashCode() {
-        return expr.evaluate().hashCode();
+        // This is way too slow if there are pairings inside
+        // return expr.evaluate().hashCode();
+        return group.hashCode() * 31 + expr.hashCode();
     }
 
     /**

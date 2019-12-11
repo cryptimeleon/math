@@ -69,19 +69,29 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     public GroupElement evaluate(GroupElementExpression expr) {
         MultiExpContext multiExpContext = new MultiExpContext();
         boolean inInversion = false;
-        try {
-            extractMultiExpContext(expr, inInversion, multiExpContext);
-        } catch (InterruptedException e) {
-            throw new IllegalStateException("A pairing evaluation thread was interrupted " +
-                    "unexpectedly: " + e.getMessage());
-        }
+        extractMultiExpContext(expr, inInversion, multiExpContext);
 
         if (!multiExpContext.allBasesSameGroup()) {
             throw new IllegalArgumentException("Expression contains elements with different" +
                     "groups outside of pairings.");
         }
 
-        return evaluateMultiExp(multiExpContext);
+        if (multiExpContext.isEmpty()) {
+            return expr.getGroup().getNeutralElement();
+        }
+        // This is to remove any constants (exponent 1) from the multi-exponentiation.
+        // (Atleast the ones on the left and on the right, we cannot remove the ones
+        // in the middle unless we got commutativity.
+        // We don't want to do any precomputations for those.
+        GroupElement leftConstantsResult = multiExpContext.evalAndRemoveLeftConstants();
+        GroupElement rightConstantsResult = expr.getGroup().getNeutralElement();
+        if (!multiExpContext.isEmpty()) {
+            rightConstantsResult = multiExpContext.evalAndRemoveRightConstants();
+        }
+        if (multiExpContext.isEmpty()) {
+            return leftConstantsResult.op(rightConstantsResult);
+        }
+        return leftConstantsResult.op(evaluateMultiExp(multiExpContext)).op(rightConstantsResult);
     }
 
     /**
@@ -444,7 +454,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      * @param multiExpContext Storage for extracted multi-exponentiation.
      */
     private void extractMultiExpContext(GroupElementExpression expr, boolean inInversion,
-                                        MultiExpContext multiExpContext) throws InterruptedException {
+                                        MultiExpContext multiExpContext) {
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr op_expr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
@@ -461,7 +471,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             GroupPowExpr pow_expr = (GroupPowExpr) expr;
             // for now, just use evaluate naive on base and exponent
             multiExpContext.addExponentiation(
-                    pow_expr.getBase().evaluate(),
+                    pow_expr.getBase().evaluateNaive(),
                     pow_expr.getExponent().evaluate(),
                     inInversion
             );
@@ -514,19 +524,30 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
 
         void addExponentiation(GroupElement base, BigInteger exponent, boolean inInversion) {
-            // TODO: bases with exponents one need extra handling to avoid precomputations
-            //  problem with that is if those constants are inbetween other bases
-            //  dont want to split any multi-exponentiations
-            bases.add(base);
-            if (inInversion) {
-                exponents.add(BigInteger.ZERO.subtract(exponent).mod(base.getStructure().size()));
+            if (exponent.compareTo(BigInteger.ZERO) == 0) {
+                return;
+            }
+            BigInteger realExponent;
+            if(inInversion) {
+                realExponent = exponent.negate();
             } else {
-                exponents.add(exponent);
+                realExponent = exponent;
+            }
+            // Move negative exponent into basis if possible
+            if (realExponent.compareTo(BigInteger.ZERO) < 0) {
+                exponents.add(realExponent.negate());
+                bases.add(base.inv());
+            } else {
+                exponents.add(realExponent);
+                bases.add(base);
             }
 
         }
 
         boolean allBasesSameGroup() {
+            if (isEmpty()) {
+                return true;
+            }
             Group group = bases.get(0).getStructure();
             for (GroupElement base : bases) {
                 if (base.getStructure() != group) {
@@ -534,6 +555,54 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                 }
             }
             return true;
+        }
+
+        /**
+         * Avoid precomputing elements whose exponent is one (so no exponentiation necessary)
+         * by evaluating them and then removing them from the multi-exponentiation context.
+         * @return
+         */
+        GroupElement evalAndRemoveLeftConstants() {
+            // assume size of bases not 0
+            int numLeftConstants = 0;
+            while (numLeftConstants < exponents.size()
+                    && exponents.get(numLeftConstants).compareTo(BigInteger.ONE) == 0) {
+                ++numLeftConstants;
+            }
+            GroupElement result = bases.get(0).getStructure().getNeutralElement();
+            for (int i = 0; i < numLeftConstants; ++i) {
+                result = result.op(bases.get(i));
+            }
+            // remove evaluated elements
+            bases.subList(0, numLeftConstants).clear();
+            exponents.subList(0, numLeftConstants).clear();
+            return result;
+        }
+
+        /**
+         * Same as for left but for right instead.
+         * @return
+         */
+        GroupElement evalAndRemoveRightConstants() {
+            // assume size of bases not 0
+            int numRightConstants = 0;
+            while (numRightConstants < exponents.size()
+                    && exponents
+                    .get(exponents.size()-1-numRightConstants).compareTo(BigInteger.ONE) == 0) {
+                ++numRightConstants;
+            }
+            GroupElement result = bases.get(0).getStructure().getNeutralElement();
+            for (int i = exponents.size()-numRightConstants; i < exponents.size(); ++i) {
+                result = result.op(bases.get(i));
+            }
+            // remove evaluated elements
+            bases.subList(exponents.size()-numRightConstants, exponents.size()).clear();
+            exponents.subList(exponents.size()-numRightConstants, exponents.size()).clear();
+            return result;
+        }
+
+        public boolean isEmpty() {
+            return bases.size() == 0;
         }
 
         public List<GroupElement> getBases() {
@@ -625,7 +694,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             // change this if we change multiexp algorithm to be smarter
             // if variable in there we cannot precompute easily
             if (!containsVariableExpr(pow_expr)) {
-                expr_info.getContainedBases().add(pow_expr.base.evaluate());
+                expr_info.getContainedBases().add(pow_expr.base.evaluateNaive());
             }
         } else if (expr instanceof GroupElementConstantExpr) {
             // count this as basis too for now since multiexp does it too

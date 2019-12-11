@@ -2,7 +2,6 @@ package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
-import de.upb.crypto.math.expressions.group.NaiveGroupElementExpressionEvaluator;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 import de.upb.crypto.math.structures.zn.Zn;
@@ -84,7 +83,7 @@ public interface Group extends Structure, RepresentationRestorer {
      * @return an evaluator that is able to handle all expressions that legitimately involve an element of this group (this includes PairingExpr).
      */
     default GroupElementExpressionEvaluator getExpressionEvaluator() {
-        return new NaiveGroupElementExpressionEvaluator();
+        return new OptGroupElementExpressionEvaluator();
     }
 
     /**

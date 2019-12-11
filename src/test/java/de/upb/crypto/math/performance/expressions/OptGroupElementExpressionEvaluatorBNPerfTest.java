@@ -3,11 +3,13 @@ package de.upb.crypto.math.performance.expressions;
 import com.github.noconnor.junitperf.JUnitPerfRule;
 import com.github.noconnor.junitperf.JUnitPerfTest;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.NaiveGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Performance tests for multi-exponentiation algorithms using group 1 for a BN pairing.
  */
-//@Ignore
+@Ignore
 @RunWith(Parameterized.class)
 public class OptGroupElementExpressionEvaluatorBNPerfTest {
 
@@ -68,8 +70,9 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         evaluator.precompute(manyPerfTestExpr);
         evaluator.precompute(fewPerfTestExpr);
-        manyExprResult = manyPerfTestExpr.evaluate();
-        fewExprResult = fewPerfTestExpr.evaluate();
+        NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
+        manyExprResult = manyPerfTestExpr.evaluate(naiveEval);
+        fewExprResult = fewPerfTestExpr.evaluate(naiveEval);
 
 
     }
@@ -141,13 +144,15 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
     @Test
     @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
     public void testManyBasesNaivePerf() {
-        manyPerfTestExpr.evaluate();
+        NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
+        manyPerfTestExpr.evaluate(naiveEval);
     }
 
     @Test
     @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
     public void testFewBasesNaivePerf() {
-        fewPerfTestExpr.evaluate();
+        NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
+        fewPerfTestExpr.evaluate(naiveEval);
     }
 }
 
