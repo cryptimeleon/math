@@ -1,7 +1,7 @@
 package de.upb.crypto.math.pairings.generic;
 
 import de.upb.crypto.math.interfaces.structures.EllipticCurve;
-import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
+import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 
 /**

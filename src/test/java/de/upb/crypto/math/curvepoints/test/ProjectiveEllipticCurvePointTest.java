@@ -2,10 +2,7 @@ package de.upb.crypto.math.curvepoints.test;
 
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
-import de.upb.crypto.math.interfaces.structures.EllipticCurve;
-import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigSourceGroup;
-import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import org.junit.Test;
 
 public class ProjectiveEllipticCurvePointTest {

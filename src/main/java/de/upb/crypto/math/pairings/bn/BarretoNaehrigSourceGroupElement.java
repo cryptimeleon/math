@@ -1,11 +1,11 @@
 package de.upb.crypto.math.pairings.bn;
 
 import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
+import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 
 import java.math.BigInteger;
 
-public abstract class BarretoNaehrigSourceGroupElement extends PairingSourceGroupElement {
+public abstract class BarretoNaehrigSourceGroupElement extends EllipticCurvePoint {
 
     public BarretoNaehrigSourceGroupElement(BarretoNaehrigSourceGroup curve, FieldElement x, FieldElement y) {
         super(curve, x, y);

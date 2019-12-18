@@ -7,6 +7,7 @@ import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 
 import java.math.BigInteger;
@@ -23,7 +24,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
 
     protected BigInteger size;
     protected BigInteger cofactor;
-    protected PairingSourceGroupElement generator;
+    protected EllipticCurvePoint generator;
     protected Field field;
 
     private FieldElement a1, a2, a3, a4, a6;
@@ -93,11 +94,11 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
     }
 
     @Override
-    public PairingSourceGroupElement getGenerator() {
+    public EllipticCurvePoint getGenerator() {
         return this.generator;
     }
 
-    public void setGenerator(PairingSourceGroupElement generator) {
+    public void setGenerator(EllipticCurvePoint generator) {
         this.generator = generator;
     }
 
@@ -218,19 +219,19 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
 
 
     @Override
-    public PairingSourceGroupElement getUniformlyRandomElement() throws UnsupportedOperationException {
+    public EllipticCurvePoint getUniformlyRandomElement() throws UnsupportedOperationException {
         Zp zp = new Zp(this.size());
-        return (PairingSourceGroupElement) this.getGenerator().pow(zp.getUniformlyRandomElement().getInteger());
+        return (EllipticCurvePoint) this.getGenerator().pow(zp.getUniformlyRandomElement().getInteger());
     }
 
     @Override
-    public PairingSourceGroupElement getElement(Representation repr) {
+    public EllipticCurvePoint getElement(Representation repr) {
         ObjectRepresentation or = (ObjectRepresentation) repr;
         FieldElement x = getFieldOfDefinition().getElement(or.get("x"));
         FieldElement y = getFieldOfDefinition().getElement(or.get("y"));
         FieldElement z = getFieldOfDefinition().getElement(or.get("z"));
         if (z.isZero())
-            return (PairingSourceGroupElement) getNeutralElement();
+            return (EllipticCurvePoint) getNeutralElement();
 
         return getElement(x, y);
     }
@@ -242,7 +243,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
     }
 
 
-    public abstract PairingSourceGroupElement getElement(FieldElement x, FieldElement y);
+    public abstract EllipticCurvePoint getElement(FieldElement x, FieldElement y);
 
     @Override
     public int estimateCostOfInvert() {
@@ -251,15 +252,15 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
 
     /**
      * Maps a point (x,y) on the curve into the subgroup represented by this object.
-     * Note that pow() on a PairingSourceGroupElement does not work if pow() depends on
+     * Note that pow() on a EllipticCurvePoint does not work if pow() depends on
      * the group size (which it may, e.g., to first reduce the exponent mod size()).
      *
      * @param x first coordinate of the point to map
      * @param y second coordinate of the point to map
      * @return a point in this subgroup
      */
-    protected PairingSourceGroupElement cofactorMultiplication(FieldElement x, FieldElement y) {
-        PairingSourceGroupElement elem = getElement(x, y);
+    protected EllipticCurvePoint cofactorMultiplication(FieldElement x, FieldElement y) {
+        EllipticCurvePoint elem = getElement(x, y);
 
         GroupElement result = getNeutralElement();
         for (int i = cofactor.bitLength() - 1; i >= 0; i--) {
@@ -267,6 +268,6 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
             if (cofactor.testBit(i))
                 result = result.op(elem);
         }
-        return (PairingSourceGroupElement) result;
+        return (EllipticCurvePoint) result;
     }
 }
