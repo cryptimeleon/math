@@ -6,23 +6,23 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 
 
-public class AffineEllipticCurvePoint extends EllipticCurvePoint {
+public class AffineECPCoordinate extends AbstractECPCoordinate {
 
-    public AffineEllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y,
-                                    FieldElement z) {
+    public AffineECPCoordinate(WeierstrassCurve curve, FieldElement x, FieldElement y,
+                               FieldElement z) {
         super(curve, x, y, z);
     }
 
-    public AffineEllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y) {
+    public AffineECPCoordinate(WeierstrassCurve curve, FieldElement x, FieldElement y) {
         super(curve, x, y);
     }
 
-    public AffineEllipticCurvePoint(WeierstrassCurve curve) {
+    public AffineECPCoordinate(WeierstrassCurve curve) {
         super(curve);
     }
 
     @Override
-    public EllipticCurvePoint normalize() {
+    public AbstractECPCoordinate normalize() {
         return this;
     }
 
@@ -32,8 +32,8 @@ public class AffineEllipticCurvePoint extends EllipticCurvePoint {
     }
 
     @Override
-    public FieldElement[] computeLine(EllipticCurvePoint Q) {
-        AffineEllipticCurvePoint P = (AffineEllipticCurvePoint) Q;
+    public FieldElement[] computeLine(AbstractECPCoordinate Q) {
+        AffineECPCoordinate P = (AffineECPCoordinate) Q;
 
         if (this.equals(P.inv()) || this.isNeutralElement() || P.isNeutralElement()) {
             //line is given as 0*(y-y_P)+1*(x-x_P)
@@ -47,27 +47,25 @@ public class AffineEllipticCurvePoint extends EllipticCurvePoint {
     }
 
     @Override
-    public GroupElement op(Element e) {
-        EllipticCurvePoint P = (EllipticCurvePoint) e;
-
-        return this.add(P, this.computeLine(P));
+    public AbstractECPCoordinate add(AbstractECPCoordinate Q) {
+        return this.add(Q, computeLine(Q));
     }
 
     @Override
-    public AffineEllipticCurvePoint add(EllipticCurvePoint P, FieldElement[] line) {
-        AffineEllipticCurvePoint Q = (AffineEllipticCurvePoint) P;
+    public AffineECPCoordinate add(AbstractECPCoordinate Q, FieldElement[] line) {
+        AffineECPCoordinate P = (AffineECPCoordinate) Q;
 
-        if (Q.isNeutralElement()) {
+        if (P.isNeutralElement()) {
             return this;
         }
 
         if (this.isNeutralElement()) {
-            return Q;
+            return P;
         }
 
         /*vertical line*/
         if (line[0].isZero()) {
-            return (AffineEllipticCurvePoint) this.getStructure().getNeutralElement();
+            return new AffineECPCoordinate(this.getStructure());
         }
 
 
@@ -76,7 +74,7 @@ public class AffineEllipticCurvePoint extends EllipticCurvePoint {
         if (this.getStructure().isShortForm()) {
             nu = this.getStructure().getFieldOfDefinition().getZeroElement();
         } else {
-            nu = this.calculateNu(Q);
+            nu = this.calculateNu(P);
         }
 
         FieldElement lambda = line[1];
@@ -84,7 +82,7 @@ public class AffineEllipticCurvePoint extends EllipticCurvePoint {
         // x = L^2 + a1*L - a2 - xP - xQ
         FieldElement x = lambda.mul(lambda)
                 .add(lambda.mul(this.getStructure().getA1()))
-                .sub(this.getStructure().getA2()).sub(this.x).sub(Q.x);
+                .sub(this.getStructure().getA2()).sub(this.x).sub(P.x);
 
 
         FieldElement y;
@@ -97,11 +95,11 @@ public class AffineEllipticCurvePoint extends EllipticCurvePoint {
                     .sub(nu).sub(this.getStructure().getA3());
         }
 
-        return (AffineEllipticCurvePoint) this.getStructure().getElement(x, y);
+        return new AffineECPCoordinate(this.getStructure(), x, y);
     }
 
     @Override
-    public GroupElement inv() {
+    public AbstractECPCoordinate inv() {
         if (this.isNeutralElement())
             return this;
 
@@ -116,12 +114,22 @@ public class AffineEllipticCurvePoint extends EllipticCurvePoint {
                     .neg();
         }
 
-        return this.getStructure().getElement(this.x, y);
+        return new AffineECPCoordinate(this.getStructure(), this.x, y);
     }
 
-    private FieldElement calculateLambda(AffineEllipticCurvePoint P) {
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof AffineECPCoordinate))
+            return false;
+        AffineECPCoordinate P = (AffineECPCoordinate) other;
+        if (this.isNeutralElement() && P.isNeutralElement())
+            return true;
+        else return x.equals(P.x) && y.equals(P.y) && z.equals(P.z);
+    }
+
+    private FieldElement calculateLambda(AffineECPCoordinate Q) {
         FieldElement enumerator, denominator;
-        if (this.x.equals(P.x)) {
+        if (this.x.equals(Q.x)) {
             FieldElement x = this.x;
             FieldElement y = this.y;
             // Calculate numerator of lambda
@@ -147,17 +155,17 @@ public class AffineEllipticCurvePoint extends EllipticCurvePoint {
             // + a3
             denominator = denominator.add(this.getStructure().getA3());
         } else {
-            enumerator = P.y.sub(this.y);
-            denominator = P.x.sub(this.x);
+            enumerator = Q.y.sub(this.y);
+            denominator = Q.x.sub(this.x);
         }
         return enumerator.div(denominator);
     }
 
-    private FieldElement calculateNu(AffineEllipticCurvePoint P) {
+    private FieldElement calculateNu(AffineECPCoordinate Q) {
         FieldElement enumerator, denominator;
         FieldElement x = this.x;
         FieldElement y = this.y;
-        if (this.x.equals(P.x)) {
+        if (this.x.equals(Q.x)) {
             // calculate numerator of v
             // - x^3
             enumerator = x.mul(x).mul(x).neg();
@@ -183,8 +191,8 @@ public class AffineEllipticCurvePoint extends EllipticCurvePoint {
             // + a3
             denominator = denominator.add(this.getStructure().getA3());
         } else {
-            enumerator = y.mul(P.x).sub(P.y.mul(x));
-            denominator = P.x.sub(x);
+            enumerator = y.mul(Q.x).sub(Q.y.mul(x));
+            denominator = Q.x.sub(x);
         }
         return enumerator.div(denominator);
     }

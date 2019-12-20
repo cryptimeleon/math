@@ -1,10 +1,12 @@
 package de.upb.crypto.math.pairings.bn;
 
+import de.upb.crypto.math.interfaces.structures.EllipticCurve;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroup;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -25,7 +27,7 @@ public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
         super(r);
     }
 
-    protected PairingSourceGroupElement getUniformlyRandomElementOblivious() throws UnsupportedOperationException {
+    protected EllipticCurvePoint getUniformlyRandomElementOblivious() throws UnsupportedOperationException {
         do {
             /* get random y-coordinate */
             FieldElement y = getFieldOfDefinition().getUniformlyRandomElement();
@@ -54,7 +56,7 @@ public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
      * @param y   - y-coordinate of point
      * @param sel - selection of x-coordinate
      */
-    public PairingSourceGroupElement mapToSubgroup(FieldElement y, int sel) {
+    public EllipticCurvePoint mapToSubgroup(FieldElement y, int sel) {
         /* this is required to be sure to map to the unique subgroup of size size() */
         if (!this.size().gcd(this.getCofactor()).equals(BigInteger.ONE)) {
             throw new IllegalArgumentException("Require cofactor coprime to order of subgroup.");
@@ -77,7 +79,7 @@ public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
      * @param sel - select x-coordinate
      * @return Point (x,y) on curve or IllegalArgumentExceptions
      */
-    public PairingSourceGroupElement mapToPoint(FieldElement y, int sel) {
+    public EllipticCurvePoint mapToPoint(FieldElement y, int sel) {
         return this.getElement(decompressX(y, sel), y);
     }
 
@@ -90,6 +92,9 @@ public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
      */
     public FieldElement decompressX(FieldElement y, int sel) {
         /*
+         * Since parameter a = 0 for BN Curves, it holds that y^2-b = x^3.
+         * Hence, computing third root of y^2-b results in three possible values for x.
+         * The selector allows selecting one of them.
          *
          * For background see Lemma2.26 and Lemma 2.27 of Naehrigs PHD Thesis.
          */
@@ -149,7 +154,7 @@ public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
     }
 
     // workaround since `super.super.method()` does not work...
-    protected PairingSourceGroupElement superGetUniformlyRandomElement() {
+    protected EllipticCurvePoint superGetUniformlyRandomElement() {
         return super.getUniformlyRandomElement();
     }
 }

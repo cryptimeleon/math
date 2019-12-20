@@ -1,127 +1,116 @@
 package de.upb.crypto.math.structures.ec;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.structures.Element;
-import de.upb.crypto.math.interfaces.structures.Field;
-import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.*;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
-public abstract class EllipticCurvePoint implements GroupElement {
+import java.util.function.Function;
 
-    protected FieldElement x, y, z;
-    protected WeierstrassCurve structure;
+/**
+ * Wrapper class for an elliptic curve point coordinate object. Allows subclassing
+ * for curve/pairing-specific points with additional capabilities such as compression.
+ *
+ * @author Raphael Heitjohann
+ */
+public class EllipticCurvePoint implements GroupElement {
 
+    /**
+     * The actual point.
+     */
+    private AbstractECPCoordinate point;
 
-    public EllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y,
-                              FieldElement z) {
-        this.structure = curve;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    /**
+     * Allows passing a constructor which takes in the curve and constructs a default element.
+     * The specific point is then constructed afterwards. This allows using different coordinates
+     * without having to use an enum.
+     * @param curve
+     * @param x
+     * @param y
+     * @param z
+     * @param ecpCoordConstructor
+     */
+    public EllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y, FieldElement z,
+                              Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        point = ecpCoordConstructor.apply(curve);
+        point.setX(x);
+        point.setY(y);
+        point.setZ(z);
     }
 
-    public EllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y) {
-        this(curve, x, y, curve.getFieldOfDefinition().getOneElement());
+    public EllipticCurvePoint(AbstractECPCoordinate point) {
+        this.point = point;
     }
 
-    public EllipticCurvePoint(WeierstrassCurve curve) {
-        // Init with neutral element
-        this(curve,
-                curve.getFieldOfDefinition().getZeroElement(),
-                curve.getFieldOfDefinition().getOneElement(),
-                curve.getFieldOfDefinition().getZeroElement()
-        );
+    public FieldElement getNormalizedX() {
+        return point.getNormalizedX();
     }
 
-    public FieldElement getX() {
-        return normalize().x;
+    public FieldElement getNormalizedY() {
+        return point.getNormalizedY();
     }
 
-    public FieldElement getY() {
-        return normalize().y;
+    public FieldElement getNormalizedZ() {
+        return point.getNormalizedZ();
     }
 
-    public FieldElement getZ() {
-        return normalize().z;
-    }
-
-    public WeierstrassCurve getStructure() {
-        return structure;
+    @Override
+    public Group getStructure() {
+        return point.getStructure();
     }
 
     public Field getFieldOfDefinition() {
-        return this.structure.getFieldOfDefinition();
-    }
-
-    public boolean isNeutralElement() {
-        return z.isZero();
+        return point.getFieldOfDefinition();
     }
 
     @Override
-    public String toString() {
-        return "(" + x.toString() + ":" + y.toString() + ":" + z.toString() + ")";
+    public GroupElement inv() {
+        return new EllipticCurvePoint(point.inv());
     }
 
     @Override
-    public int hashCode() {
-        if (isNormalized())
-            return x.hashCode();
-        else
-            return normalize().x.hashCode(); //todo do something more efficient
-    }
+    public GroupElement op(Element e) throws IllegalArgumentException {
+        EllipticCurvePoint P = (EllipticCurvePoint) e;
 
-    @Override
-    public Representation getRepresentation() {
-        /*
-         * normalize point to save memory for z-coordinates
-         */
-        EllipticCurvePoint normalized = this.normalize();
-        ObjectRepresentation r = new ObjectRepresentation();
-        r.put("x", normalized.x.getRepresentation());
-        r.put("y", normalized.y.getRepresentation());
-        r.put("z", normalized.z.getRepresentation()); //basically in this to represent the neutral element
-        return r;
-    }
-
-    public boolean representsSamePoint(EllipticCurvePoint P) {
-        return this.x.equals(P.x)
-                && this.y.equals(P.y)
-                && this.z.equals(P.z);
+        return new EllipticCurvePoint(point.add(P.point));
     }
 
     @Override
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
-        EllipticCurvePoint normalized = normalize();
-        if (!getStructure().getFieldOfDefinition().getUniqueByteLength().isPresent()) {
-            accumulator.escapeAndSeparate(normalized.x);
-            accumulator.escapeAndSeparate(normalized.y);
-            accumulator.escapeAndSeparate(normalized.z);
-        } else {
-            accumulator.append(normalized.x);
-            accumulator.append(normalized.y);
-            accumulator.append(normalized.z);
-        }
-        return accumulator;
+        return point.updateAccumulator(accumulator);
     }
 
-    public abstract EllipticCurvePoint normalize();
-
-    public abstract boolean isNormalized();
-
-    public abstract FieldElement[] computeLine(EllipticCurvePoint Q);
+    @Override
+    public Representation getRepresentation() {
+        return point.getRepresentation();
+    }
 
     @Override
-    public abstract GroupElement op(Element e);
+    public boolean isNeutralElement() {
+        return point.isNeutralElement();
+    }
 
-    public abstract EllipticCurvePoint add(EllipticCurvePoint P, FieldElement[] line);
+    public boolean isNormalized() {
+        return point.isNormalized();
+    }
 
     @Override
-    public abstract boolean equals(Object other);
+    public boolean equals(Object other) {
+        if (!(other instanceof EllipticCurvePoint)) {
+            return false;
+        }
+        EllipticCurvePoint P = (EllipticCurvePoint) other;
+        return point.equals(P.point);
+    }
 
     @Override
-    public abstract GroupElement inv();
+    public String toString() {
+        return point.toString();
+    }
 
+    @Override
+    public int hashCode() {
+        return point.hashCode();
+    }
 }

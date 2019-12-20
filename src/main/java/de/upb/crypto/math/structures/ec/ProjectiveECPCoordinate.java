@@ -7,28 +7,28 @@ import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 
 import java.math.BigInteger;
 
-public class ProjectiveEllipticCurvePoint extends EllipticCurvePoint {
+public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
 
-    public ProjectiveEllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y,
-                                        FieldElement z) {
+    public ProjectiveECPCoordinate(WeierstrassCurve curve, FieldElement x, FieldElement y,
+                                   FieldElement z) {
         super(curve, x, y, z);
     }
 
-    public ProjectiveEllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y) {
+    public ProjectiveECPCoordinate(WeierstrassCurve curve, FieldElement x, FieldElement y) {
         super(curve, x, y);
     }
 
-    public ProjectiveEllipticCurvePoint(WeierstrassCurve curve) {
+    public ProjectiveECPCoordinate(WeierstrassCurve curve) {
         super(curve);
     }
 
     @Override
-    public EllipticCurvePoint normalize() {
+    public AbstractECPCoordinate normalize() {
         if (this.isNormalized())
             return this;
 
         FieldElement inv_z = this.z.inv();
-        return new ProjectiveEllipticCurvePoint(
+        return new ProjectiveECPCoordinate(
                 this.structure,
                 this.x.mul(inv_z),
                 this.y.mul(inv_z)
@@ -40,22 +40,15 @@ public class ProjectiveEllipticCurvePoint extends EllipticCurvePoint {
         return z.equals(this.structure.getFieldOfDefinition().getOneElement());
     }
 
-    @Override
+
     public FieldElement[] computeLine(EllipticCurvePoint Q) {
         // TODO: How to do this?
         return new FieldElement[0];
     }
 
-    @Override
-    public GroupElement op(Element e) {
-        EllipticCurvePoint P = (EllipticCurvePoint) e;
 
-        return this.add(P);
-    }
-
-    @Override
-    public EllipticCurvePoint add(EllipticCurvePoint P, FieldElement[] line) {
-        ProjectiveEllipticCurvePoint Q = (ProjectiveEllipticCurvePoint) P;
+    public AbstractECPCoordinate add(EllipticCurvePoint P, FieldElement[] line) {
+        ProjectiveECPCoordinate Q = (ProjectiveECPCoordinate) P;
 
         // TODO: Can line help here?
 
@@ -63,7 +56,7 @@ public class ProjectiveEllipticCurvePoint extends EllipticCurvePoint {
     }
 
     public EllipticCurvePoint add(EllipticCurvePoint P) {
-        ProjectiveEllipticCurvePoint Q = (ProjectiveEllipticCurvePoint) P;
+        ProjectiveECPCoordinate Q = (ProjectiveECPCoordinate) P;
         // If points are same, double instead (more efficient)
         if (this.representsSamePoint(Q)) {
             return this.ec_double();
@@ -94,7 +87,7 @@ public class ProjectiveEllipticCurvePoint extends EllipticCurvePoint {
             if (!u.isZero()) {
                 // If v == 0 and u != 0, i.e. same x-coordinates but different y-coordinates,
                 // we have a vertical line and can return neutral element
-                return new ProjectiveEllipticCurvePoint(this.structure);
+                return new ProjectiveECPCoordinate(this.structure);
             } else {
                 // If v == 0 and u == 0, i.e. the points are the same, we need to do a doubling
                 // and not an addition. This should not happen though as we already
@@ -120,7 +113,7 @@ public class ProjectiveEllipticCurvePoint extends EllipticCurvePoint {
         // Z_3 = v_3 * W_Z
         FieldElement Z_3 = v_3.mul(W_Z);
 
-        return new ProjectiveEllipticCurvePoint(this.structure, X_3, Y_3, Z_3);
+        return new ProjectiveECPCoordinate(this.structure, X_3, Y_3, Z_3);
     }
 
     @Override
@@ -136,14 +129,24 @@ public class ProjectiveEllipticCurvePoint extends EllipticCurvePoint {
             // TODO: What to do here?
         }
 
-        return new ProjectiveEllipticCurvePoint(this.structure, x, new_y, z);
+        return new ProjectiveECPCoordinate(this.structure, x, new_y, z);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof ProjectiveECPCoordinate))
+            return false;
+        ProjectiveECPCoordinate P = (ProjectiveECPCoordinate) other;
+        if (this.isNeutralElement() && P.isNeutralElement())
+            return true;
+        else return x.equals(P.x) && y.equals(P.y) && z.equals(P.z);
     }
 
     // Cannot call method just double because its reserved
     private EllipticCurvePoint ec_double() {
         // If this point is neutral point or is self-inverse, just return neutral point
         if (this.z.isZero() || this.y.isZero()) {
-            return new ProjectiveEllipticCurvePoint(this.structure);
+            return new ProjectiveECPCoordinate(this.structure);
         }
 
         // Double the point this = (X_1, Y_1, Z_1). Takes 5 multiplications and 6 squarings.
@@ -175,6 +178,6 @@ public class ProjectiveEllipticCurvePoint extends EllipticCurvePoint {
         // Z_3 = s * s_2
         FieldElement Z_3 = s.mul(s_2);
 
-        return new ProjectiveEllipticCurvePoint(this.structure, X_3, Y_3, Z_3);
+        return new ProjectiveECPCoordinate(this.structure, X_3, Y_3, Z_3);
     }
 }
