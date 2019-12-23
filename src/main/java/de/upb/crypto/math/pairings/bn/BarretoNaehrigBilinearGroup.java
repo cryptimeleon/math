@@ -145,12 +145,12 @@ public class BarretoNaehrigBilinearGroup implements BilinearGroup {
         return new HashIntoZn(this.getG1().size());
     }
 
-    public BarretoNaehrigGroup1Element getG1Generator() {
-        return (BarretoNaehrigGroup1Element) getG1().getGenerator();
+    public BarretoNaehrigSourceGroupElement getG1Generator() {
+        return (BarretoNaehrigSourceGroupElement) getG1().getGenerator();
     }
 
-    public BarretoNaehrigGroup2Element getG2Generator() {
-        return (BarretoNaehrigGroup2Element) getG2().getGenerator();
+    public BarretoNaehrigSourceGroupElement getG2Generator() {
+        return (BarretoNaehrigSourceGroupElement) getG2().getGenerator();
     }
 
     @Override

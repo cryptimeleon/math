@@ -124,7 +124,7 @@ public class AffineECPCoordinate extends AbstractECPCoordinate {
         AffineECPCoordinate P = (AffineECPCoordinate) other;
         if (this.isNeutralElement() && P.isNeutralElement())
             return true;
-        else return x.equals(P.x) && y.equals(P.y) && z.equals(P.z);
+        else return x.equals(P.x) && y.equals(P.y) && z.equals(P.z) && structure.equals(P.structure);
     }
 
     private FieldElement calculateLambda(AffineECPCoordinate Q) {

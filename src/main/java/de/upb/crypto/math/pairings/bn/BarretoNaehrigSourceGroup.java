@@ -5,11 +5,14 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroup;
+import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.function.Function;
 
 /**
  * Implementation of subgroup of BN curves.
@@ -19,12 +22,13 @@ import java.math.BigInteger;
  * @author peter.guenther
  */
 public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
-    public BarretoNaehrigSourceGroup(BigInteger size, BigInteger cofactor, ExtensionFieldElement a6) {
-        super(size, cofactor, a6.getStructure().getZeroElement(), a6);
+    public BarretoNaehrigSourceGroup(BigInteger size, BigInteger cofactor, ExtensionFieldElement a6,
+                                     Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        super(size, cofactor, a6.getStructure().getZeroElement(), a6, ecpCoordConstructor);
     }
 
-    public BarretoNaehrigSourceGroup(Representation r) {
-        super(r);
+    public BarretoNaehrigSourceGroup(Representation r, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        super(r, ecpCoordConstructor);
     }
 
     protected EllipticCurvePoint getUniformlyRandomElementOblivious() throws UnsupportedOperationException {

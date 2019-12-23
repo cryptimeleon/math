@@ -2,9 +2,12 @@ package de.upb.crypto.math.pairings.bn;
 
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
+import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 
 import java.math.BigInteger;
+import java.util.function.Function;
 
 public class BarretoNaehrigGroup1 extends BarretoNaehrigSourceGroup {
     /**
@@ -14,15 +17,16 @@ public class BarretoNaehrigGroup1 extends BarretoNaehrigSourceGroup {
      * @param cofactor
      * @param a6
      */
-    public BarretoNaehrigGroup1(BigInteger size, BigInteger cofactor, ExtensionFieldElement a6) {
-        super(size, cofactor, a6);
+    public BarretoNaehrigGroup1(BigInteger size, BigInteger cofactor, ExtensionFieldElement a6,
+                                Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        super(size, cofactor, a6, ecpCoordConstructor);
     }
 
     /**
      * standard constructor for StandaloneRepresentation
      **/
-    public BarretoNaehrigGroup1(Representation r) {
-        super(r);
+    public BarretoNaehrigGroup1(Representation r, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        super(r, ecpCoordConstructor);
     }
 
     private BigInteger traceFrobenius() {
@@ -31,13 +35,13 @@ public class BarretoNaehrigGroup1 extends BarretoNaehrigSourceGroup {
     }
 
     @Override
-    public BarretoNaehrigGroup1Element getNeutralElement() {
-        return new BarretoNaehrigGroup1Element(this);
+    public BarretoNaehrigSourceGroupElement getNeutralElement() {
+        return new BarretoNaehrigSourceGroupElement(this);
     }
 
     @Override
-    public BarretoNaehrigGroup1Element getElement(FieldElement x, FieldElement y) {
-        return new BarretoNaehrigGroup1Element(this, x, y);
+    public BarretoNaehrigSourceGroupElement getElement(FieldElement x, FieldElement y) {
+        return new BarretoNaehrigSourceGroupElement(this, x, y);
     }
 
 

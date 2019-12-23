@@ -8,8 +8,12 @@ import de.upb.crypto.math.interfaces.hash.HashFunction;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
+import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
+import de.upb.crypto.math.structures.ec.ProjectiveECPCoordinate;
 
 import java.math.BigInteger;
+import java.util.function.Function;
 
 import static de.upb.crypto.math.factory.BilinearGroup.Type.TYPE_3;
 
@@ -20,6 +24,12 @@ import static de.upb.crypto.math.factory.BilinearGroup.Type.TYPE_3;
  * Naehrig.
  */
 public class BarretoNaehrigProvider implements BilinearGroupProvider {
+
+    /**
+     * The default coordinate representation constructor to use for this provider.
+     */
+    final static Function<WeierstrassCurve, AbstractECPCoordinate> DEFAULT_ECP_COORD_CONSTRUCTOR =
+            ProjectiveECPCoordinate::new;
 
     /**
      * {@link de.upb.crypto.math.factory.BilinearGroup} produced by this factory.
@@ -68,7 +78,7 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
      * @param P2 - Generator of G2
      * @param gT - Target group
      */
-    private void init(BarretoNaehrigGroup1Element P1, BarretoNaehrigGroup2Element P2, BarretoNaehrigTargetGroup gT) {
+    private void init(BarretoNaehrigSourceGroupElement P1, BarretoNaehrigSourceGroupElement P2, BarretoNaehrigTargetGroup gT) {
         BarretoNaehrigGroup1 G1 = (BarretoNaehrigGroup1) P1.getStructure();
         BarretoNaehrigGroup2 G2 = (BarretoNaehrigGroup2) P2.getStructure();
 
@@ -107,13 +117,13 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
      * <p>
      * Basically implements Algorithm 2.1 of [1]
      */
-    private void init(int groupBitSize) {
+    private void init(int groupBitSize, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
         BarretoNaehrigGroup1 g1;
         BarretoNaehrigGroup2 g2;
         BarretoNaehrigTargetGroup gT;
 
-        BarretoNaehrigGroup1Element P1;
-        BarretoNaehrigGroup2Element P2;
+        BarretoNaehrigSourceGroupElement P1;
+        BarretoNaehrigSourceGroupElement P2;
 
         BigInteger u = BigInteger.ONE.shiftLeft(groupBitSize / 4 + 1);
 
@@ -176,11 +186,11 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
                 } while (true);
 
                 /* setup curve based on b */
-                g1 = new BarretoNaehrigGroup1(n, BigInteger.ONE, b);
+                g1 = new BarretoNaehrigGroup1(n, BigInteger.ONE, b, ecpCoordConstructor);
 
                 /* possibly y^2-b = 1-b is not a cubic residue in Z_q and we cannont find point with y-coordinate 1 */
                 try {
-                    P1 = (BarretoNaehrigGroup1Element) g1.mapToSubgroup(y, 0);
+                    P1 = (BarretoNaehrigSourceGroupElement) g1.mapToSubgroup(y, 0);
                     /* if we found Point with y-coordinate 1 we are done */
                     g1.setGenerator(P1);
                     break;
@@ -227,12 +237,12 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
                 ExtensionFieldElement bTwist = (ExtensionFieldElement) bInExt.div(v).neg();
 
                 /* setup twist */
-                g2 = new BarretoNaehrigGroup2(n, t, bTwist);
+                g2 = new BarretoNaehrigGroup2(n, t, bTwist, ecpCoordConstructor);
 
                 /* search for generator of g2 */
                 do {
                     /* uses cofactor multiplication to map to subgroup */
-                    P2 = (BarretoNaehrigGroup2Element) g2.getUniformlyRandomElement();
+                    P2 = g2.getUniformlyRandomElement();
                 } while (P2.isNeutralElement());
 
                 g2.setGenerator(P2);
@@ -262,11 +272,38 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
      * requirements given in {@code requirements}
      */
     @Override
-    public BarretoNaehrigBilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
+    public BarretoNaehrigBilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements,
+                                                            Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
         if (!checkRequirements(securityParameter, requirements))
             throw new UnsupportedOperationException("The requirements are not fulfilled by this Bilinear Group!");
+        if (ecpCoordConstructor == null) {
+            ecpCoordConstructor = DEFAULT_ECP_COORD_CONSTRUCTOR;
+        }
+        init(securityParameter * 2, ecpCoordConstructor);
 
-        init(securityParameter * 2);
+        return params;
+    }
+
+    /**
+     * Provides a BN group {@link BarretoNaehrigBilinearGroup} according to a given specification.
+     * <p>
+     * The returned group will for a given specification always be the same, see
+     * {@link BarretoNaehrigParameterSpec#sfc256()}.
+     *
+     * @param spec group specification
+     * @param ecpCoordConstructor The coordinate system constructor to use for the bilinear group.
+     * @return BN group from given {@code spec}
+     */
+    public BarretoNaehrigBilinearGroup provideBilinearGroupFromSpec(String spec,
+                                                                    Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        if (ecpCoordConstructor == null) {
+            ecpCoordConstructor = DEFAULT_ECP_COORD_CONSTRUCTOR;
+        }
+        if (spec.equals(ParamSpecs.SFC256))
+            // security parameter is 128, ie bit length of group order is at least 256
+            this.params = decompressParameters(BarretoNaehrigParameterSpec.sfc256(), ecpCoordConstructor);
+        else
+            throw new IllegalArgumentException("Cannot find given specification!");
 
         return params;
     }
@@ -283,7 +320,7 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
     public BarretoNaehrigBilinearGroup provideBilinearGroupFromSpec(String spec) {
         if (spec.equals(ParamSpecs.SFC256))
             // security parameter is 128, ie bit length of group order is at least 256
-            this.params = decompressParameters(BarretoNaehrigParameterSpec.sfc256());
+            this.params = decompressParameters(BarretoNaehrigParameterSpec.sfc256(), DEFAULT_ECP_COORD_CONSTRUCTOR);
         else
             throw new IllegalArgumentException("Cannot find given specification!");
 
@@ -299,7 +336,8 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
     /**
      * Reconstruct {@link BarretoNaehrigBilinearGroup} from efficient representation.
      */
-    public BarretoNaehrigBilinearGroup decompressParameters(BarretoNaehrigParameterSpec spec) {
+    public BarretoNaehrigBilinearGroup decompressParameters(BarretoNaehrigParameterSpec spec,
+                                                            Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
         /* get size of groups */
         BigInteger n = spec.size;
 
@@ -314,7 +352,7 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
         ExtensionFieldElement b = baseField.createElement(spec.b);
 
         /* setup group based on given parameters */
-        BarretoNaehrigGroup1 g1 = new BarretoNaehrigGroup1(n, BigInteger.ONE, b);
+        BarretoNaehrigGroup1 g1 = new BarretoNaehrigGroup1(n, BigInteger.ONE, b, ecpCoordConstructor);
 
         /* get elemnet defining first extension field of degree 2 */
         ExtensionFieldElement alpha = baseField.createElement(spec.alpha);
@@ -330,12 +368,12 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
         BigInteger t = p.add(BigInteger.ONE).subtract(n);
 
         /* construct G2 */
-        BarretoNaehrigGroup2 g2 = new BarretoNaehrigGroup2(n, t, (ExtensionFieldElement) F2.lift(b).div(beta.neg()));
+        BarretoNaehrigGroup2 g2 = new BarretoNaehrigGroup2(n, t, (ExtensionFieldElement) F2.lift(b).div(beta.neg()), ecpCoordConstructor);
 
         /* get generators of G1 and G2 */
-        BarretoNaehrigGroup1Element P1 = g1.getElement(baseField.createElement(spec.x1),
+        BarretoNaehrigSourceGroupElement P1 = g1.getElement(baseField.createElement(spec.x1),
                 baseField.createElement(spec.y1));
-        BarretoNaehrigGroup2Element P2 = g2.getElement(
+        BarretoNaehrigSourceGroupElement P2 = g2.getElement(
                 F2.createElement(baseField.createElement(spec.x20), baseField.createElement(spec.x21)),
                 F2.createElement(baseField.createElement(spec.y20), baseField.createElement(spec.y21)));
 

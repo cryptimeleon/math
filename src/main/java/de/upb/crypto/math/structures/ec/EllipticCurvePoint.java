@@ -29,14 +29,22 @@ public class EllipticCurvePoint implements GroupElement {
      * @param x
      * @param y
      * @param z
-     * @param ecpCoordConstructor
      */
-    public EllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y, FieldElement z,
-                              Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
-        point = ecpCoordConstructor.apply(curve);
+    public EllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y, FieldElement z) {
+        point = curve.getEcpCoordConstructor().apply(curve);
         point.setX(x);
         point.setY(y);
         point.setZ(z);
+    }
+
+    public EllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y) {
+        point = curve.getEcpCoordConstructor().apply(curve);
+        point.setX(x);
+        point.setY(y);
+    }
+
+    public EllipticCurvePoint(WeierstrassCurve curve) {
+        point = curve.getEcpCoordConstructor().apply(curve);
     }
 
     public EllipticCurvePoint(AbstractECPCoordinate point) {
@@ -53,6 +61,14 @@ public class EllipticCurvePoint implements GroupElement {
 
     public FieldElement getNormalizedZ() {
         return point.getNormalizedZ();
+    }
+
+    public void setPoint(AbstractECPCoordinate point) {
+        this.point = point;
+    }
+
+    public AbstractECPCoordinate getPoint() {
+        return this.point;
     }
 
     @Override
@@ -93,6 +109,13 @@ public class EllipticCurvePoint implements GroupElement {
 
     public boolean isNormalized() {
         return point.isNormalized();
+    }
+
+    public EllipticCurvePoint normalize() {
+        if (this.isNormalized()) {
+            return this;
+        }
+        return new EllipticCurvePoint(point.normalize());
     }
 
     @Override

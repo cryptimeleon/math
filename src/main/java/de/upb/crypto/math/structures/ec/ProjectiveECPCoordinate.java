@@ -24,9 +24,6 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
 
     @Override
     public AbstractECPCoordinate normalize() {
-        if (this.isNormalized())
-            return this;
-
         FieldElement inv_z = this.z.inv();
         return new ProjectiveECPCoordinate(
                 this.structure,
@@ -40,31 +37,30 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
         return z.equals(this.structure.getFieldOfDefinition().getOneElement());
     }
 
-
-    public FieldElement[] computeLine(EllipticCurvePoint Q) {
+    @Override
+    public FieldElement[] computeLine(AbstractECPCoordinate Q) {
         // TODO: How to do this?
         return new FieldElement[0];
     }
 
-
-    public AbstractECPCoordinate add(EllipticCurvePoint P, FieldElement[] line) {
-        ProjectiveECPCoordinate Q = (ProjectiveECPCoordinate) P;
+    @Override
+    public AbstractECPCoordinate add(AbstractECPCoordinate P, FieldElement[] line) {
 
         // TODO: Can line help here?
 
         return null;
     }
 
-    public EllipticCurvePoint add(EllipticCurvePoint P) {
-        ProjectiveECPCoordinate Q = (ProjectiveECPCoordinate) P;
+    @Override
+    public AbstractECPCoordinate add(AbstractECPCoordinate P) {
         // If points are same, double instead (more efficient)
-        if (this.representsSamePoint(Q)) {
+        if (this.representsSamePoint(P)) {
             return this.ec_double();
         }
         // If either point is the neutral element at infinity, just return other one
         if (this.z.isZero())
-            return Q;
-        if (Q.z.isZero())
+            return P;
+        if (P.z.isZero())
             return this;
 
         // TODO: Mixed operations, more efficient if one point is normalized already
@@ -74,15 +70,15 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
         // Description of algorithm in Section 3.1.2 of Swante Scholz' master thesis.
 
         // W_X = X_1 * Z_2
-        FieldElement W_X = this.x.mul(Q.z);
+        FieldElement W_X = this.x.mul(P.z);
         // W_Y = Y_1 * Z_2
-        FieldElement W_Y = this.y.mul(Q.z);
+        FieldElement W_Y = this.y.mul(P.z);
         // W_Z = Z_1 * Z_2
-        FieldElement W_Z = this.z.mul(Q.z);
+        FieldElement W_Z = this.z.mul(P.z);
         // u = Y_2 * Z_1 - W_Y
-        FieldElement u = Q.z.mul(this.z).sub(W_Y);
+        FieldElement u = P.z.mul(this.z).sub(W_Y);
         // v = X_2 * Z_1 - W_X
-        FieldElement v = Q.x.mul(this.z).sub(W_X);
+        FieldElement v = P.x.mul(this.z).sub(W_X);
         if (v.isZero()) {
             if (!u.isZero()) {
                 // If v == 0 and u != 0, i.e. same x-coordinates but different y-coordinates,
@@ -117,7 +113,7 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
     }
 
     @Override
-    public GroupElement inv() {
+    public AbstractECPCoordinate inv() {
         if (this.isNeutralElement())
             return this;
 
@@ -139,11 +135,11 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
         ProjectiveECPCoordinate P = (ProjectiveECPCoordinate) other;
         if (this.isNeutralElement() && P.isNeutralElement())
             return true;
-        else return x.equals(P.x) && y.equals(P.y) && z.equals(P.z);
+        else return x.equals(P.x) && y.equals(P.y) && z.equals(P.z) && structure.equals(P.structure);
     }
 
     // Cannot call method just double because its reserved
-    private EllipticCurvePoint ec_double() {
+    private AbstractECPCoordinate ec_double() {
         // If this point is neutral point or is self-inverse, just return neutral point
         if (this.z.isZero() || this.y.isZero()) {
             return new ProjectiveECPCoordinate(this.structure);

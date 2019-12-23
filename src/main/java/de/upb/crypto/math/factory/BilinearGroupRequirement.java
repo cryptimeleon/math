@@ -1,5 +1,6 @@
 package de.upb.crypto.math.factory;
 
+
 /**
  * Requirements for a bilinear group.
  * <p>
@@ -74,8 +75,7 @@ public class BilinearGroupRequirement {
      *                         set to false, it
      *                         may still be supported.
      */
-    public BilinearGroupRequirement(BilinearGroup.Type type, boolean hashIntoG1Needed, boolean hashIntoG2Needed,
-                                    boolean hashIntoGTNeeded) {
+    public BilinearGroupRequirement(BilinearGroup.Type type, boolean hashIntoG1Needed, boolean hashIntoG2Needed, boolean hashIntoGTNeeded) {
         this(type, hashIntoG1Needed, hashIntoG2Needed, hashIntoGTNeeded, 1);
     }
 

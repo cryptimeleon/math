@@ -7,11 +7,13 @@ import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 
 import java.math.BigInteger;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Implements a subgroup over the Weierstrass Curve.
@@ -26,6 +28,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
     protected BigInteger cofactor;
     protected EllipticCurvePoint generator;
     protected Field field;
+    protected Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor;
 
     private FieldElement a1, a2, a3, a4, a6;
 
@@ -59,7 +62,9 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
      * @param size     the desired size of the group
      * @param cofactor the number c such that size * c = number of points on the WeierstrassCurve over fieldOfDefinition
      */
-    private void create(BigInteger size, BigInteger cofactor, FieldElement a1, FieldElement a2, FieldElement a3, FieldElement a4, FieldElement a6) {
+    private void create(BigInteger size, BigInteger cofactor, FieldElement a1, FieldElement a2,
+                        FieldElement a3, FieldElement a4, FieldElement a6,
+                        Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
         this.size = size;
         this.cofactor = cofactor;
         this.field = a1.getStructure();
@@ -68,18 +73,23 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         this.a3 = a3;
         this.a4 = a4;
         this.a6 = a6;
+        this.ecpCoordConstructor = ecpCoordConstructor;
     }
 
-    public PairingSourceGroup(BigInteger size, BigInteger cofactor, FieldElement a1, FieldElement a2, FieldElement a3, FieldElement a4, FieldElement a6) {
-        create(size, cofactor, a1, a2, a3, a4, a6);
+    public PairingSourceGroup(BigInteger size, BigInteger cofactor, FieldElement a1, FieldElement a2,
+                              FieldElement a3, FieldElement a4, FieldElement a6,
+                              Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        create(size, cofactor, a1, a2, a3, a4, a6, ecpCoordConstructor);
     }
 
-    public PairingSourceGroup(BigInteger size, BigInteger cofactor, FieldElement a4, FieldElement a6) {
-        create(size, cofactor, a4.getStructure().getZeroElement(), a4.getStructure().getZeroElement(), a4.getStructure().getZeroElement(), a4, a6);
+    public PairingSourceGroup(BigInteger size, BigInteger cofactor, FieldElement a4,
+                              FieldElement a6, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        create(size, cofactor, a4.getStructure().getZeroElement(), a4.getStructure().getZeroElement(),
+                a4.getStructure().getZeroElement(), a4, a6, ecpCoordConstructor);
     }
 
 
-    public PairingSourceGroup(Representation repr) {
+    public PairingSourceGroup(Representation repr, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
         ObjectRepresentation or = (ObjectRepresentation) repr;
         this.size = ((BigIntegerRepresentation) or.get("size")).get();
         this.cofactor = ((BigIntegerRepresentation) or.get("cofactor")).get();
@@ -89,6 +99,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         this.a3 = this.field.getElement(or.get("a3"));
         this.a4 = this.field.getElement(or.get("a4"));
         this.a6 = this.field.getElement(or.get("a6"));
+        this.ecpCoordConstructor = ecpCoordConstructor;
 
         this.setGenerator(this.getElement(or.get("generator")));
     }
@@ -129,6 +140,11 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         or.put("a4", a4.getRepresentation());
         or.put("a6", a6.getRepresentation());
         return or;
+    }
+
+    @Override
+    public Function<WeierstrassCurve, AbstractECPCoordinate> getEcpCoordConstructor() {
+        return this.ecpCoordConstructor;
     }
 
     /**

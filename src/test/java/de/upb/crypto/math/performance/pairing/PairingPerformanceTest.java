@@ -8,6 +8,8 @@ import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
+import de.upb.crypto.math.structures.ec.AffineECPCoordinate;
+import de.upb.crypto.math.structures.ec.ProjectiveECPCoordinate;
 import de.upb.crypto.math.structures.zn.Zn;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,10 +50,10 @@ public class PairingPerformanceTest {
         // Barreto-Naehrig non-native
         BarretoNaehrigProvider bnProvider = new BarretoNaehrigProvider();
         pairings.add(bnProvider.provideBilinearGroup(128,
-                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3)).getBilinearMap());
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3), AffineECPCoordinate::new).getBilinearMap());
         // Barreto-Naehrig non-native, SFC-256
         pairings.add(
-                bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256).getBilinearMap());
+                bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256, AffineECPCoordinate::new).getBilinearMap());
 
         return pairings;
     }

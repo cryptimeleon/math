@@ -1,11 +1,14 @@
 package de.upb.crypto.math.pairings.bn;
 
 import de.upb.crypto.math.interfaces.structures.FieldElement;
+import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 
 import java.math.BigInteger;
+import java.util.function.Function;
 
-public abstract class BarretoNaehrigSourceGroupElement extends EllipticCurvePoint {
+public class BarretoNaehrigSourceGroupElement extends EllipticCurvePoint {
 
     public BarretoNaehrigSourceGroupElement(BarretoNaehrigSourceGroup curve, FieldElement x, FieldElement y) {
         super(curve, x, y);
@@ -33,8 +36,10 @@ public abstract class BarretoNaehrigSourceGroupElement extends EllipticCurvePoin
          * search for correct x-coordiante wrt. to this.getStructure().getFieldOfDefinition().getCubeRoot()
          */
         // TODO, more efficient way to injective mapping of primitive cube root into the integers
+        // Normalize first, else this wont work
+        this.setPoint(this.normalize().getPoint());
         for (int i = 0; i < 3; i++) {
-            if (((BarretoNaehrigSourceGroup) this.getStructure()).mapToPoint(this.getY(), i).equals(this)) {
+            if (((BarretoNaehrigSourceGroup) this.getStructure()).mapToPoint(this.getNormalizedY(), i).equals(this)) {
                 return i;
             }
         }

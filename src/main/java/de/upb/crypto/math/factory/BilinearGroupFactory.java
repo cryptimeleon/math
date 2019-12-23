@@ -3,10 +3,14 @@ package de.upb.crypto.math.factory;
 import de.upb.crypto.math.lazy.LazyBilinearGroup;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.debug.DebugBilinearGroupProvider;
+import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
+import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
+import de.upb.crypto.math.structures.ec.ProjectiveECPCoordinate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +47,7 @@ public class BilinearGroupFactory {
     private List<? extends BilinearGroupProvider> registeredProvider = Arrays.asList(new SupersingularProvider(),
             new BarretoNaehrigProvider());
     private boolean debugMode;
+    private Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor;
 
     /**
      * Constructs a factory
@@ -54,6 +59,8 @@ public class BilinearGroupFactory {
      */
     public BilinearGroupFactory(int securityParameter) {
         this.securityParameter = securityParameter;
+        // selection of default value is delegated to specific provider
+        this.ecpCoordConstructor = null;
     }
 
     public void setRequirements(BilinearGroupRequirement requirements) {
@@ -124,6 +131,15 @@ public class BilinearGroupFactory {
     }
 
     /**
+     * @param ecpCoordConstructor Constructor that takes in a Weierstrass curve and instantiates an
+     *                            elliptic curve point coordinate. Allows using different coordinate
+     *                            systems such as projective or affine coordinates.
+     *                            Not a constraint so does not affect provider search.
+     */
+    public void setEcpCoordinateConstructor(Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        this.ecpCoordConstructor = ecpCoordConstructor;
+    }
+    /**
      * Creates a bilinear group according to the defined requirements and registered provider.
      * <p>
      * see {@link #setRequirements} and {@link #registerProvider(List)}
@@ -150,7 +166,8 @@ public class BilinearGroupFactory {
             throw new UnsupportedOperationException("Unable to create a group with the given constraints");
         }
 
-        BilinearGroup result = suitableProvider.get(0).provideBilinearGroup(securityParameter, requirements);
+        BilinearGroup result = suitableProvider.get(0)
+                .provideBilinearGroup(securityParameter, requirements, ecpCoordConstructor);
 
         return lazygroup ? new LazyBilinearGroup(result) : result;
     }
