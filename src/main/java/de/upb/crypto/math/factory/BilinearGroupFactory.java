@@ -166,8 +166,16 @@ public class BilinearGroupFactory {
             throw new UnsupportedOperationException("Unable to create a group with the given constraints");
         }
 
-        BilinearGroup result = suitableProvider.get(0)
-                .provideBilinearGroup(securityParameter, requirements, ecpCoordConstructor);
+        BilinearGroup result;
+        // use given ecp coordinate constructor if given else provider will select a default value
+        if (ecpCoordConstructor != null) {
+             result = suitableProvider.get(0)
+                    .provideBilinearGroup(securityParameter, requirements, ecpCoordConstructor);
+        } else {
+            result = suitableProvider.get(0)
+                    .provideBilinearGroup(securityParameter, requirements);
+        }
+
 
         return lazygroup ? new LazyBilinearGroup(result) : result;
     }

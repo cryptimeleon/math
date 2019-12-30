@@ -26,7 +26,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
 
     protected BigInteger size;
     protected BigInteger cofactor;
-    protected EllipticCurvePoint generator;
+    protected PairingSourceGroupElement generator;
     protected Field field;
     protected Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor;
 
@@ -105,11 +105,11 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
     }
 
     @Override
-    public EllipticCurvePoint getGenerator() {
+    public PairingSourceGroupElement getGenerator() {
         return this.generator;
     }
 
-    public void setGenerator(EllipticCurvePoint generator) {
+    public void setGenerator(PairingSourceGroupElement generator) {
         this.generator = generator;
     }
 
@@ -235,19 +235,19 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
 
 
     @Override
-    public EllipticCurvePoint getUniformlyRandomElement() throws UnsupportedOperationException {
+    public PairingSourceGroupElement getUniformlyRandomElement() throws UnsupportedOperationException {
         Zp zp = new Zp(this.size());
-        return (EllipticCurvePoint) this.getGenerator().pow(zp.getUniformlyRandomElement().getInteger());
+        return (PairingSourceGroupElement) this.getGenerator().pow(zp.getUniformlyRandomElement().getInteger());
     }
 
     @Override
-    public EllipticCurvePoint getElement(Representation repr) {
+    public PairingSourceGroupElement getElement(Representation repr) {
         ObjectRepresentation or = (ObjectRepresentation) repr;
         FieldElement x = getFieldOfDefinition().getElement(or.get("x"));
         FieldElement y = getFieldOfDefinition().getElement(or.get("y"));
         FieldElement z = getFieldOfDefinition().getElement(or.get("z"));
         if (z.isZero())
-            return (EllipticCurvePoint) getNeutralElement();
+            return (PairingSourceGroupElement) getNeutralElement();
 
         return getElement(x, y);
     }
@@ -259,7 +259,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
     }
 
 
-    public abstract EllipticCurvePoint getElement(FieldElement x, FieldElement y);
+    public abstract PairingSourceGroupElement getElement(FieldElement x, FieldElement y);
 
     @Override
     public int estimateCostOfInvert() {
@@ -275,8 +275,8 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
      * @param y second coordinate of the point to map
      * @return a point in this subgroup
      */
-    protected EllipticCurvePoint cofactorMultiplication(FieldElement x, FieldElement y) {
-        EllipticCurvePoint elem = getElement(x, y);
+    protected PairingSourceGroupElement cofactorMultiplication(FieldElement x, FieldElement y) {
+        PairingSourceGroupElement elem = getElement(x, y);
 
         GroupElement result = getNeutralElement();
         for (int i = cofactor.bitLength() - 1; i >= 0; i--) {
@@ -284,6 +284,6 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
             if (cofactor.testBit(i))
                 result = result.op(elem);
         }
-        return (EllipticCurvePoint) result;
+        return (PairingSourceGroupElement) result;
     }
 }

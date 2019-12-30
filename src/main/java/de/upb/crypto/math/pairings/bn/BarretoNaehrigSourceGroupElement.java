@@ -1,6 +1,7 @@
 package de.upb.crypto.math.pairings.bn;
 
 import de.upb.crypto.math.interfaces.structures.FieldElement;
+import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
@@ -8,7 +9,7 @@ import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import java.math.BigInteger;
 import java.util.function.Function;
 
-public class BarretoNaehrigSourceGroupElement extends EllipticCurvePoint {
+public class BarretoNaehrigSourceGroupElement extends PairingSourceGroupElement {
 
     public BarretoNaehrigSourceGroupElement(BarretoNaehrigSourceGroup curve, FieldElement x, FieldElement y) {
         super(curve, x, y);

@@ -59,8 +59,25 @@ public class EllipticCurvePoint implements GroupElement {
         return point.getNormalizedY();
     }
 
-    public FieldElement getNormalizedZ() {
-        return point.getNormalizedZ();
+    /**
+     * @return non-normalized x coordinate.
+     */
+    public FieldElement getX() {
+        return point.x;
+    }
+
+    /**
+     * @return non-normalized y coordinate.
+     */
+    public FieldElement getY() {
+        return point.y;
+    }
+
+    /**
+     * @return non-normalized z coordinate.
+     */
+    public FieldElement getZ() {
+        return point.z;
     }
 
     public void setPoint(AbstractECPCoordinate point) {
@@ -76,6 +93,9 @@ public class EllipticCurvePoint implements GroupElement {
         return point.getStructure();
     }
 
+    /**
+     * @return Field of curve.
+     */
     public Field getFieldOfDefinition() {
         return point.getFieldOfDefinition();
     }
@@ -85,11 +105,23 @@ public class EllipticCurvePoint implements GroupElement {
         return new EllipticCurvePoint(point.inv());
     }
 
+    public FieldElement[] computeLine(EllipticCurvePoint Q) {
+        return point.computeLine(Q.point);
+    }
+
+    public EllipticCurvePoint add(EllipticCurvePoint Q) {
+        return new EllipticCurvePoint(point.add(Q.point));
+    }
+
+    public EllipticCurvePoint add(EllipticCurvePoint Q, FieldElement[] line) {
+        return new EllipticCurvePoint(point.add(Q.point, line));
+    }
+
     @Override
     public GroupElement op(Element e) throws IllegalArgumentException {
         EllipticCurvePoint P = (EllipticCurvePoint) e;
 
-        return new EllipticCurvePoint(point.add(P.point));
+        return this.add(P);
     }
 
     @Override

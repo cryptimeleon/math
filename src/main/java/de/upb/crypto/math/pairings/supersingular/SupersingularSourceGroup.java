@@ -4,11 +4,14 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroup;
+import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.helpers.FiniteFieldTools;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.function.Function;
 
 /**
  * A type 1 pairing group:
@@ -24,12 +27,13 @@ public class SupersingularSourceGroup extends PairingSourceGroup {
      * @param cofactor          the number c such that size * c = number of points on the WeierstrassCurve over fieldOfDefinition
      * @param fieldOfDefinition the field where x,y from the Weierstrass equation come from
      */
-    public SupersingularSourceGroup(BigInteger size, BigInteger cofactor, ExtensionField fieldOfDefinition) {
-        super(size, cofactor, fieldOfDefinition.getElement(-3), fieldOfDefinition.getZeroElement());
+    public SupersingularSourceGroup(BigInteger size, BigInteger cofactor, ExtensionField fieldOfDefinition,
+                                    Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        super(size, cofactor, fieldOfDefinition.getElement(-3), fieldOfDefinition.getZeroElement(), ecpCoordConstructor);
     }
 
-    public SupersingularSourceGroup(Representation r) {
-        super(r);
+    public SupersingularSourceGroup(Representation r, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+        super(r, ecpCoordConstructor);
     }
 
     @Override

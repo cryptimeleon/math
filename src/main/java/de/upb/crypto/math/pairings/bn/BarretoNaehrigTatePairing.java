@@ -4,6 +4,7 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.AbstractPairing;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
+import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.serialization.Representation;
 
 /**
@@ -45,6 +46,9 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
          * Here, non-vertical lines are parameterize by [a_0,a_1]=[1,lambda_P] where lambda_P is the slope through P and
          * vertical lines are parameterized by [a_0,a_1]=[0,1].
          */
+        // TODO: Can we do this without normalizing?
+        P = (PairingSourceGroupElement) P.normalize();
+        Q = (PairingSourceGroupElement) Q.normalize();
         if (!P.isNormalized() || !Q.isNormalized()) {
             throw new IllegalArgumentException("Currently, only affine points are supported.");
         }

@@ -276,12 +276,14 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
                                                             Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
         if (!checkRequirements(securityParameter, requirements))
             throw new UnsupportedOperationException("The requirements are not fulfilled by this Bilinear Group!");
-        if (ecpCoordConstructor == null) {
-            ecpCoordConstructor = DEFAULT_ECP_COORD_CONSTRUCTOR;
-        }
         init(securityParameter * 2, ecpCoordConstructor);
 
         return params;
+    }
+
+    @Override
+    public BarretoNaehrigBilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
+        return provideBilinearGroup(securityParameter, requirements, DEFAULT_ECP_COORD_CONSTRUCTOR);
     }
 
     /**
@@ -318,13 +320,7 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
      * @return BN group from given {@code spec}
      */
     public BarretoNaehrigBilinearGroup provideBilinearGroupFromSpec(String spec) {
-        if (spec.equals(ParamSpecs.SFC256))
-            // security parameter is 128, ie bit length of group order is at least 256
-            this.params = decompressParameters(BarretoNaehrigParameterSpec.sfc256(), DEFAULT_ECP_COORD_CONSTRUCTOR);
-        else
-            throw new IllegalArgumentException("Cannot find given specification!");
-
-        return params;
+        return provideBilinearGroupFromSpec(spec, null);
     }
 
     @Override

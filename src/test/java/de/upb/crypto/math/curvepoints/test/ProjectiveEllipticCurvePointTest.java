@@ -3,6 +3,7 @@ package de.upb.crypto.math.curvepoints.test;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigSourceGroup;
+import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import org.junit.Test;
 
 public class ProjectiveEllipticCurvePointTest {
@@ -18,12 +19,12 @@ public class ProjectiveEllipticCurvePointTest {
     }
 
     @Test
-    public testAddCorrect() {
+    public void testAddCorrect() {
         EllipticCurvePoint P = curve.getUniformlyRandomElement();
         System.out.println("P: " + P);
         EllipticCurvePoint Q = curve.getUniformlyRandomElement();
         System.out.println("Q: " + Q);
         // Need beetter equals probably here
-        assert()
+        assert(true);
     }
 }

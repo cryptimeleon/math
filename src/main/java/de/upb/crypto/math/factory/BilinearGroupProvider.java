@@ -26,12 +26,24 @@ public interface BilinearGroupProvider {
      * Provides a bilinear group for the given {@code securityParameter}. Before the group is provided it should be
      * checked whether the provider meets the {@code requirements} stated by the user.
      *
-     * @param securityParameter Discrete logarithm of the groups G1, G2, GT of the bilinear group provided.
-     * @param requirements      Requirements the provided bilinear group need to fulfill.
+     * @param securityParameter   Discrete logarithm of the groups G1, G2, GT of the bilinear group provided.
+     * @param requirements        Requirements the provided bilinear group need to fulfill.
+     * @param ecpCoordConstructor How to construct the elliptic curve coordinates. Determines the coordinate system.
      * @return A concrete instance of a {@link BilinearGroup} meeting the given parameters
      */
     BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements,
                                        Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor);
+
+    /**
+     * Provides a bilinear group for the given {@code securityParameter}. Before the group is provided it should be
+     * checked whether the provider meets the {@code requirements} stated by the user. Tells provider to use
+     * default coordinate system for the bilinear group.
+     *
+     * @param securityParameter Discrete logarithm of the groups G1, G2, GT of the bilinear group provided.
+     * @param requirements      Requirements the provided bilinear group need to fulfill.
+     * @return A concrete instance of a {@link BilinearGroup} meeting the given parameters
+     */
+    BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements);
 
     /**
      * @param requirements      requirements to be checked

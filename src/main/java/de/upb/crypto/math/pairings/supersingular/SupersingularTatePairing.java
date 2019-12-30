@@ -4,6 +4,7 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.AbstractPairing;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
+import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.serialization.Representation;
 
 public class SupersingularTatePairing extends AbstractPairing {
@@ -34,7 +35,8 @@ public class SupersingularTatePairing extends AbstractPairing {
          *  a_0 (yq'-yp) - a_1(xq'-xp) = a1(xq + yq) - a0 yp + a0 yq i
          *
          */
-
+        P = (PairingSourceGroupElement) P.normalize();
+        Q = (PairingSourceGroupElement) Q.normalize();
         if (!P.isNormalized() || !Q.isNormalized()) {
             throw new IllegalArgumentException("Currently, only affine points are supported.");
         }

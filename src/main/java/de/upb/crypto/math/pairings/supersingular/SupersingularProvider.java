@@ -5,11 +5,15 @@ import de.upb.crypto.math.factory.BilinearGroupProvider;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
+import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
+import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
+import de.upb.crypto.math.structures.ec.ProjectiveECPCoordinate;
 import de.upb.crypto.math.structures.helpers.FiniteFieldTools;
 
 import java.math.BigInteger;
+import java.util.function.Function;
 
 /**
  * The factory for constructing everything that is required for supersingular pairings.
@@ -17,6 +21,12 @@ import java.math.BigInteger;
  * @author Peter Guenther (peter.guenther@uni-paderborn.de), Jan Bobolz
  */
 public class SupersingularProvider implements BilinearGroupProvider {
+
+    /**
+     * The default coordinate representation constructor to use for this provider.
+     */
+    final static Function<WeierstrassCurve, AbstractECPCoordinate> DEFAULT_ECP_COORD_CONSTRUCTOR =
+            ProjectiveECPCoordinate::new;
 
     public SupersingularProvider() {
     }
@@ -28,10 +38,10 @@ public class SupersingularProvider implements BilinearGroupProvider {
      *                          i.e., the complexity of DLOG in G1, G2, GT.
      */
     @Override
-    public SupersingularTateGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
+    public SupersingularTateGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements,
+                                                       Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
         if (!checkRequirements(securityParameter, requirements))
             throw new UnsupportedOperationException("The requirements are not fulfilled by this Bilinear Group!");
-
         BigInteger groupOrder;
         //Zp baseField;
 
@@ -77,7 +87,8 @@ public class SupersingularProvider implements BilinearGroupProvider {
 
         //Instantiate the source group
         ExtensionField fieldOfDefinition = new ExtensionField(characteristic); //TODO maybe I can also just use Zp for this
-        SupersingularSourceGroup sourceGroup = new SupersingularSourceGroup(groupOrder, cofactor, fieldOfDefinition);
+        SupersingularSourceGroup sourceGroup = new SupersingularSourceGroup(groupOrder, cofactor, fieldOfDefinition,
+                ecpCoordConstructor);
         sourceGroup.setGenerator(sourceGroup.getGenerator());
 
 
@@ -91,6 +102,11 @@ public class SupersingularProvider implements BilinearGroupProvider {
         SupersingularTargetGroup targetGroup = new SupersingularTargetGroup(targetGroupField, groupOrder);
 
         return new SupersingularTateGroup(sourceGroup, targetGroup, new SupersingularTatePairing(sourceGroup, targetGroup), new SupersingularSourceHash(sourceGroup));
+    }
+
+    @Override
+    public SupersingularTateGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
+        return provideBilinearGroup(securityParameter, requirements, DEFAULT_ECP_COORD_CONSTRUCTOR);
     }
 
     @Override
