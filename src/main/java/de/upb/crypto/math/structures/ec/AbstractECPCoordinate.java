@@ -91,12 +91,6 @@ public abstract class AbstractECPCoordinate {
         return r;
     }
 
-    public boolean representsSamePoint(AbstractECPCoordinate P) {
-        return this.x.equals(P.x)
-                && this.y.equals(P.y)
-                && this.z.equals(P.z);
-    }
-
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
         AbstractECPCoordinate normalized = normalize();
         if (!getStructure().getFieldOfDefinition().getUniqueByteLength().isPresent()) {

@@ -21,15 +21,6 @@ public class EllipticCurvePoint implements GroupElement {
      */
     private AbstractECPCoordinate point;
 
-    /**
-     * Allows passing a constructor which takes in the curve and constructs a default element.
-     * The specific point is then constructed afterwards. This allows using different coordinates
-     * without having to use an enum.
-     * @param curve
-     * @param x
-     * @param y
-     * @param z
-     */
     public EllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y, FieldElement z) {
         point = curve.getEcpCoordConstructor().apply(curve);
         point.setX(x);
@@ -41,6 +32,7 @@ public class EllipticCurvePoint implements GroupElement {
         point = curve.getEcpCoordConstructor().apply(curve);
         point.setX(x);
         point.setY(y);
+        point.setZ(getFieldOfDefinition().getOneElement());
     }
 
     public EllipticCurvePoint(WeierstrassCurve curve) {
@@ -88,8 +80,7 @@ public class EllipticCurvePoint implements GroupElement {
         return this.point;
     }
 
-    @Override
-    public Group getStructure() {
+    public WeierstrassCurve getStructure() {
         return point.getStructure();
     }
 
@@ -102,21 +93,45 @@ public class EllipticCurvePoint implements GroupElement {
 
     @Override
     public GroupElement inv() {
-        return new EllipticCurvePoint(point.inv());
+        return this.getStructure().getElement(point.inv());
     }
 
+    /**
+     * Compute line through this point and the given point.
+     * @param Q second point line should go through in addition to this.
+     * @return  array containing two coefficients of the linear combination describing the line.
+     */
     public FieldElement[] computeLine(EllipticCurvePoint Q) {
         return point.computeLine(Q.point);
     }
 
+    /**
+     * Add two points.
+     * @param Q point to add.
+     * @return points added together as a new point.
+     */
     public EllipticCurvePoint add(EllipticCurvePoint Q) {
-        return new EllipticCurvePoint(point.add(Q.point));
+        return this.getStructure().getElement(point.add(Q.point));
     }
 
+    /**
+     * Add two points using line through them as help. Line is only used in affine coordinates.
+     * @param Q    point to add.
+     * @param line array of two coefficients describing line.
+     * @return     points added together as a new point.
+     */
     public EllipticCurvePoint add(EllipticCurvePoint Q, FieldElement[] line) {
-        return new EllipticCurvePoint(point.add(Q.point, line));
+        // getStructure call is important so we get a proper element of the structure and not just an EllipticCurvePoint
+        // which we cannot cast down
+        return this.getStructure().getElement(point.add(Q.point, line));
     }
 
+    /**
+     * Implements group operation. Calls add internally.
+     * @param e right hand side of the operation
+     * @return  points added together as new point.
+     * @throws IllegalArgumentException
+     */
     @Override
     public GroupElement op(Element e) throws IllegalArgumentException {
         EllipticCurvePoint P = (EllipticCurvePoint) e;
@@ -147,9 +162,15 @@ public class EllipticCurvePoint implements GroupElement {
         if (this.isNormalized()) {
             return this;
         }
-        return new EllipticCurvePoint(point.normalize());
+        return this.getStructure().getElement(point.normalize());
     }
 
+    /**
+     * Checks if two points are equals. Normalizes points first if necessary for the coordinate system.
+     * Checks that the points use the same coordinate representation as well.
+     * @param other
+     * @return
+     */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof EllipticCurvePoint)) {

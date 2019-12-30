@@ -6,11 +6,12 @@ import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.lazy.LazyPairing;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.debug.DebugBilinearMap;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroup;
+import de.upb.crypto.math.structures.ec.AffineECPCoordinate;
+import de.upb.crypto.math.structures.ec.ProjectiveECPCoordinate;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
@@ -145,20 +146,32 @@ public class PairingTests {
 
         // Supersingular curve groups
         SupersingularProvider supsingFac = new SupersingularProvider();
-        SupersingularTateGroup supsingGroup = supsingFac.provideBilinearGroup(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
+        SupersingularTateGroup supSingGroupAffine = supsingFac.provideBilinearGroup(80,
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false),
+                AffineECPCoordinate::new);
+        SupersingularTateGroup supSingGroupProj = supsingFac.provideBilinearGroup(80,
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false),
+                ProjectiveECPCoordinate::new);
 
         // BN curves
         BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
-        BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
+        //BarretoNaehrigBilinearGroup bnGroupAffine = bnFac.provideBilinearGroup(128,
+        //        new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false),
+        //        AffineECPCoordinate::new);
+        //BarretoNaehrigBilinearGroup bnGroupProj = bnFac.provideBilinearGroup(128,
+        //        new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false),
+        //        ProjectiveECPCoordinate::new);
 
         //Lazy bn curve
-        LazyPairing lazyPairing = new LazyPairing(supsingGroup.getBilinearMap());
+        LazyPairing lazyPairing = new LazyPairing(supSingGroupAffine.getBilinearMap());
 
         // Collect parameters
-        BilinearMap params[][] = new BilinearMap[][]{
+        BilinearMap[][] params = new BilinearMap[][]{
                 {debugMap1}, {debugMap2}, {debugMap3},
-                {supsingGroup.getBilinearMap()},
-                {bnGroup.getBilinearMap()},
+        //        {supSingGroupAffine.getBilinearMap()},
+                {supSingGroupProj.getBilinearMap()},
+        //        {bnGroupAffine.getBilinearMap()},
+        //        {bnGroupProj.getBilinearMap()},
                 {lazyPairing}};
         return Arrays.asList(params);
     }

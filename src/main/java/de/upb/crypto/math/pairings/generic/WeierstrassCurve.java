@@ -1,10 +1,13 @@
 package de.upb.crypto.math.pairings.generic;
 
 import de.upb.crypto.math.interfaces.structures.EllipticCurve;
+import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 
+import java.lang.reflect.Type;
 import java.util.function.Function;
 
 /**
@@ -25,6 +28,8 @@ public interface WeierstrassCurve extends EllipticCurve {
     public FieldElement getA1();
 
     public EllipticCurvePoint getElement(FieldElement x, FieldElement y);
+
+    public EllipticCurvePoint getElement(AbstractECPCoordinate point);
 
     public Function<WeierstrassCurve, AbstractECPCoordinate> getEcpCoordConstructor();
 

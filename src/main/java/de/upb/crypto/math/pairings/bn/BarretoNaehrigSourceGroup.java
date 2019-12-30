@@ -2,10 +2,7 @@ package de.upb.crypto.math.pairings.bn;
 
 import de.upb.crypto.math.interfaces.structures.EllipticCurve;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.pairings.generic.ExtensionField;
-import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
-import de.upb.crypto.math.pairings.generic.PairingSourceGroup;
-import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.pairings.generic.*;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
@@ -27,8 +24,8 @@ public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
         super(size, cofactor, a6.getStructure().getZeroElement(), a6, ecpCoordConstructor);
     }
 
-    public BarretoNaehrigSourceGroup(Representation r, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
-        super(r, ecpCoordConstructor);
+    public BarretoNaehrigSourceGroup(Representation r) {
+        super(r);
     }
 
     protected EllipticCurvePoint getUniformlyRandomElementOblivious() throws UnsupportedOperationException {
@@ -141,6 +138,21 @@ public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
     @Override
     public BarretoNaehrigSourceGroupElement getUniformlyRandomElement() throws UnsupportedOperationException {
         return (BarretoNaehrigSourceGroupElement) this.getUniformlyRandomElementOblivious();
+    }
+
+    @Override
+    public BarretoNaehrigSourceGroupElement getElement(FieldElement x, FieldElement y) {
+        return new BarretoNaehrigSourceGroupElement(this, x, y);
+    }
+
+    @Override
+    public BarretoNaehrigSourceGroupElement getElement(AbstractECPCoordinate point) {
+        return new BarretoNaehrigSourceGroupElement(point);
+    }
+
+    @Override
+    public BarretoNaehrigSourceGroupElement getNeutralElement() {
+        return new BarretoNaehrigSourceGroupElement(this);
     }
 
     @Override

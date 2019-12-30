@@ -2,6 +2,7 @@ package de.upb.crypto.math.pairings.bn;
 
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
+import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
@@ -25,24 +26,12 @@ public class BarretoNaehrigGroup1 extends BarretoNaehrigSourceGroup {
     /**
      * standard constructor for StandaloneRepresentation
      **/
-    public BarretoNaehrigGroup1(Representation r, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
-        super(r, ecpCoordConstructor);
+    public BarretoNaehrigGroup1(Representation r) {
+        super(r);
     }
 
     private BigInteger traceFrobenius() {
         // t=q-E(F_q)+1 = q-r+1
         return this.getFieldOfDefinition().size().subtract(this.size()).add(BigInteger.ONE);
     }
-
-    @Override
-    public BarretoNaehrigSourceGroupElement getNeutralElement() {
-        return new BarretoNaehrigSourceGroupElement(this);
-    }
-
-    @Override
-    public BarretoNaehrigSourceGroupElement getElement(FieldElement x, FieldElement y) {
-        return new BarretoNaehrigSourceGroupElement(this, x, y);
-    }
-
-
 }

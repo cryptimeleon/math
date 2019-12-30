@@ -75,7 +75,6 @@ public class SupersingularProvider implements BilinearGroupProvider {
         BigInteger minCofactorSize = BigInteger.ONE.shiftLeft(logExtFieldSize / 2 - securityParameter * 2);
         BigInteger cofactor = minCofactorSize.shiftLeft(2);
         BigInteger characteristic; //the characteristic q of the two fields F_q and F_q^2.
-
         do { //choose cofactor, then check whether it fulfills our requirements.
             cofactor = cofactor.add(BigInteger.ONE); //try small numbers as they tend to have many zeros in their bit representation
             characteristic = groupOrder.multiply(cofactor).subtract(BigInteger.ONE);
@@ -84,7 +83,6 @@ public class SupersingularProvider implements BilinearGroupProvider {
                 || logExtFieldSize / 2 > characteristic.bitLength()
                 || !groupOrder.gcd(cofactor).equals(BigInteger.ONE) //to ensure cofactor multiplication in E(F_q) does not consistently result in the neutral element.
         );
-
         //Instantiate the source group
         ExtensionField fieldOfDefinition = new ExtensionField(characteristic); //TODO maybe I can also just use Zp for this
         SupersingularSourceGroup sourceGroup = new SupersingularSourceGroup(groupOrder, cofactor, fieldOfDefinition,
@@ -97,7 +95,6 @@ public class SupersingularProvider implements BilinearGroupProvider {
         while (FiniteFieldTools.isSquare(qnr)) {
             qnr = qnr.add(fieldOfDefinition.getElement(-1));
         }
-
         ExtensionField targetGroupField = new ExtensionField(qnr.neg(), 2);
         SupersingularTargetGroup targetGroup = new SupersingularTargetGroup(targetGroupField, groupOrder);
 

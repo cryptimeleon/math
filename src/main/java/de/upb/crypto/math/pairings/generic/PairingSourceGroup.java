@@ -89,7 +89,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
     }
 
 
-    public PairingSourceGroup(Representation repr, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+    public PairingSourceGroup(Representation repr) {
         ObjectRepresentation or = (ObjectRepresentation) repr;
         this.size = ((BigIntegerRepresentation) or.get("size")).get();
         this.cofactor = ((BigIntegerRepresentation) or.get("cofactor")).get();
@@ -99,7 +99,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         this.a3 = this.field.getElement(or.get("a3"));
         this.a4 = this.field.getElement(or.get("a4"));
         this.a6 = this.field.getElement(or.get("a6"));
-        this.ecpCoordConstructor = ecpCoordConstructor;
+        this.ecpCoordConstructor = (Function<WeierstrassCurve, AbstractECPCoordinate>) or.get("ecpCoordConstructor");
 
         this.setGenerator(this.getElement(or.get("generator")));
     }
@@ -139,6 +139,8 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         or.put("a3", a3.getRepresentation());
         or.put("a4", a4.getRepresentation());
         or.put("a6", a6.getRepresentation());
+        // TODO: How to do this?
+        or.put("ecpCoordConstructor", ecpCoordConstructor);
         return or;
     }
 
@@ -246,10 +248,12 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         FieldElement x = getFieldOfDefinition().getElement(or.get("x"));
         FieldElement y = getFieldOfDefinition().getElement(or.get("y"));
         FieldElement z = getFieldOfDefinition().getElement(or.get("z"));
-        if (z.isZero())
-            return (PairingSourceGroupElement) getNeutralElement();
 
-        return getElement(x, y);
+        AbstractECPCoordinate point = this.getEcpCoordConstructor().apply(this);
+        point.setX(x);
+        point.setY(y);
+        point.setZ(z);
+        return getElement(point);
     }
 
     @Override
@@ -260,6 +264,8 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
 
 
     public abstract PairingSourceGroupElement getElement(FieldElement x, FieldElement y);
+
+    public abstract PairingSourceGroupElement getElement(AbstractECPCoordinate point);
 
     @Override
     public int estimateCostOfInvert() {

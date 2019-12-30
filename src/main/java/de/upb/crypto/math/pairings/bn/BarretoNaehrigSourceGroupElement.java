@@ -11,14 +11,22 @@ import java.util.function.Function;
 
 public class BarretoNaehrigSourceGroupElement extends PairingSourceGroupElement {
 
-    public BarretoNaehrigSourceGroupElement(BarretoNaehrigSourceGroup curve, FieldElement x, FieldElement y) {
+
+    public BarretoNaehrigSourceGroupElement(WeierstrassCurve curve, FieldElement x, FieldElement y, FieldElement z) {
+        super(curve, x, y, z);
+    }
+
+    public BarretoNaehrigSourceGroupElement(WeierstrassCurve curve, FieldElement x, FieldElement y) {
         super(curve, x, y);
     }
 
-    public BarretoNaehrigSourceGroupElement(BarretoNaehrigSourceGroup curve) {
+    public BarretoNaehrigSourceGroupElement(WeierstrassCurve curve) {
         super(curve);
     }
 
+    public BarretoNaehrigSourceGroupElement(AbstractECPCoordinate point) {
+        super(point);
+    }
 
     @Override
     public BarretoNaehrigSourceGroupElement pow(BigInteger e) {

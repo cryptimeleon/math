@@ -32,8 +32,8 @@ public class SupersingularSourceGroup extends PairingSourceGroup {
         super(size, cofactor, fieldOfDefinition.getElement(-3), fieldOfDefinition.getZeroElement(), ecpCoordConstructor);
     }
 
-    public SupersingularSourceGroup(Representation r, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
-        super(r, ecpCoordConstructor);
+    public SupersingularSourceGroup(Representation r) {
+        super(r);
     }
 
     @Override
@@ -44,6 +44,11 @@ public class SupersingularSourceGroup extends PairingSourceGroup {
     @Override
     public SupersingularSourceGroupElement getElement(FieldElement x, FieldElement y) {
         return new SupersingularSourceGroupElement(this, x, y);
+    }
+
+    @Override
+    public SupersingularSourceGroupElement getElement(AbstractECPCoordinate point) {
+        return new SupersingularSourceGroupElement(point);
     }
 
 
