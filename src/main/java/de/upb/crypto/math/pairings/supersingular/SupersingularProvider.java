@@ -25,8 +25,7 @@ public class SupersingularProvider implements BilinearGroupProvider {
     /**
      * The default coordinate representation constructor to use for this provider.
      */
-    final static Function<WeierstrassCurve, AbstractECPCoordinate> DEFAULT_ECP_COORD_CONSTRUCTOR =
-            ProjectiveECPCoordinate::new;
+    final static Class DEFAULT_COORDINATE_CLASS = ProjectiveECPCoordinate.class;
 
     public SupersingularProvider() {
     }
@@ -39,7 +38,7 @@ public class SupersingularProvider implements BilinearGroupProvider {
      */
     @Override
     public SupersingularTateGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements,
-                                                       Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+                                                       Class coordinateClass) {
         if (!checkRequirements(securityParameter, requirements))
             throw new UnsupportedOperationException("The requirements are not fulfilled by this Bilinear Group!");
         BigInteger groupOrder;
@@ -86,7 +85,7 @@ public class SupersingularProvider implements BilinearGroupProvider {
         //Instantiate the source group
         ExtensionField fieldOfDefinition = new ExtensionField(characteristic); //TODO maybe I can also just use Zp for this
         SupersingularSourceGroup sourceGroup = new SupersingularSourceGroup(groupOrder, cofactor, fieldOfDefinition,
-                ecpCoordConstructor);
+                coordinateClass);
         sourceGroup.setGenerator(sourceGroup.getGenerator());
 
 
@@ -103,7 +102,7 @@ public class SupersingularProvider implements BilinearGroupProvider {
 
     @Override
     public SupersingularTateGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
-        return provideBilinearGroup(securityParameter, requirements, DEFAULT_ECP_COORD_CONSTRUCTOR);
+        return provideBilinearGroup(securityParameter, requirements, DEFAULT_COORDINATE_CLASS);
     }
 
     @Override

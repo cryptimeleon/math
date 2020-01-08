@@ -20,8 +20,8 @@ import java.util.function.Function;
  */
 public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
     public BarretoNaehrigSourceGroup(BigInteger size, BigInteger cofactor, ExtensionFieldElement a6,
-                                     Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
-        super(size, cofactor, a6.getStructure().getZeroElement(), a6, ecpCoordConstructor);
+                                     Class coordinateClass) {
+        super(size, cofactor, a6.getStructure().getZeroElement(), a6, coordinateClass);
     }
 
     public BarretoNaehrigSourceGroup(Representation r) {

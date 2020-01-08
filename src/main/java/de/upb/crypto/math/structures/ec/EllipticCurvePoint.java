@@ -6,6 +6,7 @@ import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 /**
@@ -22,21 +23,29 @@ public class EllipticCurvePoint implements GroupElement {
     private AbstractECPCoordinate point;
 
     public EllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y, FieldElement z) {
-        point = curve.getEcpCoordConstructor().apply(curve);
-        point.setX(x);
-        point.setY(y);
-        point.setZ(z);
+        try {
+            point = (AbstractECPCoordinate) curve.getCoordinateClass()
+                    .getConstructor(WeierstrassCurve.class, FieldElement.class, FieldElement.class, FieldElement.class)
+                    .newInstance(curve, x, y, z);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Given coordinate class '" + curve.getCoordinateClass() +
+                    "' does not have a constructor taking in a Weierstrass Curve and three field elements.");
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new IllegalArgumentException("An error occurred instantiating the element from the representation.");
+        }
     }
 
     public EllipticCurvePoint(WeierstrassCurve curve, FieldElement x, FieldElement y) {
-        point = curve.getEcpCoordConstructor().apply(curve);
-        point.setX(x);
-        point.setY(y);
-        point.setZ(getFieldOfDefinition().getOneElement());
+        this(curve, x, y, curve.getFieldOfDefinition().getOneElement());
     }
 
     public EllipticCurvePoint(WeierstrassCurve curve) {
-        point = curve.getEcpCoordConstructor().apply(curve);
+        this(curve,
+                curve.getFieldOfDefinition().getZeroElement(),
+                curve.getFieldOfDefinition().getOneElement(),
+                curve.getFieldOfDefinition().getZeroElement()
+        );
     }
 
     public EllipticCurvePoint(AbstractECPCoordinate point) {

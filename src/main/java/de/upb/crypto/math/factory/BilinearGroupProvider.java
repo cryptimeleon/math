@@ -13,7 +13,7 @@ import java.util.function.Function;
  * The contract is that the provider should check the requirements internally and throws a suitable exception (e.g., a
  * {@link UnsupportedOperationException}) in case the provider does not fulfill the specified requirements.
  * In particular, if the call of {@link #checkRequirements(int, BilinearGroupRequirement)} returns true, the call of
- * {@link #provideBilinearGroup(int, BilinearGroupRequirement, Function<WeierstrassCurve, AbstractECPCoordinate>)} must not fail!
+ * {@link #provideBilinearGroup(int, BilinearGroupRequirement, Class)} must not fail!
  * <p>
  * In general, {@link BilinearGroupProvider}s should be registered at {@link BilinearGroupFactory} using
  * {@link BilinearGroupFactory#registerProvider(List)} which chooses the most suitable provider for the group
@@ -28,11 +28,11 @@ public interface BilinearGroupProvider {
      *
      * @param securityParameter   Discrete logarithm of the groups G1, G2, GT of the bilinear group provided.
      * @param requirements        Requirements the provided bilinear group need to fulfill.
-     * @param ecpCoordConstructor How to construct the elliptic curve coordinates. Determines the coordinate system.
+     * @param coordinate          A class extending {@link AbstractECPCoordinate}. Determines coordinate representation
+     *                            to use for elliptic curve points.
      * @return A concrete instance of a {@link BilinearGroup} meeting the given parameters
      */
-    BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements,
-                                       Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor);
+    BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements, Class coordinate);
 
     /**
      * Provides a bilinear group for the given {@code securityParameter}. Before the group is provided it should be
@@ -53,7 +53,7 @@ public interface BilinearGroupProvider {
      *                          parameters, the parameter
      *                          can be ignored in the implementation.
      * @return true iff the bilinear group provided by
-     * {@link #provideBilinearGroup(int, BilinearGroupRequirement, Function<WeierstrassCurve, AbstractECPCoordinate>)}
+     * {@link #provideBilinearGroup(int, BilinearGroupRequirement, Class)}
      * meets the requirements defined by {@code requirements}
      */
     boolean checkRequirements(int securityParameter, BilinearGroupRequirement requirements);

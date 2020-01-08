@@ -50,10 +50,10 @@ public class PairingPerformanceTest {
         // Barreto-Naehrig non-native
         BarretoNaehrigProvider bnProvider = new BarretoNaehrigProvider();
         pairings.add(bnProvider.provideBilinearGroup(128,
-                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3), AffineECPCoordinate::new).getBilinearMap());
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3), AffineECPCoordinate.class).getBilinearMap());
         // Barreto-Naehrig non-native, SFC-256
         pairings.add(
-                bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256, AffineECPCoordinate::new).getBilinearMap());
+                bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256, AffineECPCoordinate.class).getBilinearMap());
 
         return pairings;
     }

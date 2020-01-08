@@ -148,10 +148,10 @@ public class PairingTests {
         SupersingularProvider supsingFac = new SupersingularProvider();
         SupersingularTateGroup supSingGroupAffine = supsingFac.provideBilinearGroup(80,
                 new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false),
-                AffineECPCoordinate::new);
+                AffineECPCoordinate.class);
         SupersingularTateGroup supSingGroupProj = supsingFac.provideBilinearGroup(80,
                 new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false),
-                ProjectiveECPCoordinate::new);
+                ProjectiveECPCoordinate.class);
 
         // BN curves
         BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();

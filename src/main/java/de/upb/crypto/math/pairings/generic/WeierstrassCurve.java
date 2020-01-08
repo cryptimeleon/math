@@ -31,7 +31,7 @@ public interface WeierstrassCurve extends EllipticCurve {
 
     public EllipticCurvePoint getElement(AbstractECPCoordinate point);
 
-    public Function<WeierstrassCurve, AbstractECPCoordinate> getEcpCoordConstructor();
+    public Class getCoordinateClass();
 
     public default boolean isShortForm() {
         return getA3().isZero() && getA2().isZero() && getA1().isZero();

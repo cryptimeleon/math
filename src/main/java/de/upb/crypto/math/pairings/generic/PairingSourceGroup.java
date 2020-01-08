@@ -3,14 +3,12 @@ package de.upb.crypto.math.pairings.generic;
 import de.upb.crypto.math.interfaces.structures.Field;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.serialization.BigIntegerRepresentation;
-import de.upb.crypto.math.serialization.ObjectRepresentation;
-import de.upb.crypto.math.serialization.RepresentableRepresentation;
-import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.serialization.*;
 import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.Optional;
 import java.util.function.Function;
@@ -28,7 +26,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
     protected BigInteger cofactor;
     protected PairingSourceGroupElement generator;
     protected Field field;
-    protected Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor;
+    protected Class coordinateClass;
 
     private FieldElement a1, a2, a3, a4, a6;
 
@@ -64,7 +62,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
      */
     private void create(BigInteger size, BigInteger cofactor, FieldElement a1, FieldElement a2,
                         FieldElement a3, FieldElement a4, FieldElement a6,
-                        Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+                        Class coordinateClass) {
         this.size = size;
         this.cofactor = cofactor;
         this.field = a1.getStructure();
@@ -73,19 +71,22 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         this.a3 = a3;
         this.a4 = a4;
         this.a6 = a6;
-        this.ecpCoordConstructor = ecpCoordConstructor;
+        if (!(AbstractECPCoordinate.class.isAssignableFrom(coordinateClass))) {
+            throw new IllegalArgumentException("Given coordinate class is not subclass of AbstractECPCoordinate.");
+        }
+        this.coordinateClass = coordinateClass;
     }
 
     public PairingSourceGroup(BigInteger size, BigInteger cofactor, FieldElement a1, FieldElement a2,
                               FieldElement a3, FieldElement a4, FieldElement a6,
-                              Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
-        create(size, cofactor, a1, a2, a3, a4, a6, ecpCoordConstructor);
+                              Class coordinateClass) {
+        create(size, cofactor, a1, a2, a3, a4, a6, coordinateClass);
     }
 
-    public PairingSourceGroup(BigInteger size, BigInteger cofactor, FieldElement a4,
-                              FieldElement a6, Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
+    public PairingSourceGroup(BigInteger size, BigInteger cofactor, FieldElement a4, FieldElement a6,
+                              Class coordinateClass) {
         create(size, cofactor, a4.getStructure().getZeroElement(), a4.getStructure().getZeroElement(),
-                a4.getStructure().getZeroElement(), a4, a6, ecpCoordConstructor);
+                a4.getStructure().getZeroElement(), a4, a6, coordinateClass);
     }
 
 
@@ -99,8 +100,11 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         this.a3 = this.field.getElement(or.get("a3"));
         this.a4 = this.field.getElement(or.get("a4"));
         this.a6 = this.field.getElement(or.get("a6"));
-        this.ecpCoordConstructor = (Function<WeierstrassCurve, AbstractECPCoordinate>) or.get("ecpCoordConstructor");
-
+        try {
+            this.coordinateClass = Class.forName(((StringRepresentation) or.get("coordinate_class")).get());
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("The coordinate class given in the representation cannot be found.");
+        }
         this.setGenerator(this.getElement(or.get("generator")));
     }
 
@@ -139,14 +143,12 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         or.put("a3", a3.getRepresentation());
         or.put("a4", a4.getRepresentation());
         or.put("a6", a6.getRepresentation());
-        // TODO: How to do this?
-        or.put("ecpCoordConstructor", ecpCoordConstructor);
+        or.put("coordinate_class", new StringRepresentation(coordinateClass.getTypeName()));
         return or;
     }
 
-    @Override
-    public Function<WeierstrassCurve, AbstractECPCoordinate> getEcpCoordConstructor() {
-        return this.ecpCoordConstructor;
+    public Class getCoordinateClass() {
+        return coordinateClass;
     }
 
     /**
@@ -249,11 +251,7 @@ public abstract class PairingSourceGroup implements WeierstrassCurve {
         FieldElement y = getFieldOfDefinition().getElement(or.get("y"));
         FieldElement z = getFieldOfDefinition().getElement(or.get("z"));
 
-        AbstractECPCoordinate point = this.getEcpCoordConstructor().apply(this);
-        point.setX(x);
-        point.setY(y);
-        point.setZ(z);
-        return getElement(point);
+        return getElement(new EllipticCurvePoint(this, x, y, z).getPoint());
     }
 
     @Override

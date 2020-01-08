@@ -28,8 +28,8 @@ public class SupersingularSourceGroup extends PairingSourceGroup {
      * @param fieldOfDefinition the field where x,y from the Weierstrass equation come from
      */
     public SupersingularSourceGroup(BigInteger size, BigInteger cofactor, ExtensionField fieldOfDefinition,
-                                    Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
-        super(size, cofactor, fieldOfDefinition.getElement(-3), fieldOfDefinition.getZeroElement(), ecpCoordConstructor);
+                                    Class coordinateClass) {
+        super(size, cofactor, fieldOfDefinition.getElement(-3), fieldOfDefinition.getZeroElement(), coordinateClass);
     }
 
     public SupersingularSourceGroup(Representation r) {

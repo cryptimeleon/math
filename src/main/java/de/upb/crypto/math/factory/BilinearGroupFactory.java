@@ -47,7 +47,7 @@ public class BilinearGroupFactory {
     private List<? extends BilinearGroupProvider> registeredProvider = Arrays.asList(new SupersingularProvider(),
             new BarretoNaehrigProvider());
     private boolean debugMode;
-    private Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor;
+    private Class coordinateClass;
 
     /**
      * Constructs a factory
@@ -60,7 +60,7 @@ public class BilinearGroupFactory {
     public BilinearGroupFactory(int securityParameter) {
         this.securityParameter = securityParameter;
         // selection of default value is delegated to specific provider
-        this.ecpCoordConstructor = null;
+        this.coordinateClass = null;
     }
 
     public void setRequirements(BilinearGroupRequirement requirements) {
@@ -131,13 +131,11 @@ public class BilinearGroupFactory {
     }
 
     /**
-     * @param ecpCoordConstructor Constructor that takes in a Weierstrass curve and instantiates an
-     *                            elliptic curve point coordinate. Allows using different coordinate
-     *                            systems such as projective or affine coordinates.
-     *                            Not a constraint so does not affect provider search.
+     * @param coordinateClass Class that extends {@link AbstractECPCoordinate}. Determines which coordinate represen-
+     *                        tation is used for the elliptic curve points.
      */
-    public void setEcpCoordinateConstructor(Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
-        this.ecpCoordConstructor = ecpCoordConstructor;
+    public void setCoordinateClass(Class coordinateClass) {
+        this.coordinateClass = coordinateClass;
     }
     /**
      * Creates a bilinear group according to the defined requirements and registered provider.
@@ -168,9 +166,9 @@ public class BilinearGroupFactory {
 
         BilinearGroup result;
         // use given ecp coordinate constructor if given else provider will select a default value
-        if (ecpCoordConstructor != null) {
+        if (coordinateClass != null) {
              result = suitableProvider.get(0)
-                    .provideBilinearGroup(securityParameter, requirements, ecpCoordConstructor);
+                    .provideBilinearGroup(securityParameter, requirements, coordinateClass);
         } else {
             result = suitableProvider.get(0)
                     .provideBilinearGroup(securityParameter, requirements);

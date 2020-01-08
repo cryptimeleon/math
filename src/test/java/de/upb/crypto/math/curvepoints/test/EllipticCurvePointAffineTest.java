@@ -55,13 +55,13 @@ public class EllipticCurvePointAffineTest {
         BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
         BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128,
                 new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false),
-                AffineECPCoordinate::new);
+                AffineECPCoordinate.class);
         bilinearGroups.add(bnGroup);
         // Supersingular curves
         SupersingularProvider supsingFac = new SupersingularProvider();
         SupersingularTateGroup supsingGroup = supsingFac.provideBilinearGroup(80,
                 new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false),
-                AffineECPCoordinate::new);
+                AffineECPCoordinate.class);
         bilinearGroups.add(supsingGroup);
 
         return bilinearGroups;

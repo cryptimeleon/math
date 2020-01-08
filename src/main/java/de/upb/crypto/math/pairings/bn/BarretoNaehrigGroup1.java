@@ -18,9 +18,8 @@ public class BarretoNaehrigGroup1 extends BarretoNaehrigSourceGroup {
      * @param cofactor
      * @param a6
      */
-    public BarretoNaehrigGroup1(BigInteger size, BigInteger cofactor, ExtensionFieldElement a6,
-                                Function<WeierstrassCurve, AbstractECPCoordinate> ecpCoordConstructor) {
-        super(size, cofactor, a6, ecpCoordConstructor);
+    public BarretoNaehrigGroup1(BigInteger size, BigInteger cofactor, ExtensionFieldElement a6, Class coordinateClass) {
+        super(size, cofactor, a6, coordinateClass);
     }
 
     /**
