@@ -7,6 +7,7 @@ import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
+import de.upb.crypto.math.pairings.generic.PairingSourceGroup;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 import de.upb.crypto.math.structures.ec.AffineECPCoordinate;
 import de.upb.crypto.math.structures.ec.ProjectiveECPCoordinate;
@@ -40,20 +41,27 @@ public class PairingPerformanceTest {
      */
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection<BilinearMap> initializePairings() {
-        ArrayList<BilinearMap> pairings = new ArrayList<>();
+        Collection<BilinearMap> pairings = new ArrayList<>();
 
         // Supersingular Tate Pairing
         SupersingularProvider supersingularProvider = new SupersingularProvider();
         pairings.add(supersingularProvider.provideBilinearGroup(80,
-                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1)).getBilinearMap());
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1), AffineECPCoordinate.class).getBilinearMap());
+        pairings.add(supersingularProvider.provideBilinearGroup(80,
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1), ProjectiveECPCoordinate.class).getBilinearMap());
 
         // Barreto-Naehrig non-native
         BarretoNaehrigProvider bnProvider = new BarretoNaehrigProvider();
         pairings.add(bnProvider.provideBilinearGroup(128,
                 new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3), AffineECPCoordinate.class).getBilinearMap());
+        pairings.add(bnProvider.provideBilinearGroup(128,
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3), ProjectiveECPCoordinate.class).getBilinearMap());
+
         // Barreto-Naehrig non-native, SFC-256
-        pairings.add(
-                bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256, AffineECPCoordinate.class).getBilinearMap());
+        pairings.add(bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256,
+                        AffineECPCoordinate.class).getBilinearMap());
+        pairings.add(bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256,
+                        ProjectiveECPCoordinate.class).getBilinearMap());
 
         return pairings;
     }
@@ -76,7 +84,12 @@ public class PairingPerformanceTest {
             expression.op(g1Elements.get(i), g2Elements.get(i), exponents.get(i));
         }
 
-        System.out.println("Testing " + pairing.getClass().getSimpleName() + " with " + numberOfElements + " pairings...");
+        System.out.println("Testing " + pairing.getClass().getSimpleName() + " using coordinate representation " +
+                ((PairingSourceGroup) pairing.getG1()).getCoordinateClass().getSimpleName() +
+                " with " + numberOfElements + " pairings...");
+        System.out.println(pairing.getG1().size());
+        System.out.println(pairing.getG2().size());
+
     }
 
 
