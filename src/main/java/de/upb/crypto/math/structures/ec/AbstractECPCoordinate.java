@@ -68,7 +68,7 @@ public abstract class AbstractECPCoordinate {
 
     @Override
     public String toString() {
-        return "(" + x.toString() + ":" + y.toString() + ":" + z.toString() + ")";
+        return this.getClass().getSimpleName() + "(" + x.toString() + ":" + y.toString() + ":" + z.toString() + ")";
     }
 
     @Override

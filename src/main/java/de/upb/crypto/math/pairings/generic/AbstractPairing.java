@@ -241,6 +241,9 @@ public abstract class AbstractPairing implements BilinearMap {
              * depends on the concrete implementation. It depends on the form of coordinates
              * and on untwisting R or Q. For example for affine coordinates, the line is returned
              * in the form of [a0, a1] such that l_R,R(x,y) = a_0(y-yR) - a_1(x-xR).
+             * For example, the line may be given as [1, \lambda], where \lambda is the slope of the line.
+             * Then the live is given by y = \lambda x + v. Since we know that R is on the line, v can be calculated
+             * as y_R - \lambda x_R. y = \lambda x + (y_R - \lambda x_R) <=> 0 = -\lambda (x - x_R) + 1 * (y - y_R).
              */
             millerVariable = millerVariable.mul(evaluateLine(line, R, qNormalized));
 

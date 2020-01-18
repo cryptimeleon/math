@@ -65,10 +65,6 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
 
     @Override
     public AbstractECPCoordinate add(AbstractECPCoordinate P) {
-        // If points are same, double instead (more efficient)
-        if (this.equals(P)) {
-            return this.ec_double();
-        }
         // If either point is the neutral element at infinity, just return other one
         if (this.z.isZero())
             return P;
@@ -98,8 +94,7 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
                 return new ProjectiveECPCoordinate(this.structure);
             } else {
                 // If v == 0 and u == 0, i.e. the points are the same, we need to do a doubling
-                // and not an addition. This should not happen though as we already
-                // test for equality beforehand.
+                // and not an addition.
                 return this.ec_double();
             }
         }
