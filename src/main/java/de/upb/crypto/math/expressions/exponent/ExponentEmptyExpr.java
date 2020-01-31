@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -21,6 +22,11 @@ public class ExponentEmptyExpr implements ExponentExpr {
 
     @Override
     public ExponentExpr substitute(Function<String, Expression> substitutionMap) {
+        return this;
+    }
+
+    @Override
+    public ExponentEmptyExpr substitute(ValueBundle variableValues) {
         return this;
     }
 

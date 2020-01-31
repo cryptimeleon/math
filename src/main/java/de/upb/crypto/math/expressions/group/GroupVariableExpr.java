@@ -2,6 +2,7 @@ package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.EvaluationException;
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
@@ -31,6 +32,12 @@ public class GroupVariableExpr extends GroupElementExpression implements Variabl
     public GroupElementExpression substitute(Function<String, Expression> substitutionMap) {
         Expression result = substitutionMap.apply(name);
         return result == null ? this : (GroupElementExpression) result;
+    }
+
+    @Override
+    public GroupElementExpression substitute(ValueBundle variableValues) {
+        GroupElement value = variableValues.getGroupElement(name);
+        return value == null ? this : new GroupElementConstantExpr(value);
     }
 
     @Override

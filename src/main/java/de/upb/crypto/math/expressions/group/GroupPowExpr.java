@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
@@ -31,6 +32,11 @@ public class GroupPowExpr extends GroupElementExpression {
     @Override
     public GroupPowExpr substitute(Function<String, Expression> substitutionMap) {
         return new GroupPowExpr(base.substitute(substitutionMap), exponent.substitute(substitutionMap));
+    }
+
+    @Override
+    public GroupPowExpr substitute(ValueBundle variableValues) {
+        return new GroupPowExpr(base.substitute(variableValues), exponent.substitute(variableValues));
     }
 
     @Override

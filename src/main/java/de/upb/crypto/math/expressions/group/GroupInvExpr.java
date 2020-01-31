@@ -2,6 +2,7 @@ package de.upb.crypto.math.expressions.group;
 
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
@@ -25,6 +26,11 @@ public class GroupInvExpr extends GroupElementExpression {
     @Override
     public GroupInvExpr substitute(Function<String, Expression> substitutionMap) {
         return new GroupInvExpr(base.substitute(substitutionMap));
+    }
+
+    @Override
+    public GroupInvExpr substitute(ValueBundle variableValues) {
+        return new GroupInvExpr(base.substitute(variableValues));
     }
 
     public GroupElementExpression getBase() {

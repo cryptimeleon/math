@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.util.Map;
@@ -24,6 +25,11 @@ public class GroupOpExpr extends GroupElementExpression {
     @Override
     public GroupOpExpr substitute(Function<String, Expression> substitutionMap) {
         return new GroupOpExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
+    }
+
+    @Override
+    public GroupOpExpr substitute(ValueBundle variableValues) {
+        return new GroupOpExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }
 
     public GroupElementExpression getLhs() {

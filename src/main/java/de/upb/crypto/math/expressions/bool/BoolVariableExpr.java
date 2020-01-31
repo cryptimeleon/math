@@ -2,6 +2,7 @@ package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.EvaluationException;
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.VariableExpression;
 
 import java.util.Map;
