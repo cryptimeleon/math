@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.bool.BooleanExpression;
+import de.upb.crypto.math.expressions.exponent.*;
 import de.upb.crypto.math.interfaces.structures.*;
 
 import java.math.BigInteger;
@@ -39,6 +40,9 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      */
     private int useWnafCostInversion;
 
+    private boolean enablePrecomputeEvaluation;
+    private boolean enablePrecomputeCaching;
+
     private ThreadPoolExecutor pairingExecutor;
 
     public OptGroupElementExpressionEvaluator() {
@@ -55,6 +59,9 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         windowSizeSimultaneousNoCaching = 1;
         simultaneousNumBasesCutoff = 10;
         useWnafCostInversion = 100;
+
+        enablePrecomputeCaching = true;
+        enablePrecomputeEvaluation = true;
 
         // For parallel evaluation of both sides of a pariring
         // In the case of expensive pairings such as the BN pairing, this
@@ -626,88 +633,169 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     @Override
     public GroupElementExpression precompute(GroupElementExpression expr) {
-        // This object contains information about each expression in the expression tree.
-        // It is continually manipulated in the analysis stage and will be used to compute
-        // a new optimized expression in the optimization stage. The mutation approach is
-        // chosen for better performance.
-        Map<GroupElementExpression, ExprInfo> exprToInfo = new HashMap<>();
-        analyzeGExpr(expr, exprToInfo);
-        // This current approach would not allow optimization across pairing groups.
-        // So we might need another step if we want optimization across pairings.
-        return optimizeGExpr(expr, exprToInfo);
-    }
-
-    /**
-     * Analyzes given expression tree to extract information for later optimization step.
-     * @param expr Expression to analyze.
-     * @param exprToInfo Information about expression and contained subexpressions.
-     */
-    private void analyzeGExpr(GroupElementExpression expr,
-                              Map<GroupElementExpression, ExprInfo> exprToInfo) {
-        findContainedBases(expr, false, exprToInfo);
+        GroupElementExpression newExpr = expr;
+        if (enablePrecomputeEvaluation) {
+            // Evaluate all expressions that do not contain variables to simplify expression as much as possible
+            // For that we need to find expressions that do not contain variable first
+            Map<GroupElementExpression, Boolean> exprToContainsVar = new HashMap<>();
+            markExprWithVars(expr, exprToContainsVar);
+            // Now we evaluate everything without variables and build a reduced new expression
+            newExpr = evalWithoutVars(expr, exprToContainsVar);
+        }
+        if (enablePrecomputeCaching) {
+            // Find bases contained in the expression such that precomputations can be done for them
+            Map<GroupElementExpression, List<GroupElement>> exprToContBases = new HashMap<>();
+            findContainedBases(newExpr, false, exprToContBases);
+            cacheWindows(newExpr, exprToContBases);
+        }
+        return newExpr;
     }
 
     /**
      * Finds all bases contained in the expr and stores it as information.
      * @param expr Expression to find bases in.
-     * @param exprToInfo Information about expression and contained subexpressions.
+     * @param exprToContBases Maps expressions to bases contained within them.
      */
     private void findContainedBases(GroupElementExpression expr, boolean inInversion,
-                                    Map<GroupElementExpression, ExprInfo> exprToInfo) {
+                                    Map<GroupElementExpression, List<GroupElement>> exprToContBases) {
         // TODO: Would be nice to refactor this pattern,
         //  but recursion is required for inversion handling
         if (expr instanceof GroupOpExpr) {
-            GroupOpExpr op_expr = (GroupOpExpr) expr;
+            GroupOpExpr opExpr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
             if (inInversion) {
-                findContainedBases(op_expr.getRhs(), inInversion, exprToInfo);
-                findContainedBases(op_expr.getLhs(), inInversion, exprToInfo);
-                ExprInfo expr_info_right = exprToInfo.computeIfAbsent(op_expr.getRhs(),
-                        k -> new ExprInfo());
-                ExprInfo expr_info_left = exprToInfo.computeIfAbsent(op_expr.getLhs(),
-                        k -> new ExprInfo());
-                ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
-                expr_info.getContainedBases().addAll(expr_info_right.getContainedBases());
-                expr_info.getContainedBases().addAll(expr_info_left.getContainedBases());
+                findContainedBases(opExpr.getRhs(), inInversion, exprToContBases);
+                findContainedBases(opExpr.getLhs(), inInversion, exprToContBases);
+                List<GroupElement> containedBasesRight = exprToContBases.computeIfAbsent(opExpr.getRhs(),
+                        k -> new LinkedList<>());
+                List<GroupElement> containedBasesLeft = exprToContBases.computeIfAbsent(opExpr.getLhs(),
+                        k -> new LinkedList<>());
+                List<GroupElement> containedBases = exprToContBases.computeIfAbsent(expr, k -> new LinkedList<>());
+                containedBases.addAll(containedBasesRight);
+                containedBases.addAll(containedBasesLeft);
             } else {
-                findContainedBases(op_expr.getLhs(), inInversion, exprToInfo);
-                findContainedBases(op_expr.getRhs(), inInversion, exprToInfo);
-                ExprInfo expr_info_left = exprToInfo.computeIfAbsent(op_expr.getLhs(),
-                        k -> new ExprInfo());
-                ExprInfo expr_info_right = exprToInfo.computeIfAbsent(op_expr.getRhs(),
-                        k -> new ExprInfo());
-                ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
-                expr_info.getContainedBases().addAll(expr_info_left.getContainedBases());
-                expr_info.getContainedBases().addAll(expr_info_right.getContainedBases());
+                findContainedBases(opExpr.getLhs(), inInversion, exprToContBases);
+                findContainedBases(opExpr.getRhs(), inInversion, exprToContBases);
+                List<GroupElement> containedBasesLeft = exprToContBases.computeIfAbsent(opExpr.getLhs(),
+                        k -> new LinkedList<>());
+                List<GroupElement> containedBasesRight = exprToContBases.computeIfAbsent(opExpr.getRhs(),
+                        k -> new LinkedList<>());
+                List<GroupElement> containedBases = exprToContBases.computeIfAbsent(expr, k -> new LinkedList<>());
+                containedBases.addAll(containedBasesLeft);
+                containedBases.addAll(containedBasesRight);
             }
         } else if (expr instanceof GroupInvExpr) {
-            GroupElementExpression inv_base = ((GroupInvExpr) expr).getBase();
-            findContainedBases(inv_base, !inInversion, exprToInfo);
+            GroupElementExpression invBase = ((GroupInvExpr) expr).getBase();
+            findContainedBases(invBase, !inInversion, exprToContBases);
             // propagate found bases from base to inv expression
-            ExprInfo expr_info_inv_base = exprToInfo.computeIfAbsent(inv_base, k -> new ExprInfo());
-            ExprInfo expr_info_inv = exprToInfo.computeIfAbsent(expr, k ->  new ExprInfo());
-            expr_info_inv.getContainedBases().addAll(expr_info_inv_base.getContainedBases());
+            List<GroupElement> invBaseContBases = exprToContBases.computeIfAbsent(invBase, k -> new LinkedList<>());
+            List<GroupElement> invContBases = exprToContBases.computeIfAbsent(expr, k ->  new LinkedList<>());
+            invContBases.addAll(invBaseContBases);
         } else if (expr instanceof GroupPowExpr) {
-            GroupPowExpr pow_expr = (GroupPowExpr) expr;
+            GroupPowExpr powExpr = (GroupPowExpr) expr;
             // for now, just use evaluate naive on base and exponent
-            ExprInfo expr_info = exprToInfo.computeIfAbsent(pow_expr, k -> new ExprInfo());
+            List<GroupElement> containedBases = exprToContBases.computeIfAbsent(powExpr, k -> new LinkedList<>());
             // change this if we change multiexp algorithm to be smarter
             // if variable in there we cannot precompute easily
-            if (!containsVariableExpr(pow_expr)) {
-                expr_info.getContainedBases().add(pow_expr.base.evaluateNaive());
-            }
+            containedBases.add(powExpr.base.evaluateNaive());
         } else if (expr instanceof GroupElementConstantExpr) {
             // count this as basis too for now since multiexp does it too
-            ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
-            expr_info.getContainedBases().add(expr.evaluateNaive());
+            List<GroupElement> containedBases = exprToContBases.computeIfAbsent(expr, k -> new LinkedList<>());
+            containedBases.add(expr.evaluateNaive());
         } else if (expr instanceof GroupEmptyExpr) {
             // count this as basis too for now since multiexp does it too
-            ExprInfo expr_info = exprToInfo.computeIfAbsent(expr, k -> new ExprInfo());
-            expr_info.getContainedBases().add(expr.evaluateNaive());
+            List<GroupElement> containedBases = exprToContBases.computeIfAbsent(expr, k -> new LinkedList<>());
+            containedBases.add(expr.evaluateNaive());
         } else if (expr instanceof PairingExpr) {
             // Dont handle pairing here, need to call precompute on both sides but not here
         } else if (expr instanceof GroupVariableExpr) {
             // Dont handle variable here
+        } else {
+            throw new IllegalArgumentException("Found something in expression tree that" +
+                    "is not a proper expression.");
+        }
+    }
+
+    private GroupElementExpression evalWithoutVars(GroupElementExpression expr,
+                                                   Map<GroupElementExpression, Boolean> exprToContainsVar) {
+        if (!exprToContainsVar.get(expr)) {
+            return expr.evaluate().expr();
+        } else {
+            if (expr instanceof GroupOpExpr) {
+                GroupOpExpr opExpr = (GroupOpExpr) expr;
+                return new GroupOpExpr(
+                        evalWithoutVars(opExpr.getLhs(), exprToContainsVar),
+                        evalWithoutVars(opExpr.getRhs(), exprToContainsVar)
+                );
+            } else if (expr instanceof GroupInvExpr) {
+                GroupInvExpr invExpr = (GroupInvExpr) expr;
+                return new GroupInvExpr(
+                        evalWithoutVars(invExpr.getBase(), exprToContainsVar)
+                );
+            } else if (expr instanceof GroupPowExpr) {
+                GroupPowExpr powExpr = (GroupPowExpr) expr;
+                // We don't go deeper into exponent
+                return new GroupPowExpr(
+                        evalWithoutVars(powExpr.getBase(), exprToContainsVar), powExpr.getExponent()
+                );
+            } else if (expr instanceof PairingExpr) {
+                PairingExpr pairingExpr = (PairingExpr) expr;
+                return new PairingExpr(
+                        pairingExpr.getMap(),
+                        evalWithoutVars(pairingExpr.getRhs(), exprToContainsVar),
+                        evalWithoutVars(pairingExpr.getLhs(), exprToContainsVar)
+                );
+            } else if (expr instanceof GroupVariableExpr) {
+                return expr;
+            } else if (expr instanceof GroupElementConstantExpr || expr instanceof GroupEmptyExpr) {
+                throw new IllegalStateException("Expression contains variable although it cannot.");
+            } else {
+                throw new IllegalArgumentException("Found something in expression tree that" +
+                        "is not a proper group expression.");
+            }
+        }
+    }
+
+    /**
+     * Traverses the given expression and marks call sub-expressions that contain a variable.
+     * @param expr The expression to search.
+     * @param exprToContainsVar Maps each sub-expression to a Boolean indicating whether the expression contains
+     *                          a variable or not.
+     */
+    private void markExprWithVars(GroupElementExpression expr, Map<GroupElementExpression, Boolean> exprToContainsVar) {
+        if (expr instanceof GroupOpExpr) {
+            GroupOpExpr opExpr = (GroupOpExpr) expr;
+            markExprWithVars(opExpr.getRhs(), exprToContainsVar);
+            markExprWithVars(opExpr.getLhs(), exprToContainsVar);
+            exprToContainsVar.put(
+                    opExpr, exprToContainsVar.get(opExpr.getLhs()) || exprToContainsVar.get(opExpr.getRhs())
+            );
+        } else if (expr instanceof GroupInvExpr) {
+            GroupInvExpr invExpr = (GroupInvExpr) expr;
+            markExprWithVars(invExpr.getBase(), exprToContainsVar);
+            exprToContainsVar.put(
+                    invExpr, exprToContainsVar.get(invExpr.getBase())
+            );
+        } else if (expr instanceof GroupPowExpr) {
+            GroupPowExpr powExpr = (GroupPowExpr) expr;
+            markExprWithVars(powExpr.getBase(), exprToContainsVar);
+            exprToContainsVar.put(
+                    powExpr, exprToContainsVar.get(powExpr.getBase()) || containsVariableExpr(powExpr.getExponent())
+            );
+        } else if (expr instanceof GroupElementConstantExpr) {
+            exprToContainsVar.put(expr, false);
+        } else if (expr instanceof GroupEmptyExpr) {
+            exprToContainsVar.put(expr, false);
+        } else if (expr instanceof PairingExpr) {
+            PairingExpr pairingExpr = (PairingExpr) expr;
+            markExprWithVars(pairingExpr.getLhs(), exprToContainsVar);
+            markExprWithVars(pairingExpr.getRhs(), exprToContainsVar);
+            exprToContainsVar.put(
+                    pairingExpr,
+                    exprToContainsVar.get(pairingExpr.getLhs()) || exprToContainsVar.get(pairingExpr.getRhs())
+            );
+        } else if (expr instanceof GroupVariableExpr) {
+            exprToContainsVar.put(expr, true);
         } else {
             throw new IllegalArgumentException("Found something in expression tree that" +
                     "is not a proper expression.");
@@ -729,7 +817,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             return containsVariableExpr(invExpr.getBase());
         } else if (expr instanceof GroupPowExpr) {
             GroupPowExpr powExpr = (GroupPowExpr) expr;
-            return containsVariableExpr(powExpr.getBase());
+            return containsVariableExpr(powExpr.getBase()) || containsVariableExpr(powExpr.getExponent());
         } else if (expr instanceof GroupElementConstantExpr) {
             return false;
         } else if (expr instanceof GroupEmptyExpr) {
@@ -742,22 +830,33 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             return true;
         } else {
             throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper expression.");
+                    "is not a proper group expression.");
         }
     }
 
-    /**
-     * Optimizes given expression using the expression information gathered in the analysis
-     * step.
-     * @param expr Expression to optimize.
-     * @param exprToInfo Information about expression and contained subexpressions.
-     * @return Optimized expression.
-     */
-    private GroupElementExpression optimizeGExpr(GroupElementExpression expr,
-                                                 Map<GroupElementExpression, ExprInfo> exprToInfo) {
-        // need to clone the expression before changing it
-        cacheWindows(expr, exprToInfo);
-        return expr;
+    private boolean containsVariableExpr(ExponentExpr expr) {
+        if (expr instanceof ExponentConstantExpr) {
+            return false;
+        } else if (expr instanceof ExponentEmptyExpr) {
+            return false;
+        } else if (expr instanceof ExponentInvExpr) {
+            ExponentInvExpr invExpr = (ExponentInvExpr) expr;
+            return containsVariableExpr(invExpr.getChild());
+        } else if (expr instanceof ExponentMulExpr) {
+            ExponentMulExpr mulExpr = (ExponentMulExpr) expr;
+            return containsVariableExpr(mulExpr.getLhs()) || containsVariableExpr(mulExpr.getRhs());
+        } else if (expr instanceof ExponentNegExpr) {
+            ExponentNegExpr negExpr = (ExponentNegExpr) expr;
+            return containsVariableExpr(negExpr.getChild());
+        } else if (expr instanceof  ExponentSumExpr) {
+            ExponentSumExpr sumExpr = (ExponentSumExpr) expr;
+            return containsVariableExpr(sumExpr.getLhs()) || containsVariableExpr(sumExpr.getLhs());
+        } else if (expr instanceof ExponentVariableExpr) {
+            return true;
+        } else {
+            throw new IllegalArgumentException("Found something in expression tree that" +
+                    "is not a proper exponent expression.");
+        }
     }
 
     /**
@@ -765,14 +864,13 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      * done depends on the algorithm that would be selected for evaluation with the current
      * settings.
      * @param expr Expression to cache powers for.
-     * @param exprToInfo Information about expression and contained subexpressions.
+     * @param exprToContainedBases Maps expressions to bases contained within them.
      */
     private void cacheWindows(GroupElementExpression expr,
-                              Map<GroupElementExpression, ExprInfo> exprToInfo) {
+                              Map<GroupElementExpression, List<GroupElement>> exprToContainedBases) {
         // Find out which algorithm would be used with current settings and do precomputation
         // for that algorithm.
-        ExprInfo rootExprInfo = exprToInfo.get(expr);
-        List<GroupElement> rootBases = rootExprInfo.getContainedBases();
+        List<GroupElement> rootBases = exprToContainedBases.get(expr);
         int rootNumBases = rootBases.size();
         int costOfInversion = rootBases.get(0).getStructure().estimateCostOfInvert();
         MultiExpAlgorithm alg = getCurrentlyChosenMultiExpALgorithm(rootNumBases, costOfInversion);
@@ -803,22 +901,6 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                 groupPrecomputations = GroupPrecomputationsFactory
                         .get(rootBases.iterator().next().getStructure());
                 groupPrecomputations.addPowerProducts(rootBases, windowSizeSimultaneousCaching);
-        }
-    }
-
-    /**
-     * Information about an expression gathered while analyzing the expression in the precompute
-     * method. Later used in optimization step.
-     */
-    public static class ExprInfo {
-        private List<GroupElement> containedBases;
-
-        public ExprInfo() {
-            this.containedBases = new ArrayList<>();
-        }
-
-        public List<GroupElement> getContainedBases() {
-            return containedBases;
         }
     }
 
@@ -914,6 +996,15 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         this.useWnafCostInversion = newSetting;
     }
 
+
+    public void setEnablePrecomputeEvaluation(boolean enablePrecomputeEvaluation) {
+        this.enablePrecomputeEvaluation = enablePrecomputeEvaluation;
+    }
+
+    public void setEnablePrecomputeCaching(boolean enablePrecomputeCaching) {
+        this.enablePrecomputeCaching = enablePrecomputeCaching;
+    }
+
     public enum ForceMultiExpAlgorithmSetting {
         DISABLED, INTERLEAVED_SLIDING, INTERLEAVED_WNAF, SIMULTANEOUS
     }
@@ -973,5 +1064,13 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     public int getUseWnafCostInversion() {
         return useWnafCostInversion;
+    }
+
+    public boolean isEnablePrecomputeEvaluation() {
+        return enablePrecomputeEvaluation;
+    }
+
+    public boolean isEnablePrecomputeCaching() {
+        return enablePrecomputeCaching;
     }
 }

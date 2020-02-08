@@ -1,11 +1,9 @@
 package de.upb.crypto.math.expressions.test;
 
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator
         .ForceMultiExpAlgorithmSetting;
-import de.upb.crypto.math.expressions.group.PairingExpr;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -20,7 +18,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static junit.framework.TestCase.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(Parameterized.class)
 public class OptGroupElementExpressionEvaluatorPrecomputeTest {
@@ -66,6 +64,7 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
         expr = expr.op(new PairingExpr(bilGroup.getBilinearMap(), leftExpr, rightExpr));
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.setEnablePrecomputeEvaluation(false);
         evaluator.precompute(expr);
 
         List<GroupElement> bases = new LinkedList<>();
@@ -80,7 +79,7 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
                     gp.getOddPowers(b, evaluator.getWindowSizeInterleavedSlidingCaching(), false);
                 } catch (IllegalStateException e) {
                     System.out.println(e.getMessage());
-                    fail("Missing odd powers.");
+                    fail("Missing odd powers for " + b);
                 }
             }
         } else if (algSetting == ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF) {
@@ -89,7 +88,7 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
                     gp.getOddPowers(b, evaluator.getWindowSizeInterleavedWnafCaching(), false);
                 } catch (IllegalStateException e) {
                     System.out.println(e.getMessage());
-                    fail("Missing odd powers.");
+                    fail("Missing odd powers for " + b);
                 }
             }
         } else {
@@ -97,8 +96,46 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
                 gp.getPowerProducts(bases, evaluator.getWindowSizeSimultaneousCaching(), false);
             } catch (IllegalStateException e) {
                 System.out.println(e.getMessage());
-                fail("Missing power products.");
+                fail("Missing power products for " + Arrays.toString(bases.toArray()));
             }
         }
+    }
+
+    @Test
+    public void testPrecomputeEvaluation() {
+        // Just reuse from PrecomputePowers test
+        BilinearGroupFactory fac = new BilinearGroupFactory(160);
+        fac.setDebugMode(true);
+        fac.setRequirements(BilinearGroup.Type.TYPE_3);
+        BilinearGroup bilGroup = fac.createBilinearGroup();
+        GroupElement leftElem = bilGroup.getG1().getUniformlyRandomElement();
+        System.out.println("Left Element G1: " + leftElem);
+        GroupElement rightElem = bilGroup.getG2().getUniformlyRandomElement();
+        System.out.println("Right Element G2: " + rightElem);
+
+        GroupElementExpression leftExpr = leftElem.expr();
+        leftExpr = leftExpr.opPow(leftElem.pow(2), BigInteger.valueOf(2));
+        leftExpr = leftExpr.inv();
+        GroupElementExpression rightExpr = rightElem.expr();
+        rightExpr = rightExpr.opPow(rightElem.pow(3), BigInteger.valueOf(3));
+        rightExpr = rightExpr.inv();
+
+        GroupElement elem = bilGroup.getGT().getUniformlyRandomNonNeutral();
+        System.out.println("Element: " + elem);
+        GroupElementExpression expr = elem.expr();
+        expr = expr.opPow(elem.pow(2), new ExponentVariableExpr("x"));
+        expr = expr.inv();
+        expr = expr.opPow(elem.pow(3), new ExponentVariableExpr("y"));
+
+        PairingExpr pairingExpr = new PairingExpr(bilGroup.getBilinearMap(), leftExpr, rightExpr);
+        expr = expr.op(pairingExpr);
+
+        OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        GroupElementExpression newExpr = evaluator.precompute(expr);
+
+        GroupOpExpr newOpExpr = (GroupOpExpr) newExpr;
+        assertTrue(newOpExpr.getRhs() instanceof GroupElementConstantExpr);
+        assertEquals(newOpExpr.getRhs().evaluate(), pairingExpr.evaluate());
     }
 }
