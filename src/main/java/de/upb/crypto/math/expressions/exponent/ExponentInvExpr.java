@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -30,8 +31,13 @@ public class ExponentInvExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentExpr substitute(Function<String, Expression> substitutionMap) {
+    public ExponentInvExpr substitute(Function<String, Expression> substitutionMap) {
         return new ExponentInvExpr(child.substitute(substitutionMap));
+    }
+
+    @Override
+    public ExponentInvExpr substitute(ValueBundle variableValues) {
+        return new ExponentInvExpr(child.substitute(variableValues));
     }
 
     @Override

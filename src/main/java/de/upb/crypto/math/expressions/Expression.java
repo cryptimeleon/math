@@ -1,5 +1,6 @@
 package de.upb.crypto.math.expressions;
 
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.structures.Element;
 
 import java.util.HashSet;
@@ -18,6 +19,16 @@ public interface Expression {
      * @param substitutionMap a map, where variables s will be substituted with substitutionMap(s). Output null if no substitution should take place for the given variable.
      */
     Expression substitute(Function<String, Expression> substitutionMap);
+
+    /**
+     * Returns an Expression where (some) variables have been substituted with the given expressions.
+     * @param values plugs in the values from the ValueBundle into this Expression (i.e. for any variable in this expression, the variable is replaced with its value in the ValueBundle if it exists)
+     */
+    Expression substitute(ValueBundle values);
+
+    default Expression substitute(String variable, Expression substitution) {
+        return substitute(name -> name.equals(variable) ? substitution : null);
+    }
 
     /**
      * Returns the set of variables the value of this expression depends on.

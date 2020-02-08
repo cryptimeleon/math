@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -60,6 +61,11 @@ public class GroupEmptyExpr extends GroupElementExpression {
 
     @Override
     public GroupEmptyExpr substitute(Function<String, Expression> substitutionMap) {
+        return this;
+    }
+
+    @Override
+    public GroupEmptyExpr substitute(ValueBundle variableValues) {
         return this;
     }
 

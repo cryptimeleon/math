@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.bool.ExponentEqualityExpr;
 import de.upb.crypto.math.structures.zn.Zn;
 
@@ -22,6 +23,9 @@ public interface ExponentExpr extends Expression {
 
     @Override
     ExponentExpr substitute(Function<String, Expression> substitutionMap);
+
+    @Override
+    ExponentExpr substitute(ValueBundle variableValues);
 
     @Override
     ExponentExpr precompute();

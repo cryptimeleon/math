@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -18,6 +19,11 @@ public interface BooleanExpression extends Expression {
 
     @Override
     BooleanExpression substitute(Function<String, Expression> substitutionMap);
+
+    @Override
+    default BooleanExpression substitute(ValueBundle variableValues) {
+        return this; //TODO support substitution by adding bools into VariableBundle and removing this default implementation.
+    }
 
     @Override
     BooleanExpression precompute();
