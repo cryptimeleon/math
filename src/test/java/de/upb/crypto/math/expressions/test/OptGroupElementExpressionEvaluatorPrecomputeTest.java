@@ -1,9 +1,9 @@
 package de.upb.crypto.math.expressions.test;
 
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluatorConfig;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.*;
-import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator
-        .ForceMultiExpAlgorithmSetting;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -24,17 +24,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OptGroupElementExpressionEvaluatorPrecomputeTest {
 
     @Parameterized.Parameters(name= "{index}: algorithm={0}")
-    public static Iterable<OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting>
+    public static Iterable<OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting>
     algs() {
         return Arrays.asList(
-                ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING,
-                ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF,
-                ForceMultiExpAlgorithmSetting.SIMULTANEOUS
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING,
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF,
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.SIMULTANEOUS
         );
     }
 
     @Parameterized.Parameter
-    public ForceMultiExpAlgorithmSetting algSetting;
+    public OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting algSetting;
 
     @Test
     public void testPrecomputingPowers() {
@@ -63,8 +63,8 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
 
         expr = expr.op(new PairingExpr(bilGroup.getBilinearMap(), leftExpr, rightExpr));
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
-        evaluator.setEnablePrecomputeEvaluation(false);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setEnablePrecomputeEvaluation(false);
         evaluator.precompute(expr);
 
         List<GroupElement> bases = new LinkedList<>();
@@ -73,19 +73,20 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
         bases.add(elem.pow(3));
         GroupPrecomputations gp = GroupPrecomputationsFactory.get(bilGroup.getGT());
         // now check whether bases have been precomputed
-        if (algSetting == ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING) {
+        if (algSetting == OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING) {
             for (GroupElement b : bases) {
                 try {
-                    gp.getOddPowers(b, evaluator.getWindowSizeInterleavedSlidingCaching(), false);
+                    gp.getOddPowers(b,
+                            evaluator.getConfig().getWindowSizeInterleavedSlidingCaching(), false);
                 } catch (IllegalStateException e) {
                     System.out.println(e.getMessage());
                     fail("Missing odd powers for " + b);
                 }
             }
-        } else if (algSetting == ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF) {
+        } else if (algSetting == OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF) {
             for (GroupElement b : bases) {
                 try {
-                    gp.getOddPowers(b, evaluator.getWindowSizeInterleavedWnafCaching(), false);
+                    gp.getOddPowers(b, evaluator.getConfig().getWindowSizeInterleavedWnafCaching(), false);
                 } catch (IllegalStateException e) {
                     System.out.println(e.getMessage());
                     fail("Missing odd powers for " + b);
@@ -93,7 +94,7 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
             }
         } else {
             try {
-                gp.getPowerProducts(bases, evaluator.getWindowSizeSimultaneousCaching(), false);
+                gp.getPowerProducts(bases, evaluator.getConfig().getWindowSizeSimultaneousCaching(), false);
             } catch (IllegalStateException e) {
                 System.out.println(e.getMessage());
                 fail("Missing power products for " + Arrays.toString(bases.toArray()));
@@ -131,7 +132,7 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
         expr = expr.op(pairingExpr);
 
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         GroupElementExpression newExpr = evaluator.precompute(expr);
 
         GroupOpExpr newOpExpr = (GroupOpExpr) newExpr;

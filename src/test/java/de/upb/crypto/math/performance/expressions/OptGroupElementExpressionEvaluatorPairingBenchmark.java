@@ -1,7 +1,7 @@
 package de.upb.crypto.math.performance.expressions;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 
@@ -23,7 +23,7 @@ public class OptGroupElementExpressionEvaluatorPairingBenchmark {
         );
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         // set this to switch multithreading option
-        evaluator.setEnableMultithreadedPairingEvaluation(false);
+        evaluator.getConfig().setEnableMultithreadedPairingEvaluation(false);
 
         int runs = 20;
         int warmupRuns = 4;

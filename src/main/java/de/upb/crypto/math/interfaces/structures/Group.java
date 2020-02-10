@@ -1,5 +1,6 @@
 package de.upb.crypto.math.interfaces.structures;
 
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
 import de.upb.crypto.math.serialization.Representation;

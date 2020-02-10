@@ -1,6 +1,8 @@
-package de.upb.crypto.math.expressions.group;
+package de.upb.crypto.math.expressions.evaluator;
 
 import de.upb.crypto.math.expressions.bool.BooleanExpression;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 public class NaiveGroupElementExpressionEvaluator implements GroupElementExpressionEvaluator {

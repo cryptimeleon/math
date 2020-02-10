@@ -2,9 +2,10 @@ package de.upb.crypto.math.performance.expressions;
 
 import com.github.noconnor.junitperf.JUnitPerfRule;
 import com.github.noconnor.junitperf.JUnitPerfTest;
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluatorConfig;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.expressions.group.NaiveGroupElementExpressionEvaluator;
-import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.evaluator.NaiveGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -27,17 +28,17 @@ import static org.junit.Assert.assertEquals;
 public class OptGroupElementExpressionEvaluatorBNPerfTest {
 
     @Parameterized.Parameters(name= "{index}: algorithm={0}")
-    public static Iterable<OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting>
+    public static Iterable<OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting>
     algs() {
         return Arrays.asList(
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING,
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF,
-                OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting.SIMULTANEOUS
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING,
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF,
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.SIMULTANEOUS
         );
     }
 
     @Parameterized.Parameter
-    public OptGroupElementExpressionEvaluator.ForceMultiExpAlgorithmSetting algSetting;
+    public OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting algSetting;
 
     @Rule
     public JUnitPerfRule perfTestRule = new JUnitPerfRule();
@@ -80,30 +81,30 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
     @Test
     public void testManyCorrectnessCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         assertEquals(manyExprResult, manyPerfTestExpr.evaluate(evaluator));
     }
 
     @Test
     public void testManyCorrectnessNoCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCachingForAlg(algSetting, false);
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setEnableCachingForAlg(algSetting, false);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         assertEquals(manyExprResult, manyPerfTestExpr.evaluate(evaluator));
     }
 
     @Test
     public void testFewCorrectnessCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         assertEquals(fewExprResult, fewPerfTestExpr.evaluate(evaluator));
     }
 
     @Test
     public void testFewCorrectnessNoCaching() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCachingForAlg(algSetting, false);
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setEnableCachingForAlg(algSetting, false);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         assertEquals(fewExprResult, fewPerfTestExpr.evaluate(evaluator));
     }
 
@@ -111,7 +112,7 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
     @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
     public void testManyBasesOptCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         manyPerfTestExpr.evaluate(evaluator);
     }
 
@@ -119,8 +120,8 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
     @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
     public void testManyBasesOptNoCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCachingForAlg(algSetting, false);
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setEnableCachingForAlg(algSetting, false);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         manyPerfTestExpr.evaluate(evaluator);
     }
 
@@ -128,7 +129,7 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
     @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
     public void testFewBasesOptCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         fewPerfTestExpr.evaluate(evaluator);
     }
 
@@ -136,8 +137,8 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
     @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
     public void testFewBasesOptNoCachingPerf() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setEnableCachingForAlg(algSetting, false);
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setEnableCachingForAlg(algSetting, false);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         fewPerfTestExpr.evaluate(evaluator);
     }
 

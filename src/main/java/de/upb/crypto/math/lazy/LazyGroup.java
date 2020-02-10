@@ -1,19 +1,15 @@
 package de.upb.crypto.math.lazy;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
-import de.upb.crypto.math.expressions.group.NaiveGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.evaluator.NaiveGroupElementExpressionEvaluator;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.AnnotatedRepresentationUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;
 
-import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.BiFunction;
 
 /**
  * A group where operations are deferred until they are needed.

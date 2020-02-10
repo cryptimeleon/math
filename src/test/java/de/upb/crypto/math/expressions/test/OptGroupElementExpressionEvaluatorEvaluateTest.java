@@ -1,10 +1,11 @@
 package de.upb.crypto.math.expressions.test;
 
+import de.upb.crypto.math.expressions.EvaluationException;
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluatorConfig;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.expressions.group.NaiveGroupElementExpressionEvaluator;
-import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator;
-import de.upb.crypto.math.expressions.group.OptGroupElementExpressionEvaluator
-        .ForceMultiExpAlgorithmSetting;
+import de.upb.crypto.math.expressions.group.GroupVariableExpr;
+import de.upb.crypto.math.expressions.evaluator.NaiveGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.performance.expressions.ExpressionGenerator;
@@ -22,17 +23,17 @@ import static org.junit.Assert.assertEquals;
 public class OptGroupElementExpressionEvaluatorEvaluateTest {
 
     @Parameterized.Parameters(name= "{index}: algorithm={0}")
-    public static Iterable<ForceMultiExpAlgorithmSetting>
+    public static Iterable<OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting>
     algs() {
         return Arrays.asList(
-                ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING,
-                ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF,
-                ForceMultiExpAlgorithmSetting.SIMULTANEOUS
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING,
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_WNAF,
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.SIMULTANEOUS
         );
     }
 
     @Parameterized.Parameter
-    public ForceMultiExpAlgorithmSetting algSetting;
+    public OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting algSetting;
 
     @Test
     public void testAdditiveMultiExp() {
@@ -40,7 +41,7 @@ public class OptGroupElementExpressionEvaluatorEvaluateTest {
         GroupElementExpression expr = ExpressionGenerator
                 .genMultiExponentiation(zp.asAdditiveGroup(), 10, 15);
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
         assertEquals(expr.evaluate(naiveEval), expr.evaluate(evaluator));
     }
@@ -51,7 +52,7 @@ public class OptGroupElementExpressionEvaluatorEvaluateTest {
         GroupElementExpression expr = ExpressionGenerator
                 .genMultiExponentiation(zp.asUnitGroup(), 10, 15);
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
         assertEquals(expr.evaluate(naiveEval), expr.evaluate(evaluator));
     }
@@ -70,7 +71,7 @@ public class OptGroupElementExpressionEvaluatorEvaluateTest {
         );
 
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
         NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
         assertEquals(expr.evaluate(naiveEval), expr.evaluate(evaluator));
     }
@@ -89,9 +90,15 @@ public class OptGroupElementExpressionEvaluatorEvaluateTest {
         );
 
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.setForcedMultiExpAlgorithm(algSetting);
-        evaluator.setEnableMultithreadedPairingEvaluation(false);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(algSetting);
+        evaluator.getConfig().setEnableMultithreadedPairingEvaluation(false);
         NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
         assertEquals(expr.evaluate(naiveEval), expr.evaluate(evaluator));
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testVarExpr() {
+        GroupVariableExpr expr = new GroupVariableExpr("x");
+        expr.evaluate();
     }
 }
