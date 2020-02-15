@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 /**
  * A class containing multi-exponentiation algorithms.
  *
- * @author Raphael Heitjohann, based on Swante Scholz' implementation.
+ * @author Raphael Heitjohann, taken from Swante Scholz' implementation.
  */
 public class MultiExpAlgorithms {
 

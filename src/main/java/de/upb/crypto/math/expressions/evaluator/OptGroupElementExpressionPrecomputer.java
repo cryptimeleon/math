@@ -1,5 +1,6 @@
 package de.upb.crypto.math.expressions.evaluator;
 
+import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
@@ -12,7 +13,7 @@ import static de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyze
 
 public class OptGroupElementExpressionPrecomputer {
 
-    OptGroupElementExpressionEvaluatorConfig config;
+    private OptGroupElementExpressionEvaluatorConfig config;
 
     public OptGroupElementExpressionPrecomputer() {
         this.config = new OptGroupElementExpressionEvaluatorConfig();
@@ -20,6 +21,63 @@ public class OptGroupElementExpressionPrecomputer {
 
     public OptGroupElementExpressionPrecomputer(OptGroupElementExpressionEvaluatorConfig config) {
         this.config = config;
+    }
+
+    /**
+     * Tries to fix the problem of not being able to traverse the expression tree back up by just rewriting
+     * terms until the expression that comes out is not different anymore.
+     * @param expr The expression to rewrite.
+     * @param ruleApplicator Contains the rules to apply and how to apply them.
+     * @return Rewritten expression.
+     */
+    public GroupElementExpression rewriteTerms(GroupElementExpression expr, RuleApplicator ruleApplicator) {
+        GroupElementExpression newExpr = expr;
+        do {
+            newExpr = this.rewriteTermsTopDown(newExpr, ruleApplicator);
+        } while (ruleApplicator.isAppliedAndReset());
+        return newExpr;
+    }
+
+    public GroupElementExpression rewriteTermsTopDown(GroupElementExpression expr, RuleApplicator ruleApplicator) {
+        // apply as many rules on this expr as possible, constructing a new expression
+        // once all rules have been applied, apply this method recursively on its children
+        // also need to make sure rule application terminates, so use appropriate rules without infinite derivation
+        GroupElementExpression newExpr = ruleApplicator.applyAllRules(expr);
+        // now do recursive step, keep in mind this does not work for rules that could be applied multiple times
+        // bottom up such as moving exponents into pairing, but that is what the parent method is for.
+        if (newExpr instanceof GroupOpExpr) {
+            GroupOpExpr opExpr = (GroupOpExpr) newExpr;
+            return new GroupOpExpr(
+                    this.rewriteTermsTopDown(opExpr.getLhs(), ruleApplicator),
+                    this.rewriteTermsTopDown(opExpr.getRhs(), ruleApplicator)
+            );
+        } else if (newExpr instanceof GroupInvExpr) {
+            GroupInvExpr invExpr = (GroupInvExpr) newExpr;
+            return new GroupInvExpr(
+                    this.rewriteTermsTopDown(invExpr.getBase(), ruleApplicator)
+            );
+        } else if (newExpr instanceof GroupPowExpr) {
+            GroupPowExpr powExpr = (GroupPowExpr) newExpr;
+            return new GroupPowExpr(
+                    this.rewriteTermsTopDown(powExpr.getBase(), ruleApplicator), powExpr.getExponent()
+            );
+        } else if (newExpr instanceof GroupElementConstantExpr) {
+            return newExpr;
+        } else if (newExpr instanceof GroupEmptyExpr) {
+            return newExpr;
+        } else if (newExpr instanceof PairingExpr) {
+            PairingExpr pairingExpr = (PairingExpr) newExpr;
+            return new PairingExpr(
+                    pairingExpr.getMap(),
+                    this.rewriteTermsTopDown(pairingExpr.getLhs(), ruleApplicator),
+                    this.rewriteTermsTopDown(pairingExpr.getRhs(), ruleApplicator)
+            );
+        } else if (newExpr instanceof GroupVariableExpr) {
+            return newExpr;
+        } else {
+            throw new IllegalArgumentException("Found something in expression tree that" +
+                    "is not a proper expression.");
+        }
     }
 
     /**

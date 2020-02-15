@@ -1,5 +1,12 @@
 package de.upb.crypto.math.expressions.evaluator;
 
+import de.upb.crypto.math.expressions.evaluator.trs.ExpSwapRule;
+import de.upb.crypto.math.expressions.evaluator.trs.GroupExprRule;
+import de.upb.crypto.math.expressions.evaluator.trs.PairingGtExpRule;
+import de.upb.crypto.math.expressions.evaluator.trs.PowExpMulLeftRule;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -29,8 +36,23 @@ public class OptGroupElementExpressionEvaluatorConfig {
      */
     private int useWnafCostInversion;
 
+    /**
+     * Whether to pre-evaluate the expression as much as possible. E.g. for (g^2)^x, the g^2 will be evaluated.
+     */
     private boolean enablePrecomputeEvaluation;
+    /**
+     * Whether to already precompute and cache powers for later multiexponentiations.
+     */
     private boolean enablePrecomputeCaching;
+    /**
+     * Whether to rewrite expression for more efficient evaluation later.
+     */
+    private boolean enablePrecomputeRewriting;
+    /**
+     * List of rules used to rewrite expression terms. Order determines precedence when multiple rules are applicable.
+     * Rules more towards start of list are preferred.
+     */
+    private List<GroupExprRule> rewritingRules;
 
     public OptGroupElementExpressionEvaluatorConfig() {
         // TODO: best default values here? Could use even more finetuning
@@ -49,6 +71,12 @@ public class OptGroupElementExpressionEvaluatorConfig {
 
         enablePrecomputeCaching = true;
         enablePrecomputeEvaluation = true;
+        enablePrecomputeRewriting = true;
+
+        rewritingRules = new LinkedList<>();
+        rewritingRules.add(new PowExpMulLeftRule());
+        rewritingRules.add(new ExpSwapRule());
+        rewritingRules.add(new PairingGtExpRule());
 
         // For parallel evaluation of both sides of a pariring
         // In the case of expensive pairings such as the BN pairing, this
@@ -251,5 +279,21 @@ public class OptGroupElementExpressionEvaluatorConfig {
 
     public void setEnablePrecomputeCaching(boolean enablePrecomputeCaching) {
         this.enablePrecomputeCaching = enablePrecomputeCaching;
+    }
+
+    public boolean isEnablePrecomputeRewriting() {
+        return enablePrecomputeRewriting;
+    }
+
+    public void setEnablePrecomputeRewriting(boolean enablePrecomputeRewriting) {
+        this.enablePrecomputeRewriting = enablePrecomputeRewriting;
+    }
+
+    public List<GroupExprRule> getRewritingRules() {
+        return rewritingRules;
+    }
+
+    public void setRewritingRules(List<GroupExprRule> rewritingRules) {
+        this.rewritingRules = rewritingRules;
     }
 }

@@ -1,6 +1,10 @@
 package de.upb.crypto.math.expressions.evaluator;
 
 import de.upb.crypto.math.expressions.bool.BooleanExpression;
+import de.upb.crypto.math.expressions.evaluator.trs.ExpSwapRule;
+import de.upb.crypto.math.expressions.evaluator.trs.GroupExprRule;
+import de.upb.crypto.math.expressions.evaluator.trs.PairingGtExpRule;
+import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.interfaces.structures.*;
 
@@ -206,6 +210,12 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     @Override
     public GroupElementExpression precompute(GroupElementExpression expr) {
         GroupElementExpression newExpr = expr;
+        if (config.isEnablePrecomputeRewriting()) {
+            // Rewrite the expression to be more efficiently evaluatable and to make some more pre-evaluations possible
+            // note: we could also move rule applicator into config, then user can customize that.
+            newExpr = precomputer.rewriteTerms(newExpr, new RuleApplicator(config.getRewritingRules()));
+        }
+
         if (config.isEnablePrecomputeEvaluation()) {
             // Evaluate all expressions that do not contain variables to simplify expression as much as possible
             // For that we need to find expressions that do not contain variable first

@@ -37,7 +37,7 @@ public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
     @Override
     public ExponentExpr substitute(ValueBundle variableValues) {
         BigInteger result = variableValues.getInteger(name);
-        return result == null ? this : (ExponentExpr) result;
+        return result == null ? this : new ExponentConstantExpr(result);
     }
 
     @Override
