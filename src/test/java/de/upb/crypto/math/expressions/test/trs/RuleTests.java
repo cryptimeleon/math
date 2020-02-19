@@ -1,10 +1,7 @@
 package de.upb.crypto.math.expressions.test.trs;
 
 import de.upb.crypto.math.expressions.ValueBundle;
-import de.upb.crypto.math.expressions.evaluator.trs.ExpSwapRule;
-import de.upb.crypto.math.expressions.evaluator.trs.GroupExprRule;
-import de.upb.crypto.math.expressions.evaluator.trs.PairingGtExpRule;
-import de.upb.crypto.math.expressions.evaluator.trs.PowExpMulLeftRule;
+import de.upb.crypto.math.expressions.evaluator.trs.*;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentMulExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
@@ -96,8 +93,147 @@ public class RuleTests {
         GroupElementExpression newExpr = powExpMulLeftRule.apply(expr);
         assert newExpr instanceof GroupPowExpr;
         assert ((GroupPowExpr) newExpr).getBase() instanceof  GroupPowExpr;
+        assert ((GroupPowExpr) ((GroupPowExpr) newExpr).getBase()).getExponent().evaluate()
+                .equals(BigInteger.valueOf(2));
         ValueBundle valueBundle = new ValueBundle();
         valueBundle.put("x", BigInteger.valueOf(3));
         assert expr.substitute(valueBundle).evaluateNaive().equals(newExpr.substitute(valueBundle).evaluateNaive());
+    }
+
+    @Test
+    public void testPowExpMulRightRule() {
+        Zp zp = new Zp(BigInteger.valueOf(101));
+        Group unitGroup = zp.asUnitGroup();
+
+        GroupPowExpr expr = new GroupPowExpr(
+                new GroupElementConstantExpr(unitGroup.getUniformlyRandomNonNeutral()),
+                new ExponentMulExpr(
+                        new ExponentVariableExpr("x"),
+                        new ExponentConstantExpr(BigInteger.valueOf(2))
+                )
+        );
+        GroupExprRule powExpMulRightRule = new PowExpMulRightRule();
+        assert powExpMulRightRule.isApplicable(expr);
+
+        GroupElementExpression newExpr = powExpMulRightRule.apply(expr);
+        assert newExpr instanceof GroupPowExpr;
+        assert ((GroupPowExpr) newExpr).getBase() instanceof GroupPowExpr;
+        assert ((GroupPowExpr) ((GroupPowExpr) newExpr).getBase()).getExponent().evaluate()
+                .equals(BigInteger.valueOf(2));
+        ValueBundle valueBundle = new ValueBundle();
+        valueBundle.put("x", BigInteger.valueOf(3));
+        assert expr.substitute(valueBundle).evaluateNaive().equals(newExpr.substitute(valueBundle).evaluateNaive());
+    }
+
+    @Test
+    public void testOpInPowRuleAllVars() {
+        Zp zp = new Zp(BigInteger.valueOf(101));
+        Group unitGroup = zp.asUnitGroup();
+
+        // (g_1^x * g_2^y)^z
+        GroupPowExpr expr = new GroupPowExpr(
+                new GroupOpExpr(
+                        new GroupPowExpr(
+                                unitGroup.getUniformlyRandomNonNeutral().expr(),
+                                new ExponentVariableExpr("x")
+                        ),
+                        new GroupPowExpr(
+                                unitGroup.getUniformlyRandomNonNeutral().expr(),
+                                new ExponentVariableExpr("y")
+                        )
+                ),
+                new ExponentVariableExpr("z")
+        );
+
+        GroupExprRule opInPowRule = new OpInPowRule();
+        assert opInPowRule.isApplicable(expr);
+
+        // newExpr = (g_1^x)^z * (g_2^y)^z
+        GroupElementExpression newExpr = opInPowRule.apply(expr);
+        assert newExpr instanceof GroupOpExpr;
+        ValueBundle valueBundle = new ValueBundle();
+        valueBundle.put("x", BigInteger.valueOf(1));
+        valueBundle.put("y", BigInteger.valueOf(2));
+        valueBundle.put("z", BigInteger.valueOf(3));
+        assert expr.substitute(valueBundle).evaluateNaive().equals(newExpr.substitute(valueBundle).evaluateNaive());
+    }
+
+    @Test
+    public void testOpInPowRuleNoVarsInside() {
+        Zp zp = new Zp(BigInteger.valueOf(101));
+        Group unitGroup = zp.asUnitGroup();
+
+        // (g_1 * g_2^2)^z
+        GroupPowExpr expr = new GroupPowExpr(
+                new GroupOpExpr(
+                        new GroupPowExpr(
+                                unitGroup.getUniformlyRandomNonNeutral().expr(),
+                                new ExponentConstantExpr(BigInteger.valueOf(1))
+                        ),
+                        new GroupPowExpr(
+                                unitGroup.getUniformlyRandomNonNeutral().expr(),
+                                new ExponentConstantExpr(BigInteger.valueOf(2))
+                        )
+                ),
+                new ExponentVariableExpr("z")
+        );
+
+        GroupExprRule opInPowRule = new OpInPowRule();
+        assert !opInPowRule.isApplicable(expr);
+    }
+
+    @Test
+    public void testMergeNestedVarExpRule() {
+        Zp zp = new Zp(BigInteger.valueOf(101));
+        Group unitGroup = zp.asUnitGroup();
+
+        // (g^x)^y
+        GroupPowExpr expr = new GroupPowExpr(
+                new GroupPowExpr(
+                        unitGroup.getUniformlyRandomNonNeutral().expr(),
+                        new ExponentVariableExpr("x")
+                ),
+                new ExponentVariableExpr("y")
+        );
+
+        GroupExprRule mergeNestedVarExpRule = new MergeNestedVarExpRule();
+        assert mergeNestedVarExpRule.isApplicable(expr);
+
+        // newExpr = g^{x*y}
+        GroupElementExpression newExpr = mergeNestedVarExpRule.apply(expr);
+        assert newExpr instanceof GroupPowExpr;
+        GroupPowExpr powExpr = (GroupPowExpr) newExpr;
+        assert powExpr.getExponent() instanceof ExponentMulExpr;
+        assert powExpr.getBase() instanceof GroupElementConstantExpr;
+        ValueBundle valueBundle = new ValueBundle();
+        valueBundle.put("x", BigInteger.valueOf(1));
+        valueBundle.put("y", BigInteger.valueOf(2));
+        assert expr.substitute(valueBundle).evaluateNaive().equals(newExpr.substitute(valueBundle).evaluateNaive());
+    }
+
+    @Test
+    public void testMergeNestedConstExpRule() {
+        Zp zp = new Zp(BigInteger.valueOf(101));
+        Group unitGroup = zp.asUnitGroup();
+
+        // (g^2)^3
+        GroupPowExpr expr = new GroupPowExpr(
+                new GroupPowExpr(
+                        unitGroup.getUniformlyRandomNonNeutral().expr(),
+                        new ExponentConstantExpr(BigInteger.valueOf(2))
+                ),
+                new ExponentConstantExpr(BigInteger.valueOf(3))
+        );
+
+        GroupExprRule mergeNestedConstExpRule = new MergeNestedConstExpRule();
+        assert mergeNestedConstExpRule.isApplicable(expr);
+
+        // newExpr = g^{2*3}
+        GroupElementExpression newExpr = mergeNestedConstExpRule.apply(expr);
+        assert newExpr instanceof GroupPowExpr;
+        GroupPowExpr powExpr = (GroupPowExpr) newExpr;
+        assert powExpr.getExponent() instanceof ExponentMulExpr;
+        assert powExpr.getBase() instanceof GroupElementConstantExpr;
+        assert expr.evaluateNaive().equals(newExpr.evaluateNaive());
     }
 }

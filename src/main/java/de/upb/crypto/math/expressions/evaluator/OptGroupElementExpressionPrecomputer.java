@@ -36,6 +36,10 @@ public class OptGroupElementExpressionPrecomputer {
         return newExpr;
     }
 
+    public GroupElementExpression rewriteTerms(GroupElementExpression expr) {
+        return this.rewriteTerms(expr, new RuleApplicator(this.config.getRewritingRules()));
+    }
+
     public GroupElementExpression rewriteTermsTopDown(GroupElementExpression expr, RuleApplicator ruleApplicator) {
         // apply as many rules on this expr as possible, constructing a new expression
         // once all rules have been applied, apply this method recursively on its children

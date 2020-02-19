@@ -1,9 +1,7 @@
 package de.upb.crypto.math.expressions.evaluator;
 
-import de.upb.crypto.math.expressions.evaluator.trs.ExpSwapRule;
-import de.upb.crypto.math.expressions.evaluator.trs.GroupExprRule;
-import de.upb.crypto.math.expressions.evaluator.trs.PairingGtExpRule;
-import de.upb.crypto.math.expressions.evaluator.trs.PowExpMulLeftRule;
+import de.upb.crypto.math.expressions.evaluator.trs.*;
+import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -74,7 +72,11 @@ public class OptGroupElementExpressionEvaluatorConfig {
         enablePrecomputeRewriting = true;
 
         rewritingRules = new LinkedList<>();
+        rewritingRules.add(new OpInPowRule());
         rewritingRules.add(new PowExpMulLeftRule());
+        rewritingRules.add(new PowExpMulRightRule());
+        rewritingRules.add(new MergeNestedConstExpRule());
+        rewritingRules.add(new MergeNestedVarExpRule());
         rewritingRules.add(new ExpSwapRule());
         rewritingRules.add(new PairingGtExpRule());
 

@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.test;
 
 import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionPrecomputer;
 import de.upb.crypto.math.expressions.evaluator.trs.ExpSwapRule;
@@ -8,6 +9,7 @@ import de.upb.crypto.math.expressions.evaluator.trs.GroupExprRule;
 import de.upb.crypto.math.expressions.evaluator.trs.PairingGtExpRule;
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentMulExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.factory.BilinearGroup;
@@ -45,7 +47,7 @@ public class OptGroupElementExpressionPrecomputerTest {
     }
 
     @Test
-    public void testRewriteTermsMultiRules() {
+    public void testRewriteTermsPairingExpSwap() {
         BilinearGroupFactory fac = new BilinearGroupFactory(60);
         fac.setDebugMode(true);
         fac.setRequirements(BilinearGroup.Type.TYPE_3);
@@ -77,9 +79,42 @@ public class OptGroupElementExpressionPrecomputerTest {
     }
 
     @Test
+    public void testRewriteTermsExpOptimization() {
+        Zp zp = new Zp(BigInteger.valueOf(101));
+        Group unitGroup = zp.asUnitGroup();
+
+        // (g^{2*x})^{y*3}
+        GroupElementExpression expr = new GroupPowExpr(
+                new GroupPowExpr(
+                        unitGroup.getUniformlyRandomNonNeutral().expr(),
+                        new ExponentMulExpr(
+                                new ExponentConstantExpr(BigInteger.valueOf(2)),
+                                new ExponentVariableExpr("x")
+                        )
+                ),
+                new ExponentMulExpr(
+                        new ExponentVariableExpr("y"),
+                        new ExponentConstantExpr(BigInteger.valueOf(3))
+                )
+        );
+
+        GroupElementExpression newExpr = new OptGroupElementExpressionPrecomputer().rewriteTerms(expr);
+        assert newExpr instanceof GroupPowExpr;
+        GroupPowExpr powExpr1 = (GroupPowExpr) newExpr;
+        assert powExpr1.getBase() instanceof GroupPowExpr;
+        assert !ExponentExpressionAnalyzer.containsVariableExpr(((GroupPowExpr) powExpr1.getBase()).getExponent());
+        assert ExponentExpressionAnalyzer.containsVariableExpr(powExpr1.getExponent());
+        ValueBundle valueBundle = new ValueBundle();
+        valueBundle.put("x", BigInteger.valueOf(3));
+        valueBundle.put("y", BigInteger.valueOf(2));
+        assert expr.substitute(valueBundle).evaluateNaive().equals(newExpr.substitute(valueBundle).evaluateNaive());
+    }
+
+    @Test
     public void testVariableInBase() {
         Zp zp = new Zp(BigInteger.valueOf(101));
 
+        // x^e
         GroupElementExpression expr = new GroupPowExpr(
                 new GroupVariableExpr("x"),
                 new ExponentConstantExpr(zp.getUniformlyRandomElement())
