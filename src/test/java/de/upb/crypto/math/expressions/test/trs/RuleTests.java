@@ -41,6 +41,23 @@ public class RuleTests {
     }
 
     @Test
+    public void testPairingGtExpRuleDontMoveVar() {
+        BilinearGroupFactory fac = new BilinearGroupFactory(60);
+        fac.setDebugMode(true);
+        fac.setRequirements(BilinearGroup.Type.TYPE_3);
+        BilinearGroup group = fac.createBilinearGroup();
+        GroupPowExpr powExpr = new GroupPowExpr(
+                new PairingExpr(group.getBilinearMap(),
+                        new GroupElementConstantExpr(group.getG1().getUniformlyRandomNonNeutral()),
+                        new GroupElementConstantExpr(group.getG2().getUniformlyRandomNonNeutral())
+                ),
+                new ExponentVariableExpr("x")
+        );
+        GroupExprRule pairingRule = new PairingGtExpRule();
+        assert !pairingRule.isApplicable(powExpr);
+    }
+
+    @Test
     public void testExpSwapRuleSimple() {
         Zp zp = new Zp(BigInteger.valueOf(101));
         Group unitGroup = zp.asUnitGroup();

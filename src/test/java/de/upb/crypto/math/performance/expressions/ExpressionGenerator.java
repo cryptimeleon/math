@@ -1,6 +1,10 @@
 package de.upb.crypto.math.performance.expressions;
 
+import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
 import de.upb.crypto.math.expressions.group.PairingExpr;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
@@ -53,6 +57,7 @@ public class ExpressionGenerator {
     /**
      * Generate one pairing with contained multi-exponentiations on each side.
      * @param bilMap The bilinear map for the pairing.
+     * @return The constructed expression.
      */
     public static GroupElementExpression
     genPairingWithMultiExp(BilinearMap bilMap, int leftNumBases, int leftNumExponents,
@@ -64,5 +69,33 @@ public class ExpressionGenerator {
                 ExpressionGenerator
                         .genMultiExponentiation(bilMap.getG2(), rightNumBases, rightNumExponents)
         );
+    }
+
+    /**
+     * Generates a multi-exponentiation of the form e(g_1[1], g_2[1])^e_1 op e(g_1[2], g_2[2])^e_2 ...
+     * @param bilMap The bilinear map to use for the pairing.
+     * @param numPairings The number of pairings in the multi-exponentiation.
+     * @return The constructed expression.
+     */
+    public static GroupElementExpression genPairingWithMultiExpOutside(BilinearMap bilMap, int numPairings,
+                                                                       boolean useVarExponents) {
+        GroupElement[] g1Elements = new GroupElement[numPairings];
+        GroupElement[] g2Elements = new GroupElement[numPairings];
+        ExponentExpr[] exponents = new ExponentExpr[numPairings];
+        for (int i = 0; i < numPairings; ++i) {
+            g1Elements[i] = bilMap.getG1().getUniformlyRandomNonNeutral();
+            g2Elements[i] = bilMap.getG2().getUniformlyRandomNonNeutral();
+            if (useVarExponents) {
+                exponents[i] = new ExponentVariableExpr("x" + i);
+            } else {
+                exponents[i] = new ExponentConstantExpr(bilMap.getGT().getZn().getUniformlyRandomElement());
+            }
+        }
+        GroupElementExpression expr = new GroupEmptyExpr(bilMap.getGT());
+
+        for (int i = 0; i < numPairings; ++i) {
+            expr = expr.opPow(new PairingExpr(bilMap, g1Elements[i].expr(), g2Elements[i].expr()), exponents[i]);
+        }
+        return expr;
     }
 }

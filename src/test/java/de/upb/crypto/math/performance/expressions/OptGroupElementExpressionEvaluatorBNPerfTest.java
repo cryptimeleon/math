@@ -74,8 +74,6 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
         NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();
         manyExprResult = manyPerfTestExpr.evaluate(naiveEval);
         fewExprResult = fewPerfTestExpr.evaluate(naiveEval);
-
-
     }
 
     @Test

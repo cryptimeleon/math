@@ -83,7 +83,7 @@ public class OptGroupElementExpressionEvaluatorConfig {
         // seems to really only be worth it if the multi-exponentiation is very big,
         // and even then, the difference is not really noticable at all since the pairing
         // is so expensive.
-        enableMultithreadedPairingEvaluation = true;
+        enableMultithreadedPairingEvaluation = false;
     }
 
     /**

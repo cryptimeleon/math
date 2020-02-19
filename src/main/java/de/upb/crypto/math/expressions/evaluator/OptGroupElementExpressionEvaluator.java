@@ -220,9 +220,9 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             // Evaluate all expressions that do not contain variables to simplify expression as much as possible
             // For that we need to find expressions that do not contain variable first
             Map<GroupElementExpression, Boolean> exprToContainsVar = new HashMap<>();
-            precomputer.markExprWithVars(expr, exprToContainsVar);
+            precomputer.markExprWithVars(newExpr, exprToContainsVar);
             // Now we evaluate everything without variables and build a reduced new expression
-            newExpr = precomputer.evalWithoutVars(expr, exprToContainsVar);
+            newExpr = precomputer.evalWithoutVars(newExpr, exprToContainsVar);
         }
         if (config.isEnablePrecomputeCaching()) {
             // Find bases contained in the expression such that precomputations can be done for them

@@ -159,8 +159,8 @@ public class OptGroupElementExpressionPrecomputer {
                 PairingExpr pairingExpr = (PairingExpr) expr;
                 return new PairingExpr(
                         pairingExpr.getMap(),
-                        evalWithoutVars(pairingExpr.getRhs(), exprToContainsVar),
-                        evalWithoutVars(pairingExpr.getLhs(), exprToContainsVar)
+                        evalWithoutVars(pairingExpr.getLhs(), exprToContainsVar),
+                        evalWithoutVars(pairingExpr.getRhs(), exprToContainsVar)
                 );
             } else if (expr instanceof GroupVariableExpr) {
                 return expr;
@@ -250,6 +250,8 @@ public class OptGroupElementExpressionPrecomputer {
         // Find out which algorithm would be used with current settings and do precomputation
         // for that algorithm.
         List<GroupElement> rootBases = exprToContainedBases.get(expr);
+        if (rootBases == null || rootBases.size() == 0)
+            return;
         int rootNumBases = rootBases.size();
         int costOfInversion = rootBases.get(0).getStructure().estimateCostOfInvert();
         MultiExpAlgorithm alg = config.getCurrentlyChosenMultiExpAlgorithm(rootNumBases, costOfInversion);
