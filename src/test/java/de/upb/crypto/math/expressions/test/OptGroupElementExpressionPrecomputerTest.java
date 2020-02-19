@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.test;
 
 import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionPrecomputer;
 import de.upb.crypto.math.expressions.evaluator.trs.ExpSwapRule;
 import de.upb.crypto.math.expressions.evaluator.trs.GroupExprRule;
@@ -8,10 +9,7 @@ import de.upb.crypto.math.expressions.evaluator.trs.PairingGtExpRule;
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
-import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.expressions.group.GroupPowExpr;
-import de.upb.crypto.math.expressions.group.PairingExpr;
+import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.Group;
@@ -76,5 +74,16 @@ public class OptGroupElementExpressionPrecomputerTest {
         ValueBundle valueBundle = new ValueBundle();
         valueBundle.put("x", BigInteger.valueOf(3));
         assert expr.substitute(valueBundle).evaluateNaive().equals(newExpr.substitute(valueBundle).evaluateNaive());
+    }
+
+    @Test
+    public void testVariableInBase() {
+        Zp zp = new Zp(BigInteger.valueOf(101));
+
+        GroupElementExpression expr = new GroupPowExpr(
+                new GroupVariableExpr("x"),
+                new ExponentConstantExpr(zp.getUniformlyRandomElement())
+        );
+        GroupElementExpression newExpr = new OptGroupElementExpressionEvaluator().precompute(expr);
     }
 }

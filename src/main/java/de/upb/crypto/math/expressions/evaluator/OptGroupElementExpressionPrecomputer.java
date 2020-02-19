@@ -9,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer.containsVariableExpr;
-
 public class OptGroupElementExpressionPrecomputer {
 
     private OptGroupElementExpressionEvaluatorConfig config;
@@ -104,7 +102,8 @@ public class OptGroupElementExpressionPrecomputer {
             GroupPowExpr powExpr = (GroupPowExpr) expr;
             markExprWithVars(powExpr.getBase(), exprToContainsVar);
             exprToContainsVar.put(
-                    powExpr, exprToContainsVar.get(powExpr.getBase()) || containsVariableExpr(powExpr.getExponent())
+                    powExpr, exprToContainsVar.get(powExpr.getBase())
+                            || ExponentExpressionAnalyzer.containsVariableExpr(powExpr.getExponent())
             );
         } else if (expr instanceof GroupElementConstantExpr) {
             exprToContainsVar.put(expr, false);
@@ -219,7 +218,8 @@ public class OptGroupElementExpressionPrecomputer {
             List<GroupElement> containedBases = exprToContBases.computeIfAbsent(powExpr, k -> new LinkedList<>());
             // change this if we change multiexp algorithm to be smarter
             // if variable in there we cannot precompute easily
-            containedBases.add(powExpr.getBase().evaluateNaive());
+            if (!GroupElementExpressionAnalyzer.containsVariableExpr(powExpr.getBase()))
+                containedBases.add(powExpr.getBase().evaluateNaive());
         } else if (expr instanceof GroupElementConstantExpr) {
             // count this as basis too for now since multiexp does it too
             List<GroupElement> containedBases = exprToContBases.computeIfAbsent(expr, k -> new LinkedList<>());
