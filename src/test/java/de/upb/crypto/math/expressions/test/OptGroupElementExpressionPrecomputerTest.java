@@ -69,7 +69,10 @@ public class OptGroupElementExpressionPrecomputerTest {
         rules.add(new PairingGtExpRule());
         GroupElementExpression newExpr = new OptGroupElementExpressionPrecomputer()
                 .rewriteTerms(expr, new RuleApplicator(rules));
-        assert newExpr instanceof PairingExpr;
+        assert newExpr instanceof GroupPowExpr;
+        GroupPowExpr powExpr = (GroupPowExpr) newExpr;
+        assert powExpr.getExponent().getVariables().contains("x");
+        assert powExpr.getBase() instanceof  PairingExpr;
         ValueBundle valueBundle = new ValueBundle();
         valueBundle.put("x", BigInteger.valueOf(3));
         assert expr.substitute(valueBundle).evaluateNaive().equals(newExpr.substitute(valueBundle).evaluateNaive());
