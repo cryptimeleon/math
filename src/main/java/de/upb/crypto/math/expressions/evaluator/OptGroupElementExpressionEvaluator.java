@@ -1,9 +1,6 @@
 package de.upb.crypto.math.expressions.evaluator;
 
 import de.upb.crypto.math.expressions.bool.BooleanExpression;
-import de.upb.crypto.math.expressions.evaluator.trs.ExpSwapRule;
-import de.upb.crypto.math.expressions.evaluator.trs.GroupExprRule;
-import de.upb.crypto.math.expressions.evaluator.trs.PairingGtExpRule;
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.interfaces.structures.*;
@@ -204,7 +201,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     @Override
     public GroupElementExpression optimize(GroupElementExpression expr) {
-        return expr;
+        return precompute(expr);
     }
 
     @Override
@@ -213,7 +210,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         if (config.isEnablePrecomputeRewriting()) {
             // Rewrite the expression to be more efficiently evaluatable and to make some more pre-evaluations possible
             // note: we could also move rule applicator into config, then user can customize that.
-            newExpr = precomputer.rewriteTerms(newExpr, new RuleApplicator(config.getRewritingRules()));
+            newExpr = precomputer.rewriteTerms(newExpr, new RuleApplicator(config.getGroupRewritingRules()));
         }
 
         if (config.isEnablePrecomputeEvaluation()) {

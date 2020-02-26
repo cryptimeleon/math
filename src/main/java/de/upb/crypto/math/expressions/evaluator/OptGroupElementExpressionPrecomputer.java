@@ -37,14 +37,14 @@ public class OptGroupElementExpressionPrecomputer {
     }
 
     public GroupElementExpression rewriteTerms(GroupElementExpression expr) {
-        return this.rewriteTerms(expr, new RuleApplicator(this.config.getRewritingRules()));
+        return this.rewriteTerms(expr, new RuleApplicator(this.config.getGroupRewritingRules()));
     }
 
     public GroupElementExpression rewriteTermsTopDown(GroupElementExpression expr, RuleApplicator ruleApplicator) {
         // apply as many rules on this expr as possible, constructing a new expression
         // once all rules have been applied, apply this method recursively on its children
         // also need to make sure rule application terminates, so use appropriate rules without infinite derivation
-        GroupElementExpression newExpr = ruleApplicator.applyAllRules(expr);
+        GroupElementExpression newExpr = (GroupElementExpression) ruleApplicator.applyAllRules(expr);
         // now do recursive step, keep in mind this does not work for rules that could be applied multiple times
         // bottom up such as moving exponents into pairing, but that is what the parent method is for.
         if (newExpr instanceof GroupOpExpr) {

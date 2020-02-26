@@ -1,6 +1,8 @@
-package de.upb.crypto.math.expressions.evaluator.trs;
+package de.upb.crypto.math.expressions.evaluator.trs.group;
 
+import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.evaluator.GroupElementExpressionAnalyzer;
+import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.GroupOpExpr;
 import de.upb.crypto.math.expressions.group.GroupPowExpr;
@@ -11,9 +13,9 @@ import de.upb.crypto.math.expressions.group.GroupPowExpr;
  * this rewriting does not make sense as the inner one can be precomputed. Hence, the rule
  * is skipped in that case.
  */
-public class OpInPowRule implements GroupExprRule {
+public class OpInPowRule implements ExprRule {
     @Override
-    public boolean isApplicable(GroupElementExpression expr) {
+    public boolean isApplicable(Expression expr) {
         if (!(expr instanceof GroupPowExpr))
             return false;
 
@@ -30,7 +32,7 @@ public class OpInPowRule implements GroupExprRule {
     }
 
     @Override
-    public GroupElementExpression apply(GroupElementExpression expr) {
+    public Expression apply(Expression expr) {
         GroupPowExpr powExpr = (GroupPowExpr) expr;
         GroupOpExpr opExpr = (GroupOpExpr) powExpr.getBase();
         return new GroupOpExpr(

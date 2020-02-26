@@ -1,7 +1,8 @@
 package de.upb.crypto.math.expressions.test.trs;
 
 import de.upb.crypto.math.expressions.ValueBundle;
-import de.upb.crypto.math.expressions.evaluator.trs.*;
+import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
+import de.upb.crypto.math.expressions.evaluator.trs.group.*;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentMulExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
@@ -29,10 +30,10 @@ public class RuleTests {
                 ),
                 new ExponentConstantExpr(BigInteger.valueOf(2))
         );
-        GroupExprRule pairingRule = new PairingGtExpRule();
+        ExprRule pairingRule = new PairingGtExpRule();
         assert pairingRule.isApplicable(powExpr);
 
-        GroupElementExpression newExpr = pairingRule.apply(powExpr);
+        GroupElementExpression newExpr = (GroupElementExpression) pairingRule.apply(powExpr);
         assert newExpr instanceof PairingExpr;
         assert powExpr.evaluateNaive().equals(newExpr.evaluateNaive());
     }
@@ -50,7 +51,7 @@ public class RuleTests {
                 ),
                 new ExponentVariableExpr("x")
         );
-        GroupExprRule pairingRule = new PairingGtExpRule();
+        ExprRule pairingRule = new PairingGtExpRule();
         assert !pairingRule.isApplicable(powExpr);
     }
 
@@ -65,10 +66,10 @@ public class RuleTests {
                         new ExponentVariableExpr("x")),
                 new ExponentConstantExpr(BigInteger.valueOf(2))
         );
-        GroupExprRule expSwapRule = new ExpSwapRule();
+        ExprRule expSwapRule = new ExpSwapRule();
         assert expSwapRule.isApplicable(expr);
 
-        GroupElementExpression newExpr = expSwapRule.apply(expr);
+        GroupElementExpression newExpr = (GroupElementExpression) expSwapRule.apply(expr);
         assert newExpr instanceof GroupPowExpr;
         ValueBundle valueBundle = new ValueBundle();
         valueBundle.put("x", BigInteger.valueOf(3));
@@ -87,10 +88,10 @@ public class RuleTests {
                         new ExponentVariableExpr("x")
                 )
         );
-        GroupExprRule powExpMulLeftRule = new PowExpMulLeftRule();
+        ExprRule powExpMulLeftRule = new PowExpMulLeftRule();
         assert powExpMulLeftRule.isApplicable(expr);
 
-        GroupElementExpression newExpr = powExpMulLeftRule.apply(expr);
+        GroupElementExpression newExpr = (GroupElementExpression) powExpMulLeftRule.apply(expr);
         assert newExpr instanceof GroupPowExpr;
         assert ((GroupPowExpr) newExpr).getBase() instanceof  GroupPowExpr;
         assert ((GroupPowExpr) ((GroupPowExpr) newExpr).getBase()).getExponent().evaluate()
@@ -112,10 +113,10 @@ public class RuleTests {
                         new ExponentConstantExpr(BigInteger.valueOf(2))
                 )
         );
-        GroupExprRule powExpMulRightRule = new PowExpMulRightRule();
+        ExprRule powExpMulRightRule = new PowExpMulRightRule();
         assert powExpMulRightRule.isApplicable(expr);
 
-        GroupElementExpression newExpr = powExpMulRightRule.apply(expr);
+        GroupElementExpression newExpr = (GroupElementExpression) powExpMulRightRule.apply(expr);
         assert newExpr instanceof GroupPowExpr;
         assert ((GroupPowExpr) newExpr).getBase() instanceof GroupPowExpr;
         assert ((GroupPowExpr) ((GroupPowExpr) newExpr).getBase()).getExponent().evaluate()
@@ -145,11 +146,11 @@ public class RuleTests {
                 new ExponentVariableExpr("z")
         );
 
-        GroupExprRule opInPowRule = new OpInPowRule();
+        ExprRule opInPowRule = new OpInPowRule();
         assert opInPowRule.isApplicable(expr);
 
         // newExpr = (g_1^x)^z * (g_2^y)^z
-        GroupElementExpression newExpr = opInPowRule.apply(expr);
+        GroupElementExpression newExpr = (GroupElementExpression) opInPowRule.apply(expr);
         assert newExpr instanceof GroupOpExpr;
         ValueBundle valueBundle = new ValueBundle();
         valueBundle.put("x", BigInteger.valueOf(1));
@@ -178,7 +179,7 @@ public class RuleTests {
                 new ExponentVariableExpr("z")
         );
 
-        GroupExprRule opInPowRule = new OpInPowRule();
+        ExprRule opInPowRule = new OpInPowRule();
         assert !opInPowRule.isApplicable(expr);
     }
 
@@ -196,11 +197,11 @@ public class RuleTests {
                 new ExponentVariableExpr("y")
         );
 
-        GroupExprRule mergeNestedVarExpRule = new MergeNestedVarExpRule();
+        ExprRule mergeNestedVarExpRule = new MergeNestedVarExpRule();
         assert mergeNestedVarExpRule.isApplicable(expr);
 
         // newExpr = g^{x*y}
-        GroupElementExpression newExpr = mergeNestedVarExpRule.apply(expr);
+        GroupElementExpression newExpr = (GroupElementExpression) mergeNestedVarExpRule.apply(expr);
         assert newExpr instanceof GroupPowExpr;
         GroupPowExpr powExpr = (GroupPowExpr) newExpr;
         assert powExpr.getExponent() instanceof ExponentMulExpr;
@@ -225,11 +226,11 @@ public class RuleTests {
                 new ExponentConstantExpr(BigInteger.valueOf(3))
         );
 
-        GroupExprRule mergeNestedConstExpRule = new MergeNestedConstExpRule();
+        ExprRule mergeNestedConstExpRule = new MergeNestedConstExpRule();
         assert mergeNestedConstExpRule.isApplicable(expr);
 
         // newExpr = g^{2*3}
-        GroupElementExpression newExpr = mergeNestedConstExpRule.apply(expr);
+        GroupElementExpression newExpr = (GroupElementExpression) mergeNestedConstExpRule.apply(expr);
         assert newExpr instanceof GroupPowExpr;
         GroupPowExpr powExpr = (GroupPowExpr) newExpr;
         assert powExpr.getExponent() instanceof ExponentMulExpr;

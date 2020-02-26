@@ -1,12 +1,10 @@
 package de.upb.crypto.math.expressions.evaluator;
 
 import de.upb.crypto.math.expressions.evaluator.trs.*;
-import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
+import de.upb.crypto.math.expressions.evaluator.trs.group.*;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Class containing configuration of {@link OptGroupElementExpressionEvaluator}.
@@ -50,7 +48,7 @@ public class OptGroupElementExpressionEvaluatorConfig {
      * List of rules used to rewrite expression terms. Order determines precedence when multiple rules are applicable.
      * Rules more towards start of list are preferred.
      */
-    private List<GroupExprRule> rewritingRules;
+    private List<ExprRule> groupRewritingRules;
 
     public OptGroupElementExpressionEvaluatorConfig() {
         // TODO: best default values here? Could use even more finetuning
@@ -71,14 +69,14 @@ public class OptGroupElementExpressionEvaluatorConfig {
         enablePrecomputeEvaluation = true;
         enablePrecomputeRewriting = true;
 
-        rewritingRules = new LinkedList<>();
-        rewritingRules.add(new OpInPowRule());
-        rewritingRules.add(new PowExpMulLeftRule());
-        rewritingRules.add(new PowExpMulRightRule());
-        rewritingRules.add(new MergeNestedConstExpRule());
-        rewritingRules.add(new MergeNestedVarExpRule());
-        rewritingRules.add(new ExpSwapRule());
-        rewritingRules.add(new PairingGtExpRule());
+        groupRewritingRules = new LinkedList<>();
+        groupRewritingRules.add(new OpInPowRule());
+        groupRewritingRules.add(new PowExpMulLeftRule());
+        groupRewritingRules.add(new PowExpMulRightRule());
+        groupRewritingRules.add(new MergeNestedConstExpRule());
+        groupRewritingRules.add(new MergeNestedVarExpRule());
+        groupRewritingRules.add(new ExpSwapRule());
+        groupRewritingRules.add(new PairingGtExpRule());
 
         // For parallel evaluation of both sides of a pariring
         // In the case of expensive pairings such as the BN pairing, this
@@ -291,11 +289,11 @@ public class OptGroupElementExpressionEvaluatorConfig {
         this.enablePrecomputeRewriting = enablePrecomputeRewriting;
     }
 
-    public List<GroupExprRule> getRewritingRules() {
-        return rewritingRules;
+    public List<ExprRule> getGroupRewritingRules() {
+        return groupRewritingRules;
     }
 
-    public void setRewritingRules(List<GroupExprRule> rewritingRules) {
-        this.rewritingRules = rewritingRules;
+    public void setGroupRewritingRules(List<ExprRule> groupRewritingRules) {
+        this.groupRewritingRules = groupRewritingRules;
     }
 }

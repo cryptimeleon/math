@@ -4,9 +4,9 @@ import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionPrecomputer;
-import de.upb.crypto.math.expressions.evaluator.trs.ExpSwapRule;
-import de.upb.crypto.math.expressions.evaluator.trs.GroupExprRule;
-import de.upb.crypto.math.expressions.evaluator.trs.PairingGtExpRule;
+import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
+import de.upb.crypto.math.expressions.evaluator.trs.group.ExpSwapRule;
+import de.upb.crypto.math.expressions.evaluator.trs.group.PairingGtExpRule;
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentMulExpr;
@@ -36,7 +36,7 @@ public class OptGroupElementExpressionPrecomputerTest {
                 new ExponentConstantExpr(BigInteger.valueOf(2))
         );
 
-        List<GroupExprRule> rules = new LinkedList<>();
+        List<ExprRule> rules = new LinkedList<>();
         rules.add(new ExpSwapRule());
         rules.add(new PairingGtExpRule());
         GroupElementExpression newExpr = new OptGroupElementExpressionPrecomputer()
@@ -64,7 +64,7 @@ public class OptGroupElementExpressionPrecomputerTest {
                 new ExponentConstantExpr(BigInteger.valueOf(2))
         );
 
-        List<GroupExprRule> rules = new LinkedList<>();
+        List<ExprRule> rules = new LinkedList<>();
         rules.add(new ExpSwapRule());
         rules.add(new PairingGtExpRule());
         GroupElementExpression newExpr = new OptGroupElementExpressionPrecomputer()

@@ -1,5 +1,7 @@
-package de.upb.crypto.math.expressions.evaluator.trs;
+package de.upb.crypto.math.expressions.evaluator.trs.group;
 
+import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.GroupOpExpr;
 import de.upb.crypto.math.expressions.group.GroupPowExpr;
@@ -9,9 +11,9 @@ import de.upb.crypto.math.expressions.group.GroupPowExpr;
  *
  * TODO: WIP. Not yet clear how to compare exponents for equality if they contain a variable.
  */
-public class MergeSameExpRule implements GroupExprRule {
+public class MergeSameExpRule implements ExprRule {
     @Override
-    public boolean isApplicable(GroupElementExpression expr) {
+    public boolean isApplicable(Expression expr) {
         if (!(expr instanceof GroupOpExpr))
             return false;
 
@@ -24,7 +26,7 @@ public class MergeSameExpRule implements GroupExprRule {
     }
 
     @Override
-    public GroupElementExpression apply(GroupElementExpression expr) {
+    public Expression apply(Expression expr) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 }
