@@ -102,8 +102,10 @@ public class OptGroupElementExpressionPrecomputerTest {
         assert newExpr instanceof GroupPowExpr;
         GroupPowExpr powExpr1 = (GroupPowExpr) newExpr;
         assert powExpr1.getBase() instanceof GroupPowExpr;
-        assert !ExponentExpressionAnalyzer.containsVariableExpr(((GroupPowExpr) powExpr1.getBase()).getExponent());
-        assert ExponentExpressionAnalyzer.containsVariableExpr(powExpr1.getExponent());
+        assert !ExponentExpressionAnalyzer.containsTypeExpr(((GroupPowExpr) powExpr1.getBase()).getExponent(),
+                ExponentVariableExpr.class);
+        assert ExponentExpressionAnalyzer.containsTypeExpr(powExpr1.getExponent(),
+                ExponentVariableExpr.class);
         ValueBundle valueBundle = new ValueBundle();
         valueBundle.put("x", BigInteger.valueOf(3));
         valueBundle.put("y", BigInteger.valueOf(2));

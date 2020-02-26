@@ -3,9 +3,10 @@ package de.upb.crypto.math.expressions.evaluator.trs.group;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.evaluator.GroupElementExpressionAnalyzer;
 import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupOpExpr;
 import de.upb.crypto.math.expressions.group.GroupPowExpr;
+import de.upb.crypto.math.expressions.group.GroupVariableExpr;
 
 /**
  * Rewrites (g_1^x * g_2^y)^z as (g_1^x)^z * (g_2^y)^z.
@@ -27,8 +28,10 @@ public class OpInPowRule implements ExprRule {
         // Now check that the inner exponentiations contain atleast one variable, else
         // moving the outer exponent does not make sense as the inner op can be pre-evaluated.
         GroupOpExpr opExpr = (GroupOpExpr) powExpr.getBase();
-        return GroupElementExpressionAnalyzer.containsVariableExpr(opExpr.getLhs())
-                || GroupElementExpressionAnalyzer.containsVariableExpr(opExpr.getRhs());
+        return GroupElementExpressionAnalyzer.containsTypeExpr(opExpr.getLhs(), GroupVariableExpr.class,
+                ExponentVariableExpr.class)
+                || GroupElementExpressionAnalyzer.containsTypeExpr(opExpr.getRhs(), GroupVariableExpr.class,
+                ExponentVariableExpr.class);
     }
 
     @Override

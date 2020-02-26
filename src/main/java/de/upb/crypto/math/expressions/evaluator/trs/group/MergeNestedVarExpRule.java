@@ -3,10 +3,10 @@ package de.upb.crypto.math.expressions.evaluator.trs.group;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
 import de.upb.crypto.math.expressions.exponent.ExponentMulExpr;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupPowExpr;
 
-import static de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer.containsVariableExpr;
+import static de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer.containsTypeExpr;
 
 /**
  * Rewrites (g^x)^y as g^{x*y}.
@@ -23,7 +23,8 @@ public class MergeNestedVarExpRule implements ExprRule {
             return false;
 
         GroupPowExpr powExpr2 = (GroupPowExpr) powExpr1.getBase();
-        return containsVariableExpr(powExpr1.getExponent()) && containsVariableExpr(powExpr2.getExponent());
+        return containsTypeExpr(powExpr1.getExponent(), ExponentVariableExpr.class)
+                && containsTypeExpr(powExpr2.getExponent(), ExponentVariableExpr.class);
     }
 
     @Override

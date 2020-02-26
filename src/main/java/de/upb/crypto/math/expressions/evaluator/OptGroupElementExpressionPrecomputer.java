@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.evaluator;
 
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
+import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
@@ -107,7 +108,7 @@ public class OptGroupElementExpressionPrecomputer {
             markExprWithVars(powExpr.getBase(), exprToContainsVar);
             exprToContainsVar.put(
                     powExpr, exprToContainsVar.get(powExpr.getBase())
-                            || ExponentExpressionAnalyzer.containsVariableExpr(powExpr.getExponent())
+                            || ExponentExpressionAnalyzer.containsTypeExpr(powExpr.getExponent(), ExponentVariableExpr.class)
             );
         } else if (expr instanceof GroupElementConstantExpr) {
             exprToContainsVar.put(expr, false);
@@ -222,7 +223,8 @@ public class OptGroupElementExpressionPrecomputer {
             List<GroupElement> containedBases = exprToContBases.computeIfAbsent(powExpr, k -> new LinkedList<>());
             // change this if we change multiexp algorithm to be smarter
             // if variable in there we cannot precompute easily
-            if (!GroupElementExpressionAnalyzer.containsVariableExpr(powExpr.getBase()))
+            if (!GroupElementExpressionAnalyzer.containsTypeExpr(powExpr.getBase(), GroupVariableExpr.class,
+                    ExponentVariableExpr.class))
                 containedBases.add(powExpr.getBase().evaluateNaive());
         } else if (expr instanceof GroupElementConstantExpr) {
             // count this as basis too for now since multiexp does it too

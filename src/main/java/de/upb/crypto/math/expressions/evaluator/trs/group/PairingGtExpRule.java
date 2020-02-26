@@ -2,11 +2,11 @@ package de.upb.crypto.math.expressions.evaluator.trs.group;
 
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupPowExpr;
 import de.upb.crypto.math.expressions.group.PairingExpr;
 
-import static de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer.containsVariableExpr;
+import static de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer.containsTypeExpr;
 
 /**
  * Rule that moves the exponent from an exponentiation with a pairing as its base to group 1 of the pairing,
@@ -22,7 +22,8 @@ public class PairingGtExpRule implements ExprRule {
 
         GroupPowExpr powExpr = (GroupPowExpr) expr;
 
-        return powExpr.getBase() instanceof PairingExpr && !containsVariableExpr(powExpr.getExponent());
+        return powExpr.getBase() instanceof PairingExpr
+                && !containsTypeExpr(powExpr.getExponent(), ExponentVariableExpr.class);
     }
 
     @Override

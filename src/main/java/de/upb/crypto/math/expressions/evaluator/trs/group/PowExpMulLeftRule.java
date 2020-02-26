@@ -3,10 +3,10 @@ package de.upb.crypto.math.expressions.evaluator.trs.group;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
 import de.upb.crypto.math.expressions.exponent.ExponentMulExpr;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupPowExpr;
 
-import static de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer.containsVariableExpr;
+import static de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer.containsTypeExpr;
 
 /**
  * Rewrites something like g^{2x} to (g^2)^x. Then the pre-evaluator can evaluate g^2 already during precomputation.
@@ -24,7 +24,8 @@ public class PowExpMulLeftRule implements ExprRule {
         if (!(powExpr.getExponent() instanceof ExponentMulExpr))
             return false;
         ExponentMulExpr mulExpr = (ExponentMulExpr) powExpr.getExponent();
-        return !containsVariableExpr(mulExpr.getLhs()) && containsVariableExpr(mulExpr.getRhs());
+        return !containsTypeExpr(mulExpr.getLhs(), ExponentVariableExpr.class)
+                && containsTypeExpr(mulExpr.getRhs(), ExponentVariableExpr.class);
     }
 
     @Override
