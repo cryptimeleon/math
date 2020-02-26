@@ -13,12 +13,17 @@ import java.util.HashMap;
  * A key-value mapping used for passing around named algebraic values.
  */
 public class ValueBundle {
-    protected HashMap<String, GroupElement> groupElems = new HashMap<>();
-    protected HashMap<String, BigInteger> ints = new HashMap<>();
-    protected HashMap<String, RingElement> ringElems = new HashMap<>();
+    protected HashMap<String, GroupElement> groupElems;
+    protected HashMap<String, BigInteger> ints;
+    protected HashMap<String, RingElement> ringElems;
+    protected HashMap<String, Boolean> bools;
     //protected HashMap<String, ValueList> lists = new HashMap<>(); //Not yet implemented
 
     public ValueBundle() {
+        groupElems = new HashMap<>();
+        ints = new HashMap<>();
+        ringElems = new HashMap<>();
+        bools = new HashMap<>();
     }
 
     /**
@@ -28,6 +33,7 @@ public class ValueBundle {
         groupElems.putAll(other.groupElems);
         ints.putAll(other.ints);
         ringElems.putAll(other.ringElems);
+        bools.putAll(other.bools);
     }
 
     public ValueBundle copy() {
@@ -50,6 +56,8 @@ public class ValueBundle {
         return (Zp.ZpElement) ringElems.get(key);
     }
 
+    public Boolean getBoolean(String key) { return bools.get(key); }
+
     public BigInteger getInteger(String key) {
         if (ints.containsKey(key))
             return ints.get(key);
@@ -67,17 +75,27 @@ public class ValueBundle {
         groupElems.put(key, value);
         ints.remove(key); //enforce unique keys between the types
         ringElems.remove(key);
+        bools.remove(key);
     }
 
     public void put(String key, RingElement value) {
         ringElems.put(key, value);
         ints.remove(key); //enforce unique keys between the types
         groupElems.remove(key);
+        bools.remove(key);
     }
 
     public void put(String key, BigInteger value) {
         ints.put(key, value);
         groupElems.remove(key); //enforce unique keys between the types
         ringElems.remove(key);
+        bools.remove(key);
+    }
+
+    public void put(String key, boolean value) {
+        bools.put(key, value);
+        groupElems.remove(key); //enforce unique keys between the types
+        ringElems.remove(key);
+        ints.remove(key);
     }
 }

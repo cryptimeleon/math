@@ -33,6 +33,12 @@ public class BoolVariableExpr implements VariableExpression, BooleanExpression {
     }
 
     @Override
+    public BooleanExpression substitute(ValueBundle variableValues) {
+        Boolean result = variableValues.getBoolean(name);
+        return result == null ? this : new BoolConstantExpr(result);
+    }
+
+    @Override
     public BooleanExpression precompute() {
         return this;
     }

@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.ValueBundle;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -22,6 +23,11 @@ public class BoolAndExpr implements BooleanExpression {
     @Override
     public BoolAndExpr substitute(Function<String, Expression> substitutionMap) {
         return new BoolAndExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
+    }
+
+    @Override
+    public BooleanExpression substitute(ValueBundle variableValues) {
+        return new BoolAndExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }
 
     @Override

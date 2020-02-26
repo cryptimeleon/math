@@ -21,9 +21,7 @@ public interface BooleanExpression extends Expression {
     BooleanExpression substitute(Function<String, Expression> substitutionMap);
 
     @Override
-    default BooleanExpression substitute(ValueBundle variableValues) {
-        return this; //TODO support substitution by adding bools into VariableBundle and removing this default implementation.
-    }
+    BooleanExpression substitute(ValueBundle variableValues);
 
     @Override
     BooleanExpression precompute();
