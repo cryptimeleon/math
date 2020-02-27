@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.evaluator;
 
 import de.upb.crypto.math.expressions.evaluator.trs.*;
+import de.upb.crypto.math.expressions.evaluator.trs.bool.MoveEqTestToLeftSideRule;
 import de.upb.crypto.math.expressions.evaluator.trs.group.*;
 
 import java.util.LinkedList;
@@ -45,10 +46,16 @@ public class OptGroupElementExpressionEvaluatorConfig {
      */
     private boolean enablePrecomputeRewriting;
     /**
+     * Whether to merge ANDs of GroupEqualtiyExprs into one Multiexponentiation. Is a probabilistic test (but with
+     * negligible failure probability if the group has prime order).
+     */
+    private boolean enablePrecomputeProbabilisticANDMerging;
+    /**
      * List of rules used to rewrite expression terms. Order determines precedence when multiple rules are applicable.
      * Rules more towards start of list are preferred.
      */
     private List<ExprRule> groupRewritingRules;
+    private List<ExprRule> boolRewritingRules;
 
     public OptGroupElementExpressionEvaluatorConfig() {
         // TODO: best default values here? Could use even more finetuning
@@ -68,6 +75,7 @@ public class OptGroupElementExpressionEvaluatorConfig {
         enablePrecomputeCaching = true;
         enablePrecomputeEvaluation = true;
         enablePrecomputeRewriting = true;
+        enablePrecomputeProbabilisticANDMerging = true;
 
         groupRewritingRules = new LinkedList<>();
         groupRewritingRules.add(new OpInPowRule());
@@ -79,6 +87,9 @@ public class OptGroupElementExpressionEvaluatorConfig {
         groupRewritingRules.add(new PairingMoveLeftVarsOutsideRule());
         groupRewritingRules.add(new PairingMoveRightVarsOutsideRule());
         groupRewritingRules.add(new PairingGtExpRule());
+
+        boolRewritingRules = new LinkedList<>();
+        boolRewritingRules.add(new MoveEqTestToLeftSideRule());
 
         // For parallel evaluation of both sides of a pairing
         // In the case of expensive pairings such as the BN pairing, this
@@ -291,11 +302,27 @@ public class OptGroupElementExpressionEvaluatorConfig {
         this.enablePrecomputeRewriting = enablePrecomputeRewriting;
     }
 
+    public boolean isEnablePrecomputeProbabilisticANDMerging() {
+        return enablePrecomputeProbabilisticANDMerging;
+    }
+
+    public void setEnablePrecomputeProbabilisticANDMerging(boolean enablePrecomputeProbabilisticANDMerging) {
+        this.enablePrecomputeProbabilisticANDMerging = enablePrecomputeProbabilisticANDMerging;
+    }
+
     public List<ExprRule> getGroupRewritingRules() {
         return groupRewritingRules;
     }
 
     public void setGroupRewritingRules(List<ExprRule> groupRewritingRules) {
         this.groupRewritingRules = groupRewritingRules;
+    }
+
+    public List<ExprRule> getBoolRewritingRules() {
+        return boolRewritingRules;
+    }
+
+    public void setBoolRewritingRules(List<ExprRule> boolRewritingRules) {
+        this.boolRewritingRules = boolRewritingRules;
     }
 }

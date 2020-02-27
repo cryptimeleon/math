@@ -41,4 +41,12 @@ public class BoolOrExpr implements BooleanExpression {
         lhs.treeWalk(visitor);
         rhs.treeWalk(visitor);
     }
+
+    public BooleanExpression getLhs() {
+        return lhs;
+    }
+
+    public BooleanExpression getRhs() {
+        return rhs;
+    }
 }

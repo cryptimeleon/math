@@ -1,9 +1,7 @@
 package de.upb.crypto.math.expressions.test.trs;
 
 import de.upb.crypto.math.expressions.ValueBundle;
-import de.upb.crypto.math.expressions.bool.GroupEqualityExpr;
 import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
-import de.upb.crypto.math.expressions.evaluator.trs.bool.MoveEqTestToOneSideRule;
 import de.upb.crypto.math.expressions.evaluator.trs.group.*;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentMulExpr;
@@ -12,7 +10,6 @@ import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.Group;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
 

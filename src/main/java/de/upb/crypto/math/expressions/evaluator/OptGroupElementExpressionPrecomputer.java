@@ -1,14 +1,22 @@
 package de.upb.crypto.math.expressions.evaluator;
 
+import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.bool.*;
+import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
+import de.upb.crypto.math.expressions.evaluator.trs.bool.MoveEqTestToLeftSideRule;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.*;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
+import de.upb.crypto.math.structures.zn.Zn;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class OptGroupElementExpressionPrecomputer {
 
@@ -26,22 +34,51 @@ public class OptGroupElementExpressionPrecomputer {
      * Tries to fix the problem of not being able to traverse the expression tree back up by just rewriting
      * terms until the expression that comes out is not different anymore.
      * @param expr The expression to rewrite.
-     * @param ruleApplicator Contains the rules to apply and how to apply them.
+     * @param boolRuleApplicator Contains the rules to apply to boolean expressions and how to apply them.
+     * @param groupRuleApplicator Same as for boolean just for group elements.
      * @return Rewritten expression.
      */
-    public GroupElementExpression rewriteTerms(GroupElementExpression expr, RuleApplicator ruleApplicator) {
-        GroupElementExpression newExpr = expr;
-        do {
-            newExpr = this.rewriteTermsTopDown(newExpr, ruleApplicator);
-        } while (ruleApplicator.isAppliedAndReset());
+    public Expression rewriteTerms(Expression expr, RuleApplicator boolRuleApplicator,
+                                   RuleApplicator groupRuleApplicator) {
+        // TODO: This can be improved by using repeated rewriting at every level in the tree, not just at the root
+        //  since that wastes time traversing the tree each time.
+        Expression newExpr = expr;
+        if (expr instanceof GroupElementExpression) {
+            do {
+                newExpr = this.rewriteGroupTermsTopDown((GroupElementExpression) newExpr, groupRuleApplicator);
+            } while (groupRuleApplicator.isAppliedAndReset());
+        } else if (expr instanceof  BooleanExpression) {
+            do {
+                newExpr = this.rewriteBoolTermsTopDown((BooleanExpression) newExpr, boolRuleApplicator,
+                        groupRuleApplicator);
+            } while (boolRuleApplicator.isAppliedAndReset() | groupRuleApplicator.isAppliedAndReset());
+        }
         return newExpr;
     }
 
-    public GroupElementExpression rewriteTerms(GroupElementExpression expr) {
-        return this.rewriteTerms(expr, new RuleApplicator(this.config.getGroupRewritingRules()));
+    /**
+     * Helper method if you don't want to apply any boolean rules, e.g. if this is used on a group expression.
+     * @param expr The expression to rewrite.
+     * @param groupRuleApplicator Contains the rules to apply to group expressions and how to apply them.
+     * @return Rewritten expression.
+     */
+    public Expression rewriteTerms(Expression expr, RuleApplicator groupRuleApplicator) {
+        return this.rewriteTerms(
+                expr,
+                new RuleApplicator(new LinkedList<>()),
+                groupRuleApplicator
+        );
     }
 
-    public GroupElementExpression rewriteTermsTopDown(GroupElementExpression expr, RuleApplicator ruleApplicator) {
+    public Expression rewriteTerms(Expression expr) {
+        return this.rewriteTerms(
+                expr,
+                new RuleApplicator(this.config.getBoolRewritingRules()),
+                new RuleApplicator(this.config.getGroupRewritingRules())
+        );
+    }
+
+    public GroupElementExpression rewriteGroupTermsTopDown(GroupElementExpression expr, RuleApplicator ruleApplicator) {
         // apply as many rules on this expr as possible, constructing a new expression
         // once all rules have been applied, apply this method recursively on its children
         // also need to make sure rule application terminates, so use appropriate rules without infinite derivation
@@ -51,18 +88,18 @@ public class OptGroupElementExpressionPrecomputer {
         if (newExpr instanceof GroupOpExpr) {
             GroupOpExpr opExpr = (GroupOpExpr) newExpr;
             return new GroupOpExpr(
-                    this.rewriteTermsTopDown(opExpr.getLhs(), ruleApplicator),
-                    this.rewriteTermsTopDown(opExpr.getRhs(), ruleApplicator)
+                    this.rewriteGroupTermsTopDown(opExpr.getLhs(), ruleApplicator),
+                    this.rewriteGroupTermsTopDown(opExpr.getRhs(), ruleApplicator)
             );
         } else if (newExpr instanceof GroupInvExpr) {
             GroupInvExpr invExpr = (GroupInvExpr) newExpr;
             return new GroupInvExpr(
-                    this.rewriteTermsTopDown(invExpr.getBase(), ruleApplicator)
+                    this.rewriteGroupTermsTopDown(invExpr.getBase(), ruleApplicator)
             );
         } else if (newExpr instanceof GroupPowExpr) {
             GroupPowExpr powExpr = (GroupPowExpr) newExpr;
             return new GroupPowExpr(
-                    this.rewriteTermsTopDown(powExpr.getBase(), ruleApplicator), powExpr.getExponent()
+                    this.rewriteGroupTermsTopDown(powExpr.getBase(), ruleApplicator), powExpr.getExponent()
             );
         } else if (newExpr instanceof GroupElementConstantExpr) {
             return newExpr;
@@ -72,15 +109,186 @@ public class OptGroupElementExpressionPrecomputer {
             PairingExpr pairingExpr = (PairingExpr) newExpr;
             return new PairingExpr(
                     pairingExpr.getMap(),
-                    this.rewriteTermsTopDown(pairingExpr.getLhs(), ruleApplicator),
-                    this.rewriteTermsTopDown(pairingExpr.getRhs(), ruleApplicator)
+                    this.rewriteGroupTermsTopDown(pairingExpr.getLhs(), ruleApplicator),
+                    this.rewriteGroupTermsTopDown(pairingExpr.getRhs(), ruleApplicator)
             );
         } else if (newExpr instanceof GroupVariableExpr) {
             return newExpr;
         } else {
             throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper expression.");
+                    "is not a proper group expression: " + newExpr.getClass());
         }
+    }
+
+
+    public BooleanExpression rewriteBoolTermsTopDown(BooleanExpression expr, RuleApplicator boolRuleApplicator,
+                                                     RuleApplicator groupRuleApplicator) {
+        BooleanExpression newExpr = (BooleanExpression) boolRuleApplicator.applyAllRules(expr);
+
+        if (newExpr instanceof BoolAndExpr) {
+            BoolAndExpr andExpr = (BoolAndExpr) newExpr;
+            return new BoolAndExpr(
+                    this.rewriteBoolTermsTopDown(andExpr.getLhs(), boolRuleApplicator, groupRuleApplicator),
+                    this.rewriteBoolTermsTopDown(andExpr.getRhs(), boolRuleApplicator, groupRuleApplicator)
+            );
+        } else if (newExpr instanceof BoolOrExpr) {
+            BoolOrExpr orExpr = (BoolOrExpr) newExpr;
+            return new BoolOrExpr(
+                    this.rewriteBoolTermsTopDown(orExpr.getLhs(), boolRuleApplicator, groupRuleApplicator),
+                    this.rewriteBoolTermsTopDown(orExpr.getRhs(), boolRuleApplicator, groupRuleApplicator)
+            );
+        } else if (newExpr instanceof BoolNotExpr) {
+            BoolNotExpr notExpr = (BoolNotExpr) newExpr;
+            return new BoolNotExpr(
+                    this.rewriteBoolTermsTopDown(notExpr.getChild(), boolRuleApplicator, groupRuleApplicator)
+            );
+        } else if (newExpr instanceof BoolEmptyExpr) {
+            return newExpr;
+        } else if (newExpr instanceof BoolVariableExpr) {
+            return newExpr;
+        } else if (newExpr instanceof ExponentEqualityExpr) {
+            return newExpr;
+        } else if (newExpr instanceof GroupEqualityExpr) {
+            GroupEqualityExpr equalityExpr = (GroupEqualityExpr) newExpr;
+            return new GroupEqualityExpr(
+                    this.rewriteGroupTermsTopDown(equalityExpr.getLhs(), groupRuleApplicator),
+                    this.rewriteGroupTermsTopDown(equalityExpr.getRhs(), groupRuleApplicator)
+            );
+        } else {
+            throw new IllegalArgumentException("Found something in expression tree that" +
+                    "is not a proper boolean expression: " + newExpr.getClass());
+        }
+    }
+
+    public void markMergeableExprs(Expression expr, Map<Expression, Boolean> exprToMergeable) {
+        if (expr instanceof BoolAndExpr) {
+            BoolAndExpr andExpr = (BoolAndExpr) expr;
+            markMergeableExprs(andExpr.getLhs(), exprToMergeable);
+            markMergeableExprs(andExpr.getRhs(), exprToMergeable);
+            exprToMergeable.put(
+                    expr,
+                    exprToMergeable.get(andExpr.getLhs()) && exprToMergeable.get(andExpr.getRhs())
+            );
+        } else if (expr instanceof BoolOrExpr) {
+            BoolOrExpr orExpr = (BoolOrExpr) expr;
+            exprToMergeable.put(expr, false);
+            markMergeableExprs(orExpr.getLhs(), exprToMergeable);
+            markMergeableExprs(orExpr.getRhs(), exprToMergeable);
+        } else if (expr instanceof BoolNotExpr) {
+            BoolNotExpr notExpr = (BoolNotExpr) expr;
+            exprToMergeable.put(expr, false);
+            markMergeableExprs(notExpr.getChild(), exprToMergeable);
+        } else if (expr instanceof BoolEmptyExpr || expr instanceof BoolVariableExpr
+                || expr instanceof ExponentEqualityExpr) {
+            exprToMergeable.put(expr, false);
+        } else if (expr instanceof GroupEqualityExpr) {
+            exprToMergeable.put(expr, true);
+        } else if (expr instanceof GroupElementExpression) {
+            exprToMergeable.put(expr, false);
+        } else {
+            throw new IllegalArgumentException("Found something in expression tree that" +
+                    "is not a proper boolean or group expression: " + expr.getClass());
+        }
+    }
+
+    public Expression traverseMergeANDs(BooleanExpression expr, Map<Expression, Boolean> exprToMergeable) {
+        if (exprToMergeable.get(expr)) {
+            return mergeANDs(expr);
+        }
+        if (expr instanceof BoolAndExpr) {
+            BoolAndExpr andExpr = (BoolAndExpr) expr;
+            if (exprToMergeable.get(andExpr)) {
+
+            }
+        } else if (newExpr instanceof BoolOrExpr) {
+            BoolOrExpr orExpr = (BoolOrExpr) newExpr;
+            return new BoolOrExpr(
+                    this.rewriteBoolTermsTopDown(orExpr.getLhs(), boolRuleApplicator, groupRuleApplicator),
+                    this.rewriteBoolTermsTopDown(orExpr.getRhs(), boolRuleApplicator, groupRuleApplicator)
+            );
+        } else if (newExpr instanceof BoolNotExpr) {
+            BoolNotExpr notExpr = (BoolNotExpr) newExpr;
+            return new BoolNotExpr(
+                    this.rewriteBoolTermsTopDown(notExpr.getChild(), boolRuleApplicator, groupRuleApplicator)
+            );
+        } else if (newExpr instanceof BoolEmptyExpr) {
+            return newExpr;
+        } else if (newExpr instanceof BoolVariableExpr) {
+            return newExpr;
+        } else if (newExpr instanceof ExponentEqualityExpr) {
+            return newExpr;
+        } else if (newExpr instanceof GroupEqualityExpr) {
+            GroupEqualityExpr equalityExpr = (GroupEqualityExpr) newExpr;
+            return new GroupEqualityExpr(
+                    this.rewriteGroupTermsTopDown(equalityExpr.getLhs(), groupRuleApplicator),
+                    this.rewriteGroupTermsTopDown(equalityExpr.getRhs(), groupRuleApplicator)
+            );
+        } else {
+            throw new IllegalArgumentException("Found something in expression tree that" +
+                    "is not a proper boolean expression: " + newExpr.getClass());
+        }
+    }
+
+    /**
+     * Takes an expression with ANDs of GroupEqualityExprs and merges them into one GroupEqualityExpr with a
+     * multi-exponentiation. E.g. x_1 = 1 && x_2 = 1 get merged to x_1^a * x_2^b = 1 where a and b are randomly chosen
+     * exponents.
+     * @param expr The expression to merge.
+     * @return Merged expression if it works, else the original expression.
+     */
+    private BooleanExpression mergeANDs(BooleanExpression expr) {
+        List<GroupEqualityExpr> equalityExprs = new LinkedList<>();
+        ExprRule moveEqTestToLeftSideRule = new MoveEqTestToLeftSideRule();
+        // find all contained GroupEqualityExprs
+        Queue<Expression> searchQueue = new LinkedList<>();
+        searchQueue.add(expr);
+        while (!searchQueue.isEmpty()) {
+            Expression currExpr = searchQueue.poll();
+            if (currExpr instanceof BoolAndExpr) {
+                searchQueue.add(((BoolAndExpr) expr).getLhs());
+                searchQueue.add(((BoolAndExpr) expr).getRhs());
+            } else if (currExpr instanceof GroupEqualityExpr) {
+                // need to make sure the equality expr has the form x = 1, so move right side over if possible
+                if (moveEqTestToLeftSideRule.isApplicable(currExpr)) {
+                    equalityExprs.add((GroupEqualityExpr) moveEqTestToLeftSideRule.apply(currExpr));
+                } else {
+                    equalityExprs.add((GroupEqualityExpr) currExpr);
+                }
+            } else {
+                throw new IllegalArgumentException("Found something in expression tree that" +
+                        "is not a BoolAndExpr or GroupEqualityExpr: " + currExpr.getClass());
+            }
+        }
+        // Check that they actually all use the same group, else this does not work
+        // TODO: Would be better to check this earlier. Then we could also handle not matching groups.
+        int firstNonNullGroupIndex = 0;
+        Group group = equalityExprs.get(0).getGroup();
+        while (group == null && firstNonNullGroupIndex < equalityExprs.size()) {
+            ++firstNonNullGroupIndex;
+            group = equalityExprs.get(firstNonNullGroupIndex).getGroup();
+        }
+        if (group == null) {
+            // Only variables in group expressions, cannot proceed.
+            return expr;
+        }
+        // TODO: Do we need to test for prime order here, too?
+        for (int i = firstNonNullGroupIndex+1; i < equalityExprs.size(); ++i) {
+            if (equalityExprs.get(i).getGroup() != group) {
+                // If one of the groups doesnt match, we cannot proceed.
+                return expr;
+            }
+        }
+        List<Zn.ZnElement> exponents = new LinkedList<>();
+        GroupElementExpression newLeftSide = new GroupEmptyExpr(group);
+        // This requires all equalityExprs to be of form x = 1. Else this won't work.
+        // Should be guaranteed by the MoveEqTestToOneSideRule, however.
+        for (GroupEqualityExpr equalityExpr : equalityExprs) {
+            newLeftSide = newLeftSide.opPow(equalityExpr.getLhs(), group.getUniformlyRandomUnitExponent());
+        }
+        return new GroupEqualityExpr(
+                newLeftSide,
+                new GroupEmptyExpr(group)
+        );
     }
 
     /**

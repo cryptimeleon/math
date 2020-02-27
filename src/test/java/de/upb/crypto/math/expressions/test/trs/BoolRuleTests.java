@@ -3,7 +3,7 @@ package de.upb.crypto.math.expressions.test.trs;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.bool.GroupEqualityExpr;
 import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
-import de.upb.crypto.math.expressions.evaluator.trs.bool.MoveEqTestToOneSideRule;
+import de.upb.crypto.math.expressions.evaluator.trs.bool.MoveEqTestToLeftSideRule;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupPowExpr;
 import de.upb.crypto.math.expressions.group.GroupVariableExpr;
@@ -16,7 +16,7 @@ import java.math.BigInteger;
 public class BoolRuleTests {
 
     @Test
-    public void testMoveEqTestToOneSideRuleNoConstants()  {
+    public void testMoveEqTestToLeftSideRuleNoConstants()  {
         GroupEqualityExpr expr = new GroupEqualityExpr(
                 new GroupPowExpr(
                         new GroupVariableExpr("x"),
@@ -28,12 +28,12 @@ public class BoolRuleTests {
                 )
         );
         // No constants so not applicable
-        ExprRule moveEqTestToOneSideRule = new MoveEqTestToOneSideRule();
+        ExprRule moveEqTestToOneSideRule = new MoveEqTestToLeftSideRule();
         assert !moveEqTestToOneSideRule.isApplicable(expr);
     }
 
     @Test
-    public void testMoveEqTestToOneSideRuleLeftConstant()  {
+    public void testMoveEqTestToLeftSideRuleLeftConstant()  {
         Zp zp = new Zp(BigInteger.valueOf(101));
         Group unitGroup = zp.asUnitGroup();
 
@@ -48,7 +48,7 @@ public class BoolRuleTests {
                 )
         );
         // No constants so not applicable
-        ExprRule moveEqTestToOneSideRule = new MoveEqTestToOneSideRule();
+        ExprRule moveEqTestToOneSideRule = new MoveEqTestToLeftSideRule();
         assert moveEqTestToOneSideRule.isApplicable(expr);
 
         GroupEqualityExpr newExpr = (GroupEqualityExpr) moveEqTestToOneSideRule.apply(expr);
@@ -60,7 +60,7 @@ public class BoolRuleTests {
     }
 
     @Test
-    public void testMoveEqTestToOneSideRuleRightConstant()  {
+    public void testMoveEqTestToLeftSideRuleRightConstant()  {
         Zp zp = new Zp(BigInteger.valueOf(101));
         Group unitGroup = zp.asUnitGroup();
 
@@ -75,7 +75,7 @@ public class BoolRuleTests {
                 )
         );
         // No constants so not applicable
-        ExprRule moveEqTestToOneSideRule = new MoveEqTestToOneSideRule();
+        ExprRule moveEqTestToOneSideRule = new MoveEqTestToLeftSideRule();
         assert moveEqTestToOneSideRule.isApplicable(expr);
 
         GroupEqualityExpr newExpr = (GroupEqualityExpr) moveEqTestToOneSideRule.apply(expr);

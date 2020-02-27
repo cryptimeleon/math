@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.evaluator;
 
-import de.upb.crypto.math.expressions.bool.BooleanExpression;
+import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.bool.*;
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.interfaces.structures.*;
@@ -210,7 +211,9 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         if (config.isEnablePrecomputeRewriting()) {
             // Rewrite the expression to be more efficiently evaluatable and to make some more pre-evaluations possible
             // note: we could also move rule applicator into config, then user can customize that.
-            newExpr = precomputer.rewriteTerms(newExpr, new RuleApplicator(config.getGroupRewritingRules()));
+            newExpr = (GroupElementExpression) precomputer.rewriteTerms(
+                    newExpr, new RuleApplicator(this.config.getGroupRewritingRules())
+            );
         }
 
         if (config.isEnablePrecomputeEvaluation()) {
@@ -233,8 +236,55 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
 
     @Override
     public BooleanExpression precompute(BooleanExpression expr) {
-        return expr;
+        BooleanExpression newExpr = expr;
+        if (config.isEnablePrecomputeRewriting()) {
+            newExpr = (BooleanExpression) precomputer.rewriteTerms(newExpr);
+        }
+        // Next, try to merge ANDs of GroupEqualityExprs into one MultiExp
+        // For that, we first find subtrees in the expression tree where only ANDs and GroupEqualityExprs are
+        // contained
+        if (config.isEnablePrecomputeProbabilisticANDMerging()) {
+            Map<Expression, Boolean> exprToMergeable = new HashMap<>();
+            precomputer.markMergeableExprs(newExpr, exprToMergeable);
+            newExpr = precomputer.traverseMergeANDs(expr, exprToMergeable);
+        }
+        return (BooleanExpression) this.precomputeBoolRecursive(newExpr);
+    }
 
+    private Expression precomputeBoolRecursive(BooleanExpression expr) {
+        if (expr instanceof BoolAndExpr) {
+            BoolAndExpr andExpr = (BoolAndExpr) expr;
+            return new BoolAndExpr(
+                    (BooleanExpression) this.precomputeBoolRecursive(andExpr.getLhs()),
+                    (BooleanExpression) this.precomputeBoolRecursive(andExpr.getRhs())
+            );
+        } else if (expr instanceof BoolOrExpr) {
+            BoolOrExpr orExpr = (BoolOrExpr) expr;
+            return new BoolOrExpr(
+                    (BooleanExpression) this.precomputeBoolRecursive(orExpr.getLhs()),
+                    (BooleanExpression) this.precomputeBoolRecursive(orExpr.getRhs())
+            );
+        } else if (expr instanceof BoolNotExpr) {
+            BoolNotExpr notExpr = (BoolNotExpr) expr;
+            return new BoolNotExpr(
+                    (BooleanExpression) this.precomputeBoolRecursive(notExpr.getChild())
+            );
+        } else if (expr instanceof BoolEmptyExpr) {
+            return expr;
+        } else if (expr instanceof BoolVariableExpr) {
+            return expr;
+        } else if (expr instanceof ExponentEqualityExpr) {
+            return expr;
+        } else if (expr instanceof GroupEqualityExpr) {
+            GroupEqualityExpr equalityExpr = (GroupEqualityExpr) expr;
+            return new GroupEqualityExpr(
+                    this.precompute(equalityExpr.getLhs()),
+                    this.precompute(equalityExpr.getRhs())
+            );
+        } else {
+            throw new IllegalArgumentException("Found something in expression tree that" +
+                    "is not a proper boolean expression: " + expr.getClass());
+        }
     }
 
     public OptGroupElementExpressionEvaluatorConfig getConfig() {

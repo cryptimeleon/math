@@ -1,6 +1,8 @@
 package de.upb.crypto.math.expressions.test;
 
+import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.bool.*;
 import de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionPrecomputer;
@@ -18,8 +20,10 @@ import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class OptGroupElementExpressionPrecomputerTest {
 
@@ -39,7 +43,7 @@ public class OptGroupElementExpressionPrecomputerTest {
         rules.add(new ExpSwapRule());
         rules.add(new PairingGtExpRule());
         GroupElementExpression newExpr = new OptGroupElementExpressionPrecomputer()
-                .rewriteTermsTopDown(expr, new RuleApplicator(rules));
+                .rewriteGroupTermsTopDown(expr, new RuleApplicator(rules));
         ValueBundle valueBundle = new ValueBundle();
         valueBundle.put("x", BigInteger.valueOf(3));
         assert expr.substitute(valueBundle).evaluateNaive().equals(newExpr.substitute(valueBundle).evaluateNaive());
@@ -72,7 +76,7 @@ public class OptGroupElementExpressionPrecomputerTest {
         rules.add(new PairingMoveRightVarsOutsideRule());
         rules.add(new MergeNestedVarExpRule());
         // newExpr == e(g_1^2, g_2)^{abx}
-        GroupElementExpression newExpr = new OptGroupElementExpressionPrecomputer()
+        GroupElementExpression newExpr = (GroupElementExpression) new OptGroupElementExpressionPrecomputer()
                 .rewriteTerms(expr, new RuleApplicator(rules));
         assert newExpr instanceof GroupPowExpr;
         GroupPowExpr powExpr = (GroupPowExpr) newExpr;
@@ -107,7 +111,7 @@ public class OptGroupElementExpressionPrecomputerTest {
                 )
         );
 
-        GroupElementExpression newExpr = new OptGroupElementExpressionPrecomputer().rewriteTerms(expr);
+        GroupElementExpression newExpr = (GroupElementExpression) new OptGroupElementExpressionPrecomputer().rewriteTerms(expr);
         assert newExpr instanceof GroupPowExpr;
         GroupPowExpr powExpr1 = (GroupPowExpr) newExpr;
         assert powExpr1.getBase() instanceof GroupPowExpr;
@@ -131,5 +135,35 @@ public class OptGroupElementExpressionPrecomputerTest {
                 new ExponentConstantExpr(zp.getUniformlyRandomElement())
         );
         GroupElementExpression newExpr = new OptGroupElementExpressionEvaluator().precompute(expr);
+    }
+
+    @Test
+    public void testMarkMergeable() {
+        Zp zp = new Zp(BigInteger.valueOf(101));
+        Group unitGroup = zp.asUnitGroup();
+
+        BoolAndExpr andExpr1 = new BoolAndExpr(
+                new GroupEqualityExpr(new GroupVariableExpr("x"), new GroupEmptyExpr(unitGroup)),
+                new GroupEqualityExpr(new GroupVariableExpr("y"), new GroupEmptyExpr(unitGroup))
+        );
+        BoolAndExpr andExpr2 = new BoolAndExpr(
+                new BoolVariableExpr("z"),
+                new GroupEqualityExpr(
+                        unitGroup.getNeutralElement().expr(),
+                        unitGroup.getNeutralElement().expr()
+                )
+        );
+
+        BooleanExpression expr = new BoolOrExpr(
+                andExpr1,
+                new BoolNotExpr(
+                    andExpr2
+                )
+        );
+        Map<Expression, Boolean> exprToMergeable = new HashMap<>();
+        new OptGroupElementExpressionPrecomputer().markMergeableExprs(expr, exprToMergeable);
+        assert exprToMergeable.get(andExpr1);
+        assert !exprToMergeable.get(andExpr2);
+        assert !exprToMergeable.get(expr);
     }
 }
