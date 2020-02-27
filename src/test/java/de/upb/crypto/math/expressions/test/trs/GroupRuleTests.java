@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-public class RuleTests {
+public class GroupRuleTests {
 
     @Test
     public void testPairingGtExpRuleSimple() {
@@ -242,46 +242,58 @@ public class RuleTests {
     }
 
     @Test
-    public void testMoveEqTestToOneSideRuleNoConstants()  {
-        GroupEqualityExpr expr = new GroupEqualityExpr(
+    public void testPairingMoveLeftVarsOutsideRule() {
+        BilinearGroupFactory fac = new BilinearGroupFactory(60);
+        fac.setDebugMode(true);
+        fac.setRequirements(BilinearGroup.Type.TYPE_3);
+        BilinearGroup group = fac.createBilinearGroup();
+
+        PairingExpr expr = new PairingExpr(
+                group.getBilinearMap(),
                 new GroupPowExpr(
-                        new GroupVariableExpr("x"),
-                        new ExponentVariableExpr("a")
+                        group.getG1().getUniformlyRandomNonNeutral().expr(),
+                        new ExponentMulExpr(
+                                new ExponentConstantExpr(BigInteger.valueOf(2)),
+                                new ExponentVariableExpr("x")
+                        )
                 ),
-                new GroupPowExpr(
-                        new GroupVariableExpr("y"),
-                        new ExponentVariableExpr("b")
-                )
+                group.getG2().getUniformlyRandomNonNeutral().expr()
         );
-        // No constants so not applicable
-        ExprRule moveEqTestToOneSideRule = new MoveEqTestToOneSideRule();
-        assert !moveEqTestToOneSideRule.isApplicable(expr);
+
+        ExprRule rule = new PairingMoveLeftVarsOutsideRule();
+        assert rule.isApplicable(expr);
+
+        GroupElementExpression newExpr = (GroupElementExpression) rule.apply(expr);
+        ValueBundle valueBundle = new ValueBundle();
+        valueBundle.put("x", BigInteger.valueOf(3));
+        assert expr.substitute(valueBundle).evaluate().equals(newExpr.substitute(valueBundle).evaluate());
     }
 
     @Test
-    public void testMoveEqTestToOneSideRuleLeftConstant()  {
-        Zp zp = new Zp(BigInteger.valueOf(101));
-        Group unitGroup = zp.asUnitGroup();
+    public void testPairingMoveRighttVarsOutsideRule() {
+        BilinearGroupFactory fac = new BilinearGroupFactory(60);
+        fac.setDebugMode(true);
+        fac.setRequirements(BilinearGroup.Type.TYPE_3);
+        BilinearGroup group = fac.createBilinearGroup();
 
-        GroupEqualityExpr expr = new GroupEqualityExpr(
+        PairingExpr expr = new PairingExpr(
+                group.getBilinearMap(),
+                group.getG1().getUniformlyRandomNonNeutral().expr(),
                 new GroupPowExpr(
-                        unitGroup.getUniformlyRandomNonNeutral().expr(),
-                        new ExponentVariableExpr("a")
-                ),
-                new GroupPowExpr(
-                        new GroupVariableExpr("y"),
-                        new ExponentVariableExpr("b")
+                        group.getG2().getUniformlyRandomNonNeutral().expr(),
+                        new ExponentMulExpr(
+                                new ExponentConstantExpr(BigInteger.valueOf(2)),
+                                new ExponentVariableExpr("x")
+                        )
                 )
         );
-        // No constants so not applicable
-        ExprRule moveEqTestToOneSideRule = new MoveEqTestToOneSideRule();
-        assert moveEqTestToOneSideRule.isApplicable(expr);
 
-        GroupEqualityExpr newExpr = (GroupEqualityExpr) moveEqTestToOneSideRule.apply(expr);
+        ExprRule rule = new PairingMoveRightVarsOutsideRule();
+        assert rule.isApplicable(expr);
+
+        GroupElementExpression newExpr = (GroupElementExpression) rule.apply(expr);
         ValueBundle valueBundle = new ValueBundle();
-        valueBundle.put("a", BigInteger.valueOf(2));
-        valueBundle.put("y", unitGroup.getUniformlyRandomNonNeutral());
-        valueBundle.put("b", BigInteger.valueOf(3));
-        assert expr.substitute(valueBundle).evaluate() == newExpr.substitute(valueBundle).evaluate();
+        valueBundle.put("x", BigInteger.valueOf(3));
+        assert expr.substitute(valueBundle).evaluate().equals(newExpr.substitute(valueBundle).evaluate());
     }
 }

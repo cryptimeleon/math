@@ -76,12 +76,14 @@ public class OptGroupElementExpressionEvaluatorConfig {
         groupRewritingRules.add(new MergeNestedConstExpRule());
         groupRewritingRules.add(new MergeNestedVarExpRule());
         groupRewritingRules.add(new ExpSwapRule());
+        groupRewritingRules.add(new PairingMoveLeftVarsOutsideRule());
+        groupRewritingRules.add(new PairingMoveRightVarsOutsideRule());
         groupRewritingRules.add(new PairingGtExpRule());
 
-        // For parallel evaluation of both sides of a pariring
+        // For parallel evaluation of both sides of a pairing
         // In the case of expensive pairings such as the BN pairing, this
         // seems to really only be worth it if the multi-exponentiation is very big,
-        // and even then, the difference is not really noticable at all since the pairing
+        // and even then, the difference is not really noticeable at all since the pairing
         // is so expensive.
         enableMultithreadedPairingEvaluation = false;
     }

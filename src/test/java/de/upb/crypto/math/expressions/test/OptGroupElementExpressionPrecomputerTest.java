@@ -5,8 +5,7 @@ import de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionPrecomputer;
 import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
-import de.upb.crypto.math.expressions.evaluator.trs.group.ExpSwapRule;
-import de.upb.crypto.math.expressions.evaluator.trs.group.PairingGtExpRule;
+import de.upb.crypto.math.expressions.evaluator.trs.group.*;
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentMulExpr;
@@ -47,17 +46,19 @@ public class OptGroupElementExpressionPrecomputerTest {
     }
 
     @Test
-    public void testRewriteTermsPairingExpSwap() {
+    public void testRewriteTermsPairing() {
         BilinearGroupFactory fac = new BilinearGroupFactory(60);
         fac.setDebugMode(true);
         fac.setRequirements(BilinearGroup.Type.TYPE_3);
         BilinearGroup group = fac.createBilinearGroup();
+
+        // (e(g_1^a, g_2^b)^x)^2
         GroupPowExpr expr = new GroupPowExpr(
                 new GroupPowExpr(
                         new PairingExpr(
                                 group.getBilinearMap(),
-                                new GroupElementConstantExpr(group.getG1().getUniformlyRandomNonNeutral()),
-                                new GroupElementConstantExpr(group.getG2().getUniformlyRandomNonNeutral())
+                                group.getG1().getUniformlyRandomNonNeutral().expr().pow(new ExponentVariableExpr("a")),
+                                group.getG2().getUniformlyRandomNonNeutral().expr().pow(new ExponentVariableExpr("b"))
                         ),
                         new ExponentVariableExpr("x")
                 ),
@@ -67,14 +68,22 @@ public class OptGroupElementExpressionPrecomputerTest {
         List<ExprRule> rules = new LinkedList<>();
         rules.add(new ExpSwapRule());
         rules.add(new PairingGtExpRule());
+        rules.add(new PairingMoveLeftVarsOutsideRule());
+        rules.add(new PairingMoveRightVarsOutsideRule());
+        rules.add(new MergeNestedVarExpRule());
+        // newExpr == e(g_1^2, g_2)^{abx}
         GroupElementExpression newExpr = new OptGroupElementExpressionPrecomputer()
                 .rewriteTerms(expr, new RuleApplicator(rules));
         assert newExpr instanceof GroupPowExpr;
         GroupPowExpr powExpr = (GroupPowExpr) newExpr;
         assert powExpr.getExponent().getVariables().contains("x");
+        assert powExpr.getExponent().getVariables().contains("a");
+        assert powExpr.getExponent().getVariables().contains("b");
         assert powExpr.getBase() instanceof  PairingExpr;
         ValueBundle valueBundle = new ValueBundle();
         valueBundle.put("x", BigInteger.valueOf(3));
+        valueBundle.put("a", BigInteger.valueOf(4));
+        valueBundle.put("b", BigInteger.valueOf(5));
         assert expr.substitute(valueBundle).evaluateNaive().equals(newExpr.substitute(valueBundle).evaluateNaive());
     }
 
