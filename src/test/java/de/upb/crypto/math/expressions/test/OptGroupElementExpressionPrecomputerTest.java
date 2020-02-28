@@ -166,4 +166,34 @@ public class OptGroupElementExpressionPrecomputerTest {
         assert !exprToMergeable.get(andExpr2);
         assert !exprToMergeable.get(expr);
     }
+
+    @Test
+    public void testMergeANDs() {
+        Zp zp = new Zp(new BigInteger("170141183460469231731687303715884105727"));
+        Group unitGroup = zp.asUnitGroup();
+
+        BoolAndExpr expr = new BoolAndExpr(
+                new GroupEqualityExpr(
+                        unitGroup.getUniformlyRandomNonNeutral().expr(), unitGroup.getUniformlyRandomNonNeutral().expr()
+                ),
+                new BoolAndExpr(
+                        new GroupEqualityExpr(
+                                unitGroup.getUniformlyRandomNonNeutral().expr(), new GroupEmptyExpr(unitGroup)
+                        ),
+                        new GroupEqualityExpr(
+                                unitGroup.getUniformlyRandomNonNeutral().expr(), new GroupVariableExpr("y")
+                        )
+                )
+        );
+
+        Map<Expression, Boolean> exprToMergeable = new HashMap<>();
+        exprToMergeable.put(expr, true);
+        BooleanExpression newExpr = (BooleanExpression) new OptGroupElementExpressionPrecomputer()
+                .traverseMergeANDs(expr, exprToMergeable);
+        assert newExpr instanceof GroupEqualityExpr;
+        ValueBundle valueBundle = new ValueBundle();
+        valueBundle.put("y", unitGroup.getUniformlyRandomNonNeutral());
+        // Since this is a probabilistic simplification, it could theoretically fail the test.
+        assert expr.substitute(valueBundle).evaluate() == newExpr.substitute(valueBundle).evaluate();
+    }
 }

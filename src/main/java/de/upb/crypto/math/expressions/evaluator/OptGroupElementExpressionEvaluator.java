@@ -241,12 +241,10 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             newExpr = (BooleanExpression) precomputer.rewriteTerms(newExpr);
         }
         // Next, try to merge ANDs of GroupEqualityExprs into one MultiExp
-        // For that, we first find subtrees in the expression tree where only ANDs and GroupEqualityExprs are
-        // contained
         if (config.isEnablePrecomputeProbabilisticANDMerging()) {
             Map<Expression, Boolean> exprToMergeable = new HashMap<>();
             precomputer.markMergeableExprs(newExpr, exprToMergeable);
-            newExpr = precomputer.traverseMergeANDs(expr, exprToMergeable);
+            newExpr = (BooleanExpression) precomputer.traverseMergeANDs(newExpr, exprToMergeable);
         }
         return (BooleanExpression) this.precomputeBoolRecursive(newExpr);
     }

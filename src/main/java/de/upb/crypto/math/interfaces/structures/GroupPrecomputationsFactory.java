@@ -111,7 +111,7 @@ public class GroupPrecomputationsFactory {
                     this.addOddPowers(base, maxExp);
                 } else {
                     throw new IllegalStateException("Missing precomputed odd powers for "
-                            + base + " .");
+                            + base + " and max exponent " + maxExp + ".");
                 }
             }
             return baseOddPowers.subList(0, (maxExp+1)/2);

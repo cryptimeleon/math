@@ -75,7 +75,7 @@ public class OptGroupElementExpressionEvaluatorConfig {
         enablePrecomputeCaching = true;
         enablePrecomputeEvaluation = true;
         enablePrecomputeRewriting = true;
-        enablePrecomputeProbabilisticANDMerging = true;
+        enablePrecomputeProbabilisticANDMerging = true; // TODO: Should this be enabled by default?
 
         groupRewritingRules = new LinkedList<>();
         groupRewritingRules.add(new OpInPowRule());

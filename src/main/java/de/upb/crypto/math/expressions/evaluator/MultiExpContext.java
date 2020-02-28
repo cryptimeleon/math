@@ -60,7 +60,7 @@ class MultiExpContext {
     /**
      * Avoid precomputing elements whose exponent is one (so no exponentiation necessary)
      * by evaluating them and then removing them from the multi-exponentiation context.
-     * @return
+     * @return Result of evaluating op of all constants on the left.
      */
     GroupElement evalAndRemoveLeftConstants() {
         // assume size of bases not 0
@@ -81,7 +81,7 @@ class MultiExpContext {
 
     /**
      * Same as for left but for right instead.
-     * @return
+     * @return Result of evaluating op of all constants on the right.
      */
     GroupElement evalAndRemoveRightConstants() {
         // assume size of bases not 0

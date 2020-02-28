@@ -13,10 +13,7 @@ import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 public class OptGroupElementExpressionPrecomputer {
 
@@ -142,11 +139,8 @@ public class OptGroupElementExpressionPrecomputer {
             return new BoolNotExpr(
                     this.rewriteBoolTermsTopDown(notExpr.getChild(), boolRuleApplicator, groupRuleApplicator)
             );
-        } else if (newExpr instanceof BoolEmptyExpr) {
-            return newExpr;
-        } else if (newExpr instanceof BoolVariableExpr) {
-            return newExpr;
-        } else if (newExpr instanceof ExponentEqualityExpr) {
+        } else if (newExpr instanceof BoolEmptyExpr || newExpr instanceof BoolVariableExpr
+                || newExpr instanceof ExponentEqualityExpr || newExpr instanceof BoolConstantExpr) {
             return newExpr;
         } else if (newExpr instanceof GroupEqualityExpr) {
             GroupEqualityExpr equalityExpr = (GroupEqualityExpr) newExpr;
@@ -197,35 +191,27 @@ public class OptGroupElementExpressionPrecomputer {
         }
         if (expr instanceof BoolAndExpr) {
             BoolAndExpr andExpr = (BoolAndExpr) expr;
-            if (exprToMergeable.get(andExpr)) {
-
-            }
-        } else if (newExpr instanceof BoolOrExpr) {
-            BoolOrExpr orExpr = (BoolOrExpr) newExpr;
+            return new BoolAndExpr(
+                    (BooleanExpression) traverseMergeANDs(andExpr.getLhs(), exprToMergeable),
+                    (BooleanExpression) traverseMergeANDs(andExpr.getRhs(), exprToMergeable)
+            );
+        } else if (expr instanceof BoolOrExpr) {
+            BoolOrExpr orExpr = (BoolOrExpr) expr;
             return new BoolOrExpr(
-                    this.rewriteBoolTermsTopDown(orExpr.getLhs(), boolRuleApplicator, groupRuleApplicator),
-                    this.rewriteBoolTermsTopDown(orExpr.getRhs(), boolRuleApplicator, groupRuleApplicator)
+                    (BooleanExpression) traverseMergeANDs(orExpr.getLhs(), exprToMergeable),
+                    (BooleanExpression) traverseMergeANDs(orExpr.getRhs(), exprToMergeable)
             );
-        } else if (newExpr instanceof BoolNotExpr) {
-            BoolNotExpr notExpr = (BoolNotExpr) newExpr;
+        } else if (expr instanceof BoolNotExpr) {
+            BoolNotExpr notExpr = (BoolNotExpr) expr;
             return new BoolNotExpr(
-                    this.rewriteBoolTermsTopDown(notExpr.getChild(), boolRuleApplicator, groupRuleApplicator)
+                    (BooleanExpression) traverseMergeANDs(notExpr.getChild(), exprToMergeable)
             );
-        } else if (newExpr instanceof BoolEmptyExpr) {
-            return newExpr;
-        } else if (newExpr instanceof BoolVariableExpr) {
-            return newExpr;
-        } else if (newExpr instanceof ExponentEqualityExpr) {
-            return newExpr;
-        } else if (newExpr instanceof GroupEqualityExpr) {
-            GroupEqualityExpr equalityExpr = (GroupEqualityExpr) newExpr;
-            return new GroupEqualityExpr(
-                    this.rewriteGroupTermsTopDown(equalityExpr.getLhs(), groupRuleApplicator),
-                    this.rewriteGroupTermsTopDown(equalityExpr.getRhs(), groupRuleApplicator)
-            );
+        } else if (expr instanceof BoolEmptyExpr || expr instanceof BoolVariableExpr
+                || expr instanceof ExponentEqualityExpr || expr instanceof GroupEqualityExpr) {
+            return expr;
         } else {
             throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper boolean expression: " + newExpr.getClass());
+                    "is not a proper boolean expression: " + expr.getClass());
         }
     }
 
@@ -237,7 +223,7 @@ public class OptGroupElementExpressionPrecomputer {
      * @return Merged expression if it works, else the original expression.
      */
     private BooleanExpression mergeANDs(BooleanExpression expr) {
-        List<GroupEqualityExpr> equalityExprs = new LinkedList<>();
+        List<GroupEqualityExpr> equalityExprs = new ArrayList<>();
         ExprRule moveEqTestToLeftSideRule = new MoveEqTestToLeftSideRule();
         // find all contained GroupEqualityExprs
         Queue<Expression> searchQueue = new LinkedList<>();
@@ -245,8 +231,8 @@ public class OptGroupElementExpressionPrecomputer {
         while (!searchQueue.isEmpty()) {
             Expression currExpr = searchQueue.poll();
             if (currExpr instanceof BoolAndExpr) {
-                searchQueue.add(((BoolAndExpr) expr).getLhs());
-                searchQueue.add(((BoolAndExpr) expr).getRhs());
+                searchQueue.add(((BoolAndExpr) currExpr).getLhs());
+                searchQueue.add(((BoolAndExpr) currExpr).getRhs());
             } else if (currExpr instanceof GroupEqualityExpr) {
                 // need to make sure the equality expr has the form x = 1, so move right side over if possible
                 if (moveEqTestToLeftSideRule.isApplicable(currExpr)) {
@@ -258,6 +244,10 @@ public class OptGroupElementExpressionPrecomputer {
                 throw new IllegalArgumentException("Found something in expression tree that" +
                         "is not a BoolAndExpr or GroupEqualityExpr: " + currExpr.getClass());
             }
+        }
+        // Makes no sense for just one element
+        if (equalityExprs.size() < 2) {
+            return expr;
         }
         // Check that they actually all use the same group, else this does not work
         // TODO: Would be better to check this earlier. Then we could also handle not matching groups.
@@ -348,7 +338,7 @@ public class OptGroupElementExpressionPrecomputer {
     public GroupElementExpression evalWithoutVars(GroupElementExpression expr,
                                                   Map<GroupElementExpression, Boolean> exprToContainsVar) {
         if (!exprToContainsVar.get(expr)) {
-            return expr.evaluate().expr();
+            return expr.evaluate().expr(); // TODO: Do we exclude GroupEmptyExpr here so we don't pre-evaluate that?
         } else {
             if (expr instanceof GroupOpExpr) {
                 GroupOpExpr opExpr = (GroupOpExpr) expr;
@@ -377,7 +367,7 @@ public class OptGroupElementExpressionPrecomputer {
             } else if (expr instanceof GroupVariableExpr) {
                 return expr;
             } else if (expr instanceof GroupElementConstantExpr || expr instanceof GroupEmptyExpr) {
-                throw new IllegalStateException("Expression contains variable although it cannot.");
+                throw new IllegalStateException("Expression supposedly contains variable even though it cannot.");
             } else {
                 throw new IllegalArgumentException("Found something in expression tree that" +
                         "is not a proper group expression.");

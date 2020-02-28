@@ -4,7 +4,11 @@ import com.github.noconnor.junitperf.JUnitPerfRule;
 import com.github.noconnor.junitperf.JUnitPerfTest;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
+import de.upb.crypto.math.expressions.group.GroupPowExpr;
+import de.upb.crypto.math.expressions.group.PairingExpr;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -12,6 +16,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.math.BigInteger;
 
 @Ignore
 public class OptGroupElementExpressionEvaluatorPrecomputeBenchmark {
@@ -27,6 +33,8 @@ public class OptGroupElementExpressionEvaluatorPrecomputeBenchmark {
     private static GroupElement result;
 
     private static ValueBundle valueBundle;
+
+    private static GroupElementExpression precomputeExpr;
 
 
     @BeforeClass
@@ -45,6 +53,20 @@ public class OptGroupElementExpressionEvaluatorPrecomputeBenchmark {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         precomputedTestExpr = evaluator.precompute(testExpr);
         result = testExpr.substitute(valueBundle).evaluateNaive();
+
+        precomputeExpr = new GroupEmptyExpr(bilGroup.getGT());
+        for (int i = 0; i < 1_000; ++i) {
+            precomputeExpr = precomputeExpr.op(
+                    new GroupPowExpr(
+                            new PairingExpr(
+                                    bilGroup.getBilinearMap(),
+                                    bilGroup.getG1().getNeutralElement().expr(),
+                                    bilGroup.getG2().getNeutralElement().expr()
+                            ),
+                            new ExponentConstantExpr(BigInteger.ONE)
+                    )
+            );
+        }
     }
 
     @Test
@@ -59,5 +81,14 @@ public class OptGroupElementExpressionEvaluatorPrecomputeBenchmark {
     public void testPrecomputedEvaluation() {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         assert evaluator.evaluate(precomputedTestExpr.substitute(valueBundle)).equals(result);
+    }
+
+    @Test
+    @JUnitPerfTest(durationMs = perfDuration, warmUpMs = warmupDuration)
+    public void testPrecomputeRewriting() {
+        OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.getConfig().setEnablePrecomputeEvaluation(false);
+        evaluator.getConfig().setEnablePrecomputeCaching(false);
+        evaluator.precompute(precomputeExpr);
     }
 }

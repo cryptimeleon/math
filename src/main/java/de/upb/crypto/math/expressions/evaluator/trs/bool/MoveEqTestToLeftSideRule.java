@@ -11,6 +11,8 @@ import de.upb.crypto.math.expressions.group.*;
  * Only applied if the right side is not already 1, and
  * at least one side must also contain a constant group element,
  * else we dont know the group to use for the neutral element.
+ *
+ * @author Raphael Heitjohann
  */
 public class MoveEqTestToLeftSideRule implements ExprRule {
     @Override
@@ -19,9 +21,7 @@ public class MoveEqTestToLeftSideRule implements ExprRule {
             return false;
         GroupEqualityExpr equalityExpr = (GroupEqualityExpr) expr;
         // GroupEmptyExpr test is to ensure this cannot be recursively applied forever
-        return (equalityExpr.getRhs() instanceof GroupEmptyExpr)
-                && (GroupElementExpressionAnalyzer.containsTypeExpr(equalityExpr.getLhs(), GroupElementConstantExpr.class)
-                || GroupElementExpressionAnalyzer.containsTypeExpr(equalityExpr.getRhs(), GroupElementConstantExpr.class));
+        return (!(equalityExpr.getRhs() instanceof GroupEmptyExpr)) && (equalityExpr.getGroup() != null);
     }
 
     @Override
@@ -34,8 +34,7 @@ public class MoveEqTestToLeftSideRule implements ExprRule {
                         equalityExpr.getRhs().inv()
                 ),
                 new GroupEmptyExpr(
-                        equalityExpr.getLhs().getGroup() != null
-                                ? equalityExpr.getLhs().getGroup() : equalityExpr.getRhs().getGroup()
+                        equalityExpr.getGroup()
                 ) // This could have a null group if we dont have constant
         );
     }

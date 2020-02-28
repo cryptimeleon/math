@@ -140,7 +140,7 @@ public class GroupPrecomputationsTest {
         Representation repr = mulPrecomputations.getRepresentation();
         GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations2 =
                 new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
-        assertEquals(mulPrecomputations2, mulPrecomputations);
+        assert mulPrecomputations2.equals(mulPrecomputations);
     }
 
     @Test
@@ -174,5 +174,33 @@ public class GroupPrecomputationsTest {
         mulPrecomputations2.addOddPowers(bases.get(1), windowSize);
         GroupPrecomputationsFactory.addGroupPrecomputations(mulPrecomputations2);
         assertEquals(mulPrecomputations2, mulPrecomputations);
+    }
+
+    @Test
+    public void testReset() {
+        GroupElement base = mulZp.getUniformlyRandomNonNeutral();
+        mulPrecomputations.addOddPowers(base, 2);
+        List<GroupElement> bases = new LinkedList<>();
+        bases.add(mulZp.getUniformlyRandomNonNeutral());
+        bases.add(mulZp.getUniformlyRandomNonNeutral());
+        mulPrecomputations.addPowerProducts(bases, 2);
+        mulPrecomputations.getOddPowers(base, 2, false);
+        mulPrecomputations.getPowerProducts(bases, 2, false);
+        mulPrecomputations.reset();
+        try {
+            mulPrecomputations.getOddPowers(base, 2, false);
+            fail("Exception not thrown.");
+        } catch (IllegalStateException e) {
+            assert e.getMessage().equals("Missing precomputed odd powers for "
+                    + base + " and max exponent 2.");
+        }
+        try {
+            mulPrecomputations.getPowerProducts(bases, 2, false);
+            fail("Exception not thrown.");
+        } catch (IllegalStateException e) {
+            assert e.getMessage().equals("Missing precomputed product powers for "
+                    + "PowerProductKey for bases " + Arrays.toString(bases.toArray(new GroupElement[0]))
+                    + " and window size " + "2");
+        }
     }
 }
