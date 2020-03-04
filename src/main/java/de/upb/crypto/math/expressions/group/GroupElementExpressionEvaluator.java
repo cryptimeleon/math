@@ -6,7 +6,6 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 public interface GroupElementExpressionEvaluator {
     GroupElement evaluate(GroupElementExpression expr);
-    GroupElementExpression optimize(GroupElementExpression expr); //TODO not sure what this call's role is. Why not always precompute or just evaluate?
     GroupElementExpression precompute(GroupElementExpression expr);
 
     /**

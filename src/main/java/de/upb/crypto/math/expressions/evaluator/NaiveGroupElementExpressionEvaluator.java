@@ -13,11 +13,6 @@ public class NaiveGroupElementExpressionEvaluator implements GroupElementExpress
     }
 
     @Override
-    public GroupElementExpression optimize(GroupElementExpression expr) {
-        return expr;
-    }
-
-    @Override
     public GroupElementExpression precompute(GroupElementExpression expr) {
         return expr;
     }

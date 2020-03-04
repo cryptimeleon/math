@@ -201,11 +201,6 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     }
 
     @Override
-    public GroupElementExpression optimize(GroupElementExpression expr) {
-        return precompute(expr);
-    }
-
-    @Override
     public GroupElementExpression precompute(GroupElementExpression expr) {
         GroupElementExpression newExpr = expr;
         if (config.isEnablePrecomputeRewriting()) {
