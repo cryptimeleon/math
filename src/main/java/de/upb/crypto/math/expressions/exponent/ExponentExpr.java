@@ -6,7 +6,6 @@ import de.upb.crypto.math.expressions.bool.ExponentEqualityExpr;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.Map;
 import java.util.function.Function;
 
 public interface ExponentExpr extends Expression {

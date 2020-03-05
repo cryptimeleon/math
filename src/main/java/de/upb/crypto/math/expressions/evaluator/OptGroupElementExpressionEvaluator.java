@@ -4,10 +4,12 @@ import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.bool.*;
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.group.*;
-import de.upb.crypto.math.interfaces.structures.*;
+import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;

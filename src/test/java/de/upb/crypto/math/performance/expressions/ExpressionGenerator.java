@@ -6,7 +6,6 @@ import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
 import de.upb.crypto.math.expressions.group.PairingExpr;
-import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;

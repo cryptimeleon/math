@@ -5,8 +5,6 @@ import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.lazy.LazyGroup;
-import de.upb.crypto.math.lazy.LazyGroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;

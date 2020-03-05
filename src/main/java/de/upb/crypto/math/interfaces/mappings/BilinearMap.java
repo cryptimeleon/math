@@ -2,7 +2,6 @@ package de.upb.crypto.math.interfaces.mappings;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.PairingExpr;
-import de.upb.crypto.math.interfaces.structures.FutureGroupElement;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;

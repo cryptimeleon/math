@@ -1,18 +1,17 @@
 package de.upb.crypto.math.expressions.test;
 
-import de.upb.crypto.math.expressions.bool.BooleanExpression;
-import de.upb.crypto.math.expressions.bool.GroupEqualityExpr;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluatorConfig;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
-import de.upb.crypto.math.expressions.group.*;
+import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.GroupOpExpr;
+import de.upb.crypto.math.expressions.group.PairingExpr;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
-import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory.GroupPrecomputations;
-import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

@@ -7,7 +7,6 @@ import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 

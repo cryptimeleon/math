@@ -11,9 +11,7 @@ import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
 import de.upb.crypto.math.expressions.group.GroupPowExpr;
 import de.upb.crypto.math.expressions.group.GroupVariableExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zp;
-import jdk.vm.ci.meta.Value;
 import org.junit.Test;
 
 import java.math.BigInteger;

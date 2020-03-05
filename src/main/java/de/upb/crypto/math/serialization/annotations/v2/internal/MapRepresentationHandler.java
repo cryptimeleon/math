@@ -7,7 +7,8 @@ import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 public class MapRepresentationHandler implements RepresentationHandler {

@@ -1,11 +1,9 @@
 package de.upb.crypto.math.expressions.test;
 
-import de.upb.crypto.math.expressions.EvaluationException;
-import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluatorConfig;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.expressions.group.GroupVariableExpr;
 import de.upb.crypto.math.expressions.evaluator.NaiveGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluatorConfig;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.performance.expressions.ExpressionGenerator;

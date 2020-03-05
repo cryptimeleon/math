@@ -1,10 +1,7 @@
 package de.upb.crypto.math.standalone.test;
 
-import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
-import de.upb.crypto.math.structures.cartesian.ProductGroup;
-import de.upb.crypto.math.structures.cartesian.ProductRing;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -16,7 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 

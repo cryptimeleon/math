@@ -1,10 +1,6 @@
 package de.upb.crypto.math.expressions;
 
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.interfaces.structures.Element;
-
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;

@@ -3,7 +3,6 @@ package de.upb.crypto.math.expressions.bool;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.ValueBundle;
 
-import java.util.Map;
 import java.util.function.Function;
 
 public interface BooleanExpression extends Expression {

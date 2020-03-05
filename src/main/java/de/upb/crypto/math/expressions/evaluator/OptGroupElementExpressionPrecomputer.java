@@ -12,7 +12,6 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
 import de.upb.crypto.math.structures.zn.Zn;
 
-import java.math.BigInteger;
 import java.util.*;
 
 public class OptGroupElementExpressionPrecomputer {

@@ -4,7 +4,6 @@ import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.Ring;
 import de.upb.crypto.math.interfaces.structures.RingElement;
-import de.upb.crypto.math.interfaces.structures.Structure;
 import de.upb.crypto.math.serialization.ByteArrayRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 

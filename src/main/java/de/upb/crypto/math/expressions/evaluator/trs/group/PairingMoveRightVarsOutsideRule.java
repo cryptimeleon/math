@@ -3,7 +3,6 @@ package de.upb.crypto.math.expressions.evaluator.trs.group;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.GroupPowExpr;
 import de.upb.crypto.math.expressions.group.PairingExpr;
 

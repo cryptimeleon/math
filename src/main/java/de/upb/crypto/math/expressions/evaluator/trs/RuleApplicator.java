@@ -1,7 +1,6 @@
 package de.upb.crypto.math.expressions.evaluator.trs;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
 
 import java.util.List;
 

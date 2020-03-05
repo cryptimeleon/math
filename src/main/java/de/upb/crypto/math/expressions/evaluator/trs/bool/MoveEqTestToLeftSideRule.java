@@ -2,9 +2,9 @@ package de.upb.crypto.math.expressions.evaluator.trs.bool;
 
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.bool.GroupEqualityExpr;
-import de.upb.crypto.math.expressions.evaluator.GroupElementExpressionAnalyzer;
 import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
-import de.upb.crypto.math.expressions.group.*;
+import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
+import de.upb.crypto.math.expressions.group.GroupOpExpr;
 
 /**
  * Rewrites x^a = y^b as x^a * y^{-b} = 1 to enable use of a multi-exponentiation.

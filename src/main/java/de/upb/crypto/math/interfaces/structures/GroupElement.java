@@ -6,7 +6,6 @@ import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory.Grou
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

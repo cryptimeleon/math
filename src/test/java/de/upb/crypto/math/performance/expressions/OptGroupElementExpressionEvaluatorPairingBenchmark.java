@@ -1,7 +1,7 @@
 package de.upb.crypto.math.performance.expressions;
 
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 

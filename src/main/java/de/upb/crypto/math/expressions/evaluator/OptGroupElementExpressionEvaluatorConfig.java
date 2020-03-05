@@ -1,6 +1,6 @@
 package de.upb.crypto.math.expressions.evaluator;
 
-import de.upb.crypto.math.expressions.evaluator.trs.*;
+import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
 import de.upb.crypto.math.expressions.evaluator.trs.bool.MoveEqTestToLeftSideRule;
 import de.upb.crypto.math.expressions.evaluator.trs.group.*;
 
