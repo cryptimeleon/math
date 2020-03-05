@@ -91,7 +91,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     }
 
     private GroupElement simultaneousSlidingWindowMulExpWrapper(MultiExpContext multiExpContext) {
-        if (config.isEnableCachingSimultaneous()) {
+        if (config.isEnableCachingSimultaneous() && config.isEnableCachingAllAlgs()) {
             return simultaneousSlidingWindowMulExp(
                     multiExpContext,
                     config.getWindowSizeSimultaneousCaching(),
@@ -107,7 +107,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     }
 
     private GroupElement interleavingSlidingWindowMultiExpWrapper(MultiExpContext multiExpContext) {
-        if (config.isEnableCachingInterleavedSliding()) {
+        if (config.isEnableCachingInterleavedSliding() && config.isEnableCachingAllAlgs()) {
             return interleavingSlidingWindowMultiExp(
                     multiExpContext,
                     config.getWindowSizeInterleavedSlidingCaching(),
@@ -123,7 +123,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     }
 
     private GroupElement interleavingWnafWindowMultiExpWrapper(MultiExpContext multiExpContext) {
-        if (config.isEnableCachingInterleavedWnaf()) {
+        if (config.isEnableCachingInterleavedWnaf() && config.isEnableCachingAllAlgs()) {
             return interleavingWnafMultiExp(
                     multiExpContext,
                     config.getWindowSizeInterleavedWnafCaching(),

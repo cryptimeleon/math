@@ -17,6 +17,11 @@ public class OptGroupElementExpressionEvaluatorConfig {
     private boolean enableCachingInterleavedSliding;
     private boolean enableCachingSimultaneous;
     private boolean enableCachingInterleavedWnaf;
+    /**
+     * Whether caching should be done in general. A value of false means no caching will be done for all
+     * algorithms, a value of true means the algorithm-specific values will be used instead.
+     */
+    private boolean enableCachingAllAlgs;
     private boolean enableMultithreadedPairingEvaluation;
     private ForceMultiExpAlgorithmSetting forcedMultiExpAlgorithm;
     private int windowSizeInterleavedSlidingCaching;
@@ -62,6 +67,7 @@ public class OptGroupElementExpressionEvaluatorConfig {
         enableCachingInterleavedSliding = true;
         enableCachingSimultaneous = true;
         enableCachingInterleavedWnaf = true;
+        enableCachingAllAlgs = true;
         forcedMultiExpAlgorithm = ForceMultiExpAlgorithmSetting.DISABLED;
         windowSizeInterleavedSlidingCaching = 8;
         windowSizeInterleavedSlidingNoCaching = 4;
@@ -175,6 +181,14 @@ public class OptGroupElementExpressionEvaluatorConfig {
 
     public void setEnableCachingInterleavedWnaf(boolean enableCachingInterleavedWnaf) {
         this.enableCachingInterleavedWnaf = enableCachingInterleavedWnaf;
+    }
+
+    public boolean isEnableCachingAllAlgs() {
+        return enableCachingAllAlgs;
+    }
+
+    public void setEnableCachingAllAlgs(boolean enableCachingAllAlgs) {
+        this.enableCachingAllAlgs = enableCachingAllAlgs;
     }
 
     public boolean isEnableMultithreadedPairingEvaluation() {
