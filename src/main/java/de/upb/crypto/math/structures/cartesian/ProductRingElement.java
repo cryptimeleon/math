@@ -29,7 +29,7 @@ public class ProductRingElement implements RingElement {
     }
 
     @Override
-    public RingElement add(Element e) {
+    public ProductRingElement add(Element e) {
         RingElement[] result = new RingElement[elems.length];
 
         for (int i=0;i<result.length;i++)
@@ -39,7 +39,7 @@ public class ProductRingElement implements RingElement {
     }
 
     @Override
-    public RingElement neg() {
+    public ProductRingElement neg() {
         RingElement[] result = new RingElement[elems.length];
 
         for (int i=0;i<result.length;i++)
@@ -49,12 +49,20 @@ public class ProductRingElement implements RingElement {
     }
 
     @Override
-    public RingElement mul(Element e) {
+    public ProductRingElement mul(Element e) {
         RingElement[] result = new RingElement[elems.length];
 
         for (int i=0;i<result.length;i++)
             result[i] = elems[i].mul(((ProductRingElement) e).elems[i]);
 
+        return new ProductRingElement(result);
+    }
+
+    @Override
+    public ProductRingElement mul(BigInteger k) {
+        RingElement[] result = new RingElement[elems.length];
+        for (int i=0;i<result.length;i++)
+            result[i] = elems[i].mul(k);
         return new ProductRingElement(result);
     }
 
