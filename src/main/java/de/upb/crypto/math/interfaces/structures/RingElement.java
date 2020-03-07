@@ -57,6 +57,24 @@ public interface RingElement extends Element {
     RingElement mul(Element e);
 
     /**
+     * Computes this * k (equivalent to this + this + ... [k times])
+     *
+     * @param k the factor
+     * @return the result
+     */
+    default RingElement mul(BigInteger k) { //default implementation: double&add algorithm
+        if (k.signum() < 0)
+            return mul(k.negate()).neg();
+        RingElement result = getStructure().getZeroElement();
+        for (int i = k.bitLength() - 1; i >= 0; i--) {
+            result = result.add(result);
+            if (k.testBit(i))
+                result = result.add(this);
+        }
+        return result;
+    }
+
+    /**
      * Calculates this^k.
      * (Note that (anything)^0 = 1, particularly 0^0 = 1)
      */
