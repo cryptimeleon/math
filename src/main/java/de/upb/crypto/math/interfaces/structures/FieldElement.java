@@ -21,11 +21,14 @@ public interface FieldElement extends RingElement {
     public FieldElement mul(Element e);
 
     @Override
+    public default FieldElement mul(BigInteger k) {
+        return (FieldElement) RingElement.super.mul(k);
+    }
+
+    @Override
     public default FieldElement pow(BigInteger k) {
         return (FieldElement) RingElement.super.pow(k);
     }
-
-    ;
 
     @Override
     public FieldElement inv() throws UnsupportedOperationException;

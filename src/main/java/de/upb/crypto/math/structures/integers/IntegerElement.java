@@ -58,6 +58,11 @@ public class IntegerElement implements RingElement {
     }
 
     @Override
+    public IntegerElement mul(BigInteger k) {
+        return new IntegerElement(v.multiply(k));
+    }
+
+    @Override
     public IntegerElement inv() throws UnsupportedOperationException {
         if (v.abs().equals(BigInteger.ONE))
             return this;
