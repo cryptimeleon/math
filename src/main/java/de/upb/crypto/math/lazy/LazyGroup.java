@@ -3,9 +3,10 @@ package de.upb.crypto.math.lazy;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.PowProductExpression;
+import de.upb.crypto.math.serialization.Representable;
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.serialization.annotations.AnnotatedRepresentationUtil;
-import de.upb.crypto.math.serialization.annotations.Represented;
+import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;
@@ -51,9 +52,9 @@ public class LazyGroup implements Group {
     protected WeakHashMap<LazyGroupElementWrapper, LazyGroupElementIdentityEqualsWrapper> cache = new WeakHashMap<>();
 
     @Represented
-    protected boolean enableExpressionDeduplication;
+    protected Boolean enableExpressionDeduplication;
     @Represented
-    protected boolean enableConcurrentEvaluation;
+    protected Boolean enableConcurrentEvaluation;
 
     /**
      * Wrapper that ensures that elements are compared based on their corresponding expressions
@@ -154,7 +155,7 @@ public class LazyGroup implements Group {
     }
 
     public LazyGroup(Representation repr) {
-        AnnotatedRepresentationUtil.restoreAnnotatedRepresentation(repr, this);
+        new ReprUtil(this).deserialize(repr);
         init();
     }
 
@@ -278,7 +279,7 @@ public class LazyGroup implements Group {
 
     @Override
     public Representation getRepresentation() {
-        return AnnotatedRepresentationUtil.putAnnotatedRepresentation(this);
+        return ReprUtil.serialize(this);
     }
 
     @Override
