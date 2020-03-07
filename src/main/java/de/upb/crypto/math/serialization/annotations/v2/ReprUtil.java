@@ -142,6 +142,7 @@ public class ReprUtil {
         ObjectRepresentation result = new ObjectRepresentation();
         forEachField(field -> {
             try {
+                field.setAccessible(true);
                 result.put(field.getName(), getHandler(field.getGenericType(), getRestorerStringOfField(field)).serializeToRepresentation(field.get(instance)));
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -175,6 +176,7 @@ public class ReprUtil {
      */
     Object restoreField(Field field, Representation topLevelRepr) {
         try {
+            field.setAccessible(true);
             Object value = field.get(instance);
             if (value != null)
                 return value;
@@ -252,10 +254,12 @@ public class ReprUtil {
         if (StandaloneRepresentationHandler.canHandle(type))
             return new StandaloneRepresentationHandler((Class) type);
 
-        if (DependentRepresentationHandler.canHandle(type))
-            return new DependentRepresentationHandler(restorerString, type);
+        //Get rid of spaces and enclosing parentheses (if restorerString = "(FOO)")
+        String trimmedString = stripEnclosingParentheses(restorerString);
 
-        String trimmedString = restorerString.trim();
+        if (DependentRepresentationHandler.canHandle(type))
+            return new DependentRepresentationHandler(trimmedString, type);
+
         if (ListAndSetRepresentationHandler.canHandle(type) && trimmedString.startsWith("[") && trimmedString.endsWith("]")) {
             Type elementType = ListAndSetRepresentationHandler.getElementType(type);
             return new ListAndSetRepresentationHandler(getHandler(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
@@ -284,13 +288,15 @@ public class ReprUtil {
      * If none, returns -1.
      */
     private static int findMapArrow(String str) {
-        int depth = 0; //number of "[" read minus number of "]" read.
+        int depth = 0; //number of "[" or "(" read minus number of "]" or ")" read.
         for (int i=0;i<str.length();i++) {
             switch (str.charAt(i)) {
                 case '[':
+                case '(':
                     depth++;
                     break;
                 case ']':
+                case ')':
                     depth--;
                     break;
                 case '-':
@@ -300,5 +306,31 @@ public class ReprUtil {
             }
         }
         return -1;
+    }
+
+    /**
+     * If the expression is of the form "( ... )" (where the two parentheses are matching), removes those parentheses.
+     * For example, "(x)" would become "x", but "(x) -> (y)" would not be modified.
+     */
+    private static String stripEnclosingParentheses(String str) {
+        str = str.trim();
+        if (!str.startsWith("(") || !str.endsWith(")"))
+            return str;
+
+        int depth = 1; //number of  "(" read minus number of ")" read.
+        for (int i=1;i<str.length()-1;i++) { //loop indices exclude first and last parentheses.
+            switch (str.charAt(i)) {
+                case '(':
+                    depth++;
+                    break;
+                case ')':
+                    depth--;
+                    break;
+            }
+            if (depth == 0) //found parenthesis matching the str[0] one (which is not the str[len-1] one)
+                return str;
+        }
+
+        return stripEnclosingParentheses(str.substring(1, str.length()-1)); //recursively call to remove more parentheses if necessary
     }
 }

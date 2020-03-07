@@ -12,7 +12,7 @@ public class ByteArrayRepresentation extends Representation {
     }
 
     public ByteArrayRepresentation(byte[] data) {
-        this.data = data;
+        this.data = Arrays.copyOf(data, data.length);
     }
 
     public byte[] get() {

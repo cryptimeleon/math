@@ -3,6 +3,7 @@ package de.upb.crypto.math.structures.zn;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.Field;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
+import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.helpers.FiniteFieldTools;
@@ -107,6 +108,11 @@ public class Zp extends Zn implements Field {
         @Override
         public ZpElement mul(Element e) {
             return (ZpElement) super.mul(e);
+        }
+
+        @Override
+        public ZpElement mul(BigInteger k) {
+            return (ZpElement) super.mul(k);
         }
 
         @Override

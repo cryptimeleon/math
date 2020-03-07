@@ -344,6 +344,16 @@ public class PolynomialRing implements Ring {
         }
 
         @Override
+        public Polynomial mul(BigInteger k) {
+            RingElement[] result = new RingElement[this.degree+1];
+            for (int i=0;i<result.length;i++) {
+                result[i] = this.coefficients[i].mul(k);
+            }
+
+            return createPolyInternal(result);
+        }
+
+        @Override
         public Polynomial inv() throws UnsupportedOperationException {
             if (degree > 0)
                 throw new UnsupportedOperationException("Cannot invert non-zero-degree polynomials");

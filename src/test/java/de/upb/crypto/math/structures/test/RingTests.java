@@ -86,6 +86,9 @@ public class RingTests extends StructureTests {
             ((Polynomial) b).evaluate(((PolynomialRing) b.getStructure()).getBaseRing().getUniformlyRandomElement());
         }
 
+        // 2*a = a+a
+        assertTrue(a.mul(BigInteger.valueOf(2)).equals(a.add(a)));
+
         // a/a = 1
         assertTrue(a.inv().mul(a).equals(ring.getOneElement()));
 
