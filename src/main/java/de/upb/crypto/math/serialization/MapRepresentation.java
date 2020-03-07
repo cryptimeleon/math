@@ -2,11 +2,10 @@ package de.upb.crypto.math.serialization;
 
 import de.upb.crypto.math.serialization.converter.JSONConverter;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.security.SecureRandom;
+import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 /**
@@ -47,6 +46,23 @@ public class MapRepresentation extends Representation implements Iterable<Entry<
     @Override
     public Iterator<Entry<Representation, Representation>> iterator() {
         return map.entrySet().iterator();
+    }
+
+    public void forEach(BiConsumer<Representation, Representation> consumer) {
+        for (Entry<Representation, Representation> e : getMap().entrySet())
+            consumer.accept(e.getKey(), e.getValue());
+    }
+
+    public void forEachRandomlyOrdered(BiConsumer<Representation, Representation> consumer) {
+        ArrayList<Representation> keys = new ArrayList<>(map.keySet());
+        Collections.shuffle(keys);
+
+        for (Representation key : keys)
+            consumer.accept(key, map.get(key));
+    }
+
+    public int size() {
+        return map.size();
     }
 
     @Override

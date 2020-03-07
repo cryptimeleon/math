@@ -4,6 +4,7 @@ import de.upb.crypto.math.serialization.converter.JSONConverter;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 /**
@@ -17,10 +18,44 @@ public class ObjectRepresentation extends Representation implements Iterable<Ent
 
     }
 
+    public ObjectRepresentation(String key0, Representation value0) {
+        this();
+        put(key0, value0);
+    }
+
+    public ObjectRepresentation(String key0, Representation value0,
+                                String key1, Representation value1) {
+        this();
+        put(key0, value0);
+        put(key1, value1);
+    }
+
+    public ObjectRepresentation(String key0, Representation value0,
+                                String key1, Representation value1,
+                                String key2, Representation value2) {
+        this();
+        put(key0, value0);
+        put(key1, value1);
+        put(key2, value2);
+    }
+
+    public ObjectRepresentation(String key0, Representation value0,
+                                String key1, Representation value1,
+                                String key2, Representation value2,
+                                String key3, Representation value3) {
+        this();
+        put(key0, value0);
+        put(key1, value1);
+        put(key2, value2);
+        put(key3, value3);
+    }
+
     /**
      * Put an attribute.
      */
     public void put(String key, Representation value) {
+        if (key == null || key.isEmpty())
+            throw new RuntimeException("Cannot use empty or null keys");
         map.put(key, value);
     }
 
@@ -45,6 +80,21 @@ public class ObjectRepresentation extends Representation implements Iterable<Ent
 
     public Stream<Entry<String, Representation>> stream() {
         return map.entrySet().stream();
+    }
+
+    public void forEach(BiConsumer<String, Representation> consumer) {
+        for (Entry<String, Representation> e : getMap().entrySet())
+            consumer.accept(e.getKey(), e.getValue());
+    }
+
+    public void forEachOrderedByKeys(BiConsumer<String, Representation> consumer) {
+        stream()
+                .sorted(Comparator.comparing(Map.Entry::getKey))
+                .forEachOrdered(e -> consumer.accept(e.getKey(), e.getValue()));
+    }
+
+    public int size() {
+        return map.size();
     }
 
     @Override
