@@ -99,7 +99,7 @@ public class OptGroupElementExpressionEvaluatorPrecomputeTest {
                 )
         );
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.getConfig().setEnablePrecomputeProbabilisticANDMerging(true);
+        evaluator.getConfig().setEnablePrecomputeProbabilisticAndMerging(true);
         BooleanExpression newExpr = evaluator.precompute(expr);
         assert newExpr instanceof BoolAndExpr;
         BoolAndExpr andExpr = (BoolAndExpr) newExpr;

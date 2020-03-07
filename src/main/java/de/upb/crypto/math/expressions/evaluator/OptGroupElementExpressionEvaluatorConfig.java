@@ -54,7 +54,7 @@ public class OptGroupElementExpressionEvaluatorConfig {
      * Whether to merge ANDs of GroupEqualtiyExprs into one Multiexponentiation. Is a probabilistic test (but with
      * negligible failure probability if the group has prime order).
      */
-    private boolean enablePrecomputeProbabilisticANDMerging;
+    private boolean enablePrecomputeProbabilisticAndMerging;
     /**
      * List of rules used to rewrite expression terms. Order determines precedence when multiple rules are applicable.
      * Rules more towards start of list are preferred.
@@ -81,7 +81,7 @@ public class OptGroupElementExpressionEvaluatorConfig {
         enablePrecomputeCaching = true;
         enablePrecomputeEvaluation = true;
         enablePrecomputeRewriting = true;
-        enablePrecomputeProbabilisticANDMerging = false;
+        enablePrecomputeProbabilisticAndMerging = false;
 
         groupRewritingRules = new LinkedList<>();
         groupRewritingRules.add(new OpInPowRule());
@@ -316,12 +316,12 @@ public class OptGroupElementExpressionEvaluatorConfig {
         this.enablePrecomputeRewriting = enablePrecomputeRewriting;
     }
 
-    public boolean isEnablePrecomputeProbabilisticANDMerging() {
-        return enablePrecomputeProbabilisticANDMerging;
+    public boolean isEnablePrecomputeProbabilisticAndMerging() {
+        return enablePrecomputeProbabilisticAndMerging;
     }
 
-    public void setEnablePrecomputeProbabilisticANDMerging(boolean enablePrecomputeProbabilisticANDMerging) {
-        this.enablePrecomputeProbabilisticANDMerging = enablePrecomputeProbabilisticANDMerging;
+    public void setEnablePrecomputeProbabilisticAndMerging(boolean enablePrecomputeProbabilisticAndMerging) {
+        this.enablePrecomputeProbabilisticAndMerging = enablePrecomputeProbabilisticAndMerging;
     }
 
     public List<ExprRule> getGroupRewritingRules() {
