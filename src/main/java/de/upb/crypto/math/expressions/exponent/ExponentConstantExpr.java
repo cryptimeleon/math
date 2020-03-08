@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.structures.zn.Zn;
 
@@ -35,7 +36,7 @@ public class ExponentConstantExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentConstantExpr substitute(ValueBundle variableValues) {
+    public ExponentConstantExpr substitute(Substitutions variableValues) {
         return this;
     }
 

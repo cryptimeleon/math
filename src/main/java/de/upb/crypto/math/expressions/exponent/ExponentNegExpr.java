@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.structures.zn.Zn;
 
@@ -35,7 +36,7 @@ public class ExponentNegExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentNegExpr substitute(ValueBundle variableValues) {
+    public ExponentNegExpr substitute(Substitutions variableValues) {
         return new ExponentNegExpr(child.substitute(variableValues));
     }
 

@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -30,7 +31,7 @@ public class PairingExpr extends GroupElementExpression {
     }
 
     @Override
-    public PairingExpr substitute(ValueBundle variableValues) {
+    public PairingExpr substitute(Substitutions variableValues) {
         return new PairingExpr(map, lhs.substitute(variableValues), rhs.substitute(variableValues));
     }
 

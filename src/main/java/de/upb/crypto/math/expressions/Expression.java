@@ -17,10 +17,10 @@ public interface Expression {
     Expression substitute(Function<String, Expression> substitutionMap);
 
     /**
-     * Returns an Expression where (some) variables have been substituted with the given expressions.
-     * @param values plugs in the values from the ValueBundle into this Expression (i.e. for any variable in this expression, the variable is replaced with its value in the ValueBundle if it exists)
+     * Returns an Expression where (some) variables have been substituted with other given expressions.
+     * One example use is with ValueBundle. substitute(valueBundle) inserts concrete values from the ValueBundle into variables.
      */
-    Expression substitute(ValueBundle values);
+    Expression substitute(Substitutions values);
 
     default Expression substitute(String variable, Expression substitution) {
         return substitute(name -> name.equals(variable) ? substitution : null);
@@ -40,7 +40,7 @@ public interface Expression {
      * without substituting the variable with a concrete value)
      */
     default boolean containsVariables() {
-        return getVariables().isEmpty();
+        return !getVariables().isEmpty();
     }
 
     /**

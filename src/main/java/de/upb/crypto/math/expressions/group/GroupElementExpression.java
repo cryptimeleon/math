@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.bool.GroupEqualityExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
@@ -122,7 +123,7 @@ public abstract class GroupElementExpression implements Expression {
     public abstract GroupElementExpression substitute(Function<String, Expression> substitutionMap);
 
     @Override
-    public abstract GroupElementExpression substitute(ValueBundle variableValues);
+    public abstract GroupElementExpression substitute(Substitutions variableValues);
 
     public GroupElementExpression substitute(String variable, Expression substitution) {
         return substitute(name -> name.equals(variable) ? substitution : null);

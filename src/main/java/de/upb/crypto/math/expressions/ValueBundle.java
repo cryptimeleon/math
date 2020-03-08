@@ -1,5 +1,11 @@
 package de.upb.crypto.math.expressions;
 
+import de.upb.crypto.math.expressions.bool.BoolConstantExpr;
+import de.upb.crypto.math.expressions.bool.BooleanExpression;
+import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentExpr;
+import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.structures.integers.IntegerElement;
@@ -12,7 +18,7 @@ import java.util.HashMap;
 /**
  * A key-value mapping used for passing around named algebraic values.
  */
-public class ValueBundle {
+public class ValueBundle implements Substitutions {
     protected HashMap<String, GroupElement> groupElems;
     protected HashMap<String, BigInteger> ints;
     protected HashMap<String, RingElement> ringElems;
@@ -97,5 +103,23 @@ public class ValueBundle {
         groupElems.remove(key); //enforce unique keys between the types
         ringElems.remove(key);
         ints.remove(key);
+    }
+
+    @Override
+    public GroupElementExpression getSubstitutionForGroupElementVariable(String key) {
+        GroupElement elem = getGroupElement(key);
+        return elem == null ? null : new GroupElementConstantExpr(elem);
+    }
+
+    @Override
+    public ExponentExpr getSubstitutionForExponentVariable(String key) {
+        BigInteger elem = getInteger(key);
+        return elem == null ? null : new ExponentConstantExpr(elem);
+    }
+
+    @Override
+    public BooleanExpression getSubstitutionForBooleanVariable(String key) {
+        Boolean elem = getBoolean(key);
+        return elem == null ? null : new BoolConstantExpr(elem);
     }
 }

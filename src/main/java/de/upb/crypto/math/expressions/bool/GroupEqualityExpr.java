@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.structures.Group;
@@ -27,7 +28,7 @@ public class GroupEqualityExpr implements BooleanExpression {
     }
 
     @Override
-    public GroupEqualityExpr substitute(ValueBundle variableValues) {
+    public GroupEqualityExpr substitute(Substitutions variableValues) {
         return new GroupEqualityExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }
 
