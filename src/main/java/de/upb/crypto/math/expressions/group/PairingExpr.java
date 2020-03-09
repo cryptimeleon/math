@@ -26,11 +26,6 @@ public class PairingExpr extends GroupElementExpression {
     }
 
     @Override
-    public PairingExpr substitute(Function<String, Expression> substitutionMap) {
-        return new PairingExpr(map, lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
     public PairingExpr substitute(Substitutions variableValues) {
         return new PairingExpr(map, lhs.substitute(variableValues), rhs.substitute(variableValues));
     }

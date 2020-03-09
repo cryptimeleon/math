@@ -13,12 +13,9 @@ public interface BooleanExpression extends Expression {
      * Substitutes the expression and then evaluates it.
      * This may be more efficient than calling substitute(...).evaluate()
      */
-    default boolean evaluate(Function<String, Expression> substitutionMap) {
+    default boolean evaluate(Substitutions substitutionMap) {
         return substitute(substitutionMap).evaluate();
     }
-
-    @Override
-    BooleanExpression substitute(Function<String, Expression> substitutionMap);
 
     @Override
     BooleanExpression substitute(Substitutions variableValues);

@@ -21,11 +21,6 @@ public class ExponentEmptyExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentExpr substitute(Function<String, Expression> substitutionMap) {
-        return this;
-    }
-
-    @Override
     public ExponentEmptyExpr substitute(Substitutions variableValues) {
         return this;
     }

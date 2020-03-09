@@ -59,11 +59,6 @@ public class GroupEmptyExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupEmptyExpr substitute(Function<String, Expression> substitutionMap) {
-        return this;
-    }
-
-    @Override
     public GroupEmptyExpr substitute(Substitutions variableValues) {
         return this;
     }

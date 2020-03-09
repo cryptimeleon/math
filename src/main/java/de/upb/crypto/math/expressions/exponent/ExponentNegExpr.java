@@ -31,11 +31,6 @@ public class ExponentNegExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentNegExpr substitute(Function<String, Expression> substitutionMap) {
-        return new ExponentNegExpr(child.substitute(substitutionMap));
-    }
-
-    @Override
     public ExponentNegExpr substitute(Substitutions variableValues) {
         return new ExponentNegExpr(child.substitute(variableValues));
     }

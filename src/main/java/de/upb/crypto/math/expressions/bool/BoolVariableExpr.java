@@ -23,15 +23,9 @@ public class BoolVariableExpr implements VariableExpression, BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Function<String, Expression> substitutionMap) {
-        Expression result = substitutionMap.apply(name);
-        return result == null ? this : (BooleanExpression) result;
-    }
-
-    @Override
     public BooleanExpression substitute(Substitutions variableValues) {
-        BooleanExpression result = variableValues.getSubstitutionForBooleanVariable(name);
-        return result == null ? this : result;
+        Expression result = variableValues.getSubstitution(this);
+        return result == null ? this : (BooleanExpression) result;
     }
 
     @Override

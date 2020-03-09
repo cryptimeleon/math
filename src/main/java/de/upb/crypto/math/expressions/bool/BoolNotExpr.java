@@ -24,11 +24,6 @@ public class BoolNotExpr implements BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Function<String, Expression> substitutionMap) {
-        return new BoolNotExpr(child.substitute(substitutionMap));
-    }
-
-    @Override
     public BooleanExpression substitute(Substitutions variableValues) {
         return new BoolNotExpr(child.substitute(variableValues));
     }

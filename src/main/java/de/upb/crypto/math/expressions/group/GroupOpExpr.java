@@ -23,11 +23,6 @@ public class GroupOpExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupOpExpr substitute(Function<String, Expression> substitutionMap) {
-        return new GroupOpExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
     public GroupOpExpr substitute(Substitutions variableValues) {
         return new GroupOpExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }

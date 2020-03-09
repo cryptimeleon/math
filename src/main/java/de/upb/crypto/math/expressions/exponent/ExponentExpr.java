@@ -13,16 +13,13 @@ public interface ExponentExpr extends Expression {
     BigInteger evaluate();
     Zn.ZnElement evaluate(Zn zn);
 
-    default BigInteger evaluate(Function<String, Expression> substitutionMap) {
+    default BigInteger evaluate(Substitutions substitutionMap) {
         return substitute(substitutionMap).evaluate();
     }
 
-    default Zn.ZnElement evaluate(Zn zn, Function<String, Expression> substitutionMap) {
+    default Zn.ZnElement evaluate(Zn zn, Substitutions substitutionMap) {
         return substitute(substitutionMap).evaluate(zn);
     }
-
-    @Override
-    ExponentExpr substitute(Function<String, Expression> substitutionMap);
 
     @Override
     ExponentExpr substitute(Substitutions variableValues);

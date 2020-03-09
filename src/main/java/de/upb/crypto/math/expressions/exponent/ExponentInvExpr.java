@@ -31,11 +31,6 @@ public class ExponentInvExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentInvExpr substitute(Function<String, Expression> substitutionMap) {
-        return new ExponentInvExpr(child.substitute(substitutionMap));
-    }
-
-    @Override
     public ExponentInvExpr substitute(Substitutions variableValues) {
         return new ExponentInvExpr(child.substitute(variableValues));
     }

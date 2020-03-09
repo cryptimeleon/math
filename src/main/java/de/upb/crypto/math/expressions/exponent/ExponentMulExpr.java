@@ -36,11 +36,6 @@ public class ExponentMulExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentMulExpr substitute(Function<String, Expression> substitutionMap) {
-        return new ExponentMulExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
     public ExponentMulExpr substitute(Substitutions variableValues) {
         return new ExponentMulExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }

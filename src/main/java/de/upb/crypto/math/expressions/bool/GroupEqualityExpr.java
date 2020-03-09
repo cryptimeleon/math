@@ -23,11 +23,6 @@ public class GroupEqualityExpr implements BooleanExpression {
     }
 
     @Override
-    public GroupEqualityExpr substitute(Function<String, Expression> substitutionMap) {
-        return new GroupEqualityExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
     public GroupEqualityExpr substitute(Substitutions variableValues) {
         return new GroupEqualityExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }

@@ -21,11 +21,6 @@ public class BoolOrExpr implements BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Function<String, Expression> substitutionMap) {
-        return new BoolOrExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
     public BooleanExpression substitute(Substitutions variableValues) {
         return new BoolOrExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }

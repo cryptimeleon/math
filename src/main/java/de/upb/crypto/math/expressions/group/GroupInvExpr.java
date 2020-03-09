@@ -24,11 +24,6 @@ public class GroupInvExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupInvExpr substitute(Function<String, Expression> substitutionMap) {
-        return new GroupInvExpr(base.substitute(substitutionMap));
-    }
-
-    @Override
     public GroupInvExpr substitute(Substitutions variableValues) {
         return new GroupInvExpr(base.substitute(variableValues));
     }

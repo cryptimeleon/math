@@ -24,15 +24,9 @@ public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
     }
 
     @Override
-    public ExponentExpr substitute(Function<String, Expression> substitutionMap) {
-        Expression result = substitutionMap.apply(name);
-        return result == null ? this : (ExponentExpr) result;
-    }
-
-    @Override
     public ExponentExpr substitute(Substitutions variableValues) {
-        ExponentExpr result = variableValues.getSubstitutionForExponentVariable(name);
-        return result == null ? this : result;
+        Expression result = variableValues.getSubstitution(this);
+        return result == null ? this : (ExponentExpr) result;
     }
 
     @Override

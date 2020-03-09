@@ -25,15 +25,9 @@ public class GroupVariableExpr extends GroupElementExpression implements Variabl
     }
 
     @Override
-    public GroupElementExpression substitute(Function<String, Expression> substitutionMap) {
-        Expression result = substitutionMap.apply(name);
-        return result == null ? this : (GroupElementExpression) result;
-    }
-
-    @Override
     public GroupElementExpression substitute(Substitutions variableValues) {
-        GroupElementExpression value = variableValues.getSubstitutionForGroupElementVariable(name);
-        return value == null ? this : value;
+        Expression value = variableValues.getSubstitution(this);
+        return value == null ? this : (GroupElementExpression) value;
     }
 
     @Override

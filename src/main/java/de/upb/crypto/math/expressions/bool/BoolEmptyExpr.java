@@ -15,11 +15,6 @@ public class BoolEmptyExpr implements BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Function<String, Expression> substitutionMap) {
-        return this;
-    }
-
-    @Override
     public BooleanExpression substitute(Substitutions variableValues) {
         return this;
     }

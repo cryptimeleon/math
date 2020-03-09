@@ -1,11 +1,14 @@
 package de.upb.crypto.math.expressions;
 
 import de.upb.crypto.math.expressions.bool.BoolConstantExpr;
+import de.upb.crypto.math.expressions.bool.BoolVariableExpr;
 import de.upb.crypto.math.expressions.bool.BooleanExpression;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.GroupVariableExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.structures.integers.IntegerElement;
@@ -106,20 +109,22 @@ public class ValueBundle implements Substitutions {
     }
 
     @Override
-    public GroupElementExpression getSubstitutionForGroupElementVariable(String key) {
-        GroupElement elem = getGroupElement(key);
-        return elem == null ? null : new GroupElementConstantExpr(elem);
-    }
+    public Expression getSubstitution(VariableExpression variable) {
+        if (variable instanceof GroupVariableExpr) {
+            GroupElement result = getGroupElement(variable.getName());
+            return result == null ? null : new GroupElementConstantExpr(result);
+        }
 
-    @Override
-    public ExponentExpr getSubstitutionForExponentVariable(String key) {
-        BigInteger elem = getInteger(key);
-        return elem == null ? null : new ExponentConstantExpr(elem);
-    }
+        if (variable instanceof ExponentVariableExpr) {
+            BigInteger result = getInteger(variable.getName());
+            return result == null ? null : new ExponentConstantExpr(result);
+        }
 
-    @Override
-    public BooleanExpression getSubstitutionForBooleanVariable(String key) {
-        Boolean elem = getBoolean(key);
-        return elem == null ? null : new BoolConstantExpr(elem);
+        if (variable instanceof BoolVariableExpr) {
+            Boolean result = getBoolean(variable.getName());
+            return result == null ? null : new BoolConstantExpr(result);
+        }
+
+        return null;
     }
 }

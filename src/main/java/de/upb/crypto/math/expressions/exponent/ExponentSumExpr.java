@@ -36,11 +36,6 @@ public class ExponentSumExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentSumExpr substitute(Function<String, Expression> substitutionMap) {
-        return new ExponentSumExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
     public ExponentSumExpr substitute(Substitutions variableValues) {
         return new ExponentSumExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }

@@ -23,11 +23,6 @@ public class GroupElementConstantExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElementConstantExpr substitute(Function<String, Expression> substitutionMap) {
-        return this;
-    }
-
-    @Override
     public GroupElementConstantExpr substitute(Substitutions variableValues) {
         return this;
     }

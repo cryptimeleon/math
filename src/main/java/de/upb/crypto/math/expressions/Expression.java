@@ -11,19 +11,13 @@ import java.util.function.Function;
 public interface Expression {
 
     /**
-     * Returns an Expression where (some) variables have been substituted with the given expressions.
-     * @param substitutionMap a map, where variables s will be substituted with substitutionMap(s). Output null if no substitution should take place for the given variable.
-     */
-    Expression substitute(Function<String, Expression> substitutionMap);
-
-    /**
      * Returns an Expression where (some) variables have been substituted with other given expressions.
      * One example use is with ValueBundle. substitute(valueBundle) inserts concrete values from the ValueBundle into variables.
      */
     Expression substitute(Substitutions values);
 
     default Expression substitute(String variable, Expression substitution) {
-        return substitute(name -> name.equals(variable) ? substitution : null);
+        return substitute(expr -> expr.getName().equals(variable) ? substitution : null);
     }
 
     /**

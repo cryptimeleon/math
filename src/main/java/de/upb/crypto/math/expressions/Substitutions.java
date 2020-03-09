@@ -9,24 +9,9 @@ import de.upb.crypto.math.expressions.group.GroupElementExpression;
  */
 public interface Substitutions {
     /**
-     * Defines how to replace a GroupVariableExpr with another expression.
-     * @param key name of the variable to replace
+     * Defines how to replace a VariableExpression with another expression.
+     * @param variable the variable to replace
      * @return an expression to replace the variable with, or null if nothing shall be done for that variable.
      */
-    GroupElementExpression getSubstitutionForGroupElementVariable(String key);
-
-    /**
-     * Defines how to replace an ExponentVariableExpr with another expression.
-     * @param key name of the variable to replace
-     * @return an expression to replace the variable with, or null if nothing shall be done for that variable.
-     */
-    ExponentExpr getSubstitutionForExponentVariable(String key);
-
-
-    /**
-     * Defines how to replace a BoolVariableExpr with another expression.
-     * @param key name of the variable to replace
-     * @return an expression to replace the variable with, or null if nothing shall be done for that variable.
-     */
-    BooleanExpression getSubstitutionForBooleanVariable(String key);
+    Expression getSubstitution(VariableExpression variable);
 }

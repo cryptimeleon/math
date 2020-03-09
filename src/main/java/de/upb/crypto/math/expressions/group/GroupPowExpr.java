@@ -30,11 +30,6 @@ public class GroupPowExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupPowExpr substitute(Function<String, Expression> substitutionMap) {
-        return new GroupPowExpr(base.substitute(substitutionMap), exponent.substitute(substitutionMap));
-    }
-
-    @Override
     public GroupPowExpr substitute(Substitutions variableValues) {
         return new GroupPowExpr(base.substitute(variableValues), exponent.substitute(variableValues));
     }

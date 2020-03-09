@@ -31,11 +31,6 @@ public class ExponentConstantExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentConstantExpr substitute(Function<String, Expression> substitutionMap) {
-        return this;
-    }
-
-    @Override
     public ExponentConstantExpr substitute(Substitutions variableValues) {
         return this;
     }

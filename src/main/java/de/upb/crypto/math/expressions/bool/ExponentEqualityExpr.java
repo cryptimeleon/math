@@ -22,12 +22,7 @@ public class ExponentEqualityExpr implements BooleanExpression {
     }
 
     @Override
-    public ExponentEqualityExpr substitute(Function<String, Expression> substitutionMap) {
-        return new ExponentEqualityExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
-    public BooleanExpression substitute(Substitutions variableValues) {
+    public ExponentEqualityExpr substitute(Substitutions variableValues) {
         return new ExponentEqualityExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }
 
