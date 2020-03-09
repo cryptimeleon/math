@@ -83,7 +83,7 @@ public class ExtensionField implements Field {
 		/*if(this.getCubeRoot()!=null)
 			o.put("cubeRoot", this.getCubeRoot().getRepresentation());*/
         o.put("constant", this.constant.getRepresentation());
-        o.put("extensionDegree", new IntegerRepresentation(extensionDegree));
+        o.put("extensionDegree", new BigIntegerRepresentation(extensionDegree));
         //o.put("baseField", this.constant.getStructure().getRepresentation());
         o.put("baseField", new RepresentableRepresentation(constant.getStructure()));
         return o;
@@ -97,8 +97,7 @@ public class ExtensionField implements Field {
         Field baseField = (Field) ((RepresentableRepresentation) o.get("baseField")).recreateRepresentable();
 
 
-        IntegerRepresentation i = (IntegerRepresentation) o.get("extensionDegree");
-        init(baseField.getElement(o.get("constant")), (int) i.get());
+        init(baseField.getElement(o.get("constant")), o.get("extensionDegree").bigInt().get().intValueExact());
 
         if (o.get("cubeRoot") != null)
             this.setCubeRoot(this.getElement(o.get("cubeRoot")));

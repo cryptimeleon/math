@@ -33,13 +33,6 @@ public abstract class Representation implements Serializable {
     /**
      * Shorthand for typecast
      */
-    public BooleanRepresentation bool() {
-        return (BooleanRepresentation) this;
-    }
-
-    /**
-     * Shorthand for typecast
-     */
     public ByteArrayRepresentation bytes() {
         return (ByteArrayRepresentation) this;
     }

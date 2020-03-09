@@ -83,8 +83,20 @@ public class AnnotatedUbrUtil {
         }
         ByteAccumulator nonNullAcc = new EscapingByteAccumulator(accumulator, nullSymbol);
 
-        if (obj instanceof UniqueByteRepresentable)
-            return ((UniqueByteRepresentable) obj).updateAccumulator(nonNullAcc);
+        if (obj instanceof UniqueByteRepresentable) {
+            ((UniqueByteRepresentable) obj).updateAccumulator(nonNullAcc);
+            return accumulator;
+        }
+
+        if (obj instanceof byte[]) {
+            nonNullAcc.append((byte[]) obj);
+            return accumulator;
+        }
+
+        if (obj instanceof Byte) {
+            nonNullAcc.append((byte) obj);
+            return accumulator;
+        }
 
         if (obj instanceof String) {
             nonNullAcc.append(((String) obj).getBytes(StandardCharsets.UTF_8));
@@ -116,34 +128,13 @@ public class AnnotatedUbrUtil {
             return accumulator;
         }
 
-        if (obj instanceof Set) { //need to ensure proper ordering
-            byte[][] ubrs = new byte[((Set) obj).size()][];
-            int i = 0;
+        if (obj instanceof Map) {
+            accumulateMap(nonNullAcc, (Map) obj);
+            return accumulator;
+        }
 
-            //Collect escaped ubrs of objects within the set
-            for (Object obj2 : (Set) obj) {
-                ByteAccumulator acc = new EscapingByteAccumulator(new EscapingByteAccumulator(new ByteArrayAccumulator()), nullSymbol);
-                accumulateObject(acc, obj2);
-                ubrs[i++] = acc.extractBytes();
-            }
-
-            //Sort and then append to actual accumulator
-            Arrays.sort(ubrs, (o1, o2) -> { //Comparator doesn't matter too much, just needs to be consistent
-                //Sort by length first
-                if (o1.length < o2.length)
-                    return -1;
-                if (o1.length > o2.length)
-                    return 1;
-                //Arrays of same length are tie-broken by their first unequal byte
-                for (int j = 0; j < o1.length; j++) {
-                    if (o1[j] < o2[j])
-                        return -1;
-                    if (o1[j] > o2[j])
-                        return 1;
-                }
-                return 0; //if this happens, the arrays are actually equal
-            });
-
+        if (obj instanceof Set) {
+            accumulateSet(nonNullAcc, (Set) obj);
             return accumulator;
         }
 
@@ -172,6 +163,75 @@ public class AnnotatedUbrUtil {
         }
 
         return accumulator;
+    }
+
+    private static ByteAccumulator accumulateSet(ByteAccumulator accumulator, Set obj) {
+        byte[][] ubrs = new byte[(obj).size()][];
+        int i = 0;
+
+        //Gameplan: reduce to accumulateList by ordering the objects by their UBR
+
+        //Collect objects within the set
+        for (Object obj2 : obj) {
+            ByteAccumulator acc = new ByteArrayAccumulator();
+            accumulateObject(acc, obj2);
+            ubrs[i++] = acc.extractBytes();
+        }
+
+        //Sort
+        Arrays.sort(ubrs, (o1, o2) -> { //Comparator doesn't matter too much, just needs to be consistent
+            //Sort by length first
+            if (o1.length < o2.length)
+                return -1;
+            if (o1.length > o2.length)
+                return 1;
+            //Arrays of same length are tie-broken by their first unequal byte
+            for (int j = 0; j < o1.length; j++) {
+                if (o1[j] < o2[j])
+                    return -1;
+                if (o1[j] > o2[j])
+                    return 1;
+            }
+            return 0; //if this happens, the arrays are actually equal
+        });
+
+        return accumulateList(accumulator, Arrays.asList(ubrs));
+    }
+
+    private static ByteAccumulator accumulateMap(ByteAccumulator accumulator, Map obj) {
+        byte[][][] ubrs = new byte[obj.size()][][]; //one entry is a pair [k, v], where k and v are byte arrays.
+        int i = 0;
+
+        //Collect escaped ubrs of keys and values within the map
+        for (Object key : obj.keySet()) {
+            ByteAccumulator accKey = new ByteArrayAccumulator();
+            ByteAccumulator accVal = new ByteArrayAccumulator();
+            accumulateObject(accKey, key);
+            accumulateObject(accVal, obj.get(key));
+            ubrs[i++] = new byte[][] { accKey.extractBytes(), accVal.extractBytes() };
+        }
+
+        //Sort
+        Arrays.sort(ubrs, (o1, o2) -> {
+            //Sort by key (first field)
+            byte[] key1 = o1[0];
+            byte[] key2 = o2[0];
+            //Sort by length first
+            if (key1.length < key2.length)
+                return -1;
+            if (key1.length > key2.length)
+                return 1;
+            //Arrays of same length are tie-broken by their first unequal byte
+            for (int j = 0; j < o1.length; j++) {
+                if (key1[j] < key2[j])
+                    return -1;
+                if (key1[j] > key2[j])
+                    return 1;
+            }
+            return 0; //if this happens, the arrays are actually equal
+        });
+
+        return accumulateList(accumulator, Arrays.asList(ubrs));
     }
 
     private static boolean hasAnnotation(Field field) {

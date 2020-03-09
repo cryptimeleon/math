@@ -327,16 +327,8 @@ public class AnnotatedRepresentationUtil {
             return repr.bigInt().get();
         }
 
-        if (repr instanceof IntegerRepresentation) {
-            return (int) ((IntegerRepresentation) repr).get();
-        }
-
         if (repr instanceof StringRepresentation) {
             return repr.str().get();
-        }
-
-        if (repr instanceof BooleanRepresentation) {
-            return repr.bool().get();
         }
 
         if (repr instanceof ByteArrayRepresentation) {
@@ -559,7 +551,7 @@ public class AnnotatedRepresentationUtil {
 
         if (fieldValue instanceof Integer) {
             Integer integer = (Integer) fieldValue;
-            return new IntegerRepresentation(integer);
+            return new BigIntegerRepresentation(integer);
         }
 
         if (fieldValue instanceof String) {
@@ -569,7 +561,7 @@ public class AnnotatedRepresentationUtil {
 
         if (fieldValue instanceof Boolean) {
             Boolean bool = (Boolean) fieldValue;
-            return new BooleanRepresentation(bool);
+            return new BigIntegerRepresentation(bool ? 1 : 0);
         }
 
         if (fieldValue instanceof byte[]) {

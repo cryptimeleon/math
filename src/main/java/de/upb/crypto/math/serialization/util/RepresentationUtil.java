@@ -77,8 +77,6 @@ public class RepresentationUtil {
             base.put(name, new RepresentableRepresentation((Representable) value));
         else if (value instanceof String)
             base.put(name, new StringRepresentation((String) value));
-        else if (value instanceof Boolean)
-            base.put(name, new BooleanRepresentation((Boolean) value));
         else if (value instanceof byte[])
             base.put(name, new ByteArrayRepresentation((byte[]) value));
 		/*else if (value instanceof List<?>) { //this is commented out as in restoreStandaloneRepresentable, we cannot reverse this, as we don't know the concrete type of the list
@@ -115,8 +113,6 @@ public class RepresentationUtil {
             value = r.repr().recreateRepresentable();
         else if (r instanceof StringRepresentation)
             value = r.str().get();
-        else if (r instanceof BooleanRepresentation)
-            value = r.bool().get();
         else if (r instanceof ByteArrayRepresentation)
             value = r.bytes().get();
         else
