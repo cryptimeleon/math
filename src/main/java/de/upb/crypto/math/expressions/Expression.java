@@ -1,9 +1,11 @@
 package de.upb.crypto.math.expressions;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Expression
@@ -50,6 +52,29 @@ public interface Expression {
      * By contract, implementing objects should at least regard dependent variables as child VariableExpressions.
      */
     void treeWalk(Consumer<Expression> visitor);
+
+    /**
+     * Calls the given accumulator in a pre-order (this, treeWalk[left child], treeWalk[right child]) fashion.
+     * One can view the implementation as follows:
+     * v = initialValue
+     * v = accumulator(v, expr)
+     * v = accumulator(v, [left subtree]) //recursive call
+     * v = accumulator(v, [right subtree]) //recursive call
+     *
+     */
+    default <T> T treeWalk(BiFunction<T, Expression, T> accumulator, T initialValue) {
+        ArrayList<T> value = new ArrayList<T>(); //workaround for needing an (effectively) final variable in tree walk
+        value.add(initialValue);
+        treeWalk(expr -> value.set(0, accumulator.apply(value.get(0), expr)));
+        return value.get(0);
+    }
+
+    /**
+     * Checks if an expression fulfilling the given predicate is contained in this expression.
+     */
+    default boolean containsExprMatchingPredicate(Predicate<Expression> predicate) { //TODO can be more efficiently implemented (end evaluation as soon as a predicate match has been found)
+        return treeWalk((Boolean hasPredicateExpr, Expression expr) -> predicate.test(expr) || hasPredicateExpr, false);
+    }
 
     /**
      * Returns an equivalent expression that should be faster to evaluate
