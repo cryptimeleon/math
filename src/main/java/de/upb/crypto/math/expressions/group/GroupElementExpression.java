@@ -40,7 +40,7 @@ public abstract class GroupElementExpression implements Expression {
         return evaluator.evaluate(this);
     }
 
-    public GroupElement evaluate(ValueBundle variableValues) {
+    public GroupElement evaluate(Substitutions variableValues) {
         return substitute(variableValues).evaluate();
     }
 
