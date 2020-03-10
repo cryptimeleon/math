@@ -5,6 +5,7 @@ import de.upb.crypto.math.serialization.converter.JSONConverter;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -57,6 +58,14 @@ public class ObjectRepresentation extends Representation implements Iterable<Ent
         if (key == null || key.isEmpty())
             throw new RuntimeException("Cannot use empty or null keys");
         map.put(key, value);
+    }
+
+    /**
+     * If key is not in this ObjectRepresentation, calls the supplier and inserts into this ObjectRepresentation whatever it returns.
+     * @return The Representation stored at key after this operation
+     */
+    public Representation putIfMissing(String key, Supplier<Representation> generatorOfValueToPut) {
+        return map.computeIfAbsent(key, k -> generatorOfValueToPut.get());
     }
 
     /**
