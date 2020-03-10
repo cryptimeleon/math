@@ -25,9 +25,9 @@ public interface Expression {
     /**
      * Returns the set of variables the value of this expression depends on.
      */
-    default Set<String> getVariables() {
-        Set<String> result = new HashSet<>();
-        treeWalk(node -> { if (node instanceof VariableExpression) result.add(((VariableExpression) node).getName()); });
+    default Set<VariableExpression> getVariables() {
+        Set<VariableExpression> result = new HashSet<>();
+        treeWalk(node -> { if (node instanceof VariableExpression) result.add(((VariableExpression) node)); });
         return result;
     }
 
