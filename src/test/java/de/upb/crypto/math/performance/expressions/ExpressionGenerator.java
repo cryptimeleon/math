@@ -33,12 +33,12 @@ public class ExpressionGenerator {
         for (int i = 0; i < bases.length; ++i) {
             bases[i] = group.getUniformlyRandomNonNeutral();
         }
-        System.out.println("Chose bases: " + Arrays.toString(bases));
+        //System.out.println("Chose bases: " + Arrays.toString(bases));
         Zn.ZnElement[] exponents = new Zn.ZnElement[numExponents];
         for (int i = 0; i < exponents.length; ++i) {
             exponents[i] = group.getZn().getUniformlyRandomElement();
         }
-        System.out.println("Chose exponents: " + Arrays.toString(exponents));
+        //System.out.println("Chose exponents: " + Arrays.toString(exponents));
         GroupElementExpression expr = group.expr();
         if (exponents.length >= bases.length) {
             for (int i = 0; i < exponents.length; ++i) {

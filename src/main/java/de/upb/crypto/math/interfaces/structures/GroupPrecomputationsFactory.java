@@ -130,8 +130,9 @@ public class GroupPrecomputationsFactory {
             List<GroupElement> powerProductsEntry = powerProducts
                     .computeIfAbsent(key, k -> new ArrayList<>(numPrecomputedPowers));
             // prefill arraylist
+            GroupElement neutralElement = group.getNeutralElement();
             for (int i = 0; i < numPrecomputedPowers; ++i) {
-                powerProductsEntry.add(group.getNeutralElement());
+                powerProductsEntry.add(neutralElement);
             }
 
             //powerProductsEntry.set(0, group.getNeutralElement());

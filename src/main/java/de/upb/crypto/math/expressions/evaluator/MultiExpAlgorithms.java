@@ -30,7 +30,6 @@ public class MultiExpAlgorithms {
      */
     public static GroupElement simultaneousSlidingWindowMulExp(MultiExpContext multiExpContext,
                                                          int windowSize, boolean enableCaching) {
-        // TODO: we should not do any precomputations for bases with exponents 1
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
         List<GroupElement> powerProducts;
@@ -49,7 +48,7 @@ public class MultiExpAlgorithms {
             final int finalj = j;
             if (IntStream.range(0, numBases)
                     .noneMatch(it -> exponents.get(it).testBit(finalj))) {
-                A = A.op(A);
+                A = A.square();
                 j--;
             } else {
                 int jNew = Math.max(j - windowSize, -1);
@@ -76,12 +75,12 @@ public class MultiExpAlgorithms {
                     e |= ePart;
                 }
                 while (j >= J) {
-                    A = A.op(A);
+                    A = A.square();
                     j--;
                 }
                 A = A.op(powerProducts.get(e));
                 while (j > jNew) {
-                    A = A.op(A);
+                    A = A.square();
                     j--;
                 }
             }
@@ -167,7 +166,7 @@ public class MultiExpAlgorithms {
         }
         for (int j = longestExponentBitLength - 1; j >= 0; j--) {
             if (j != longestExponentBitLength - 1) {
-                A = A.op(A);
+                A = A.square();
             }
             for (int i = 0; i < numBases; i++) {
                 if (wh[i] == -1 && exponents.get(i).testBit(j)) {
@@ -206,6 +205,7 @@ public class MultiExpAlgorithms {
                                                         boolean enableCaching) {
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
+        // TODO: Should add this list to precomputations, can save like 5% runtime for constructing the list
         List<List<GroupElement>> oddPowers = new ArrayList<>();
         int maxExp = (1 << windowSize) - 1;
         if (enableCaching) {
