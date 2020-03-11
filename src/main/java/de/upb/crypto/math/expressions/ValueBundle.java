@@ -1,5 +1,14 @@
 package de.upb.crypto.math.expressions;
 
+import de.upb.crypto.math.expressions.bool.BoolConstantExpr;
+import de.upb.crypto.math.expressions.bool.BoolVariableExpr;
+import de.upb.crypto.math.expressions.bool.BooleanExpression;
+import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
+import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.GroupVariableExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.structures.integers.IntegerElement;
@@ -12,7 +21,7 @@ import java.util.HashMap;
 /**
  * A key-value mapping used for passing around named algebraic values.
  */
-public class ValueBundle {
+public class ValueBundle implements Substitutions {
     protected HashMap<String, GroupElement> groupElems;
     protected HashMap<String, BigInteger> ints;
     protected HashMap<String, RingElement> ringElems;
@@ -97,5 +106,25 @@ public class ValueBundle {
         groupElems.remove(key); //enforce unique keys between the types
         ringElems.remove(key);
         ints.remove(key);
+    }
+
+    @Override
+    public Expression getSubstitution(VariableExpression variable) {
+        if (variable instanceof GroupVariableExpr) {
+            GroupElement result = getGroupElement(variable.getName());
+            return result == null ? null : new GroupElementConstantExpr(result);
+        }
+
+        if (variable instanceof ExponentVariableExpr) {
+            BigInteger result = getInteger(variable.getName());
+            return result == null ? null : new ExponentConstantExpr(result);
+        }
+
+        if (variable instanceof BoolVariableExpr) {
+            Boolean result = getBoolean(variable.getName());
+            return result == null ? null : new BoolConstantExpr(result);
+        }
+
+        return null;
     }
 }

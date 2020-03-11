@@ -1,9 +1,6 @@
 package de.upb.crypto.math.expressions.exponent;
 
-import de.upb.crypto.math.expressions.EvaluationException;
-import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.ValueBundle;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.*;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -27,15 +24,9 @@ public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
     }
 
     @Override
-    public ExponentExpr substitute(Function<String, Expression> substitutionMap) {
-        Expression result = substitutionMap.apply(name);
+    public ExponentExpr substitute(Substitutions variableValues) {
+        Expression result = variableValues.getSubstitution(this);
         return result == null ? this : (ExponentExpr) result;
-    }
-
-    @Override
-    public ExponentExpr substitute(ValueBundle variableValues) {
-        BigInteger result = variableValues.getInteger(name);
-        return result == null ? this : new ExponentConstantExpr(result);
     }
 
     @Override

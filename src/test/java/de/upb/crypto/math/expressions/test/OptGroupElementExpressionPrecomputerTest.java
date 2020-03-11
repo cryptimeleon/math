@@ -2,6 +2,7 @@ package de.upb.crypto.math.expressions.test;
 
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.bool.*;
 import de.upb.crypto.math.expressions.evaluator.ExponentExpressionAnalyzer;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
@@ -80,9 +81,7 @@ public class OptGroupElementExpressionPrecomputerTest {
                 .rewriteTerms(expr, new RuleApplicator(rules));
         assert newExpr instanceof GroupPowExpr;
         GroupPowExpr powExpr = (GroupPowExpr) newExpr;
-        assert powExpr.getExponent().getVariables().contains("x");
-        assert powExpr.getExponent().getVariables().contains("a");
-        assert powExpr.getExponent().getVariables().contains("b");
+        assert powExpr.getExponent().getVariables().stream().map(VariableExpression::getName).sorted().reduce("", (s1, s2) -> s1+s2).equals("abx");
         assert powExpr.getBase() instanceof  PairingExpr;
         ValueBundle valueBundle = new ValueBundle();
         valueBundle.put("x", BigInteger.valueOf(3));

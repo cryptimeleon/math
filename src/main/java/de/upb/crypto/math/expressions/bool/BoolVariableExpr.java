@@ -1,9 +1,6 @@
 package de.upb.crypto.math.expressions.bool;
 
-import de.upb.crypto.math.expressions.EvaluationException;
-import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.ValueBundle;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.*;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,15 +23,9 @@ public class BoolVariableExpr implements VariableExpression, BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Function<String, Expression> substitutionMap) {
-        Expression result = substitutionMap.apply(name);
+    public BooleanExpression substitute(Substitutions variableValues) {
+        Expression result = variableValues.getSubstitution(this);
         return result == null ? this : (BooleanExpression) result;
-    }
-
-    @Override
-    public BooleanExpression substitute(ValueBundle variableValues) {
-        Boolean result = variableValues.getBoolean(name);
-        return result == null ? this : new BoolConstantExpr(result);
     }
 
     @Override

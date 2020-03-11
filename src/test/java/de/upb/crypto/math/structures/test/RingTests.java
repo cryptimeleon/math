@@ -28,9 +28,9 @@ import static org.junit.Assert.*;
  */
 @RunWith(Parameterized.class)
 public class RingTests extends StructureTests {
-    private Ring ring;
-    private Supplier<RingElement> elementSupplier;
-    private Supplier<RingElement> unitElementSupplier;
+    protected Ring ring;
+    protected Supplier<RingElement> elementSupplier;
+    protected Supplier<RingElement> unitElementSupplier;
 
     public RingTests(TestParams params) {
         this.ring = params.ring;

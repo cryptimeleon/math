@@ -2,6 +2,7 @@ package de.upb.crypto.math.expressions.group;
 
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
@@ -23,12 +24,7 @@ public class GroupInvExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupInvExpr substitute(Function<String, Expression> substitutionMap) {
-        return new GroupInvExpr(base.substitute(substitutionMap));
-    }
-
-    @Override
-    public GroupInvExpr substitute(ValueBundle variableValues) {
+    public GroupInvExpr substitute(Substitutions variableValues) {
         return new GroupInvExpr(base.substitute(variableValues));
     }
 

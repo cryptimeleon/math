@@ -14,37 +14,10 @@ public class GroupElementExpressionAnalyzer {
      * @param expr Expression to check.
      * @param groupType The type of group expression to look for.
      * @param expType The type of exponent expression to look for in case we reach an exponentiation.
-     * @return true if expression contains a variable expression, else false.
+     * @return true if expression contains an expression of either of the given types, else false.
      */
     public static boolean containsTypeExpr(GroupElementExpression expr, Class<?> groupType, Class<?> expType) {
-        if (groupType.isInstance(expr)) {
-            return true;
-        }
-        if (expr instanceof GroupOpExpr) {
-            GroupOpExpr opExpr = (GroupOpExpr) expr;
-            return containsTypeExpr(opExpr.getLhs(), groupType, expType)
-                    || containsTypeExpr(opExpr.getRhs(), groupType, expType);
-        } else if (expr instanceof GroupInvExpr) {
-            GroupInvExpr invExpr = (GroupInvExpr) expr;
-            return containsTypeExpr(invExpr.getBase(), groupType, expType);
-        } else if (expr instanceof GroupPowExpr) {
-            GroupPowExpr powExpr = (GroupPowExpr) expr;
-            return containsTypeExpr(powExpr.getBase(), groupType, expType) ||
-                    ExponentExpressionAnalyzer.containsTypeExpr(powExpr.getExponent(), expType);
-        } else if (expr instanceof GroupElementConstantExpr) {
-            return false;
-        } else if (expr instanceof GroupEmptyExpr) {
-            return false;
-        } else if (expr instanceof PairingExpr) {
-            PairingExpr pairingExpr = (PairingExpr) expr;
-            return containsTypeExpr(pairingExpr.getLhs(), groupType, expType)
-                    || containsTypeExpr(pairingExpr.getRhs(), groupType, expType);
-        } else if (expr instanceof GroupVariableExpr) {
-            return false;
-        } else {
-            throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper group expression.");
-        }
+        return expr.containsExprMatchingPredicate(ex -> groupType != null && groupType.isInstance(ex) || expType != null && expType.isInstance(ex));
     }
 
     public static boolean containsTypeExpr(GroupElementExpression expr, Class<?> groupType) {

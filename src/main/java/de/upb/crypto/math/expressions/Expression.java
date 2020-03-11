@@ -1,9 +1,11 @@
 package de.upb.crypto.math.expressions;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Expression
@@ -11,27 +13,21 @@ import java.util.function.Function;
 public interface Expression {
 
     /**
-     * Returns an Expression where (some) variables have been substituted with the given expressions.
-     * @param substitutionMap a map, where variables s will be substituted with substitutionMap(s). Output null if no substitution should take place for the given variable.
+     * Returns an Expression where (some) variables have been substituted with other given expressions.
+     * One example use is with ValueBundle. substitute(valueBundle) inserts concrete values from the ValueBundle into variables.
      */
-    Expression substitute(Function<String, Expression> substitutionMap);
-
-    /**
-     * Returns an Expression where (some) variables have been substituted with the given expressions.
-     * @param values plugs in the values from the ValueBundle into this Expression (i.e. for any variable in this expression, the variable is replaced with its value in the ValueBundle if it exists)
-     */
-    Expression substitute(ValueBundle values);
+    Expression substitute(Substitutions values);
 
     default Expression substitute(String variable, Expression substitution) {
-        return substitute(name -> name.equals(variable) ? substitution : null);
+        return substitute(expr -> expr.getName().equals(variable) ? substitution : null);
     }
 
     /**
      * Returns the set of variables the value of this expression depends on.
      */
-    default Set<String> getVariables() {
-        Set<String> result = new HashSet<>();
-        treeWalk(node -> { if (node instanceof VariableExpression) result.add(((VariableExpression) node).getName()); });
+    default Set<VariableExpression> getVariables() {
+        Set<VariableExpression> result = new HashSet<>();
+        treeWalk(node -> { if (node instanceof VariableExpression) result.add(((VariableExpression) node)); });
         return result;
     }
 
@@ -40,7 +36,7 @@ public interface Expression {
      * without substituting the variable with a concrete value)
      */
     default boolean containsVariables() {
-        return getVariables().isEmpty();
+        return !getVariables().isEmpty();
     }
 
     /**
@@ -56,6 +52,29 @@ public interface Expression {
      * By contract, implementing objects should at least regard dependent variables as child VariableExpressions.
      */
     void treeWalk(Consumer<Expression> visitor);
+
+    /**
+     * Calls the given accumulator in a pre-order (this, treeWalk[left child], treeWalk[right child]) fashion.
+     * One can view the implementation as follows:
+     * v = initialValue
+     * v = accumulator(v, expr)
+     * v = accumulator(v, [left subtree]) //recursive call
+     * v = accumulator(v, [right subtree]) //recursive call
+     *
+     */
+    default <T> T treeWalk(BiFunction<T, Expression, T> accumulator, T initialValue) {
+        ArrayList<T> value = new ArrayList<T>(); //workaround for needing an (effectively) final variable in tree walk
+        value.add(initialValue);
+        treeWalk(expr -> value.set(0, accumulator.apply(value.get(0), expr)));
+        return value.get(0);
+    }
+
+    /**
+     * Checks if an expression fulfilling the given predicate is contained in this expression.
+     */
+    default boolean containsExprMatchingPredicate(Predicate<Expression> predicate) { //TODO can be more efficiently implemented (end evaluation as soon as a predicate match has been found)
+        return treeWalk((Boolean hasPredicateExpr, Expression expr) -> predicate.test(expr) || hasPredicateExpr, false);
+    }
 
     /**
      * Returns an equivalent expression that should be faster to evaluate

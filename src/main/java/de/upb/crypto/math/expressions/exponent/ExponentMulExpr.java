@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.structures.zn.Zn;
 
@@ -35,12 +36,7 @@ public class ExponentMulExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentMulExpr substitute(Function<String, Expression> substitutionMap) {
-        return new ExponentMulExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
-    public ExponentMulExpr substitute(ValueBundle variableValues) {
+    public ExponentMulExpr substitute(Substitutions variableValues) {
         return new ExponentMulExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }
 

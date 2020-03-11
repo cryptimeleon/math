@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.structures.zn.Zn;
 
@@ -35,12 +36,7 @@ public class ExponentSumExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentSumExpr substitute(Function<String, Expression> substitutionMap) {
-        return new ExponentSumExpr(lhs.substitute(substitutionMap), rhs.substitute(substitutionMap));
-    }
-
-    @Override
-    public ExponentSumExpr substitute(ValueBundle variableValues) {
+    public ExponentSumExpr substitute(Substitutions variableValues) {
         return new ExponentSumExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
     }
 

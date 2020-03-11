@@ -48,16 +48,16 @@ public class StandaloneRepresentationHandler implements RepresentationHandler {
             return repr.bigInt().get();
         }
 
-        if (type.isAssignableFrom(Integer.class) && repr instanceof IntegerRepresentation) {
-            return (int) ((IntegerRepresentation) repr).get();
+        if (type.isAssignableFrom(Integer.class) && repr instanceof BigIntegerRepresentation) {
+            return repr.bigInt().get().intValueExact();
         }
 
         if (type.isAssignableFrom(String.class) && repr instanceof StringRepresentation) {
             return repr.str().get();
         }
 
-        if (type.isAssignableFrom(Boolean.class) && repr instanceof BooleanRepresentation) {
-            return repr.bool().get();
+        if (type.isAssignableFrom(Boolean.class) && repr instanceof BigIntegerRepresentation) {
+            return !repr.bigInt().get().equals(BigInteger.ZERO);
         }
 
         if (type.isAssignableFrom(byte[].class) && repr instanceof ByteArrayRepresentation) {
@@ -95,7 +95,7 @@ public class StandaloneRepresentationHandler implements RepresentationHandler {
 
         if (value instanceof Integer) {
             Integer integer = (Integer) value;
-            return new IntegerRepresentation(integer);
+            return new BigIntegerRepresentation(integer);
         }
 
         if (value instanceof String) {
@@ -105,7 +105,7 @@ public class StandaloneRepresentationHandler implements RepresentationHandler {
 
         if (value instanceof Boolean) {
             Boolean bool = (Boolean) value;
-            return new BooleanRepresentation(bool);
+            return new BigIntegerRepresentation(bool ? 1 : 0);
         }
 
         if (value instanceof byte[]) {

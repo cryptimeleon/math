@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
 import de.upb.crypto.math.expressions.bool.GroupEqualityExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
@@ -39,11 +40,7 @@ public abstract class GroupElementExpression implements Expression {
         return evaluator.evaluate(this);
     }
 
-    public GroupElement evaluate(Function<String, Expression> substitutionMap) {
-        return substitute(substitutionMap).evaluate(); //TODO implement more efficiently. Needs to be done for BooleanExpr and ExponentExpr, too.
-    }
-
-    public GroupElement evaluate(ValueBundle variableValues) {
+    public GroupElement evaluate(Substitutions variableValues) {
         return substitute(variableValues).evaluate();
     }
 
@@ -119,14 +116,7 @@ public abstract class GroupElementExpression implements Expression {
     }
 
     @Override
-    public abstract GroupElementExpression substitute(Function<String, Expression> substitutionMap);
-
-    @Override
-    public abstract GroupElementExpression substitute(ValueBundle variableValues);
-
-    public GroupElementExpression substitute(String variable, Expression substitution) {
-        return substitute(name -> name.equals(variable) ? substitution : null);
-    }
+    public abstract GroupElementExpression substitute(Substitutions variableValues);
 
     /**
      * Returns the group s.t. this expression evaluates to an element of this group, or null if group is unknown
