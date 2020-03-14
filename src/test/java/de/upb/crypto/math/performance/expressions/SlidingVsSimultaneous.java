@@ -5,7 +5,7 @@ import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluat
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
-import de.upb.crypto.math.pairings.mcl.MclGroup1;
+//import de.upb.crypto.math.pairings.mcl.MclGroup1;
 
 public class SlidingVsSimultaneous {
     public static void main(String[] args) {
@@ -13,7 +13,8 @@ public class SlidingVsSimultaneous {
         int[] expNums = new int[] {2, 5, 10};
         int numRuns = 40;
         int numWarmups = 5;
-        Group group = new MclGroup1();
+        Group group = null;
+        //Group group = new MclGroup1();
         GroupElementExpression[] exprs = new GroupElementExpression[50];
         long[][] mclTimes = new long[baseNums.length][numRuns];
         long[][] multiExpAutoTimes = new long[baseNums.length][numRuns];

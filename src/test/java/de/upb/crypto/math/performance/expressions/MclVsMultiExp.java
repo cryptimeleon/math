@@ -5,8 +5,8 @@ import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluat
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
-import de.upb.crypto.math.pairings.mcl.MclGroup1;
-import de.upb.crypto.math.pairings.mcl.MclGroupT;
+//import de.upb.crypto.math.pairings.mcl.MclGroup1;
+//import de.upb.crypto.math.pairings.mcl.MclGroupT;
 
 /**
  * Benchmark for comparing Mcl naive evaluation vs Java multi-exponentiation via the evaluator.
@@ -15,7 +15,8 @@ public class MclVsMultiExp {
     public static void main(String[] args) {
         int[] baseNums = new int[] {2, 5, 10, 30, 50, 100};
         int[] expNums = new int[] {2, 5, 10, 30, 50, 100};
-        Group group = new MclGroup1();
+        Group group = null;
+        //Group group = new MclGroup1();
         GroupElementExpression[] exprs = new GroupElementExpression[50];
         for (int i = 0; i < baseNums.length; ++i) {
             for (int j = 0; j < exprs.length; ++j) {

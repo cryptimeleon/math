@@ -2,12 +2,13 @@ package de.upb.crypto.math.performance.group;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.mcl.MclGroup1;
-import de.upb.crypto.math.pairings.mcl.MclGroupT;
+//import de.upb.crypto.math.pairings.mcl.MclGroup1;
+//import de.upb.crypto.math.pairings.mcl.MclGroupT;
 
 public class OpVsInv {
     public static void main(String[] args) {
-        Group group = new MclGroup1();
+        Group group = null;
+        //Group group = new MclGroup1();
         for (int k = 0; k < 10; ++k) {
             System.out.println("Benchmark " + k);
             GroupElement[] testElements = new GroupElement[1000];
