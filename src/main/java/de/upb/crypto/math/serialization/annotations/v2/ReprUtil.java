@@ -177,17 +177,12 @@ public class ReprUtil {
      */
     Object restoreField(Field field, Representation topLevelRepr) {
         try {
-            System.out.println(field);
-            System.out.println("1. Is accessible: " + field.isAccessible());
             field.setAccessible(true);
             Object value = field.get(instance);
             if (value != null) {
-                System.out.println("Not null value.");
                 return value;
             }
-            System.out.println("2. Is accessible: " + field.isAccessible());
             value = getHandlerForField(field).deserializeFromRepresentation(topLevelRepr.obj().get(field.getName()), name -> getOrRecreateRestorer(name, topLevelRepr));
-            System.out.println("3. Is accessible: " + field.isAccessible());
             field.set(instance, value);
             return value;
         } catch (IllegalAccessException e) {
