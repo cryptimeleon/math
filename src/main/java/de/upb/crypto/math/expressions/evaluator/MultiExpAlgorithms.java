@@ -258,6 +258,13 @@ public class MultiExpAlgorithms {
         return A;
     }
 
+    /**
+     * Tests if the bit at position {@code index} equals {@code 1}, i.e. is set.
+     * Compared to {@link BigInteger#testBit(int)} also supports a negative index (then always returns {@code false}).
+     * @param n The number to test the bit of.
+     * @param index The index of the bit to test.
+     * @return {@code true} if the bit at position {@code index} is set, {@code false} if not.
+     */
     private static boolean testBit(BigInteger n, int index) {
         if (index < 0) {
             return false;
@@ -265,6 +272,11 @@ public class MultiExpAlgorithms {
         return n.testBit(index);
     }
 
+    /**
+     * Finds the longest bit length of the given exponents.
+     * @param exponents List of exponents to search through.
+     * @return The longest bit length of the given exponents.
+     */
     private static int getLongestExponentBitLength(List<BigInteger> exponents) {
         int max = 1;
         for (BigInteger exp : exponents) {

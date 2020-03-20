@@ -155,6 +155,9 @@ public class OptGroupElementExpressionEvaluatorConfig {
         throw new IllegalArgumentException("Unsupported ForceMultiExpAlgorithmSetting value.");
     }
 
+    /**
+     * Allows forcing the {@link OptGroupElementExpressionEvaluator} to use a specific multi-exponentiation algorithm.
+     */
     public enum ForceMultiExpAlgorithmSetting {
         DISABLED, INTERLEAVED_SLIDING, INTERLEAVED_WNAF, SIMULTANEOUS
     }

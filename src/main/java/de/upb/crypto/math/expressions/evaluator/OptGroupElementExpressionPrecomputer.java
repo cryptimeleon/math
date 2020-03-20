@@ -14,6 +14,11 @@ import de.upb.crypto.math.structures.zn.Zn;
 
 import java.util.*;
 
+/**
+ * Contains precomputation methods used by {@link OptGroupElementExpressionEvaluator}.
+ *
+ * @author Raphael Heitjohann
+ */
 public class OptGroupElementExpressionPrecomputer {
 
     private OptGroupElementExpressionEvaluatorConfig config;

@@ -5,6 +5,9 @@ import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
+/**
+ * Class for evaluating and precomputing the expression without any optimization.
+ */
 public class NaiveGroupElementExpressionEvaluator implements GroupElementExpressionEvaluator {
 
     @Override

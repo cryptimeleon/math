@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Raphael Heitjohann
  */
-class MultiExpContext {
+public class MultiExpContext {
 
     private List<GroupElement> bases;
     private List<BigInteger> exponents;
@@ -23,7 +23,13 @@ class MultiExpContext {
         exponents = new ArrayList<>();
     }
 
-    void addExponentiation(GroupElement base, BigInteger exponent, boolean inInversion) {
+    /**
+     * Add another element to the multi-exponentiation in the form of a base/exponent pair.
+     * @param base The base of the new exponentiation to add.
+     * @param exponent The exponent of the new exponentiation to add.
+     * @param inInversion Whether the exponentiation has to be inverted.
+     */
+    public void addExponentiation(GroupElement base, BigInteger exponent, boolean inInversion) {
         if (exponent.compareTo(BigInteger.ZERO) == 0) {
             return;
         }
@@ -44,7 +50,11 @@ class MultiExpContext {
 
     }
 
-    boolean allBasesSameGroup() {
+    /**
+     * Checks whether all bases in this multi-exponentiation are from the same group.
+     * @return {@code true} if all bases are from the same group, {@code false} if not.
+     */
+    public boolean allBasesSameGroup() {
         if (isEmpty()) {
             return true;
         }
@@ -62,7 +72,7 @@ class MultiExpContext {
      * by evaluating them and then removing them from the multi-exponentiation context.
      * @return Result of evaluating op of all constants on the left.
      */
-    GroupElement evalAndRemoveLeftConstants() {
+    public GroupElement evalAndRemoveLeftConstants() {
         // assume size of bases not 0
         int numLeftConstants = 0;
         while (numLeftConstants < exponents.size()
@@ -83,7 +93,7 @@ class MultiExpContext {
      * Same as for left but for right instead.
      * @return Result of evaluating op of all constants on the right.
      */
-    GroupElement evalAndRemoveRightConstants() {
+    public GroupElement evalAndRemoveRightConstants() {
         // assume size of bases not 0
         int numRightConstants = 0;
         while (numRightConstants < exponents.size()

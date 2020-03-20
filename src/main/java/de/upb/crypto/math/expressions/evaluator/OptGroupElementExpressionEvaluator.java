@@ -7,9 +7,7 @@ import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -18,9 +16,13 @@ import static de.upb.crypto.math.expressions.evaluator.MultiExpAlgorithms.*;
 
 /**
  * Class for optimized evaluation of expressions. Can recognize multi-exponentiations in
- * expression trees and evaluates them using some appropriate multi-exponentiation algorithm.
+ * expression trees and evaluates them using the appropriate multi-exponentiation algorithm.
+ * Furthermore, pre-computation allows for different optimizations such as pre-computing and caching
+ * powers for the used multi-exponentiation algorithm and rewriting of the expression to be more
+ * efficiently evaluable later.
  *
- * For explanation of algorithms see Swante Scholz's master thesis.
+ * Most optimizations can be configured using the {@link OptGroupElementExpressionEvaluatorConfig}
+ * accessible through {@link OptGroupElementExpressionEvaluator#getConfig()}.
  *
  * @author Raphael Heitjohann
  */
@@ -37,12 +39,20 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         this.pairingExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
     }
 
+    /**
+     * Initialize the evaluator with a given configuration.
+     * @param config The configuration to use.
+     */
     public OptGroupElementExpressionEvaluator(OptGroupElementExpressionEvaluatorConfig config) {
         this.config = config;
         this.precomputer = new OptGroupElementExpressionPrecomputer(this.config);
         this.pairingExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
     }
 
+    /**
+     * Evaluate the given expression. Extracts the multi-exponentiation, if available, and uses
+     * the multi-exponentiation algorithm given by the configuration to evaluate it.
+     */
     @Override
     public GroupElement evaluate(GroupElementExpression expr) {
         MultiExpContext multiExpContext = new MultiExpContext();
@@ -90,6 +100,12 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         throw new IllegalArgumentException("Unsupported MultiExpAlgorithm value.");
     }
 
+    /**
+     * Decides whether to use the simultaneous sliding window multi-exponentiation algorithm with caching or
+     * without depending on the configuration, and executes the corresponding algorithm.
+     * @param multiExpContext The multi-exponentiation to evaluate.
+     * @return The result of evaluating the given multi-exponentiation.
+     */
     private GroupElement simultaneousSlidingWindowMulExpWrapper(MultiExpContext multiExpContext) {
         if (config.isEnableCachingSimultaneous() && config.isEnableCachingAllAlgs()) {
             return simultaneousSlidingWindowMulExp(
@@ -106,6 +122,12 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
+    /**
+     * Decides whether to use the interleaving sliding window multi-exponentiation algorithm with caching or without
+     * depending on the configuraation, and executes the corresponding algorithm.
+     * @param multiExpContext The multi-exponentiation to evaluate.
+     * @return The result of evaluating the given multi-exponentiation.
+     */
     private GroupElement interleavingSlidingWindowMultiExpWrapper(MultiExpContext multiExpContext) {
         if (config.isEnableCachingInterleavedSliding() && config.isEnableCachingAllAlgs()) {
             return interleavingSlidingWindowMultiExp(
@@ -122,6 +144,12 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
+    /**
+     * Decides whether to use the interleaving WNAF window multi-exponentiation algorithm with caching or without
+     * depending on the configuraation, and executes the corresponding algorithm.
+     * @param multiExpContext The multi-exponentiation to evaluate.
+     * @return The result of evaluating the given multi-exponentiation.
+     */
     private GroupElement interleavingWnafWindowMultiExpWrapper(MultiExpContext multiExpContext) {
         if (config.isEnableCachingInterleavedWnaf() && config.isEnableCachingAllAlgs()) {
             return interleavingWnafMultiExp(
@@ -143,6 +171,8 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
      * depth-first approach.
      * @param expr Expression to extract multi-exponentiation from.
      * @param inInversion Whether we currently are in an uneven level of inversion.
+     *                    This is important as inversion needs to be propagated to each base/exponent pair
+     *                    that we extract from the expression.
      * @param multiExpContext Storage for extracted multi-exponentiation.
      */
     private void extractMultiExpContext(GroupElementExpression expr, boolean inInversion,
@@ -202,6 +232,15 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
+    /**
+     * Pre-computes given expression to obtain a more efficiently evaluable expression as well as
+     * pre-computes powers and caches them such that later multi-exponentiation can be done more efficiently.
+     * What exactly is done can be configured using the configuration obtainable by
+     * {@link OptGroupElementExpressionEvaluator#getConfig()}.
+     *
+     * @param expr The expression to pre-compute.
+     * @return The pre-computed expression.
+     */
     @Override
     public GroupElementExpression precompute(GroupElementExpression expr) {
         GroupElementExpression newExpr = expr;
@@ -231,6 +270,14 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
     }
 
 
+    /**
+     * Performs the same pre-computations as
+     * {@link OptGroupElementExpressionEvaluator#precompute(GroupElementExpression)} but additionally
+     * performs boolean-specific optimizations such as rewriting {@link GroupEqualityExpr}, and, if enabled,
+     * can merge contained {@link BoolAndExpr} into a multi-exponentiation.
+     * @param expr an expression containing, among others, expressions about this group
+     * @return The pre-computed expression.
+     */
     @Override
     public BooleanExpression precompute(BooleanExpression expr) {
         BooleanExpression newExpr = expr;
@@ -246,6 +293,13 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         return (BooleanExpression) this.precomputeBoolRecursive(newExpr);
     }
 
+    /**
+     * Searches through boolean expression tree and executes
+     * {@link OptGroupElementExpressionEvaluator#precompute(GroupElementExpression)} on the left and right side
+     * of any found {@link GroupEqualityExpr}.
+     * @param expr The expression to pre-compute.
+     * @return Pre-computed expression.
+     */
     private Expression precomputeBoolRecursive(BooleanExpression expr) {
         if (expr instanceof BoolAndExpr) {
             BoolAndExpr andExpr = (BoolAndExpr) expr;
@@ -264,11 +318,8 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             return new BoolNotExpr(
                     (BooleanExpression) this.precomputeBoolRecursive(notExpr.getChild())
             );
-        } else if (expr instanceof BoolEmptyExpr) {
-            return expr;
-        } else if (expr instanceof BoolVariableExpr) {
-            return expr;
-        } else if (expr instanceof ExponentEqualityExpr) {
+        } else if (expr instanceof BoolEmptyExpr || expr instanceof BoolVariableExpr
+                || expr instanceof ExponentEqualityExpr) {
             return expr;
         } else if (expr instanceof GroupEqualityExpr) {
             GroupEqualityExpr equalityExpr = (GroupEqualityExpr) expr;
@@ -282,6 +333,11 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         }
     }
 
+    /**
+     * Retrieve {@link OptGroupElementExpressionEvaluatorConfig} used to configure the evaluator. Allows
+     * for changing the configuration via the setters of the object.
+     * @return The configuration.
+     */
     public OptGroupElementExpressionEvaluatorConfig getConfig() {
         return this.config;
     }
