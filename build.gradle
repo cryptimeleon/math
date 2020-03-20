@@ -29,7 +29,7 @@ repositories {
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
-    //api group: 'de.upb.crypto', name: 'mclwrap', version: '0.0.2-SNAPSHOT'
+    api group: 'de.upb.crypto', name: 'mclwrap', version: '0.0.2-SNAPSHOT'
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version:'1.1'

@@ -7,6 +7,7 @@ import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,7 +36,7 @@ public class GroupPrecomputationsFactory {
         private Map<GroupElement, List<GroupElement>> oddPowers;
 
         /**
-         * Stores power products for simultaneous multiexponentiation algorithm.
+         * Stores power products for simultaneous multi-exponentiation algorithm.
          */
         @Represented(restorer = "P->[G]")
         private Map<PowerProductKey, List<GroupElement>> powerProducts;
@@ -43,6 +44,7 @@ public class GroupPrecomputationsFactory {
         /**
          * Group this object stores precomputations for.
          */
+        @Represented
         private Group group;
 
 
@@ -52,10 +54,8 @@ public class GroupPrecomputationsFactory {
             this.group = group;
         }
 
-        public GroupPrecomputations(Representation repr, Group group) {
-            this.group = group;
-            new ReprUtil(this).register(group, "G")
-                    .register(this, "P").deserialize(repr);
+        public GroupPrecomputations(Representation repr) {
+            new ReprUtil(this).register(this, "P").deserialize(repr);
         }
 
         /**
@@ -65,7 +65,7 @@ public class GroupPrecomputationsFactory {
          */
         public void addOddPowers(GroupElement base, int maxExp) {
             List<GroupElement> baseOddPowers =
-                    this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>());
+                    this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>((maxExp+1)/2));
             GroupElement baseSquared = base.op(base);
             if (baseOddPowers.size() == 0) {
                 baseOddPowers.add(base);
@@ -102,7 +102,7 @@ public class GroupPrecomputationsFactory {
         public List<GroupElement> getOddPowers(GroupElement base, int maxExp,
                                                boolean computeIfMissing) {
             List<GroupElement> baseOddPowers =
-                    this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>());
+                    this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>((maxExp+1)/2));
             // if we are missing some powers, compute them first if advised
             if (baseOddPowers.size() < (maxExp+1)/2) {
                 if (computeIfMissing) {
@@ -250,7 +250,7 @@ public class GroupPrecomputationsFactory {
         }
 
         /**
-         * Delete all precomputations.
+         * Delete all pre-computations.
          */
         public void reset() {
             oddPowers = new ConcurrentHashMap<>();
@@ -267,12 +267,12 @@ public class GroupPrecomputationsFactory {
     }
 
     /**
-     * Method to retrieve precomputations for a group.
+     * Method to retrieve pre-computations for a group.
      *
      * For being able to retrieve using the group it is important that the hashcode of two different
      * group objects that represent the same group match up, and the same holds for equals.
-     * @param group The group to obtain precomputations for.
-     * @return Precomputations of the group.
+     * @param group The group to obtain pre-computations for.
+     * @return Pre-computations of the group.
      */
     public static GroupPrecomputations get(Group group) {
         synchronized (store) {
@@ -286,9 +286,9 @@ public class GroupPrecomputationsFactory {
     }
 
     /**
-     * Allows adding deserialized precomputations object to the store. Merges with existing
-     * precomputations if one already exists for the group.
-     * @param gp The precomputations to add to the store.
+     * Allows adding deserialized pre-computations object to the store. Merges with existing
+     * pre-computations if one already exists for the group.
+     * @param gp The pre-computations to add to the store.
      */
     public static void addGroupPrecomputations(GroupPrecomputations gp) {
         synchronized (store) {

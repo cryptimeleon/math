@@ -137,10 +137,10 @@ public class MultiExpAlgorithms {
      * @return Result of multi-exponentiation.
      */
     public static GroupElement interleavingSlidingWindowMultiExp(MultiExpContext multiExpContext,
-                                                           int windowSize, boolean enableCaching) {
+                                                                 int windowSize, boolean enableCaching) {
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
-        List<List<GroupElement>> oddPowers = new ArrayList<>();
+        List<List<GroupElement>> oddPowers = new ArrayList<>(bases.size());
         int maxExp = (1 << windowSize) - 1;
         if (enableCaching) {
             GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =
@@ -151,7 +151,7 @@ public class MultiExpAlgorithms {
         } else {
             for (GroupElement base : bases) {
                 oddPowers.add(UncachedGroupPrecomputations
-                        .precomputeSmallOddPowers(base, maxExp));
+                         .precomputeSmallOddPowers(base, maxExp));
             }
         }
         int numBases = bases.size();
@@ -206,7 +206,7 @@ public class MultiExpAlgorithms {
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
         // TODO: Should add this list to precomputations, can save like 5% runtime for constructing the list
-        List<List<GroupElement>> oddPowers = new ArrayList<>();
+        List<List<GroupElement>> oddPowers = new ArrayList<>(bases.size());
         int maxExp = (1 << windowSize) - 1;
         if (enableCaching) {
             GroupPrecomputationsFactory.GroupPrecomputations groupPrecomputations =

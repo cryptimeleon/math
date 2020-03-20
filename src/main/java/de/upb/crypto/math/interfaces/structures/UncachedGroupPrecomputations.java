@@ -20,7 +20,6 @@ public abstract class UncachedGroupPrecomputations {
 
     /**
      * Prepares WNAF representation (see master thesis by Swante Scholz) of exponent.
-     * This is a ternary representation using -1, 0, 1 as digits with some extra properties.
      * @param exponent The exponent to compute WNAF representation for.
      * @param windowSize The window size to use. This determines width of the WNAF representation.
      * @return Array of exponent digits in WNAF form.

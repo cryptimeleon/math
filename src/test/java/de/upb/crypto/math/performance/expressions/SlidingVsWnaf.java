@@ -3,18 +3,24 @@ package de.upb.crypto.math.performance.expressions;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluatorConfig;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
-//import de.upb.crypto.math.pairings.mcl.MclGroup1;
+import de.upb.crypto.math.pairings.bn.BarretoNaehrigGroup1;
+import de.upb.crypto.math.pairings.mcl.MclGroup1;
 
 public class SlidingVsWnaf {
     public static void main(String[] args) {
-        int[] baseNums = new int[] {2, 5, 10, 30};
-        int[] expNums = new int[] {2, 5, 10, 30};
+        int[] baseNums = new int[] {30};
+        int[] expNums = new int[] {30};
         int numRuns = 40;
         int numWarmups = 5;
-        Group group = null;
-        //Group group = new MclGroup1();
+        BilinearGroupFactory fac = new BilinearGroupFactory(60);
+        fac.setRequirements(BilinearGroup.Type.TYPE_3);
+        BilinearGroup bilGroup = fac.createBilinearGroup();
+        //Group group = bilGroup.getG1();
+        Group group = new MclGroup1();
         GroupElementExpression[] exprs = new GroupElementExpression[30];
         long[][] mclTimes = new long[baseNums.length][numRuns];
         long[][] multiExpWnafTimes = new long[baseNums.length][numRuns];
@@ -49,9 +55,9 @@ public class SlidingVsWnaf {
             System.out.println("MultiExp (precomp, wnaf) min: " + minimum(multiExpWnafTimes[i]));
             System.out.println("MultiExp (precomp, sliding) min: " + minimum(multiExpSlidingTimes[i]));
 
-            System.out.println("Mcl stddev: " + standardDeviation(mclTimes[i]));
-            System.out.println("MultiExp (precomp, wnaf) stddev: " + standardDeviation(multiExpWnafTimes[i]));
-            System.out.println("MultiExp (precomp, sliding) stddev: " + standardDeviation(multiExpSlidingTimes[i]));
+            //System.out.println("Mcl stddev: " + standardDeviation(mclTimes[i]));
+            //System.out.println("MultiExp (precomp, wnaf) stddev: " + standardDeviation(multiExpWnafTimes[i]));
+            //System.out.println("MultiExp (precomp, sliding) stddev: " + standardDeviation(multiExpSlidingTimes[i]));
         }
 
     }

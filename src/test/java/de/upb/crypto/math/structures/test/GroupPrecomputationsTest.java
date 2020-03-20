@@ -139,7 +139,7 @@ public class GroupPrecomputationsTest {
 
         Representation repr = mulPrecomputations.getRepresentation();
         GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations2 =
-                new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
+                new GroupPrecomputationsFactory.GroupPrecomputations(repr);
         assert mulPrecomputations2.equals(mulPrecomputations);
     }
 
@@ -154,7 +154,7 @@ public class GroupPrecomputationsTest {
 
         Representation repr = mulPrecomputations.getRepresentation();
         GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations2 =
-                new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
+                new GroupPrecomputationsFactory.GroupPrecomputations(repr);
         mulPrecomputations2.addOddPowers(bases.get(1), windowSize);
         GroupPrecomputationsFactory.addGroupPrecomputations(mulPrecomputations2);
         assertEquals(mulPrecomputations2, mulPrecomputations);
@@ -164,7 +164,7 @@ public class GroupPrecomputationsTest {
     public void testAddGroupPrecomputationsNotExisting() {
         Representation repr = mulPrecomputations.getRepresentation();
         GroupPrecomputationsFactory.GroupPrecomputations mulPrecomputations2 =
-                new GroupPrecomputationsFactory.GroupPrecomputations(repr, mulZp);
+                new GroupPrecomputationsFactory.GroupPrecomputations(repr);
         List<GroupElement> bases = new ArrayList<>();
         int windowSize = 2;
         bases.add(zp.createZnElement(BigInteger.valueOf(4)).toUnitGroupElement());
