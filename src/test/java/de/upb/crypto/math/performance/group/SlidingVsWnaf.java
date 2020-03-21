@@ -8,7 +8,7 @@ import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
-import de.upb.crypto.math.pairings.mcl.MclGroup1;
+//import de.upb.crypto.math.pairings.mcl.MclGroup1;
 import de.upb.crypto.math.performance.expressions.ExpressionGenerator;
 import de.upb.crypto.math.structures.zn.Zn;
 
@@ -21,8 +21,8 @@ public class SlidingVsWnaf {
         BilinearGroupFactory fac = new BilinearGroupFactory(60);
         fac.setRequirements(BilinearGroup.Type.TYPE_3);
         BilinearGroup bilGroup = fac.createBilinearGroup();
-        //Group group = bilGroup.getG1();
-        Group group = new MclGroup1();
+        Group group = bilGroup.getG1();
+        //Group group = new MclGroup1();
         int numElems = 200;
         GroupElement[] bases = new GroupElement[numElems];
         Zn.ZnElement[] exponents = new Zn.ZnElement[numElems];

@@ -8,7 +8,7 @@ import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigGroup1;
-import de.upb.crypto.math.pairings.mcl.MclGroup1;
+//import de.upb.crypto.math.pairings.mcl.MclGroup1;
 
 /**
  * Testing performance of sliding Wnaf vs sliding window. Wnaf still slower than sliding because of
@@ -23,8 +23,8 @@ public class SlidingVsWnaf {
         BilinearGroupFactory fac = new BilinearGroupFactory(60);
         fac.setRequirements(BilinearGroup.Type.TYPE_3);
         BilinearGroup bilGroup = fac.createBilinearGroup();
-        //Group group = bilGroup.getG1();
-        Group group = new MclGroup1();
+        Group group = bilGroup.getG1();
+        //Group group = new MclGroup1();
         GroupElementExpression[] exprs = new GroupElementExpression[30];
         long[][] mclTimes = new long[baseNums.length][numRuns];
         long[][] multiExpWnafTimes = new long[baseNums.length][numRuns];

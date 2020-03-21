@@ -116,7 +116,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         } else {
             return simultaneousSlidingWindowMulExp(
                     multiExpContext,
-                    config.getWindowSizeInterleavedSlidingNoCaching(),
+                    config.getWindowSizeSimultaneousNoCaching(),
                     false
             );
         }

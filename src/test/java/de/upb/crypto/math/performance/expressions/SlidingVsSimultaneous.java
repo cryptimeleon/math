@@ -3,18 +3,24 @@ package de.upb.crypto.math.performance.expressions;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluatorConfig;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
-import de.upb.crypto.math.pairings.mcl.MclGroup1;
+//import de.upb.crypto.math.pairings.mcl.MclGroup1;
 
 public class SlidingVsSimultaneous {
     public static void main(String[] args) {
-        int[] baseNums = new int[] {5};
-        int[] expNums = new int[] {5};
+        int[] baseNums = new int[] {2, 5, 9};
+        int[] expNums = new int[] {2, 5, 9};
         int numRuns = 20;
         int numWarmups = 5;
-        Group group = new MclGroup1();
-        GroupElementExpression[] exprs = new GroupElementExpression[100];
+        BilinearGroupFactory fac = new BilinearGroupFactory(60);
+        fac.setRequirements(BilinearGroup.Type.TYPE_3);
+        BilinearGroup bilGroup = fac.createBilinearGroup();
+        Group group = bilGroup.getG1();
+        //Group group = new MclGroup1();
+        GroupElementExpression[] exprs = new GroupElementExpression[10];
         long[][] mclTimes = new long[baseNums.length][numRuns];
         long[][] multiExpAutoTimes = new long[baseNums.length][numRuns];
         long[][] multiExpSlidingTimes = new long[baseNums.length][numRuns];
@@ -80,7 +86,7 @@ public class SlidingVsSimultaneous {
 
     public static long benchmarkMultiExpPrecompSim(GroupElementExpression[] exprs) {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.getConfig().setEnableCachingAllAlgs(true);
+        evaluator.getConfig().setEnableCachingAllAlgs(false);
         evaluator.getConfig().setEnablePrecomputeRewriting(false);
         evaluator.getConfig().setEnablePrecomputeEvaluation(false);
         evaluator.getConfig().setForcedMultiExpAlgorithm(
@@ -102,7 +108,7 @@ public class SlidingVsSimultaneous {
         evaluator.getConfig().setForcedMultiExpAlgorithm(
                 OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING
         );
-        evaluator.getConfig().setEnableCachingAllAlgs(true);
+        evaluator.getConfig().setEnableCachingAllAlgs(false);
         evaluator.getConfig().setEnablePrecomputeRewriting(false);
         evaluator.getConfig().setEnablePrecomputeEvaluation(false);
         for (GroupElementExpression expr: exprs) {
