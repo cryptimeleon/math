@@ -2,6 +2,7 @@ package de.upb.crypto.math.interfaces.structures;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ public abstract class UncachedGroupPrecomputations {
      * @param windowSize The window size to use. This determines width of the WNAF representation.
      * @return Array of exponent digits in WNAF form.
      */
-    public static int[] precomputeExponentDigitsForWNAF(BigInteger exponent, int windowSize) {
+    public static int[] precomputeExponentDigitsForWnaf(BigInteger exponent, int windowSize) {
         BigInteger c = exponent;
         int[] bi = new int[exponent.bitLength()+1];
         int i = 0;

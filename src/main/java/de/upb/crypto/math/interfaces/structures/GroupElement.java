@@ -160,7 +160,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
                     .precomputeSmallOddPowers(this, oddPowersMaxExp);
         }
         exponentDigits = UncachedGroupPrecomputations
-                .precomputeExponentDigitsForWNAF(exponent, windowSize);
+                .precomputeExponentDigitsForWnaf(exponent, windowSize);
 
         GroupElement A = this.getStructure().getNeutralElement();
         for (int i = exponentDigits.length-1; i >= 0; i--) {

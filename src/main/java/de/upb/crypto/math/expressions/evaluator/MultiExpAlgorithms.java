@@ -222,7 +222,7 @@ public class MultiExpAlgorithms {
         int longestExponentDigitLength = 0;
         int[][] exponentDigits = new int[bases.size()][];
         for (int i = 0; i < bases.size(); ++i) {
-            exponentDigits[i] = UncachedGroupPrecomputations.precomputeExponentDigitsForWNAF(
+            exponentDigits[i] = UncachedGroupPrecomputations.precomputeExponentDigitsForWnaf(
                     exponents.get(i),
                     windowSize
             );
