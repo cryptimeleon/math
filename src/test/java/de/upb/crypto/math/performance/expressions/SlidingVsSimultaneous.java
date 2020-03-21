@@ -5,17 +5,16 @@ import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluat
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
-//import de.upb.crypto.math.pairings.mcl.MclGroup1;
+import de.upb.crypto.math.pairings.mcl.MclGroup1;
 
 public class SlidingVsSimultaneous {
     public static void main(String[] args) {
-        int[] baseNums = new int[] {2, 5, 10};
-        int[] expNums = new int[] {2, 5, 10};
-        int numRuns = 40;
+        int[] baseNums = new int[] {5};
+        int[] expNums = new int[] {5};
+        int numRuns = 20;
         int numWarmups = 5;
-        Group group = null;
-        //Group group = new MclGroup1();
-        GroupElementExpression[] exprs = new GroupElementExpression[50];
+        Group group = new MclGroup1();
+        GroupElementExpression[] exprs = new GroupElementExpression[100];
         long[][] mclTimes = new long[baseNums.length][numRuns];
         long[][] multiExpAutoTimes = new long[baseNums.length][numRuns];
         long[][] multiExpSlidingTimes = new long[baseNums.length][numRuns];
@@ -29,9 +28,9 @@ public class SlidingVsSimultaneous {
                 //System.out.println("Benchmarking with " + baseNums[i] + " bases and " + expNums[i] + " exponents:");
                 long mclTime = benchmarkMcl(exprs);
                 GroupPrecomputationsFactory.get(group).reset();
-                long multiExpAutoTime = benchmarkMultiExpPrecompAuto(exprs);
-                GroupPrecomputationsFactory.get(group).reset();
                 long multiExpSlidingTime = benchmarkMultiExpPrecompSliding(exprs);
+                GroupPrecomputationsFactory.get(group).reset();
+                long multiExpAutoTime = benchmarkMultiExpPrecompSim(exprs);
                 if (k >= numWarmups) {
                     mclTimes[i][k - numWarmups] = mclTime;
                     multiExpAutoTimes[i][k - numWarmups] = multiExpAutoTime;
@@ -42,16 +41,12 @@ public class SlidingVsSimultaneous {
         for (int i = 0; i < baseNums.length; ++i) {
             System.out.println("----- Results for numBases " + baseNums[i] + ": -----");
             System.out.println("Mcl avg: " + average(mclTimes[i]));
-            System.out.println("MultiExp (precomp, auto) avg: " + average(multiExpAutoTimes[i]));
+            System.out.println("MultiExp (precomp, simultaneous) avg: " + average(multiExpAutoTimes[i]));
             System.out.println("MultiExp (precomp, sliding) avg: " + average(multiExpSlidingTimes[i]));
 
             System.out.println("Mcl min: " + minimum(mclTimes[i]));
-            System.out.println("MultiExp (precomp, auto) min: " + minimum(multiExpAutoTimes[i]));
+            System.out.println("MultiExp (precomp, simultaneous) min: " + minimum(multiExpAutoTimes[i]));
             System.out.println("MultiExp (precomp, sliding) min: " + minimum(multiExpSlidingTimes[i]));
-
-            System.out.println("Mcl stddev: " + standardDeviation(mclTimes[i]));
-            System.out.println("MultiExp (precomp, auto) stddev: " + standardDeviation(multiExpAutoTimes[i]));
-            System.out.println("MultiExp (precomp, sliding) stddev: " + standardDeviation(multiExpSlidingTimes[i]));
         }
 
     }
@@ -73,17 +68,6 @@ public class SlidingVsSimultaneous {
         return min;
     }
 
-    public static double standardDeviation(long[] dataPoints) {
-        double avg = average(dataPoints);
-        double sum = 0;
-        for (long dataPoint : dataPoints) {
-            sum += Math.pow(dataPoint - avg, 2);
-        }
-        sum /= dataPoints.length - 1;
-        return Math.sqrt(sum);
-    }
-
-
     public static long benchmarkMcl(GroupElementExpression[] exprs) {
         long startTime = System.currentTimeMillis();
         for (GroupElementExpression expr : exprs)
@@ -94,13 +78,14 @@ public class SlidingVsSimultaneous {
     }
 
 
-    public static long benchmarkMultiExpPrecompAuto(GroupElementExpression[] exprs) {
+    public static long benchmarkMultiExpPrecompSim(GroupElementExpression[] exprs) {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
         evaluator.getConfig().setEnableCachingAllAlgs(true);
         evaluator.getConfig().setEnablePrecomputeRewriting(false);
         evaluator.getConfig().setEnablePrecomputeEvaluation(false);
-        evaluator.getConfig().setWindowSizeSimultaneousCaching(1);
-        evaluator.getConfig().setSimultaneousNumBasesCutoff(11);
+        evaluator.getConfig().setForcedMultiExpAlgorithm(
+                OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.SIMULTANEOUS
+        );
         for (GroupElementExpression expr: exprs) {
             evaluator.precompute(expr);
         }

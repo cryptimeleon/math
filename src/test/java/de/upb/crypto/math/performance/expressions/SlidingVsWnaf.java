@@ -10,6 +10,10 @@ import de.upb.crypto.math.interfaces.structures.GroupPrecomputationsFactory;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigGroup1;
 import de.upb.crypto.math.pairings.mcl.MclGroup1;
 
+/**
+ * Testing performance of sliding Wnaf vs sliding window. Wnaf still slower than sliding because of
+ * the WNAF representation computation which is expensive due to BigInteger being slow.
+ */
 public class SlidingVsWnaf {
     public static void main(String[] args) {
         int[] baseNums = new int[] {30};
@@ -31,7 +35,6 @@ public class SlidingVsWnaf {
                 for (int j = 0; j < exprs.length; ++j) {
                     exprs[j] = ExpressionGenerator.genMultiExponentiation(group, baseNums[i], expNums[i]);
                 }
-
                 //System.out.println("Benchmarking with " + baseNums[i] + " bases and " + expNums[i] + " exponents:");
                 long mclTime = benchmarkMcl(exprs);
                 GroupPrecomputationsFactory.get(group).reset();

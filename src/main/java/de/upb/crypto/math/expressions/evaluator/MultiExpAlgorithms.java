@@ -46,8 +46,11 @@ public class MultiExpAlgorithms {
         int j = getLongestExponentBitLength(exponents) - 1;
         while (j >= 0) {
             final int finalj = j;
-            if (IntStream.range(0, numBases)
-                    .noneMatch(it -> exponents.get(it).testBit(finalj))) {
+            boolean anyMatch = false;
+            for (int i = 0; i < numBases; ++i) {
+                anyMatch |= exponents.get(i).testBit(finalj);
+            }
+            if (!anyMatch) {
                 A = A.square();
                 j--;
             } else {
@@ -56,8 +59,11 @@ public class MultiExpAlgorithms {
 
                 while (true) {
                     final int finalJ = J;
-                    if (IntStream.range(0, numBases)
-                            .anyMatch(it -> exponents.get(it).testBit(finalJ))) {
+                    anyMatch = false;
+                    for (int i = 0; i < numBases; ++i) {
+                        anyMatch |= exponents.get(i).testBit(finalJ);
+                    }
+                    if (anyMatch) {
                         break;
                     }
                     J++;
