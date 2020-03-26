@@ -43,7 +43,8 @@ public interface Group extends Structure, RepresentationRestorer {
     GroupElement getElement(Representation repr);
 
     /**
-     * Returns any generator of this group if the group is cyclic and it's feasible to compute a generator. Repeated calls may or may not always supply the same generator again (i.e. the output is not guaranteed to be random)!
+     * Returns any generator of this group if the group is cyclic and it's feasible to compute a generator.
+     * Repeated calls may or may not always supply the same generator again (i.e. the output is not guaranteed to be random)!
      *
      * @throws UnsupportedOperationException
      */

@@ -118,11 +118,11 @@ public interface Ring extends Structure, RepresentationRestorer {
      * <p>
      * This algorithm only works on euclidean domains (i.e. RingElements must implement divideWithRemainder())
      *
-     * @param a
-     * @param b
+     * @param a First argument to the extended euclidean algorithm.
+     * @param b Second argument to the extended euclidean algorithm.
      * @returns [x, y, gcd(a,b)]
      */
-    public default RingElement[] extendedEuclideanAlgorithm(RingElement a, RingElement b) {
+    default RingElement[] extendedEuclideanAlgorithm(RingElement a, RingElement b) {
         //Variable names and algorithm taken from http://anh.cs.luc.edu/331/notes/xgcd.pdf
         RingElement x = getZeroElement(), prevx = getOneElement();
         RingElement y = getOneElement(), prevy = getZeroElement();
@@ -157,8 +157,7 @@ public interface Ring extends Structure, RepresentationRestorer {
      * <p>
      * This algorithm only works on euclidean domains (i.e. RingElements must implement divideWithRemainder())
      *
-     * @param a
-     * @param b
+     * @param elements List of elements to apply the extended euclidean algorithm to.
      * @returns an array with coefficients and the gcd: [x[0], x[1], ..., x[n-1], gcd(elements)]
      */
     public default ArrayList<RingElement> extendedEuclideanAlgorithm(List<RingElement> elements) {

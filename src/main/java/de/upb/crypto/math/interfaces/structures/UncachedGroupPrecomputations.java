@@ -56,7 +56,7 @@ public abstract class UncachedGroupPrecomputations {
      * @return List of odd powers sorted ascending by exponent.
      */
     public static List<GroupElement> precomputeSmallOddPowers(GroupElement base, int maxExp) {
-        List<GroupElement> res = new ArrayList<>();
+        List<GroupElement> res = new ArrayList<>((maxExp+1)/2);
         res.add(base);
         GroupElement square = base.square();
         for (int i = 1; i < (maxExp+1)/2; i++) {

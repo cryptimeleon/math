@@ -75,8 +75,9 @@ public class OptGroupElementExpressionEvaluatorConfig {
         windowSizeInterleavedWnafNoCaching = 4;
         windowSizeSimultaneousCaching = 1;
         windowSizeSimultaneousNoCaching = 1;
-        simultaneousNumBasesCutoff = 0; // Don't use simultaneous, its just generally slower than sliding interleaved
-        useWnafCostInversion = 0; // disable WNAF, also slower than interleaved currently
+        simultaneousNumBasesCutoff = 0; // Don't use simultaneous, only worth it in very specific circumstances and
+                                        // even then just barely.
+        useWnafCostInversion = 0; // disable WNAF, also slower than interleaved currently, main cost is WNAF representation computation.
 
         enablePrecomputeCaching = true;
         enablePrecomputeEvaluation = true;
@@ -120,7 +121,6 @@ public class OptGroupElementExpressionEvaluatorConfig {
             case INTERLEAVED_WNAF:
                 return MultiExpAlgorithm.INTERLEAVED_WNAF;
             case DISABLED:
-                // select algorithm based on swante scholz's recommendations
                 if (numBases < getSimultaneousNumBasesCutoff()
                         && isEnableCachingSimultaneous() && isEnableCachingAllAlgs()) {
                     return MultiExpAlgorithm.SIMULTANEOUS;

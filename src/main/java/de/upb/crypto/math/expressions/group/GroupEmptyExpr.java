@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 /**
  * Represents the neutral group element of the given group. Has utility over using a
- * {@see GroupConstantExpression} with a neutral element in the sense that the neutral element
+ * {@link GroupElementConstantExpr} with a neutral element in the sense that the neutral element
  * is replaced on a group operation, leading to saving one potential group operation.
  */
 public class GroupEmptyExpr extends GroupElementExpression {

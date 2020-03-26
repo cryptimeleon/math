@@ -100,7 +100,7 @@ public abstract class ByteAccumulator {
     }
 
     /**
-     * Pads the bytes with leading zero bytes to the desired {@param length} and then appends that to the accumulator.
+     * Pads the bytes with leading zero bytes to the desired length and then appends that to the accumulator.
      *
      * @param length the desired length of the appended byte string
      * @param bytes  the bytes to update
