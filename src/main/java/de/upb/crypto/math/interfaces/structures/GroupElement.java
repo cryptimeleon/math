@@ -105,14 +105,14 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
                                           boolean enableCaching) {
         if (exponent.signum() < 0)
             return powSlidingWindow(exponent.negate(), windowSize, enableCaching).inv();
-        List<GroupElement> smallOddPowersOfBase;
+        List<GroupElement> smallOddPowers;
         int oddPowersMaxExp = (1<<windowSize)-1;
         if (enableCaching) {
             GroupPrecomputations groupPrecomputations =
                     GroupPrecomputationsFactory.get(this.getStructure());
-            smallOddPowersOfBase = groupPrecomputations.getOddPowers(this, oddPowersMaxExp);
+            smallOddPowers = groupPrecomputations.getOddPowers(this, oddPowersMaxExp);
         } else {
-            smallOddPowersOfBase = UncachedGroupPrecomputations
+            smallOddPowers = UncachedGroupPrecomputations
                     .precomputeSmallOddPowers(this, oddPowersMaxExp);
         }
         GroupElement y = this.getStructure().getNeutralElement();
@@ -132,7 +132,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
                     }
                 }
 
-                y = y.op(smallOddPowersOfBase.get(smallExponent / 2));
+                y = y.op(smallOddPowers.get(smallExponent / 2));
                 i = s - 1;
             } else {
                 y = y.square();

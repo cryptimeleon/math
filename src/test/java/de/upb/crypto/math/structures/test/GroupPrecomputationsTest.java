@@ -190,17 +190,12 @@ public class GroupPrecomputationsTest {
         try {
             mulPrecomputations.getOddPowers(base, 2, false);
             fail("Exception not thrown.");
-        } catch (IllegalStateException e) {
-            assert e.getMessage().equals("Missing precomputed odd powers for "
-                    + base + " and max exponent 2.");
+        } catch (IllegalStateException ignored) {
         }
         try {
             mulPrecomputations.getPowerProducts(bases, 2, false);
             fail("Exception not thrown.");
-        } catch (IllegalStateException e) {
-            assert e.getMessage().equals("Missing precomputed product powers for "
-                    + "PowerProductKey for bases " + Arrays.toString(bases.toArray(new GroupElement[0]))
-                    + " and window size " + "2");
+        } catch (IllegalStateException ignored) {
         }
     }
 }

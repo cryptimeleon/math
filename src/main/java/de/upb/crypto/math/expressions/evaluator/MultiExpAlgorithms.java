@@ -222,7 +222,8 @@ public class MultiExpAlgorithms {
             }
         } else {
             for (GroupElement base : bases) {
-                oddPowers.add(UncachedGroupPrecomputations.precomputeSmallOddPowers(base, maxExp));
+                oddPowers.add(UncachedGroupPrecomputations
+                         .precomputeSmallOddPowers(base, maxExp));
             }
         }
         int longestExponentDigitLength = 0;

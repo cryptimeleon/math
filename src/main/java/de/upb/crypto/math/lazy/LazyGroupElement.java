@@ -2,6 +2,7 @@ package de.upb.crypto.math.lazy;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
+import de.upb.crypto.math.interfaces.structures.AbstractGroupElement;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.Representation;
@@ -9,7 +10,7 @@ import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 
-public class LazyGroupElement implements GroupElement {
+public class LazyGroupElement extends AbstractGroupElement implements GroupElement {
     protected LazyGroup group;
 
     /**

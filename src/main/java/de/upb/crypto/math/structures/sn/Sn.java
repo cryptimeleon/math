@@ -1,6 +1,7 @@
 package de.upb.crypto.math.structures.sn;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
+import de.upb.crypto.math.interfaces.structures.AbstractGroupElement;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -82,7 +83,7 @@ public class Sn implements Group {
     /**
      * Permutations on {1,...,n}
      */
-    public class SnElement implements GroupElement, Function<Integer, Integer> {
+    public class SnElement extends AbstractGroupElement implements GroupElement, Function<Integer, Integer> {
         /**
          * Contains the images of this permutation in order, i.e.
          * images[i] = j <=> i maps to j

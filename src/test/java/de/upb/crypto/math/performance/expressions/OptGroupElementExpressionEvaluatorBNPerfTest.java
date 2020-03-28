@@ -17,18 +17,18 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Performance tests for multi-exponentiation algorithms using group 1 for a BN pairing.
  */
-@Ignore
 @RunWith(Parameterized.class)
 public class OptGroupElementExpressionEvaluatorBNPerfTest {
 
     @Parameterized.Parameters(name= "{index}: algorithm={0}")
-    public static Iterable<OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting>
+    public static Collection<OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting>
     algs() {
         return Arrays.asList(
                 OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING,
@@ -37,8 +37,11 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
         );
     }
 
-    @Parameterized.Parameter
     public OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting algSetting;
+
+    public OptGroupElementExpressionEvaluatorBNPerfTest(OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting algSetting) {
+        this.algSetting = algSetting;
+    }
 
     @Rule
     public JUnitPerfRule perfTestRule = new JUnitPerfRule();
@@ -69,6 +72,8 @@ public class OptGroupElementExpressionEvaluatorBNPerfTest {
                 .genMultiExponentiation(bilGroup.getG1(), 6, 6);
         // Do precomputation beforehand
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
+        evaluator.getConfig().setEnablePrecomputeEvaluation(false);
+        evaluator.getConfig().setEnablePrecomputeRewriting(false);
         evaluator.precompute(manyPerfTestExpr);
         evaluator.precompute(fewPerfTestExpr);
         NaiveGroupElementExpressionEvaluator naiveEval = new NaiveGroupElementExpressionEvaluator();

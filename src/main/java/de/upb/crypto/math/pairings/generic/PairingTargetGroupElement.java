@@ -2,12 +2,13 @@ package de.upb.crypto.math.pairings.generic;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.interfaces.structures.AbstractGroupElement;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.Representation;
 
-public abstract class PairingTargetGroupElement implements GroupElement, UniqueByteRepresentable {
+public abstract class PairingTargetGroupElement extends AbstractGroupElement implements GroupElement, UniqueByteRepresentable {
 
     protected ExtensionFieldElement impl;
     protected PairingTargetGroup group;

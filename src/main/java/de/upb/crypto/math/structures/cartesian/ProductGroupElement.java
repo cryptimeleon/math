@@ -1,6 +1,7 @@
 package de.upb.crypto.math.structures.cartesian;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
+import de.upb.crypto.math.interfaces.structures.AbstractGroupElement;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -10,7 +11,7 @@ import de.upb.crypto.math.serialization.Representation;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public class ProductGroupElement implements GroupElement {
+public class ProductGroupElement extends AbstractGroupElement implements GroupElement {
     protected GroupElement[] elems;
 
     public ProductGroupElement(GroupElement... elems) {

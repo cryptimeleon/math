@@ -43,7 +43,7 @@ public abstract class RingGroup implements Group {
     /**
      * Common base class of ring subgroup elements
      */
-    public abstract class RingGroupElement implements GroupElement {
+    public abstract class RingGroupElement extends AbstractGroupElement implements GroupElement {
         protected final RingElement element;
 
         public RingGroupElement(RingElement e) {

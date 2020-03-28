@@ -1,6 +1,7 @@
 package de.upb.crypto.math.pairings.debug;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
+import de.upb.crypto.math.interfaces.structures.AbstractGroupElement;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -13,7 +14,7 @@ import java.util.Objects;
 /**
  * @see DebugGroup
  */
-public class DebugGroupElement implements GroupElement {
+public class DebugGroupElement extends AbstractGroupElement implements GroupElement {
     protected Zn.ZnElement elem;
     protected DebugGroup group;
 

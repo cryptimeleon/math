@@ -32,13 +32,13 @@ public class GroupPrecomputationsFactory {
         /**
          * Stores precomputed odd powers per base.
          */
-        @Represented(restorer = "G->[G]")
+        @Represented(restorer = "group->[group]")
         private Map<GroupElement, List<GroupElement>> oddPowers;
 
         /**
          * Stores power products for simultaneous multi-exponentiation algorithm.
          */
-        @Represented(restorer = "P->[G]")
+        @Represented(restorer = "P->[group]")
         private Map<PowerProductKey, List<GroupElement>> powerProducts;
 
         /**
@@ -46,6 +46,7 @@ public class GroupPrecomputationsFactory {
          */
         @Represented
         private Group group;
+
 
 
         GroupPrecomputations(Group group) {
@@ -59,13 +60,25 @@ public class GroupPrecomputationsFactory {
         }
 
         /**
-         * Add precomputed odd powers to storage.
+         * Add precomputed odd powers to storage. If {@code base} is an instance of {@link AbstractGroupElement},
+         * the odd powers are also stored in the base itself for easier retrieval later.
          * @param base Base to add odd powers for.
-         * @param maxExp maximum exponent to add odd powers up to
+         * @param maxExp Maximum exponent to add odd powers up to.
          */
         public void addOddPowers(GroupElement base, int maxExp) {
-            List<GroupElement> baseOddPowers =
-                    this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>((maxExp+1)/2));
+            addOddPowers(base, maxExp,
+                    this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>((maxExp+1)/2)));
+        }
+
+        /**
+         * Add precomputed odd powers to storage. If {@code base} is an instance of {@link AbstractGroupElement},
+         * the odd powers are also stored in the base itself for easier retrieval later.
+         * @param base Base to add odd powers for.
+         * @param maxExp Maximum exponent to add odd powers up to.
+         * @param baseOddPowers List of existing bases. New bases will be added here. Saves getting the list from
+         *                      the map twice if we already have it.
+         */
+        public void addOddPowers(GroupElement base, int maxExp, List<GroupElement> baseOddPowers) {
             GroupElement baseSquared = base.op(base);
             if (baseOddPowers.size() == 0) {
                 baseOddPowers.add(base);
@@ -75,44 +88,68 @@ public class GroupPrecomputationsFactory {
                 newPower = newPower.op(baseSquared);
                 baseOddPowers.add(newPower);
             }
+            if (base instanceof AbstractGroupElement) {
+                ((AbstractGroupElement) base).setCachedOddPowers(baseOddPowers);
+            }
         }
 
         /**
-         * Retrieve odd powers base^1, base^3, ..., base^maxExp (if maxExp is odd else maxExp-1).
+         * Retrieve odd powers base^1, base^3, ..., base^minExp, ... (if minExp is odd else minExp-1).
+         * Could also be more than that if available.
          * If they are not computed yet, then it computes them first.
          *
          * @param base Base to retrieve odd powers for.
-         * @param maxExp Maximum (inclusive) exponent to retrieve odd powers up to.
+         * @param minExp Minimum exponent up to which (inclusive) powers are supposed to be retrieved.
          * @return List of precomputed odd powers sorted ascending by exponent.
          */
-        public List<GroupElement> getOddPowers(GroupElement base, int maxExp) {
-            return getOddPowers(base, maxExp, true);
+        public List<GroupElement> getOddPowers(GroupElement base, int minExp) {
+            return getOddPowers(base, minExp, true);
         }
 
         /**
-         * Retrieve odd powers base^1, base^3, ..., base^maxExp (if maxExp is odd else maxExp-1).
-         * If they are not computed yet, then it computes them first.
+         * Retrieve odd powers base^1, base^3, ..., base^minMaxExp, ... (if minMaxExp is odd else minMaxExp-1).
+         * Could also be more than that if available.
+         * If they are not computed yet, then it can compute them first, depending on parameter.
          *
          * @param base Base to retrieve odd powers for.
-         * @param maxExp Maximum (inclusive) exponent to retrieve odd powers up to.
+         * @param minExp Minimum exponent up to which (inclusive) powers are supposed to be retrieved.
          * @param computeIfMissing Whether to compute odd powers if they have not been precomputed
          *                         yet.
          * @return List of precomputed odd powers sorted ascending by exponent.
          */
-        public List<GroupElement> getOddPowers(GroupElement base, int maxExp,
+        public List<GroupElement> getOddPowers(GroupElement base, int minExp,
                                                boolean computeIfMissing) {
-            List<GroupElement> baseOddPowers =
-                    this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>((maxExp+1)/2));
+            List<GroupElement> baseOddPowers;
+            if (base instanceof AbstractGroupElement) {
+                AbstractGroupElement abstractBase = (AbstractGroupElement) base;
+                baseOddPowers = abstractBase.getCachedOddPowers();
+                // powers are bound to instance so instance might not have all the group elements that are actually
+                // cached, e.g. if we cache powers for one instance of a group element only that instance will
+                // have them set, any new instances won't. So we have to additionally consider the ones stored
+                // in the map, as here the instance does not matter.
+                if (baseOddPowers.size() < (minExp+1)/2) {
+                    List<GroupElement> mapBaseOddPowers =
+                            this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>((minExp+1)/2));
+                    if (mapBaseOddPowers.size() > baseOddPowers.size()) {
+                        // also store them in this instance
+                        abstractBase.setCachedOddPowers(mapBaseOddPowers);
+                        baseOddPowers = mapBaseOddPowers;
+                    }
+                }
+            } else {
+                baseOddPowers =
+                        this.oddPowers.computeIfAbsent(base, k -> new ArrayList<>((minExp+1)/2));
+            }
             // if we are missing some powers, compute them first if advised
-            if (baseOddPowers.size() < (maxExp+1)/2) {
+            if (baseOddPowers.size() < (minExp+1)/2) {
                 if (computeIfMissing) {
-                    this.addOddPowers(base, maxExp);
+                    this.addOddPowers(base, minExp, baseOddPowers);
                 } else {
                     throw new IllegalStateException("Missing precomputed odd powers for "
-                            + base + " and max exponent " + maxExp + ".");
+                            + base + " and min max exponent " + minExp + ".");
                 }
             }
-            return baseOddPowers.subList(0, (maxExp+1)/2);
+            return baseOddPowers;
         }
 
         /**
@@ -253,6 +290,11 @@ public class GroupPrecomputationsFactory {
          * Delete all pre-computations.
          */
         public void reset() {
+            for (GroupElement g : oddPowers.keySet()) {
+                if (g instanceof AbstractGroupElement) {
+                    ((AbstractGroupElement) g).setCachedOddPowers(new ArrayList<>());
+                }
+            }
             oddPowers = new ConcurrentHashMap<>();
             powerProducts = new ConcurrentHashMap<>();
         }
@@ -295,6 +337,12 @@ public class GroupPrecomputationsFactory {
             // Check if precomputations for the group exist
             GroupPrecomputations result = store.get(gp.group);
             if (result != null) {
+                // Add the precomputations to the abstract ones first, else they might be inconsistent with each other
+                for (GroupElement g : result.oddPowers.keySet()) {
+                    if (g instanceof AbstractGroupElement) {
+                        ((AbstractGroupElement) g).setCachedOddPowers(result.oddPowers.get(g));
+                    }
+                }
                 // Combine them
                 result.oddPowers.putAll(gp.oddPowers);
                 result.powerProducts.putAll(gp.powerProducts);
