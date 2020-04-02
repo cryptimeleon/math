@@ -48,13 +48,31 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
     public FieldElement[] computeLine(AbstractECPCoordinate Q) {
         // TODO: How to do this?
         // use computeLine from the affine coordinates for now
-        AbstractECPCoordinate normalizedThis = this.normalize();
+        /*AbstractECPCoordinate normalizedThis = this.normalize();
         AffineECPCoordinate affineThis = new AffineECPCoordinate(normalizedThis.structure, normalizedThis.x,
                 normalizedThis.y, normalizedThis.z);
         AbstractECPCoordinate normalizedQ = Q.normalize();
         AffineECPCoordinate affineQ = new AffineECPCoordinate(normalizedQ.structure, normalizedQ.x,
                 normalizedQ.y, normalizedQ.z);
-        return affineThis.computeLine(affineQ);
+        return affineThis.computeLine(affineQ);*/
+        ProjectiveECPCoordinate P = (ProjectiveECPCoordinate) Q;
+        if (this.equals(P.inv()) || this.isNeutralElement() || P.isNeutralElement()) {
+            //line is given as 0*(y-y_P)+1*(x-x_P)
+            return new FieldElement[]{this.getFieldOfDefinition().getZeroElement(),
+                    this.getFieldOfDefinition().getOneElement()};
+        } else {
+            //line is given as 1*(y-y_P)-lambda*(x-x_P)
+            return new FieldElement[]{this.getFieldOfDefinition().getOneElement(),
+                    this.calculateLambda(P)};
+        }
+    }
+
+    private FieldElement calculateLambda(ProjectiveECPCoordinate Q) {
+        if (this.x.equals(Q.x)) {
+            // Calculate tangent line
+        } else {
+            // Calculate line through points
+        }
     }
 
     @Override

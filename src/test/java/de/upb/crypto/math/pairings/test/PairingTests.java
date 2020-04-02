@@ -6,6 +6,7 @@ import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.lazy.LazyPairing;
+import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.debug.DebugBilinearMap;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
@@ -155,12 +156,12 @@ public class PairingTests {
 
         // BN curves
         BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
-        //BarretoNaehrigBilinearGroup bnGroupAffine = bnFac.provideBilinearGroup(128,
-        //        new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false),
-        //        AffineECPCoordinate::new);
-        //BarretoNaehrigBilinearGroup bnGroupProj = bnFac.provideBilinearGroup(128,
-        //        new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false),
-        //        ProjectiveECPCoordinate::new);
+        BarretoNaehrigBilinearGroup bnGroupAffine = bnFac.provideBilinearGroup(128,
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false),
+                AffineECPCoordinate.class);
+        BarretoNaehrigBilinearGroup bnGroupProj = bnFac.provideBilinearGroup(128,
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false),
+                ProjectiveECPCoordinate.class);
 
         //Lazy bn curve
         LazyPairing lazyPairing = new LazyPairing(supSingGroupAffine.getBilinearMap());
@@ -168,10 +169,10 @@ public class PairingTests {
         // Collect parameters
         BilinearMap[][] params = new BilinearMap[][]{
                 {debugMap1}, {debugMap2}, {debugMap3},
-        //        {supSingGroupAffine.getBilinearMap()},
+                {supSingGroupAffine.getBilinearMap()},
                 {supSingGroupProj.getBilinearMap()},
-        //        {bnGroupAffine.getBilinearMap()},
-        //        {bnGroupProj.getBilinearMap()},
+                {bnGroupAffine.getBilinearMap()},
+                {bnGroupProj.getBilinearMap()},
                 {lazyPairing}};
         return Arrays.asList(params);
     }
