@@ -29,7 +29,7 @@ public class MultiExpAlgorithms {
      * @return Result of multi-exponentiation.
      */
     public static GroupElement simultaneousSlidingWindowMulExp(MultiExpContext multiExpContext,
-                                                         int windowSize, boolean enableCaching) {
+                                                               int windowSize, boolean enableCaching) {
         List<GroupElement> bases = multiExpContext.getBases();
         List<BigInteger> exponents = multiExpContext.getExponents();
         List<GroupElement> powerProducts;

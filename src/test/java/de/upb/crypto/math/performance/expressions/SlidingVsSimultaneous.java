@@ -86,7 +86,7 @@ public class SlidingVsSimultaneous {
 
     public static long benchmarkMultiExpPrecompSim(GroupElementExpression[] exprs) {
         OptGroupElementExpressionEvaluator evaluator = new OptGroupElementExpressionEvaluator();
-        evaluator.getConfig().setEnableCachingAllAlgs(false);
+        evaluator.getConfig().setEnableCachingAllAlgs(true);
         evaluator.getConfig().setEnablePrecomputeRewriting(false);
         evaluator.getConfig().setEnablePrecomputeEvaluation(false);
         evaluator.getConfig().setForcedMultiExpAlgorithm(
@@ -108,7 +108,7 @@ public class SlidingVsSimultaneous {
         evaluator.getConfig().setForcedMultiExpAlgorithm(
                 OptGroupElementExpressionEvaluatorConfig.ForceMultiExpAlgorithmSetting.INTERLEAVED_SLIDING
         );
-        evaluator.getConfig().setEnableCachingAllAlgs(false);
+        evaluator.getConfig().setEnableCachingAllAlgs(true);
         evaluator.getConfig().setEnablePrecomputeRewriting(false);
         evaluator.getConfig().setEnablePrecomputeEvaluation(false);
         for (GroupElementExpression expr: exprs) {
