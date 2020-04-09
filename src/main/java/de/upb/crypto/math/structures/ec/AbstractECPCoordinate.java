@@ -119,4 +119,5 @@ public abstract class AbstractECPCoordinate {
     public abstract boolean equals(Object other);
 
     public abstract AbstractECPCoordinate inv();
+
 }

@@ -1,11 +1,11 @@
 package de.upb.crypto.math.pairings.bn;
 
 import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.pairings.generic.AbstractPairing;
-import de.upb.crypto.math.pairings.generic.ExtensionField;
-import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
-import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
+import de.upb.crypto.math.pairings.generic.*;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.ec.ProjectiveECPCoordinate;
+
+import java.math.BigInteger;
 
 /**
  * Tate-pairing specific implementation of BN based pairings.
@@ -31,37 +31,44 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
     }
 
     @Override
-    protected ExtensionFieldElement evaluateLine(FieldElement[] line, PairingSourceGroupElement P, PairingSourceGroupElement Q) {
+    public ExtensionFieldElement evaluateLine(FieldElement[] line, PairingSourceGroupElement P, PairingSourceGroupElement A) {
         ExtensionField targetField = (ExtensionField) this.getGT().getFieldOfDefinition();
-        ExtensionField extField = (ExtensionField) Q.getFieldOfDefinition();
+        ExtensionField extField = (ExtensionField) A.getFieldOfDefinition();
 
         /*
          * G2 is a subgroup sextic twist E':y^2=x^3-b/v with xi^6=v from E'->E, phi:(x,y)->(x xi^2,y xi^3). GT is
          * defined over degree 6 extension field defined by X^6-v.
          *
          * Hence,
-         * l_P(phi(xq,yq))=a_0(yq xi^3-yp) - a_1(xq xi^2 - xp) = (a_1 xp - a_0 yp) + 0 xi + (- a_1 xq) xi^2 + a_0 yq
-         * xi^3 + 0 xi^4 + 0 xi^5.
+         * l_P(phi(x_A,y_A)) = a_0(y_A xi^3-y_P) - a_1(x_A xi^2 - x_P)
+         *                   = (a_1 x_P - a_0 y_P) + 0 xi + (- a_1 x_A) xi^2 + a_0 y_A xi^3 + 0 xi^4 + 0 xi^5.
          *
          * Here, non-vertical lines are parameterize by [a_0,a_1]=[1,lambda_P] where lambda_P is the slope through P and
          * vertical lines are parameterized by [a_0,a_1]=[0,1].
          */
-        // TODO: Can we do this without normalizing?
-        P = (PairingSourceGroupElement) P.normalize();
-        Q = (PairingSourceGroupElement) Q.normalize();
-        if (!P.isNormalized() || !Q.isNormalized()) {
-            throw new IllegalArgumentException("Currently, only affine points are supported.");
+        if (P.getPoint() instanceof ProjectiveECPCoordinate) {
+            // Formula from "Implementing Cryptographic Pairings over Barreto-Naehrig Curves", Devegili et al. Section 5
+            // Formula: l_{P,Q}(A) = (y_A * z_P^3 - y_P) * z_R - (x_A * z_P^3 - x_P * z_P) * \lambda_{P,Q}
+            //  where R = P + Q
+            PairingSourceGroupElement ANormalized = (PairingSourceGroupElement) A.normalize();
+            FieldElement[] coefficients = new FieldElement[4];
+            FieldElement zPToThree = P.getZ().pow(BigInteger.valueOf(3));
+            coefficients[0] = extField.lift(line[1].mul(P.getZ()).mul(P.getX()).sub(P.getY().mul(line[0])));
+            coefficients[1] = extField.getZeroElement();
+            coefficients[2] = extField.lift(line[1].mul(zPToThree)).mul(ANormalized.getX());
+            coefficients[3] = extField.lift(line[0].mul(zPToThree)).mul(ANormalized.getY());
+            return targetField.createElement(coefficients);
+        } else {
+            FieldElement[] coefficients = new FieldElement[4];
+            coefficients[0] = extField.lift((ExtensionFieldElement) P.getX().mul(line[1]).sub(P.getY().mul(line[0])));
+
+            coefficients[1] = extField.getZeroElement();
+            coefficients[2] = extField.lift((ExtensionFieldElement) line[1]).mul(A.getX()).neg();
+
+            coefficients[3] = A.getY().mul(extField.lift((ExtensionFieldElement) line[0]));
+
+            return targetField.createElement(coefficients);
         }
-
-        FieldElement[] coefficients = new FieldElement[4];
-        coefficients[0] = extField.lift((ExtensionFieldElement) P.getX().mul(line[1]).sub(P.getY().mul(line[0])));
-
-        coefficients[1] = extField.getZeroElement();
-        coefficients[2] = extField.lift((ExtensionFieldElement) line[1]).mul(Q.getX()).neg();
-
-        coefficients[3] = Q.getY().mul(extField.lift((ExtensionFieldElement) line[0]));
-
-        return targetField.createElement(coefficients);
     }
 
     @Override

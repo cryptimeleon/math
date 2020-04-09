@@ -44,34 +44,33 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
         return z.isOne() || z.isZero();
     }
 
+
     @Override
     public FieldElement[] computeLine(AbstractECPCoordinate Q) {
-        // TODO: How to do this?
-        // use computeLine from the affine coordinates for now
-        /*AbstractECPCoordinate normalizedThis = this.normalize();
-        AffineECPCoordinate affineThis = new AffineECPCoordinate(normalizedThis.structure, normalizedThis.x,
-                normalizedThis.y, normalizedThis.z);
-        AbstractECPCoordinate normalizedQ = Q.normalize();
-        AffineECPCoordinate affineQ = new AffineECPCoordinate(normalizedQ.structure, normalizedQ.x,
-                normalizedQ.y, normalizedQ.z);
-        return affineThis.computeLine(affineQ);*/
-        ProjectiveECPCoordinate P = (ProjectiveECPCoordinate) Q;
-        if (this.equals(P.inv()) || this.isNeutralElement() || P.isNeutralElement()) {
-            //line is given as 0*(y-y_P)+1*(x-x_P)
+        // Formula from "Implementing Cryptographic Pairings over Barreto-Naehrig Curves", Devegili et al. Section 5
+        // Formula: l_{P,Q}(A) = (y_A * z_P^3 - y_P) * z_R - (x_A * z_P^3 - x_P * z_P) * \lambda_{P,Q}
+        //  where R = P + Q
+        // TODO: Can we do this without normalizing the points?
+        //  Cannot do the line at infinity check otherwise, or the tangent vs non-tangent line decision
+        ProjectiveECPCoordinate thisNormalized = (ProjectiveECPCoordinate) this.normalize();
+        ProjectiveECPCoordinate QNormalized = (ProjectiveECPCoordinate) Q.normalize();
+        if (thisNormalized.equals(QNormalized.inv()) || this.isNeutralElement() || Q.isNeutralElement()) {
+            // z_R = 0, \lambda{P,Q} = 1
             return new FieldElement[]{this.getFieldOfDefinition().getZeroElement(),
                     this.getFieldOfDefinition().getOneElement()};
         } else {
-            //line is given as 1*(y-y_P)-lambda*(x-x_P)
-            return new FieldElement[]{this.getFieldOfDefinition().getOneElement(),
-                    this.calculateLambda(P)};
-        }
-    }
-
-    private FieldElement calculateLambda(ProjectiveECPCoordinate Q) {
-        if (this.x.equals(Q.x)) {
-            // Calculate tangent line
-        } else {
-            // Calculate line through points
+            FieldElement lambda;
+            ProjectiveECPCoordinate R;
+            if (thisNormalized.equals(QNormalized)) {
+                R = (ProjectiveECPCoordinate) this.ec_double();
+                // tangent line
+            } else {
+                R = (ProjectiveECPCoordinate) this.add(QNormalized);
+                // non-tangent line
+            }
+            return new FieldElement[] {
+                    R.z, lambda
+            };
         }
     }
 

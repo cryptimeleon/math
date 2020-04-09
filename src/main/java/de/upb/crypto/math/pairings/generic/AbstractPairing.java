@@ -280,5 +280,91 @@ public abstract class AbstractPairing implements BilinearMap {
         return (ExtensionFieldElement) millerVariable;
     }
 
+    protected ExtensionFieldElement projMiller(PairingSourceGroupElement P, PairingSourceGroupElement Q, BigInteger n) {
+        FieldElement[] line;
+        ExtensionField targetField = (ExtensionField) this.getGT().getFieldOfDefinition();
+        /*
+         * f_1=1; f_2=1 R=P;
+         */
+
+        FieldElement millerVariable = targetField.getOneElement();
+
+
+
+        /*
+         * e2 needs to be normalized for the evaluateLineAt and evaluateVertical
+         * functions we normalize also e1 to be faster with the addition of P to
+         * R.
+         */
+        PairingSourceGroupElement pNormalized = (PairingSourceGroupElement) P.normalize();
+        PairingSourceGroupElement qNormalized = (PairingSourceGroupElement) Q.normalize();
+
+
+
+        /*
+         * variable point of the pairing
+         */
+        PairingSourceGroupElement R = pNormalized;
+
+        for (int i = n.bitLength() - 2; i >= 0; i--) {
+
+            /*
+             * f_1=f_1^2
+             */
+            millerVariable = (FieldElement) millerVariable.square();
+
+
+            /*
+             * calculate parametrization of tangent line l_R,R.
+             */
+            line = R.computeLine(R);
+
+
+            /*
+             * f*=l_R,R(Q)
+             *
+             * Evaluate line at Q and multiply result with f. How to evaluate the line,
+             * depends on the concrete implementation. It depends on the form of coordinates
+             * and on untwisting R or Q. For example for affine coordinates, the line is returned
+             * in the form of [a0, a1] such that l_R,R(x,y) = a_0(y-yR) - a_1(x-xR).
+             * For example, the line may be given as [1, \lambda], where \lambda is the slope of the line.
+             * Then the live is given by y = \lambda x + v. Since we know that R is on the line, v can be calculated
+             * as y_R - \lambda x_R. y = \lambda x + (y_R - \lambda x_R) <=> 0 = -\lambda (x - x_R) + 1 * (y - y_R).
+             */
+            millerVariable = millerVariable.mul(evaluateLine(line, R, qNormalized));
+
+            /*
+             * R=2R
+             */
+            R = (PairingSourceGroupElement) R.add(R, line);
+
+            /*
+             * if bit order_i is set to 1 also do
+             *
+             * f_1*=l_V,P(Q), R = R+P
+             */
+            if (n.testBit(i)) {
+
+
+                /*here, it for projective coordinates it is important to use the normalized P as the argument.*/
+                line = R.computeLine(pNormalized);
+
+                millerVariable = millerVariable.mul(evaluateLine(line, R, qNormalized));
+
+                /*
+                 * V=V+P
+                 */
+
+                R = (PairingSourceGroupElement) R.add(pNormalized, line);
+                //	System.out.println(line[0]+ " " + line[1]);
+
+            }
+
+        }
+
+        //millerVariable is not an element of target group because it has not been exponentiated by cofactor yet.
+        return (ExtensionFieldElement) millerVariable;
+    }
+
 
 }
