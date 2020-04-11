@@ -59,19 +59,52 @@ public class ProjectiveECPCoordinate extends AbstractECPCoordinate {
             return new FieldElement[]{this.getFieldOfDefinition().getZeroElement(),
                     this.getFieldOfDefinition().getOneElement()};
         } else {
-            FieldElement lambda;
+            // TODO: Can maybe make use of R addition to compute the lambda
+            FieldElement lambda = calculateLambda(thisNormalized, QNormalized);
             ProjectiveECPCoordinate R;
             if (thisNormalized.equals(QNormalized)) {
-                R = (ProjectiveECPCoordinate) this.ec_double();
-                // tangent line
+                R = (ProjectiveECPCoordinate) this.ec_double();// tangent line
             } else {
-                R = (ProjectiveECPCoordinate) this.add(QNormalized);
-                // non-tangent line
+                R = (ProjectiveECPCoordinate) this.add(QNormalized);// non-tangent line
             }
             return new FieldElement[] {
                     R.z, lambda
             };
         }
+    }
+
+    private static FieldElement calculateLambda(ProjectiveECPCoordinate PNormalized, ProjectiveECPCoordinate QNormalized) {
+        FieldElement enumerator, denominator;
+        if (PNormalized.x.equals(QNormalized.x)) {
+            FieldElement x = PNormalized.x;
+            FieldElement y = PNormalized.y;
+            // Calculate numerator of lambda
+            // L = 3x^2
+            enumerator = x.mul(x);
+            enumerator = enumerator.add(enumerator).add(enumerator);
+
+            // L + 2*a2*x
+            FieldElement tmp = PNormalized.getStructure().getA2().mul(x);
+            tmp = tmp.add(tmp);
+            enumerator = enumerator.add(tmp);
+
+            // L + a4 - a1*y
+            enumerator = enumerator.add(PNormalized.getStructure().getA4())
+                    .sub(y.mul(PNormalized.getStructure().getA1()));
+
+            // calculate denominator of enumerator
+            // = 2y
+            denominator = y.add(y);
+
+            // + a1*x
+            denominator = denominator.add(x.mul(PNormalized.getStructure().getA1()));
+            // + a3
+            denominator = denominator.add(PNormalized.getStructure().getA3());
+        } else {
+            enumerator = QNormalized.y.sub(PNormalized.y);
+            denominator = QNormalized.x.sub(PNormalized.x);
+        }
+        return enumerator.div(denominator);
     }
 
     @Override

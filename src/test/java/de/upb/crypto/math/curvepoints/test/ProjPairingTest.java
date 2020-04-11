@@ -43,4 +43,20 @@ public class ProjPairingTest {
             assert projRes.equals(affineRes);
         }
     }
+
+    @Test
+    public void testPairing() {
+        BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
+        BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128,
+                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false),
+                AffineECPCoordinate.class);
+        PairingSourceGroupElement p1 = (PairingSourceGroupElement) bnGroup.getG1().getGenerator();
+        PairingSourceGroupElement projP1 = new BarretoNaehrigSourceGroupElement(
+                new ProjectiveECPCoordinate(p1.getStructure(), p1.getNormalizedX(), p1.getNormalizedY())
+        );
+
+        System.out.println(bnGroup.getBilinearMap().apply(p1, p1));
+        System.out.println(bnGroup.getBilinearMap().apply(projP1, projP1));
+
+    }
 }
