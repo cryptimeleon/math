@@ -32,6 +32,7 @@ public class EllipticCurvePoint implements GroupElement {
             throw new IllegalArgumentException("Given coordinate class '" + curve.getCoordinateClass() +
                     "' does not have a constructor taking in a Weierstrass Curve and three field elements.");
         } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            e.printStackTrace();
             throw new IllegalArgumentException("An error occurred instantiating the element from the representation.");
         }
     }

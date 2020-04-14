@@ -4,7 +4,9 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.serialization.StringRepresentation;
 import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 
 import java.math.BigInteger;
@@ -32,5 +34,11 @@ public class BarretoNaehrigGroup1 extends BarretoNaehrigSourceGroup {
     private BigInteger traceFrobenius() {
         // t=q-E(F_q)+1 = q-r+1
         return this.getFieldOfDefinition().size().subtract(this.size()).add(BigInteger.ONE);
+    }
+
+    public WeierstrassCurve withCoordinateClass(Class newCoordinateClass) {
+        Representation repr = this.getRepresentation();
+        ((ObjectRepresentation) repr).put("coordinate_class", new StringRepresentation(newCoordinateClass.getTypeName()));
+        return new BarretoNaehrigGroup1(repr);
     }
 }

@@ -4,11 +4,10 @@ import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.structures.EllipticCurve;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigSourceGroupElement;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigTatePairing;
+import de.upb.crypto.math.pairings.bn.*;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
+import de.upb.crypto.math.pairings.generic.PairingTargetGroupElement;
+import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.AffineECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import de.upb.crypto.math.structures.ec.ProjectiveECPCoordinate;
@@ -33,7 +32,7 @@ public class ProjPairingTest {
             FieldElement projRes = pairing.evaluateLine(projLine, P, Q);
 
             PairingSourceGroupElement affineP = new BarretoNaehrigSourceGroupElement(
-                    new AffineECPCoordinate(P.getStructure(), P.getNormalizedX(), P.getNormalizedY())
+                    new AffineECPCoordinate(((BarretoNaehrigGroup1) P.getStructure()).withCoordinateClass(AffineECPCoordinate.class), P.getNormalizedX(), P.getNormalizedY())
             );
             assert affineP.getPoint() instanceof AffineECPCoordinate;
             FieldElement[] affineLine = affineP.computeLine(affineP);
@@ -45,18 +44,24 @@ public class ProjPairingTest {
     }
 
     @Test
-    public void testPairing() {
+    public void testPairing() throws NoSuchMethodException {
         BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
         BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128,
                 new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false),
                 AffineECPCoordinate.class);
-        PairingSourceGroupElement p1 = (PairingSourceGroupElement) bnGroup.getG1().getGenerator();
+        PairingSourceGroupElement p1 = bnGroup.getG1Generator();
+        PairingSourceGroupElement p2 = bnGroup.getG2Generator();
         PairingSourceGroupElement projP1 = new BarretoNaehrigSourceGroupElement(
-                new ProjectiveECPCoordinate(p1.getStructure(), p1.getNormalizedX(), p1.getNormalizedY())
+                new ProjectiveECPCoordinate(((BarretoNaehrigGroup1) p1.getStructure()).withCoordinateClass(ProjectiveECPCoordinate.class), p1.getNormalizedX(), p1.getNormalizedY())
+        );
+        PairingSourceGroupElement projP2 = new BarretoNaehrigSourceGroupElement(
+                new ProjectiveECPCoordinate(((BarretoNaehrigGroup2) p2.getStructure()).withCoordinateClass(ProjectiveECPCoordinate.class), p2.getNormalizedX(), p2.getNormalizedY())
         );
 
-        System.out.println(bnGroup.getBilinearMap().apply(p1, p1));
-        System.out.println(bnGroup.getBilinearMap().apply(projP1, projP1));
-
+        PairingTargetGroupElement res = (PairingTargetGroupElement) bnGroup.getBilinearMap().apply(p1, p2);
+        PairingTargetGroupElement projRes = (PairingTargetGroupElement) bnGroup.getBilinearMap().apply(projP1, projP2);
+        System.out.println(res);
+        System.out.println(projRes);
+        assert res.equals(projRes);
     }
 }

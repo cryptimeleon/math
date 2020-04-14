@@ -1,6 +1,8 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.pairings.generic.PairingSourceGroup;
+import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
 import java.math.BigInteger;

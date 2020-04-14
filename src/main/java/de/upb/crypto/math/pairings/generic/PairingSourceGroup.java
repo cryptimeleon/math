@@ -8,10 +8,8 @@ import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 import de.upb.crypto.math.structures.zn.Zp;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Implements a subgroup over the Weierstrass Curve.

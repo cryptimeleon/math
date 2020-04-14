@@ -17,23 +17,30 @@ import java.util.function.Function;
  */
 public interface WeierstrassCurve extends EllipticCurve {
 
-    public FieldElement getA6();
+    FieldElement getA6();
 
-    public FieldElement getA4();
+    FieldElement getA4();
 
-    public FieldElement getA3();
+    FieldElement getA3();
 
-    public FieldElement getA2();
+    FieldElement getA2();
 
-    public FieldElement getA1();
+    FieldElement getA1();
 
-    public EllipticCurvePoint getElement(FieldElement x, FieldElement y);
+    EllipticCurvePoint getElement(FieldElement x, FieldElement y);
 
-    public EllipticCurvePoint getElement(AbstractECPCoordinate point);
+    EllipticCurvePoint getElement(AbstractECPCoordinate point);
 
-    public Class getCoordinateClass();
+    Class getCoordinateClass();
 
-    public default boolean isShortForm() {
+    /**
+     * Allows cloning the structure with a new coordinate class to make coordinate class switching easier.
+     * @param coordinateClass The new coordinate class.
+     * @return The same weierstrass curve but with the given coordinate class.
+     */
+    //WeierstrassCurve withCoordinateClass(Class coordinateClass);
+
+    default boolean isShortForm() {
         return getA3().isZero() && getA2().isZero() && getA1().isZero();
     }
 

@@ -5,7 +5,9 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.serialization.StringRepresentation;
 import de.upb.crypto.math.structures.ec.AbstractECPCoordinate;
 import de.upb.crypto.math.structures.ec.EllipticCurvePoint;
 
@@ -28,4 +30,9 @@ public class BarretoNaehrigGroup2 extends BarretoNaehrigSourceGroup {
         super(r);
     }
 
+    public WeierstrassCurve withCoordinateClass(Class newCoordinateClass) {
+        Representation repr = this.getRepresentation();
+        ((ObjectRepresentation) repr).put("coordinate_class", new StringRepresentation(newCoordinateClass.getTypeName()));
+        return new BarretoNaehrigGroup2(repr);
+    }
 }
