@@ -91,6 +91,10 @@ public abstract class GroupElementExpression implements Expression {
         return op(rhs.pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
+    public GroupElementExpression opPow(GroupElementExpression rhs, String exponentOfRhs) {
+        return op(rhs.pow(new ExponentVariableExpr(exponentOfRhs)));
+    }
+
     public GroupElementExpression opPow(GroupElement rhs, ExponentExpr exponentOfRhs) {
         return op(rhs.expr().pow(exponentOfRhs));
     }
@@ -103,6 +107,10 @@ public abstract class GroupElementExpression implements Expression {
         return op(rhs.expr().pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
+    public GroupElementExpression opPow(GroupElement rhs, String exponentOfRhs) {
+        return op(rhs.expr().pow(new ExponentVariableExpr(exponentOfRhs)));
+    }
+
     public GroupElementExpression inv() {
         return new GroupInvExpr(this);
     }
@@ -113,6 +121,10 @@ public abstract class GroupElementExpression implements Expression {
 
     public GroupEqualityExpr isEqualTo(GroupElement other) {
         return new GroupEqualityExpr(this, other.expr());
+    }
+
+    public GroupEqualityExpr isEqualTo(String other) {
+        return isEqualTo(new GroupVariableExpr(other));
     }
 
     @Override

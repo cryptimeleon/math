@@ -5,6 +5,7 @@ import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
+import de.upb.crypto.math.structures.zn.Zn;
 
 /**
  * Parameters for a pairing group setting.
@@ -48,5 +49,9 @@ public interface BilinearGroup extends StandaloneRepresentable {
      *                                       have the same group exponent
      */
     HashIntoStructure getHashIntoZGroupExponent() throws UnsupportedOperationException;
+
+    default Zn getZn() {
+        return getG1().getZn();
+    }
 
 }
