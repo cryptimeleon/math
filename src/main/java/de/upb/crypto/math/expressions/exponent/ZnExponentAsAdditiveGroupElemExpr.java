@@ -12,6 +12,7 @@ public class ZnExponentAsAdditiveGroupElemExpr extends GroupElementExpression {
     protected Zn zn;
     protected ExponentExpr expr;
     public ZnExponentAsAdditiveGroupElemExpr(Zn zn, ExponentExpr expr) {
+        super(zn.asAdditiveGroup());
         this.zn = zn;
         this.expr = expr;
     }

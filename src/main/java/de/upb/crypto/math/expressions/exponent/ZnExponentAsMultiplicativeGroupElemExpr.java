@@ -13,6 +13,7 @@ public class ZnExponentAsMultiplicativeGroupElemExpr extends GroupElementExpress
     protected Zn zn;
     protected ExponentExpr expr;
     public ZnExponentAsMultiplicativeGroupElemExpr(Zn zn, ExponentExpr expr) {
+        super(zn.asUnitGroup());
         this.zn = zn;
         this.expr = expr;
     }
