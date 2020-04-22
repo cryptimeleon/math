@@ -12,12 +12,12 @@ import java.util.function.Function;
 public class ExponentEmptyExpr implements ExponentExpr {
     @Override
     public BigInteger evaluate() {
-        return BigInteger.ONE;
+        return BigInteger.ZERO;
     }
 
     @Override
     public Zn.ZnElement evaluate(Zn zn) {
-        return zn.getOneElement();
+        return zn.getZeroElement();
     }
 
     @Override
@@ -28,6 +28,26 @@ public class ExponentEmptyExpr implements ExponentExpr {
     @Override
     public void treeWalk(Consumer<Expression> visitor) {
         //Intentionally empty.
+    }
+
+    @Override
+    public ExponentExpr invert() {
+        throw new ArithmeticException("division by 0");
+    }
+
+    @Override
+    public ExponentExpr mul(ExponentExpr other) {
+        return this;
+    }
+
+    @Override
+    public ExponentExpr add(ExponentExpr other) {
+        return other;
+    }
+
+    @Override
+    public ExponentExpr sub(ExponentExpr other) {
+        return other.negate();
     }
 
     @Override

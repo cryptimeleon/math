@@ -30,12 +30,32 @@ public interface ExponentExpr extends Expression {
         return new ExponentNegExpr(this);
     }
 
+    default ExponentExpr invert() {
+        return new ExponentInvExpr(this);
+    }
+
     default ExponentExpr add(ExponentExpr other) {
         return new ExponentSumExpr(this, other);
     }
 
+    default ExponentExpr add(String other) {
+        return add(new ExponentVariableExpr(other));
+    }
+
+    default ExponentExpr sub(ExponentExpr other) {
+        return add(other.negate());
+    }
+
+    default ExponentExpr sub(String other) {
+        return sub(new ExponentVariableExpr(other));
+    }
+
     default ExponentExpr mul(ExponentExpr other) {
         return new ExponentMulExpr(this, other);
+    }
+
+    default ExponentExpr mul(String other) {
+        return mul(new ExponentVariableExpr(other));
     }
 
     default ExponentEqualityExpr isEqualTo(ExponentExpr other) {
