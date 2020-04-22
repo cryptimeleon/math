@@ -42,6 +42,11 @@ public class Zp extends Zn implements Field {
     }
 
     @Override
+    public boolean hasPrimeSize() throws UnsupportedOperationException {
+        return true;
+    }
+
+    @Override
     public ZpElement getUniformlyRandomUnit() throws UnsupportedOperationException {
         return createZnElement(RandomGeneratorSupplier.getRnd().getRandomElement(n.subtract(BigInteger.ONE)).add(BigInteger.ONE));
     }

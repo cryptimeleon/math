@@ -53,6 +53,11 @@ public class Sn implements Group {
     }
 
     @Override
+    public boolean hasPrimeSize() throws UnsupportedOperationException {
+        return n == 2;
+    }
+
+    @Override
     public Representation getRepresentation() {
         return new BigIntegerRepresentation(BigInteger.valueOf(n));
     }

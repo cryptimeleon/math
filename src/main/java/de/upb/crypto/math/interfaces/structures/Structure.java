@@ -23,6 +23,17 @@ public interface Structure extends StandaloneRepresentable {
     BigInteger size() throws UnsupportedOperationException;
 
     /**
+     * Returns true if the size of this structure is known and prime.
+     * @throws UnsupportedOperationException if size is unknown
+     */
+    default boolean hasPrimeSize() throws UnsupportedOperationException {
+        BigInteger size = size();
+        if (size == null) //infinite size
+            return false;
+        return size.isProbablePrime(80);
+    }
+
+    /**
      * Returns an element of this structure that is drawn uniformly at random (using a cryptographically strong RNG)
      *
      * @throws UnsupportedOperationException

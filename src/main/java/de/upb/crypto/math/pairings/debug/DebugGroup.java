@@ -148,6 +148,11 @@ public class DebugGroup implements Group {
         return zn.size();
     }
 
+    @Override
+    public boolean hasPrimeSize() throws UnsupportedOperationException {
+        return zn.hasPrimeSize(); //zn caches this
+    }
+
     /**
      * Wraps an RingAdditiveGroupElement into a DebugGroupElement
      */
