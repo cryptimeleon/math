@@ -54,8 +54,32 @@ public interface ExponentExpr extends Expression {
         return new ExponentMulExpr(this, other);
     }
 
+    default ExponentExpr mul(BigInteger other) {
+        return mul(new ExponentConstantExpr(other));
+    }
+
+    default ExponentExpr mul(long other) {
+        return mul(BigInteger.valueOf(other));
+    }
+
     default ExponentExpr mul(String other) {
         return mul(new ExponentVariableExpr(other));
+    }
+
+    default ExponentExpr pow(ExponentExpr exponent) {
+        return new ExponentPowExpr(this, exponent);
+    }
+
+    default ExponentExpr pow(long exponent) {
+        return pow(BigInteger.valueOf(exponent));
+    }
+
+    default ExponentExpr pow(BigInteger exponent) {
+        return pow(new ExponentConstantExpr(exponent));
+    }
+
+    default ExponentExpr pow(String exponent) {
+        return pow(new ExponentVariableExpr(exponent));
     }
 
     default ExponentEqualityExpr isEqualTo(ExponentExpr other) {

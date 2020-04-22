@@ -74,6 +74,10 @@ public interface RingElement extends Element {
         return result;
     }
 
+    default RingElement mul(long k) {
+        return mul(BigInteger.valueOf(k));
+    }
+
     /**
      * Calculates this^k.
      * (Note that (anything)^0 = 1, particularly 0^0 = 1)
@@ -88,6 +92,10 @@ public interface RingElement extends Element {
                 result = result.mul(this);
         }
         return result;
+    }
+
+    default RingElement pow(long k) {
+        return pow(BigInteger.valueOf(k));
     }
 
     /**

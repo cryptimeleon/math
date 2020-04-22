@@ -121,12 +121,22 @@ public class Zp extends Zn implements Field {
         }
 
         @Override
+        public ZpElement mul(long k) {
+            return (ZpElement) super.mul(k);
+        }
+
+        @Override
         public ZpElement inv() throws UnsupportedOperationException {
             return (ZpElement) super.inv();
         }
 
         @Override
         public ZpElement pow(BigInteger k) {
+            return (ZpElement) super.pow(k);
+        }
+
+        @Override
+        public ZpElement pow(long k) {
             return (ZpElement) super.pow(k);
         }
 

@@ -156,6 +156,21 @@ public class Zn implements Ring {
         }
 
         @Override
+        public ZnElement mul(long k) {
+            return mul(BigInteger.valueOf(k));
+        }
+
+        @Override
+        public ZnElement pow(BigInteger k) {
+            return createZnElement(v.modPow(k, n));
+        }
+
+        @Override
+        public ZnElement pow(long k) {
+            return pow(BigInteger.valueOf(k));
+        }
+
+        @Override
         public ZnElement inv() throws UnsupportedOperationException {
             try {
                 return createZnElement(v.modInverse(n));
