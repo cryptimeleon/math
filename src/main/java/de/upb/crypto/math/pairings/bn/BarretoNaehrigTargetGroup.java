@@ -28,4 +28,9 @@ public class BarretoNaehrigTargetGroup extends PairingTargetGroup {
     public BarretoNaehrigTargetGroupElement getElement(ExtensionFieldElement fe) {
         return new BarretoNaehrigTargetGroupElement(this, fe);
     }
+
+    @Override
+    public boolean hasPrimeSize() throws UnsupportedOperationException {
+        return true;
+    }
 }

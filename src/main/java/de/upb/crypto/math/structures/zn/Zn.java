@@ -20,6 +20,7 @@ public class Zn implements Ring {
     protected final ZnElement ONE;
     protected final ZnElement ZERO;
     protected final BigInteger n;
+    protected Boolean nIsPrime = null;
 
     /**
      * Maximum value (over all elements elem) of elem.getInteger().toByteArray().length;
@@ -52,6 +53,13 @@ public class Zn implements Ring {
     @Override
     public BigInteger size() {
         return n;
+    }
+
+    @Override
+    public boolean hasPrimeSize() throws UnsupportedOperationException {
+        if (nIsPrime == null)
+            nIsPrime = n.isProbablePrime(80);
+        return nIsPrime;
     }
 
     @Override

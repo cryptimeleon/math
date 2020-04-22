@@ -149,6 +149,11 @@ public abstract class BarretoNaehrigSourceGroup extends PairingSourceGroup {
         return true;
     }
 
+    @Override
+    public boolean hasPrimeSize() throws UnsupportedOperationException {
+        return true;
+    }
+
     // workaround since `super.super.method()` does not work...
     protected PairingSourceGroupElement superGetUniformlyRandomElement() {
         return super.getUniformlyRandomElement();
