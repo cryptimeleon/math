@@ -6,6 +6,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -60,11 +61,23 @@ public class MultiExpContext {
         }
         Group group = bases.get(0).getStructure();
         for (GroupElement base : bases) {
-            if (base.getStructure() != group) {
+            if (!base.getStructure().equals(group)) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Extract group structure from each base. Returned in same oder as bases. Used for logging error.
+     * @return List of {@link Group}.
+     */
+    public List<Group> getBaseGroups() {
+        List<Group> groups = new LinkedList<>();
+        for (GroupElement base : bases) {
+            groups.add(base.getStructure());
+        }
+        return groups;
     }
 
     /**

@@ -6,6 +6,8 @@ import de.upb.crypto.math.expressions.evaluator.trs.ExprRule;
 import de.upb.crypto.math.expressions.evaluator.trs.RuleApplicator;
 import de.upb.crypto.math.expressions.evaluator.trs.bool.MoveEqTestToLeftSideRule;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
+import de.upb.crypto.math.expressions.exponent.ZnExponentAsAdditiveGroupElemExpr;
+import de.upb.crypto.math.expressions.exponent.ZnExponentAsMultiplicativeGroupElemExpr;
 import de.upb.crypto.math.expressions.group.*;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -79,6 +81,13 @@ public class OptGroupElementExpressionPrecomputer {
         );
     }
 
+    /**
+     * Traverses the group element expression tree top-down, applying rules as possible.
+     * As it does not traverse back up, it does not apply all rules that are possible to apply.
+     * @param expr The expression tree to rewrite.
+     * @param ruleApplicator Determines which rules are applied and with which precedence.
+     * @return The rewritten expression.
+     */
     public GroupElementExpression rewriteGroupTermsTopDown(GroupElementExpression expr, RuleApplicator ruleApplicator) {
         // apply as many rules on this expr as possible, constructing a new expression
         // once all rules have been applied, apply this method recursively on its children
@@ -102,10 +111,6 @@ public class OptGroupElementExpressionPrecomputer {
             return new GroupPowExpr(
                     this.rewriteGroupTermsTopDown(powExpr.getBase(), ruleApplicator), powExpr.getExponent()
             );
-        } else if (newExpr instanceof GroupElementConstantExpr) {
-            return newExpr;
-        } else if (newExpr instanceof GroupEmptyExpr) {
-            return newExpr;
         } else if (newExpr instanceof PairingExpr) {
             PairingExpr pairingExpr = (PairingExpr) newExpr;
             return new PairingExpr(
@@ -113,15 +118,19 @@ public class OptGroupElementExpressionPrecomputer {
                     this.rewriteGroupTermsTopDown(pairingExpr.getLhs(), ruleApplicator),
                     this.rewriteGroupTermsTopDown(pairingExpr.getRhs(), ruleApplicator)
             );
-        } else if (newExpr instanceof GroupVariableExpr) {
-            return newExpr;
         } else {
-            throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper group expression: " + newExpr.getClass());
+            return newExpr;
         }
     }
 
-
+    /**
+     * Traverses the boolean expression tree top-down, applying rules as possible.
+     * As it does not traverse back up, it does not apply all rules that are possible to apply.
+     * @param expr The expression tree to rewrite.
+     * @param boolRuleApplicator Determines which rules are applied to the bool expressions and with which precedence.
+     * @param groupRuleApplicator Determines which rules are applied to the group expressions and with which precendence.
+     * @return The rewritten expression.
+     */
     public BooleanExpression rewriteBoolTermsTopDown(BooleanExpression expr, RuleApplicator boolRuleApplicator,
                                                      RuleApplicator groupRuleApplicator) {
         BooleanExpression newExpr = (BooleanExpression) boolRuleApplicator.applyAllRules(expr);
@@ -143,9 +152,6 @@ public class OptGroupElementExpressionPrecomputer {
             return new BoolNotExpr(
                     this.rewriteBoolTermsTopDown(notExpr.getChild(), boolRuleApplicator, groupRuleApplicator)
             );
-        } else if (newExpr instanceof BoolEmptyExpr || newExpr instanceof BoolVariableExpr
-                || newExpr instanceof ExponentEqualityExpr || newExpr instanceof BoolConstantExpr) {
-            return newExpr;
         } else if (newExpr instanceof GroupEqualityExpr) {
             GroupEqualityExpr equalityExpr = (GroupEqualityExpr) newExpr;
             return new GroupEqualityExpr(
@@ -153,11 +159,15 @@ public class OptGroupElementExpressionPrecomputer {
                     this.rewriteGroupTermsTopDown(equalityExpr.getRhs(), groupRuleApplicator)
             );
         } else {
-            throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper boolean expression: " + newExpr.getClass());
+            return newExpr;
         }
     }
 
+    /**
+     * Finds boolean expressions eligible for merging.
+     * @param expr The expressions tree to search through.
+     * @param exprToMergeable A map determining for each sub-expression whether it is mergeable.
+     */
     public void markMergeableExprs(Expression expr, Map<Expression, Boolean> exprToMergeable) {
         if (expr instanceof BoolAndExpr) {
             BoolAndExpr andExpr = (BoolAndExpr) expr;
@@ -176,19 +186,19 @@ public class OptGroupElementExpressionPrecomputer {
             BoolNotExpr notExpr = (BoolNotExpr) expr;
             exprToMergeable.put(expr, false);
             markMergeableExprs(notExpr.getChild(), exprToMergeable);
-        } else if (expr instanceof BoolEmptyExpr || expr instanceof BoolVariableExpr
-                || expr instanceof ExponentEqualityExpr) {
-            exprToMergeable.put(expr, false);
         } else if (expr instanceof GroupEqualityExpr) {
             exprToMergeable.put(expr, true);
-        } else if (expr instanceof GroupElementExpression) {
-            exprToMergeable.put(expr, false);
         } else {
-            throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper boolean or group expression: " + expr.getClass());
+            exprToMergeable.put(expr, false);
         }
     }
 
+    /**
+     * Traverses the boolean expression tree and merges candidate AND expressions.
+     * @param expr The boolean expression tree to rewrite.
+     * @param exprToMergeable Information about which expressions can be merged.
+     * @return Rewritten expression with eligible equality expressions merged into one.
+     */
     public Expression traverseMergeANDs(BooleanExpression expr, Map<Expression, Boolean> exprToMergeable) {
         if (exprToMergeable.get(expr)) {
             return mergeANDs(expr);
@@ -210,12 +220,8 @@ public class OptGroupElementExpressionPrecomputer {
             return new BoolNotExpr(
                     (BooleanExpression) traverseMergeANDs(notExpr.getChild(), exprToMergeable)
             );
-        } else if (expr instanceof BoolEmptyExpr || expr instanceof BoolVariableExpr
-                || expr instanceof ExponentEqualityExpr || expr instanceof GroupEqualityExpr) {
-            return expr;
         } else {
-            throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper boolean expression: " + expr.getClass());
+            return expr;
         }
     }
 
@@ -312,9 +318,7 @@ public class OptGroupElementExpressionPrecomputer {
                     powExpr, exprToContainsVar.get(powExpr.getBase())
                             || ExponentExpressionAnalyzer.containsTypeExpr(powExpr.getExponent(), ExponentVariableExpr.class)
             );
-        } else if (expr instanceof GroupElementConstantExpr) {
-            exprToContainsVar.put(expr, false);
-        } else if (expr instanceof GroupEmptyExpr) {
+        } else if (expr instanceof GroupElementConstantExpr || expr instanceof  GroupEmptyExpr) {
             exprToContainsVar.put(expr, false);
         } else if (expr instanceof PairingExpr) {
             PairingExpr pairingExpr = (PairingExpr) expr;
@@ -324,11 +328,9 @@ public class OptGroupElementExpressionPrecomputer {
                     pairingExpr,
                     exprToContainsVar.get(pairingExpr.getLhs()) || exprToContainsVar.get(pairingExpr.getRhs())
             );
-        } else if (expr instanceof GroupVariableExpr) {
-            exprToContainsVar.put(expr, true);
         } else {
-            throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper expression.");
+            // for unknown expressions just assume there is a variable in there
+            exprToContainsVar.put(expr, true);
         }
     }
 
@@ -368,13 +370,11 @@ public class OptGroupElementExpressionPrecomputer {
                         evalWithoutVars(pairingExpr.getLhs(), exprToContainsVar),
                         evalWithoutVars(pairingExpr.getRhs(), exprToContainsVar)
                 );
-            } else if (expr instanceof GroupVariableExpr) {
-                return expr;
-            } else if (expr instanceof GroupElementConstantExpr || expr instanceof GroupEmptyExpr) {
-                throw new IllegalStateException("Expression supposedly contains variable even though it cannot.");
+            }  else if (expr instanceof GroupElementConstantExpr || expr instanceof GroupEmptyExpr) {
+                throw new IllegalStateException("Expression of type " + expr.getClass() + " supposedly contains " +
+                        "variable even though it cannot.");
             } else {
-                throw new IllegalArgumentException("Found something in expression tree that" +
-                        "is not a proper group expression.");
+                return expr;
             }
         }
     }
@@ -386,8 +386,6 @@ public class OptGroupElementExpressionPrecomputer {
      */
     public void findContainedBases(GroupElementExpression expr, boolean inInversion,
                                     Map<GroupElementExpression, List<GroupElement>> exprToContBases) {
-        // TODO: Would be nice to refactor this pattern,
-        //  but recursion is required for inversion handling
         if (expr instanceof GroupOpExpr) {
             GroupOpExpr opExpr = (GroupOpExpr) expr;
             // group not necessarily commutative, so if we are in inversion, switch order
@@ -428,21 +426,10 @@ public class OptGroupElementExpressionPrecomputer {
             if (!GroupElementExpressionAnalyzer.containsTypeExpr(powExpr.getBase(), GroupVariableExpr.class,
                     ExponentVariableExpr.class))
                 containedBases.add(powExpr.getBase().evaluateNaive());
-        } else if (expr instanceof GroupElementConstantExpr) {
+        } else if (expr instanceof GroupElementConstantExpr || expr instanceof GroupEmptyExpr) {
             // count this as basis too for now since multiexp does it too
             List<GroupElement> containedBases = exprToContBases.computeIfAbsent(expr, k -> new LinkedList<>());
             containedBases.add(expr.evaluateNaive());
-        } else if (expr instanceof GroupEmptyExpr) {
-            // count this as basis too for now since multiexp does it too
-            List<GroupElement> containedBases = exprToContBases.computeIfAbsent(expr, k -> new LinkedList<>());
-            containedBases.add(expr.evaluateNaive());
-        } else if (expr instanceof PairingExpr) {
-            // Dont handle pairing here, need to call precompute on both sides but not here
-        } else if (expr instanceof GroupVariableExpr) {
-            // Dont handle variable here
-        } else {
-            throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper expression.");
         }
     }
 

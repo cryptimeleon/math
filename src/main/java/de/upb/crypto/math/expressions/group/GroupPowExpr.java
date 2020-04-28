@@ -22,7 +22,10 @@ public class GroupPowExpr extends GroupElementExpression {
 
     @Override
     public GroupElement evaluateNaive() {
-        BigInteger groupOrder = getGroup().size();
+        BigInteger groupOrder = null;
+        try {
+            groupOrder = getGroup().size();
+        } catch (UnsupportedOperationException ignored) {}
         if (groupOrder == null)
             return base.evaluateNaive().pow(exponent.evaluate());
         else

@@ -60,8 +60,9 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
         extractMultiExpContext(expr, inInversion, multiExpContext);
 
         if (!multiExpContext.allBasesSameGroup()) {
-            throw new IllegalArgumentException("Expression contains elements with different" +
-                    "groups outside of pairings.");
+            throw new IllegalArgumentException("Expression contains elements with different " +
+                    "groups outside of pairings: " + multiExpContext.getBases() + " with groups "
+                    + multiExpContext.getBaseGroups());
         }
 
         if (multiExpContext.isEmpty()) {
@@ -197,14 +198,6 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                     pow_expr.getExponent().evaluate(),
                     inInversion
             );
-        } else if (expr instanceof GroupElementConstantExpr) {
-            // count this as basis too, multiexp algorithm can distinguish
-            multiExpContext.addExponentiation(expr.evaluateNaive(), BigInteger.ONE,
-                    inInversion);
-        } else if (expr instanceof GroupEmptyExpr) {
-            // count this as basis too, multiexp algorithm can distinguish
-            multiExpContext.addExponentiation(expr.evaluateNaive(), BigInteger.ONE,
-                    inInversion);
         } else if (expr instanceof PairingExpr) {
             PairingExpr pair_expr = (PairingExpr) expr;
             final GroupElement[] lhs = new GroupElement[1];
@@ -227,8 +220,9 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             throw new IllegalArgumentException("Cannot evaluate variable expression. " +
                     "Insert value first");
         } else {
-            throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper expression.");
+            // assume expression can just be evaluated directly by default
+            multiExpContext.addExponentiation(expr.evaluateNaive(), BigInteger.ONE,
+                    inInversion);
         }
     }
 
@@ -318,9 +312,6 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
             return new BoolNotExpr(
                     (BooleanExpression) this.precomputeBoolRecursive(notExpr.getChild())
             );
-        } else if (expr instanceof BoolEmptyExpr || expr instanceof BoolVariableExpr
-                || expr instanceof ExponentEqualityExpr) {
-            return expr;
         } else if (expr instanceof GroupEqualityExpr) {
             GroupEqualityExpr equalityExpr = (GroupEqualityExpr) expr;
             return new GroupEqualityExpr(
@@ -328,8 +319,7 @@ public class OptGroupElementExpressionEvaluator implements GroupElementExpressio
                     this.precompute(equalityExpr.getRhs())
             );
         } else {
-            throw new IllegalArgumentException("Found something in expression tree that" +
-                    "is not a proper boolean expression: " + expr.getClass());
+            return expr;
         }
     }
 
