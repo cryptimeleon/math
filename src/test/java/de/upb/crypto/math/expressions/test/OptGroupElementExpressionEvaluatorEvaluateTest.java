@@ -62,7 +62,7 @@ public class OptGroupElementExpressionEvaluatorEvaluateTest {
     public void testZnExponentAsMultiplicativeGroupElemExpr() {
         Zn zn = new Zn(BigInteger.valueOf(100));
         ExponentExpr expExpr = new ExponentConstantExpr(zn.getUniformlyRandomUnit());
-        expExpr = expExpr.add(expExpr);
+        expExpr = expExpr.mul(expExpr);
         GroupElementExpression expr = new ZnExponentAsMultiplicativeGroupElemExpr(zn, expExpr);
         expr = expr.op(expr);
         expr = expr.opPow(expr, expExpr);

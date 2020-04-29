@@ -171,12 +171,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
             if (exponentDigit != 0) {
                 GroupElement power = smallOddPowers.get(Math.abs(exponentDigit) / 2);
                 if (exponentDigit < 0) {
-                    try {
-                        power = power.inv();
-                    } catch (UnsupportedOperationException e) {
-                        // if one of the exponents is not invertible we switch to sliding window pow
-                        return this.powSlidingWindow(exponent, enableCaching);
-                    }
+                    power = power.inv();
                 }
                 A = A.op(power);
             }
