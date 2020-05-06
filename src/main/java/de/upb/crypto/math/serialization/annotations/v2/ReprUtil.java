@@ -1,6 +1,7 @@
 package de.upb.crypto.math.serialization.annotations.v2;
 
 import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.internal.*;
@@ -74,9 +75,14 @@ public class ReprUtil {
     }
 
     public ReprUtil register(BilinearGroup bilinearGroup) {
-        register(bilinearGroup.getG1(), "G1");
-        register(bilinearGroup.getG2(), "G2");
-        register(bilinearGroup.getGT(), "GT");
+        register(bilinearGroup.getBilinearMap());
+        return this;
+    }
+
+    public ReprUtil register(BilinearMap bilinearMap) {
+        register(bilinearMap.getG1(), "G1");
+        register(bilinearMap.getG2(), "G2");
+        register(bilinearMap.getGT(), "GT");
         return this;
     }
 
