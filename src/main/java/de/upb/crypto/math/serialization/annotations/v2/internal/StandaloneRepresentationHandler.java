@@ -13,7 +13,7 @@ import java.util.function.Function;
  * 2) Some basic types (see static supportedTypes variable).
  */
 public class StandaloneRepresentationHandler implements RepresentationHandler {
-    private static Class[] supportedTypes = new Class[] {StandaloneRepresentable.class, BigInteger.class, Integer.class, String.class, Boolean.class, byte[].class};
+    private static Class[] supportedTypes = new Class[] {StandaloneRepresentable.class, BigInteger.class, Integer.class, String.class, Boolean.class, byte[].class, Enum.class};
     protected Class type;
 
     public StandaloneRepresentationHandler(Class type) {
