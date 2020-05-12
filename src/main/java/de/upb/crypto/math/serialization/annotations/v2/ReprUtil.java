@@ -8,6 +8,7 @@ import de.upb.crypto.math.serialization.annotations.v2.internal.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -307,8 +308,15 @@ public class ReprUtil {
      * This is done statically, i.e. with static type information.
      */
     protected static RepresentationHandler getHandlerWithoutRestorerString(Type type) {
-        if (StandaloneRepresentationHandler.canHandle(type))
-            return new StandaloneRepresentationHandler((Class) type);
+        // For generic type we need to extract the raw type. Only for StandaloneRepresentable though, as stuff
+        // like list and map handling can handle generic types by themselves.
+        // TODO: What about DependentRepresentations?
+        Type rawType = type;
+        if (type instanceof ParameterizedType) {
+            rawType = ((ParameterizedType) type).getRawType();
+        }
+        if (StandaloneRepresentationHandler.canHandle(rawType))
+            return new StandaloneRepresentationHandler((Class) rawType);
 
         if (DependentRepresentationHandler.canHandle(type))
             return new DependentRepresentationHandler("", type);
