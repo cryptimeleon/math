@@ -42,13 +42,20 @@ public class GroupTests extends StructureTests {
         this.elementSupplier = params.elementSupplier;
     }
 
-    @Test
+    @Test(timeout = 30000)
     public void testBasicProperties() {
         GroupElement a = null, b = null, c;
 
         // Drawing random elements works or throws the right exception
         try {
             a = group.getUniformlyRandomElement();
+        } catch (Exception ex) {
+            assertTrue(ex instanceof UnsupportedOperationException);
+        }
+
+        // Drawing uniformly random non neutral elements works or throws the right exception
+        try {
+            a = group.getUniformlyRandomNonNeutral();
         } catch (Exception ex) {
             assertTrue(ex instanceof UnsupportedOperationException);
         }
