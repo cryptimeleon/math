@@ -1,7 +1,6 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
-    id 'maven'
     id 'maven-publish'
 }
 
@@ -67,42 +66,34 @@ test {
     }
 }
 
-//packaging tests
-task packageTests(type: Jar) {
-   //from sourceSets.test.output
-    classifier = 'tests'
-    baseName = project.name + '-test'
-    from sourceSets.test.output+sourceSets.test.allSource
-}
-
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
-    classifier = 'sources'
+    archiveClassifier = 'sources'
 }
 
 task javadocJar(type: Jar) {
     from javadoc
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
 }
 
-//packageTests.dependsOn 'test'
-
-configurations {
-    testArtifacts
-}
 artifacts {
-    archives packageTests
+    archives javadocJar
+    archives sourcesJar
+}
+
+java {
+    registerFeature("tests") {
+        usingSourceSet(sourceSets.test)
+    }
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact packageTests
             artifact sourcesJar
             artifact javadocJar
         }
-
     }
 
     repositories {
