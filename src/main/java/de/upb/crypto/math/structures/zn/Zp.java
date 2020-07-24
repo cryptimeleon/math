@@ -52,6 +52,11 @@ public class Zp extends Zn implements Field {
     }
 
     @Override
+    public ZpElement getUniformlyRandomNonzeroElement() {
+        return (ZpElement) super.getUniformlyRandomNonzeroElement();
+    }
+
+    @Override
     public ZpElement getUniformlyRandomElement() throws UnsupportedOperationException {
         return (ZpElement) super.getUniformlyRandomElement();
     }
@@ -69,7 +74,6 @@ public class Zp extends Zn implements Field {
     @Override
     public ZpElement getPrimitiveElement() throws UnsupportedOperationException {
         throw new UnsupportedOperationException("Not implemented");
-
     }
 
     @Override

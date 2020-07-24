@@ -1,5 +1,8 @@
 package de.upb.crypto.math.interfaces.structures;
 
+import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
+
 import java.math.BigInteger;
 
 /**
@@ -12,15 +15,15 @@ public interface RingElement extends Element {
     /**
      * Interprets this element as an element of this R's unit group
      */
-    default RingUnitGroup.RingUnitGroupElement toUnitGroupElement() {
-        return new RingUnitGroup(getStructure()).new RingUnitGroupElement(this);
+    default GroupElement toUnitGroupElement() {
+        return RingGroup.unitGroupOf(getStructure()).getElement(this);
     }
 
     /**
      * Interprets this element as an element of this R's additive group
      */
-    default RingAdditiveGroup.RingAdditiveGroupElement toAdditiveGroupElement() {
-        return new RingAdditiveGroup(getStructure()).new RingAdditiveGroupElement(this);
+    default GroupElement toAdditiveGroupElement() {
+        return RingGroup.additiveGroupOf(getStructure()).getElement(this);
     }
 
     /**

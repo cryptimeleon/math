@@ -1,18 +1,18 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.bool.GroupEqualityExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
-import de.upb.crypto.math.interfaces.structures.FutureGroupElement;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -31,32 +31,26 @@ public abstract class GroupElementExpression implements Expression {
     }
 
     public GroupElement evaluate() {
-        return evaluate(group == null ? null : group.getExpressionEvaluator());
+        return evaluate(x -> null);
     }
 
-    public GroupElement evaluate(GroupElementExpressionEvaluator evaluator) {
-        if (evaluator == null)
-            throw new IllegalArgumentException("Trying to evaluate expression that has no known group type attached to it");
-        return evaluator.evaluate(this);
+    @Override
+    public abstract GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions);
+
+    @Override
+    public abstract GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions);
+
+    @Override
+    public GroupElementExpression substitute(ValueBundle values) {
+        return (GroupElementExpression) Expression.super.substitute(values);
     }
 
-    public GroupElement evaluate(Substitutions variableValues) {
-        return substitute(variableValues).evaluate();
+    @Override
+    public GroupElementExpression substitute(String variable, Expression substitution) {
+        return (GroupElementExpression) Expression.super.substitute(variable, substitution);
     }
 
-    /**
-     * Naively compute the value of this expression (without optimizations provided by the group)
-     * There should usually be no good reason for procotol implementors to call this. Prefer evaluate(), which should be faster.
-     *
-     * @return the value of this expression
-     */
-    public abstract GroupElement evaluateNaive();
-
-    public FutureGroupElement evaluateAsync() {
-        return new FutureGroupElement(this::evaluate);
-    }
-
-    public  GroupElementExpression op(GroupElementExpression rhs) {
+    public GroupElementExpression op(GroupElementExpression rhs) {
         return new GroupOpExpr(this, rhs);
     }
     public GroupElementExpression op(GroupElement rhs) {
@@ -127,9 +121,6 @@ public abstract class GroupElementExpression implements Expression {
         return isEqualTo(new GroupVariableExpr(other));
     }
 
-    @Override
-    public abstract GroupElementExpression substitute(Substitutions variableValues);
-
     /**
      * Returns the group s.t. this expression evaluates to an element of this group, or null if group is unknown
      * (e.g., if expression consists only of variables)
@@ -138,20 +129,41 @@ public abstract class GroupElementExpression implements Expression {
         return group;
     }
 
-    @Override
     public GroupElementExpression precompute() {
-        return getGroup().getExpressionEvaluator().precompute(this);
+        GroupOpExpr linearized = linearize();
+        linearized.getLhs().evaluate().computeSync();
+        linearized.treeWalk(expr -> {
+            if (expr instanceof GroupPowExpr) {
+                GroupElementExpression base = ((GroupPowExpr) expr).getBase();
+                if (base instanceof GroupElementConstantExpr)
+                    ((GroupElementConstantExpr) base).value.precomputePow();
+            }
+        });
+
+        return linearized;
     }
 
     /**
-     * Outputs an equivalent expression that's of the form \prod g_i^{x_i}
+     * Returns an equivalent expression of the form y * \prod g_i^x_i, where y doesn't contain any variables, but for every i, g_i or x_i do.
+     * The exact result is a GroupOpExpr
+     * where the left-hand-side is a GroupElementConstantExpr y,
+     * the right-hand-side is a tree whose inner nodes are GroupOpExpr or PairingExpr
+     * and leaf nodes are GroupPowExpr (whose base is a GroupConstantExpr, a GroupVariableExpr, or a PairingExpr whose arguments are again linearized).
      */
-    /*public GroupElementExpression linearize() {
-        return linearize(false, new ExponentEmptyExpr());
-    }*/
+    public GroupOpExpr linearize() {
+        return linearize(new ExponentConstantExpr(BigInteger.ONE));
+    }
 
     /**
-     * Returns a linearized expression equivalent to this^{(-1)^inverted exponent}
+     * Linearizes the expression this^exponent. The result must be of form y[no variable] * \prod g_i^x_i [variables]
      */
-    //protected abstract GroupElementExpression linearize(boolean inverted, ExponentExpr exponent);
+    protected abstract GroupOpExpr linearize(ExponentExpr exponent);
+
+    protected BigInteger getGroupOrderIfKnown() {
+        try {
+            return getGroup().size();
+        } catch (UnsupportedOperationException unknownSizeException) {
+            return null;
+        }
+    }
 }

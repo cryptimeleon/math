@@ -2,6 +2,8 @@ package de.upb.crypto.math.structures.cartesian;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
@@ -59,11 +61,6 @@ public class ProductGroup implements Group {
     @Override
     public boolean isCommutative() {
         return Arrays.stream(groups).allMatch(Group::isCommutative);
-    }
-
-    @Override
-    public int estimateCostOfInvert() {
-        return (int) Arrays.stream(groups).mapToInt(Group::estimateCostOfInvert).average().orElseGet(() -> 100);
     }
 
     @Override

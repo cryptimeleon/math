@@ -60,7 +60,7 @@ public class PairingPerformanceTest {
     public void setupTest() {
         Group g1 = pairing.getG1();
         Group g2 = pairing.getG2();
-        expression = pairing.expr();
+        expression = pairing.getGT().expr();
 
         // Generate test data
         g1Elements = new ArrayList<>();

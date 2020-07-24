@@ -1,10 +1,9 @@
 package de.upb.crypto.math.structures.sn;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.structures.AbstractGroupElement;
 import de.upb.crypto.math.interfaces.structures.Element;
-import de.upb.crypto.math.interfaces.structures.Group;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.ListRepresentation;
 import de.upb.crypto.math.serialization.Representation;
@@ -20,9 +19,9 @@ import java.util.function.Function;
  * The group Sn for a natural number n is the set of permutations
  * {1,...,n} -> {1,...,n} where the group operation is function composition.
  */
-public class Sn implements Group {
+public class Sn implements GroupImpl {
     protected int n;
-    private SnElement identity = null;
+    private SnElementImpl identity = null;
 
     /**
      * Constructs Sn for n
@@ -64,31 +63,36 @@ public class Sn implements Group {
     }
 
     @Override
-    public SnElement getNeutralElement() {
+    public SnElementImpl getNeutralElement() {
         if (identity == null)
-            identity = new SnElement(Function.identity());
+            identity = new SnElementImpl(Function.identity());
         return identity;
     }
 
     @Override
-    public SnElement getUniformlyRandomElement() throws UnsupportedOperationException {
+    public SnElementImpl getUniformlyRandomElement() throws UnsupportedOperationException {
         ArrayList<Integer> images = new ArrayList<>();
         for (int i = 1; i <= n; i++)
             images.add(i);
         Collections.shuffle(images);
 
-        return new SnElement(i -> images.get(i - 1)); //(we could do this more efficiently)
+        return new SnElementImpl(i -> images.get(i - 1)); //(we could do this more efficiently)
     }
 
     @Override
-    public SnElement getElement(Representation repr) {
-        return new SnElement(repr);
+    public SnElementImpl getElement(Representation repr) {
+        return new SnElementImpl(repr);
+    }
+
+    @Override
+    public GroupElementImpl getGenerator() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
     }
 
     /**
      * Permutations on {1,...,n}
      */
-    public class SnElement extends AbstractGroupElement implements GroupElement, Function<Integer, Integer> {
+    public class SnElementImpl implements GroupElementImpl, Function<Integer, Integer> {
         /**
          * Contains the images of this permutation in order, i.e.
          * images[i] = j <=> i maps to j
@@ -99,21 +103,21 @@ public class Sn implements Group {
         /**
          * Constructor for java's serialization
          */
-        private SnElement() {
+        private SnElementImpl() {
 
         }
 
         /**
          * Recreate from representation
          */
-        public SnElement(Representation repr) {
+        public SnElementImpl(Representation repr) {
             this(i -> repr.list().get(i).bigInt().get().intValue());
         }
 
         /**
          * Create from a mapping
          */
-        public SnElement(Function<Integer, Integer> permutation) {
+        public SnElementImpl(Function<Integer, Integer> permutation) {
             images = new int[n + 1];
             for (int i = 1; i <= n; i++)
                 images[i] = permutation.apply(i);
@@ -126,7 +130,7 @@ public class Sn implements Group {
          *
          * @param images
          */
-        public SnElement(int[] images) {
+        public SnElementImpl(int[] images) {
             this.images = Arrays.copyOf(images, n + 1);
             if (!checkValidElement()) throw new IllegalArgumentException(this + " is not a permutation");
         }
@@ -161,12 +165,12 @@ public class Sn implements Group {
         }
 
         @Override
-        public Group getStructure() {
+        public GroupImpl getStructure() {
             return Sn.this;
         }
 
         @Override
-        public SnElement inv() {
+        public SnElementImpl inv() {
             int[] inverse = new int[n + 1];
             for (int i = 0; i <= n; i++)
                 inverse[images[i]] = i;
@@ -174,11 +178,11 @@ public class Sn implements Group {
         }
 
         @Override
-        public SnElement op(Element e) throws IllegalArgumentException {
+        public SnElementImpl op(GroupElementImpl e) throws IllegalArgumentException {
             if (!e.getStructure().equals(getStructure()))
                 throw new IllegalArgumentException("Trying to operate on elements of two different groups");
 
-            int[] rhs = ((SnElement) e).images;
+            int[] rhs = ((SnElementImpl) e).images;
             int[] lhs = images;
             int[] result = new int[n + 1];
             for (int i = 1; i <= n; i++)
@@ -194,9 +198,9 @@ public class Sn implements Group {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof SnElement) || !((SnElement) obj).getStructure().equals(getStructure()))
+            if (!(obj instanceof SnElementImpl) || !((SnElementImpl) obj).getStructure().equals(getStructure()))
                 return false;
-            return Arrays.equals(((SnElement) obj).images, this.images);
+            return Arrays.equals(((SnElementImpl) obj).images, this.images);
         }
 
         @Override
@@ -228,8 +232,8 @@ public class Sn implements Group {
     /**
      * Creates an SnElement, assumes that the supplied integer array is [not known]/[never changed] anywhere else
      */
-    private SnElement createElement(int[] images) {
-        SnElement result = new SnElement();
+    private SnElementImpl createElement(int[] images) {
+        SnElementImpl result = new SnElementImpl();
         result.images = images;
         return result;
     }
@@ -238,12 +242,12 @@ public class Sn implements Group {
      * Create from String.
      * Format: "[image1 image2 image3]"
      */
-    public static SnElement createElementFromString(String str) {
+    public static SnElementImpl createElementFromString(String str) {
         str = str.substring(1, str.length() - 1);
         Integer[] ints = Arrays.stream(str.split(" ")).map(s -> Integer.parseInt(s)).toArray(len -> new Integer[len]);
         int n = ints.length - 1;
         Sn sn = new Sn(n);
-        return sn.new SnElement(i -> ints[i - 1]);
+        return sn.new SnElementImpl(i -> ints[i - 1]);
     }
 
     @Override
@@ -264,11 +268,6 @@ public class Sn implements Group {
     @Override
     public Optional<Integer> getUniqueByteLength() {
         return Optional.of(n * BigInteger.valueOf(n).toByteArray().length);
-    }
-
-    @Override
-    public int estimateCostOfInvert() {
-        return 100;
     }
 
     @Override

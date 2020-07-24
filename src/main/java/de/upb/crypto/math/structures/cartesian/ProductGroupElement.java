@@ -1,17 +1,17 @@
 package de.upb.crypto.math.structures.cartesian;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.structures.AbstractGroupElement;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.ListRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public class ProductGroupElement extends AbstractGroupElement implements GroupElement {
+public class ProductGroupElement implements GroupElement {
     protected GroupElement[] elems;
 
     public ProductGroupElement(GroupElement... elems) {
@@ -47,6 +47,32 @@ public class ProductGroupElement extends AbstractGroupElement implements GroupEl
     @Override
     public ProductGroupElement pow(BigInteger k) {
         return new ProductGroupElement(Arrays.stream(elems).map(g -> g.pow(k)).toArray(GroupElement[]::new));
+    }
+
+    @Override
+    public GroupElement precomputePow() {
+        for (GroupElement elem : elems)
+            elem.precomputePow();
+        return this;
+    }
+
+    @Override
+    public GroupElement compute() {
+        for (GroupElement elem : elems)
+            elem.compute();
+        return this;
+    }
+
+    @Override
+    public GroupElement computeSync() {
+        for (GroupElement elem : elems)
+            elem.computeSync();
+        return this;
+    }
+
+    @Override
+    public boolean isComputed() {
+        return false;
     }
 
     public GroupElement get(int index) {

@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -24,8 +23,18 @@ public class GroupEmptyExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElement evaluateNaive() {
+    public GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
         return this.group.getNeutralElement();
+    }
+
+    @Override
+    public void forEachChild(Consumer<Expression> action) {
+        //Nothing to do
+    }
+
+    @Override
+    public GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return this;
     }
 
     @Override
@@ -59,10 +68,7 @@ public class GroupEmptyExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupEmptyExpr substitute(Substitutions variableValues) {
-        return this;
+    protected GroupOpExpr linearize(ExponentExpr exponent) {
+        return new GroupOpExpr(this, this);
     }
-
-    @Override
-    public void treeWalk(Consumer<Expression> visitor) {}
 }

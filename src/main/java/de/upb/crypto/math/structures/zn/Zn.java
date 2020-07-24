@@ -88,6 +88,11 @@ public class Zn implements Ring {
     }
 
     @Override
+    public ZnElement getUniformlyRandomNonzeroElement() {
+        return createZnElement(RandomGeneratorSupplier.getRnd().getRandomNonZeroElement(n));
+    }
+
+    @Override
     public boolean equals(Object obj) {
         return obj instanceof Zn && n.equals(((Zn) obj).n);
     }

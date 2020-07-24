@@ -19,6 +19,8 @@ public class StandaloneTestParams {
         super();
         this.toTest = toTest;
         this.instance = instance;
+        if (instance != null && !toTest.isInstance(instance))
+            throw new IllegalArgumentException("Given object must be instance of claimed class");
     }
 
     public StandaloneTestParams(StandaloneRepresentable toTest) {

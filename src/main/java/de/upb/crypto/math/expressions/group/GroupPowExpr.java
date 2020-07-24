@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
@@ -21,27 +20,24 @@ public class GroupPowExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElement evaluateNaive() {
-        BigInteger groupOrder = null;
-        try {
-            groupOrder = getGroup().size();
-        } catch (UnsupportedOperationException ignored) {}
+    public GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+        BigInteger groupOrder = getGroupOrderIfKnown();
+
         if (groupOrder == null)
-            return base.evaluateNaive().pow(exponent.evaluate());
+            return base.evaluate(substitutions).pow(exponent.evaluate(substitutions));
         else
-            return base.evaluateNaive().pow(exponent.evaluate(getGroup().getZn()));
+            return base.evaluate(substitutions).pow(exponent.evaluate(getGroup().getZn(), substitutions));
     }
 
     @Override
-    public GroupPowExpr substitute(Substitutions variableValues) {
-        return new GroupPowExpr(base.substitute(variableValues), exponent.substitute(variableValues));
+    public void forEachChild(Consumer<Expression> action) {
+        action.accept(base);
+        action.accept(exponent);
     }
 
     @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-        base.treeWalk(visitor);
-        exponent.treeWalk(visitor);
+    public GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return base.substitute(substitutions).pow(exponent.substitute(substitutions));
     }
 
     public GroupElementExpression getBase() {
@@ -53,7 +49,12 @@ public class GroupPowExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElementExpression pow(ExponentExpr exponent) {
-        return new GroupPowExpr(base, this.exponent.mul(exponent));
+    public GroupElementExpression pow(ExponentExpr exp) {
+        return new GroupPowExpr(base, this.exponent.mul(exp));
+    }
+
+    @Override
+    protected GroupOpExpr linearize(ExponentExpr exp) {
+        return base.linearize(exp.mul(this.exponent));
     }
 }

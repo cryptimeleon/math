@@ -5,10 +5,10 @@ import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.lazy.LazyPairing;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.debug.DebugBilinearMap;
+import de.upb.crypto.math.pairings.debug.DebugBilinearGroup;
+import de.upb.crypto.math.pairings.debug.DebugBilinearMapImpl;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroup;
 import de.upb.crypto.math.structures.zn.Zn;
@@ -139,9 +139,9 @@ public class PairingTests {
     @Parameters(name = "Test: {0}") // add (name="Test: {0}") for jUnit 4.12+ to print Pairing's name to test
     public static Collection<BilinearMap[]> data() {
         //Debug curve
-        DebugBilinearMap debugMap1 = new DebugBilinearMap(1, BigInteger.valueOf(19));
-        DebugBilinearMap debugMap2 = new DebugBilinearMap(2, BigInteger.valueOf(19));
-        DebugBilinearMap debugMap3 = new DebugBilinearMap(3, BigInteger.valueOf(19));
+        DebugBilinearGroup debugMap1 = new DebugBilinearGroup(BilinearGroup.Type.TYPE_1, BigInteger.valueOf(19));
+        DebugBilinearGroup debugMap2 = new DebugBilinearGroup(BilinearGroup.Type.TYPE_2, BigInteger.valueOf(19));
+        DebugBilinearGroup debugMap3 = new DebugBilinearGroup(BilinearGroup.Type.TYPE_3, BigInteger.valueOf(19));
 
         // Supersingular curve groups
         SupersingularProvider supsingFac = new SupersingularProvider();
@@ -151,15 +151,12 @@ public class PairingTests {
         BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
         BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
 
-        //Lazy bn curve
-        LazyPairing lazyPairing = new LazyPairing(supsingGroup.getBilinearMap());
-
         // Collect parameters
-        BilinearMap params[][] = new BilinearMap[][]{
-                {debugMap1}, {debugMap2}, {debugMap3},
+        BilinearMap params[][] = new BilinearMap[][] {
+                {debugMap1.getBilinearMap()}, {debugMap2.getBilinearMap()}, {debugMap3.getBilinearMap()},
                 {supsingGroup.getBilinearMap()},
-                {bnGroup.getBilinearMap()},
-                {lazyPairing}};
+                {bnGroup.getBilinearMap()}
+        };
         return Arrays.asList(params);
     }
 }

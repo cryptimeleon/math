@@ -1,25 +1,25 @@
 package de.upb.crypto.math.performance.group;
 
-import de.upb.crypto.math.interfaces.structures.Group;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 //import de.upb.crypto.math.pairings.mcl.MclGroup1;
 //import de.upb.crypto.math.pairings.mcl.MclGroupT;
 
 public class OpVsInv {
     public static void main(String[] args) {
-        Group group = null;
+        GroupImpl group = null;
         //Group group = new MclGroup1();
         for (int k = 0; k < 10; ++k) {
             System.out.println("Benchmark " + k);
-            GroupElement[] testElements = new GroupElement[1000];
+            GroupElementImpl[] testElements = new GroupElementImpl[1000];
             for (int i = 0; i < testElements.length; ++i) {
                 testElements[i] = group.getUniformlyRandomNonNeutral();
             }
 
-            GroupElement tmp = group.getNeutralElement();
+            GroupElementImpl tmp = group.getNeutralElement();
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < 100; ++i) {
-                for (GroupElement testElement : testElements) {
+                for (GroupElementImpl testElement : testElements) {
                     tmp = tmp.op(testElement);
                 }
             }
@@ -28,7 +28,7 @@ public class OpVsInv {
 
             startTime = System.currentTimeMillis();
             for (int i = 0; i < 100; ++i) {
-                for (GroupElement testElement : testElements) {
+                for (GroupElementImpl testElement : testElements) {
                     tmp = testElement.inv();
                 }
             }

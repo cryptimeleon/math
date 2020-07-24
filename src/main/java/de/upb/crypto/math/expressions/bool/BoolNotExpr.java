@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,23 +18,17 @@ public class BoolNotExpr implements BooleanExpression {
     }
 
     @Override
-    public boolean evaluate() {
-        return !child.evaluate();
+    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return child.substitute(substitutions).not();
     }
 
     @Override
-    public BooleanExpression substitute(Substitutions variableValues) {
-        return new BoolNotExpr(child.substitute(variableValues));
+    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+        return !child.evaluate(substitutions);
     }
 
     @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-        child.treeWalk(visitor);
-    }
-
-    @Override
-    public BooleanExpression precompute() {
-        return new BoolNotExpr(child.precompute());
+    public void forEachChild(Consumer<Expression> action) {
+        action.accept(child);
     }
 }

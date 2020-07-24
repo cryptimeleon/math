@@ -1,7 +1,5 @@
 package de.upb.crypto.math.test;
 
-import de.upb.crypto.math.interfaces.structures.UncachedGroupPrecomputations;
-
 import java.math.BigInteger;
 
 public class WnafDigitsTest {

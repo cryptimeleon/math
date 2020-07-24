@@ -3,8 +3,10 @@ package de.upb.crypto.math.factory;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
+import de.upb.crypto.math.interfaces.mappings.impl.GroupHomomorphismImpl;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
+import de.upb.crypto.math.structures.zn.HashIntoZn;
 import de.upb.crypto.math.structures.zn.Zn;
 
 /**
@@ -48,10 +50,11 @@ public interface BilinearGroup extends StandaloneRepresentable {
      * @throws UnsupportedOperationException if this factory does not support a hash into exponents or G1,G2,GT don't
      *                                       have the same group exponent
      */
-    HashIntoStructure getHashIntoZGroupExponent() throws UnsupportedOperationException;
+    default HashIntoStructure getHashIntoZGroupExponent() throws UnsupportedOperationException {
+        return new HashIntoZn(getZn());
+    }
 
     default Zn getZn() {
         return getG1().getZn();
     }
-
 }

@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.structures.Group;
 
@@ -17,16 +16,6 @@ public class GroupEqualityExpr implements BooleanExpression {
         this.rhs = rhs;
     }
 
-    @Override
-    public boolean evaluate() {
-        return lhs.evaluate().equals(rhs.evaluate());
-    }
-
-    @Override
-    public GroupEqualityExpr substitute(Substitutions variableValues) {
-        return new GroupEqualityExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
-    }
-
     public GroupElementExpression getLhs() {
         return lhs;
     }
@@ -35,20 +24,23 @@ public class GroupEqualityExpr implements BooleanExpression {
         return rhs;
     }
 
-    @Override
-    public BooleanExpression precompute() {
-        Group group = getGroup();
-        return group == null ? this : group.getExpressionEvaluator().precompute(this);
-    }
-
-    @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-        lhs.treeWalk(visitor);
-        rhs.treeWalk(visitor);
-    }
-
     public Group getGroup() {
         return lhs.getGroup() == null ? rhs.getGroup() : lhs.getGroup();
+    }
+
+    @Override
+    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return lhs.substitute(substitutions).isEqualTo(rhs.substitute(substitutions));
+    }
+
+    @Override
+    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+        return lhs.evaluate(substitutions).equals(rhs.evaluate(substitutions));
+    }
+
+    @Override
+    public void forEachChild(Consumer<Expression> action) {
+        action.accept(lhs);
+        action.accept(rhs);
     }
 }

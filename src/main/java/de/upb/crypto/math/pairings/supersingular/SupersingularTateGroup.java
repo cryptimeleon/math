@@ -2,24 +2,28 @@ package de.upb.crypto.math.pairings.supersingular;
 
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
+import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.IdentityIsomorphism;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.AnnotatedRepresentationUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;
+import de.upb.crypto.math.structures.groups.lazy.LazyBilinearMap;
+import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
+import de.upb.crypto.math.structures.groups.lazy.LazyHashIntoStructure;
 import de.upb.crypto.math.structures.zn.HashIntoZn;
 
 public class SupersingularTateGroup implements BilinearGroup {
 
     @Represented
-    private SupersingularSourceGroup g1;
+    private SupersingularSourceGroupImpl g1;
     @Represented
-    private SupersingularTargetGroup gt;
-    @Represented
+    private SupersingularTargetGroupImpl gt;
     private SupersingularTatePairing pairing;
     @Represented
     private SupersingularSourceHash hashIntoG1;
 
-    public SupersingularTateGroup(SupersingularSourceGroup g1, SupersingularTargetGroup gt, SupersingularTatePairing pairing, SupersingularSourceHash hashIntoG1) {
+    public SupersingularTateGroup(SupersingularSourceGroupImpl g1, SupersingularTargetGroupImpl gt, SupersingularTatePairing pairing, SupersingularSourceHash hashIntoG1) {
         this.g1 = g1;
         this.gt = gt;
         this.pairing = pairing;
@@ -28,26 +32,27 @@ public class SupersingularTateGroup implements BilinearGroup {
 
     public SupersingularTateGroup(Representation repr) {
         AnnotatedRepresentationUtil.restoreAnnotatedRepresentation(repr, this);
+        pairing = new SupersingularTatePairing(g1, gt);
     }
 
     @Override
-    public SupersingularSourceGroup getG1() {
-        return g1;
+    public LazyGroup getG1() {
+        return new LazyGroup(g1);
     }
 
     @Override
-    public SupersingularSourceGroup getG2() {
-        return g1;
+    public LazyGroup getG2() {
+        return getG1();
     }
 
     @Override
-    public SupersingularTargetGroup getGT() {
-        return gt;
+    public LazyGroup getGT() {
+        return new LazyGroup(gt);
     }
 
     @Override
-    public SupersingularTatePairing getBilinearMap() {
-        return pairing;
+    public BilinearMap getBilinearMap() {
+        return new LazyBilinearMap(pairing, getG1(), getG2(), getGT());
     }
 
     @Override
@@ -56,13 +61,13 @@ public class SupersingularTateGroup implements BilinearGroup {
     }
 
     @Override
-    public SupersingularSourceHash getHashIntoG1() throws UnsupportedOperationException {
-        return hashIntoG1;
+    public LazyHashIntoStructure getHashIntoG1() throws UnsupportedOperationException {
+        return new LazyHashIntoStructure(hashIntoG1, (LazyGroup) getG1());
     }
 
     @Override
-    public SupersingularSourceHash getHashIntoG2() throws UnsupportedOperationException {
-        return hashIntoG1;
+    public LazyHashIntoStructure getHashIntoG2() throws UnsupportedOperationException {
+        return getHashIntoG1();
     }
 
     @Override

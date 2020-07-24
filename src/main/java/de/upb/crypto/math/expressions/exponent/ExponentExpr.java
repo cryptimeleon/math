@@ -1,30 +1,41 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
+import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.bool.ExponentEqualityExpr;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.function.Function;
 
 public interface ExponentExpr extends Expression {
+    @Override
     BigInteger evaluate();
     Zn.ZnElement evaluate(Zn zn);
 
-    default BigInteger evaluate(Substitutions substitutionMap) {
-        return substitute(substitutionMap).evaluate();
+    @Override
+    default BigInteger evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+        return substitute(substitutions).evaluate();
     }
 
-    default Zn.ZnElement evaluate(Zn zn, Substitutions substitutionMap) {
-        return substitute(substitutionMap).evaluate(zn);
+    default Zn.ZnElement evaluate(Zn zn, Function<VariableExpression, ? extends Expression> substitutions) {
+        return substitute(substitutions).evaluate(zn);
     }
 
     @Override
-    ExponentExpr substitute(Substitutions variableValues);
+    default ExponentExpr substitute(String variable, Expression substitution) {
+        return (ExponentExpr) Expression.super.substitute(variable, substitution);
+    }
 
     @Override
-    ExponentExpr precompute();
+    ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions);
+
+    @Override
+    default ExponentExpr substitute(ValueBundle values) {
+        return (ExponentExpr) Expression.super.substitute(values);
+    }
 
     default ExponentExpr negate() {
         return new ExponentNegExpr(this);
@@ -92,13 +103,5 @@ public interface ExponentExpr extends Expression {
 
     default ExponentEqualityExpr isEqualTo(BigInteger other) {
         return new ExponentEqualityExpr(this, new ExponentConstantExpr(other));
-    }
-
-    default GroupElementExpression asAdditiveGroupElementExpression(Zn zn) {
-        return new ZnExponentAsAdditiveGroupElemExpr(zn,this);
-    }
-
-    default GroupElementExpression asMultiplicativeGroupElementExpression(Zn zn) {
-        return new ZnExponentAsMultiplicativeGroupElemExpr(zn, this);
     }
 }

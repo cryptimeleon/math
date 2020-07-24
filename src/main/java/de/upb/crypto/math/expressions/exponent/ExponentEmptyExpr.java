@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -16,18 +15,18 @@ public class ExponentEmptyExpr implements ExponentExpr {
     }
 
     @Override
+    public void forEachChild(Consumer<Expression> action) {
+        //Nothing to do
+    }
+
+    @Override
     public Zn.ZnElement evaluate(Zn zn) {
         return zn.getZeroElement();
     }
 
     @Override
-    public ExponentEmptyExpr substitute(Substitutions variableValues) {
+    public ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions) {
         return this;
-    }
-
-    @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        //Intentionally empty.
     }
 
     @Override
@@ -48,10 +47,5 @@ public class ExponentEmptyExpr implements ExponentExpr {
     @Override
     public ExponentExpr sub(ExponentExpr other) {
         return other.negate();
-    }
-
-    @Override
-    public ExponentExpr precompute() {
-        return this;
     }
 }

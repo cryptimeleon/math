@@ -24,13 +24,16 @@ public interface Structure extends StandaloneRepresentable {
 
     /**
      * Returns true if the size of this structure is known and prime.
-     * @throws UnsupportedOperationException if size is unknown
      */
-    default boolean hasPrimeSize() throws UnsupportedOperationException {
-        BigInteger size = size();
-        if (size == null) //infinite size
+    default boolean hasPrimeSize() {
+        try {
+            BigInteger size = size();
+            if (size == null) //infinite size
+                return false;
+            return size.isProbablePrime(80);
+        } catch (UnsupportedOperationException ex) {
             return false;
-        return size.isProbablePrime(80);
+        }
     }
 
     /**

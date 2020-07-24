@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -26,23 +25,18 @@ public class ExponentNegExpr implements ExponentExpr {
     }
 
     @Override
+    public void forEachChild(Consumer<Expression> action) {
+        action.accept(child);
+    }
+
+    @Override
     public Zn.ZnElement evaluate(Zn zn) {
         return child.evaluate(zn).neg();
     }
 
     @Override
-    public ExponentNegExpr substitute(Substitutions variableValues) {
-        return new ExponentNegExpr(child.substitute(variableValues));
+    public ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return child.substitute(substitutions).negate();
     }
 
-    @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-        child.treeWalk(visitor);
-    }
-
-    @Override
-    public ExponentExpr precompute() {
-        return new ExponentNegExpr(child.precompute());
-    }
 }

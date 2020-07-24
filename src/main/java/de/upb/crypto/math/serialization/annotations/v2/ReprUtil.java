@@ -169,6 +169,18 @@ public class ReprUtil {
     }
 
     /**
+     * Restores the instance from representation.
+     * For more control over the deserialization process (e.g., if there are dependencies),
+     * use new ReprUtil(this).register(...).deserialize(repr)
+     *
+     * @param instance an object of a class that has fields annotated with @Represented
+     * @param repr the representation created by ReprUtil::serialize
+     */
+    public static void deserialize(Object instance, Representation repr) {
+        new ReprUtil(instance).deserialize(repr);
+    }
+
+    /**
      * Recreates the instance from representation.
      * @param repr a Representation you got from serialize()
      */

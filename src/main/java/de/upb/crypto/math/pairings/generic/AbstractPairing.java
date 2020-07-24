@@ -1,8 +1,8 @@
 package de.upb.crypto.math.pairings.generic;
 
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
+import de.upb.crypto.math.interfaces.mappings.impl.BilinearMapImpl;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
@@ -14,10 +14,10 @@ import java.math.BigInteger;
  *
  * @author peter.guenther
  */
-public abstract class AbstractPairing implements BilinearMap {
-    protected PairingSourceGroup g1;
-    protected PairingSourceGroup g2;
-    protected PairingTargetGroup gT;
+public abstract class AbstractPairing implements BilinearMapImpl {
+    protected PairingSourceGroupImpl g1;
+    protected PairingSourceGroupImpl g2;
+    protected PairingTargetGroupImpl gT;
 
 
     /* (non-Javadoc)
@@ -72,18 +72,18 @@ public abstract class AbstractPairing implements BilinearMap {
         return true;
     }
 
-    protected void init(PairingSourceGroup g1, PairingSourceGroup g2, PairingTargetGroup gT) {
+    protected void init(PairingSourceGroupImpl g1, PairingSourceGroupImpl g2, PairingTargetGroupImpl gT) {
         this.g1 = g1;
         this.g2 = g2;
         this.gT = gT;
     }
 
-    public AbstractPairing(PairingSourceGroup g1, PairingSourceGroup g2, PairingTargetGroup gT) {
+    public AbstractPairing(PairingSourceGroupImpl g1, PairingSourceGroupImpl g2, PairingTargetGroupImpl gT) {
         init(g1, g2, gT);
     }
 
     @Override
-    public PairingTargetGroupElement apply(GroupElement g, GroupElement h, BigInteger exponent) {
+    public PairingTargetGroupElementImpl apply(GroupElementImpl g, GroupElementImpl h, BigInteger exponent) {
         return exponentiate(pair((PairingSourceGroupElement) g.pow(exponent), (PairingSourceGroupElement) h));
     }
 
@@ -96,46 +96,19 @@ public abstract class AbstractPairing implements BilinearMap {
      * @param f the element to exponentiate
      * @return f^e
      */
-    public PairingTargetGroupElement exponentiate(FieldElement f) {
-        PairingTargetGroupElement result = gT.getElement((ExtensionFieldElement) f.pow(gT.getCofactor()));
+    public PairingTargetGroupElementImpl exponentiate(FieldElement f) {
+        PairingTargetGroupElementImpl result = gT.getElement((ExtensionFieldElement) f.pow(gT.getCofactor()));
         return result;
-    }
-
-    @Override
-    public Representation getRepresentation() {
-        ObjectRepresentation or = new ObjectRepresentation();
-
-
-        or.put("G1", new RepresentableRepresentation(this.getG1()));
-        or.put("G2", new RepresentableRepresentation(this.getG2()));
-        or.put("GT", new RepresentableRepresentation(this.getGT()));
-
-        return or;
     }
 
     public AbstractPairing(Representation r) {
         ObjectRepresentation or = (ObjectRepresentation) r;
 
         init(
-                (PairingSourceGroup) ((RepresentableRepresentation) or.get("G1")).recreateRepresentable(),
-                (PairingSourceGroup) ((RepresentableRepresentation) or.get("G2")).recreateRepresentable(),
-                (PairingTargetGroup) ((RepresentableRepresentation) or.get("GT")).recreateRepresentable()
+                (PairingSourceGroupImpl) ((RepresentableRepresentation) or.get("G1")).recreateRepresentable(),
+                (PairingSourceGroupImpl) ((RepresentableRepresentation) or.get("G2")).recreateRepresentable(),
+                (PairingTargetGroupImpl) ((RepresentableRepresentation) or.get("GT")).recreateRepresentable()
         );
-    }
-
-    @Override
-    public PairingSourceGroup getG1() {
-        return g1;
-    }
-
-    @Override
-    public PairingSourceGroup getG2() {
-        return g2;
-    }
-
-    @Override
-    public PairingTargetGroup getGT() {
-        return gT;
     }
 
     /**
@@ -180,7 +153,7 @@ public abstract class AbstractPairing implements BilinearMap {
      */
     protected ExtensionFieldElement miller(PairingSourceGroupElement P, PairingSourceGroupElement Q, BigInteger n) {
         FieldElement[] line;
-        ExtensionField targetField = (ExtensionField) this.getGT().getFieldOfDefinition();
+        ExtensionField targetField = (ExtensionField) gT.getFieldOfDefinition();
         /*
          * f_1=1; f_2=1 R=P;
          */

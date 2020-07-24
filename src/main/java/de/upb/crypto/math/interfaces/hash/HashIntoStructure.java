@@ -4,6 +4,7 @@ import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Represents a hash function that maps byte[] -> Element
@@ -29,10 +30,6 @@ public interface HashIntoStructure extends StandaloneRepresentable {
      * @return an element
      */
     default Element hashIntoStructure(String x) {
-        try {
-            return hashIntoStructure(x.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return hashIntoStructure(x.getBytes(StandardCharsets.UTF_8));
     }
 }

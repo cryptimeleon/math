@@ -1,6 +1,8 @@
 package de.upb.crypto.math.interfaces.structures;
 
-public interface EllipticCurve extends Group {
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
+
+public interface EllipticCurve extends GroupImpl {
 
     public Field getFieldOfDefinition();
 

@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.*;
+import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
@@ -16,18 +17,28 @@ public class GroupVariableExpr extends GroupElementExpression implements Variabl
 
     @Override
     public GroupElement evaluate() {
-        return evaluateNaive();
-    }
-
-    @Override
-    public GroupElement evaluateNaive() {
         throw new EvaluationException(this, "Variable cannot be evaluated");
     }
 
     @Override
-    public GroupElementExpression substitute(Substitutions variableValues) {
-        Expression value = variableValues.getSubstitution(this);
-        return value == null ? this : (GroupElementExpression) value;
+    public GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+        GroupElementExpression substitution = (GroupElementExpression) substitutions.apply(this);
+        if (substitution == null)
+            throw new EvaluationException(this, "Variable cannot be evaluated");
+        return substitution.evaluate();
+    }
+
+    @Override
+    public GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        Expression replacement = substitutions.apply(this);
+        if (replacement != null)
+            return (GroupElementExpression) replacement;
+        return this;
+    }
+
+    @Override
+    protected GroupOpExpr linearize(ExponentExpr exponent) {
+        return new GroupOpExpr(new GroupEmptyExpr(getGroup()), this.pow(exponent));
     }
 
     @Override
@@ -36,7 +47,7 @@ public class GroupVariableExpr extends GroupElementExpression implements Variabl
     }
 
     @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
+    public void forEachChild(Consumer<Expression> action) {
+        //Nothing to do
     }
 }

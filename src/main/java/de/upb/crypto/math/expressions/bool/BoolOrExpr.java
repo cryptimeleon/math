@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -15,33 +14,27 @@ public class BoolOrExpr implements BooleanExpression {
         this.rhs = rhs;
     }
 
-    @Override
-    public boolean evaluate() {
-        return lhs.evaluate() || rhs.evaluate();
-    }
-
-    @Override
-    public BooleanExpression substitute(Substitutions variableValues) {
-        return new BoolOrExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
-    }
-
-    @Override
-    public BooleanExpression precompute() {
-        return new BoolOrExpr(lhs.precompute(), rhs.precompute());
-    }
-
-    @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-        lhs.treeWalk(visitor);
-        rhs.treeWalk(visitor);
-    }
-
     public BooleanExpression getLhs() {
         return lhs;
     }
 
     public BooleanExpression getRhs() {
         return rhs;
+    }
+
+    @Override
+    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return lhs.substitute(substitutions).or(rhs.substitute(substitutions));
+    }
+
+    @Override
+    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+        return lhs.evaluate(substitutions) || rhs.evaluate(substitutions);
+    }
+
+    @Override
+    public void forEachChild(Consumer<Expression> action) {
+        action.accept(lhs);
+        action.accept(rhs);
     }
 }

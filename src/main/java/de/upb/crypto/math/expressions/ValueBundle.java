@@ -2,12 +2,9 @@ package de.upb.crypto.math.expressions;
 
 import de.upb.crypto.math.expressions.bool.BoolConstantExpr;
 import de.upb.crypto.math.expressions.bool.BoolVariableExpr;
-import de.upb.crypto.math.expressions.bool.BooleanExpression;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
-import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.GroupVariableExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingElement;
@@ -21,7 +18,7 @@ import java.util.HashMap;
 /**
  * A key-value mapping used for passing around named algebraic values.
  */
-public class ValueBundle implements Substitutions {
+public class ValueBundle {
     protected HashMap<String, GroupElement> groupElems;
     protected HashMap<String, BigInteger> ints;
     protected HashMap<String, RingElement> ringElems;
@@ -108,7 +105,6 @@ public class ValueBundle implements Substitutions {
         ints.remove(key);
     }
 
-    @Override
     public Expression getSubstitution(VariableExpression variable) {
         if (variable instanceof GroupVariableExpr) {
             GroupElement result = getGroupElement(variable.getName());

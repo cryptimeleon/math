@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -31,18 +30,12 @@ public class ExponentInvExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentInvExpr substitute(Substitutions variableValues) {
-        return new ExponentInvExpr(child.substitute(variableValues));
+    public ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return child.substitute(substitutions).invert();
     }
 
     @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-        child.treeWalk(visitor);
-    }
-
-    @Override
-    public ExponentExpr precompute() {
-        return new ExponentInvExpr(child.precompute());
+    public void forEachChild(Consumer<Expression> action) {
+        action.accept(child);
     }
 }

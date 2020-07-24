@@ -2,11 +2,12 @@ package de.upb.crypto.math.expressions.group;
 
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
+import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -18,28 +19,32 @@ public class GroupInvExpr extends GroupElementExpression {
         this.base = base;
     }
 
-    @Override
-    public GroupElement evaluateNaive() {
-        return base.evaluateNaive().inv();
-    }
-
-    @Override
-    public GroupInvExpr substitute(Substitutions variableValues) {
-        return new GroupInvExpr(base.substitute(variableValues));
-    }
-
     public GroupElementExpression getBase() {
         return base;
     }
 
     @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-        visitor.accept(base);
+    public void forEachChild(Consumer<Expression> action) {
+        action.accept(base);
+    }
+
+    @Override
+    public GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+        return base.evaluate(substitutions).inv();
+    }
+
+    @Override
+    public GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return base.substitute(substitutions).inv();
     }
 
     @Override
     public GroupElementExpression inv() { //avoid double-inversion
         return base;
+    }
+
+    @Override
+    protected GroupOpExpr linearize(ExponentExpr exponent) {
+        return base.linearize(exponent.negate());
     }
 }

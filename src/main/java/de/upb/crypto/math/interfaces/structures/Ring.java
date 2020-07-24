@@ -1,5 +1,7 @@
 package de.upb.crypto.math.interfaces.structures;
 
+import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 
@@ -18,15 +20,15 @@ public interface Ring extends Structure, RepresentationRestorer {
     /**
      * Returns an object representing the additive group of this ring
      */
-    default RingAdditiveGroup asAdditiveGroup() {
-        return new RingAdditiveGroup(this);
+    default RingGroup asAdditiveGroup() {
+        return RingGroup.additiveGroupOf(this);
     }
 
     /**
      * Returns an object representing the (multiplicative) unit group of this ring
      */
-    default RingUnitGroup asUnitGroup() {
-        return new RingUnitGroup(this);
+    default RingGroup asUnitGroup() {
+        return RingGroup.unitGroupOf(this);
     }
 
     /**
@@ -75,6 +77,23 @@ public interface Ring extends Structure, RepresentationRestorer {
             do {
                 result = getUniformlyRandomElement();
             } while (!result.isUnit());
+            return result;
+        } catch (RuntimeException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    /**
+     * Generates a nonzero element from this ring uniformly at random (using cryptographically strong RNG).
+     *
+     * @throws UnsupportedOperationException
+     */
+    default RingElement getUniformlyRandomNonzeroElement() {
+        try {
+            RingElement result;
+            do {
+                result = getUniformlyRandomElement();
+            } while (result.isZero());
             return result;
         } catch (RuntimeException e) {
             throw new UnsupportedOperationException(e);

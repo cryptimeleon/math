@@ -11,7 +11,7 @@ public class SupersingularTatePairing extends AbstractPairing {
 
     //SupersingularTypeADistortionMap distortionMap;
 
-    public SupersingularTatePairing(SupersingularSourceGroup g1, SupersingularTargetGroup gT) {
+    public SupersingularTatePairing(SupersingularSourceGroupImpl g1, SupersingularTargetGroupImpl gT) {
         super(g1, g1, gT);
         //	this.distortionMap = new SupersingularTypeADistortionMap(g1,gT.getFieldOfDefinition());
     }
@@ -22,7 +22,7 @@ public class SupersingularTatePairing extends AbstractPairing {
 
     @Override
     protected ExtensionFieldElement evaluateLine(FieldElement[] line, PairingSourceGroupElement P, PairingSourceGroupElement Q) {
-        ExtensionField targetField = (ExtensionField) this.getGT().getFieldOfDefinition();
+        ExtensionField targetField = (ExtensionField) gT.getFieldOfDefinition();
         //ExtensionField baseField = (ExtensionField) Q.getFieldOfDefinition();
 
         /*
@@ -58,10 +58,10 @@ public class SupersingularTatePairing extends AbstractPairing {
 
         /*because of denominator elimination, forulas used for pairing compuation are not complete. Eg they fail for neutral elements*/
         if (P.isNeutralElement() || Q.isNeutralElement()) {
-            return this.getGT().getFieldOfDefinition().getOneElement();
+            return gT.getFieldOfDefinition().getOneElement();
         }
 
-        ExtensionFieldElement result = this.miller(P, Q, this.getG1().size());
+        ExtensionFieldElement result = this.miller(P, Q, g1.size());
 
         return result;
 

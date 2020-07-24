@@ -1,41 +1,34 @@
 package de.upb.crypto.math.interfaces.structures;
 
-import de.upb.crypto.math.expressions.evaluator.OptGroupElementExpressionEvaluator;
+import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.bool.BooleanExpression;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.expressions.group.GroupElementExpressionEvaluator;
 import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
+import de.upb.crypto.math.expressions.group.GroupPowExpr;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * A Group. Operations are defined on its elements.
  */
 public interface Group extends Structure, RepresentationRestorer {
     /**
-     * Thread pool used for concurrent evaluation of multiple PowProductExpressions
-     */
-    public static ExecutorService executor = Executors.newWorkStealingPool();
-
-    /**
      * Returns the neutral element for this group
      */
     GroupElement getNeutralElement();
 
     @Override
-    public GroupElement getUniformlyRandomElement() throws UnsupportedOperationException;
+    GroupElement getUniformlyRandomElement() throws UnsupportedOperationException;
 
-    public default GroupElement getUniformlyRandomNonNeutral() throws UnsupportedOperationException {
+    default GroupElement getUniformlyRandomNonNeutral() {
         GroupElement result;
         do {
             result = getUniformlyRandomElement();
         } while (result.isNeutralElement());
-
         return result;
     }
 
@@ -49,7 +42,7 @@ public interface Group extends Structure, RepresentationRestorer {
      * @throws UnsupportedOperationException
      */
     default GroupElement getGenerator() throws UnsupportedOperationException {
-        if (size().isProbablePrime(10000))
+        if (hasPrimeSize())
             return getUniformlyRandomNonNeutral();
         throw new UnsupportedOperationException("Can't compute generator for group: " + this);
     }
@@ -58,12 +51,6 @@ public interface Group extends Structure, RepresentationRestorer {
      * Returns true if this group is known to be commutative.
      */
     boolean isCommutative();
-
-    /**
-     * Outputs an integer x such that 100 inversion operations
-     * cost roughly as much computation time as x group operations.
-     */
-    int estimateCostOfInvert();
 
     /**
      * Returns a GroupElementExpression containing the neutral group element.
@@ -78,15 +65,6 @@ public interface Group extends Structure, RepresentationRestorer {
             throw new IllegalArgumentException("Group cannot recreate type "+type.getTypeName()+" from representation");
 
         return getElement(repr);
-    }
-    /**
-     * Returns the suggested evaluator for GroupElementExpressions for elements of this group.
-     * If this group is part of a larger structure (e.g., a BilinearGroup), the evaluator ideally should optimize for that complete super structure.
-     *
-     * @return an evaluator that is able to handle all expressions that legitimately involve an element of this group (this includes PairingExpr).
-     */
-    default GroupElementExpressionEvaluator getExpressionEvaluator() {
-        return new OptGroupElementExpressionEvaluator();
     }
 
     /**

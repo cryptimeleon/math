@@ -34,7 +34,7 @@ public class BilinearGroupRequirement {
      * If set to 1, the resulting {@link BilinearGroup} will consist of (G1, G2, GT) of prime order. Else, if set to a
      * value > 1, the group order is a composite number with {@code cardinalityNumPrimeFactors} prime factors.
      */
-    private int cardinalityNumPrimeFactors;
+    private int numPrimeFactorsOfSize;
 
     /**
      * Standard constructor to set all requirements by hand.
@@ -49,19 +49,19 @@ public class BilinearGroupRequirement {
      * @param hashIntoGTNeeded           true enforces that the resulting bilinear group provides a mapping byte[] ->
      *                                   GT. When set to false, it
      *                                   may still be supported.
-     * @param cardinalityNumPrimeFactors number of prime factors of the resulting groups
+     * @param numPrimeFactorsOfSize desired number of prime factors of the size of the resulting groups
      */
     public BilinearGroupRequirement(BilinearGroup.Type type, boolean hashIntoG1Needed, boolean hashIntoG2Needed,
-                                    boolean hashIntoGTNeeded, int cardinalityNumPrimeFactors) {
+                                    boolean hashIntoGTNeeded, int numPrimeFactorsOfSize) {
         this.type = type;
         this.hashIntoG1Needed = hashIntoG1Needed;
         this.hashIntoG2Needed = hashIntoG2Needed;
         this.hashIntoGTNeeded = hashIntoGTNeeded;
-        this.cardinalityNumPrimeFactors = cardinalityNumPrimeFactors;
+        this.numPrimeFactorsOfSize = numPrimeFactorsOfSize;
     }
 
     /**
-     * Constructor for prime order groups, and {@link #cardinalityNumPrimeFactors} is set to 1.
+     * Constructor for prime order groups, and {@link #numPrimeFactorsOfSize} is set to 1.
      *
      * @param type             the desired type of the resulting bilinear group
      * @param hashIntoG1Needed true enforces that the resulting bilinear group provides a mapping byte[] -> G1. When
@@ -81,7 +81,7 @@ public class BilinearGroupRequirement {
 
     /**
      * Constructor for prime order groups without any requirements for hashing, i. e.
-     * {@link #cardinalityNumPrimeFactors} is set to 1 and {@link #hashIntoG1Needed}, {@link #hashIntoG2Needed},
+     * {@link #numPrimeFactorsOfSize} is set to 1 and {@link #hashIntoG1Needed}, {@link #hashIntoG2Needed},
      * {@link #hashIntoGTNeeded} is set to false.
      *
      * @param type the desired type of the resulting bilinear group
@@ -95,10 +95,10 @@ public class BilinearGroupRequirement {
      * {@link #hashIntoG2Needed}, {@link #hashIntoGTNeeded} is set to false by default.
      *
      * @param type                       the desired type of the resulting bilinear group
-     * @param cardinalityNumPrimeFactors * number of prime factors of the resulting groups
+     * @param numPrimeFactorsOfSize * number of prime factors of the resulting groups
      */
-    public BilinearGroupRequirement(BilinearGroup.Type type, int cardinalityNumPrimeFactors) {
-        this(type, false, false, false, cardinalityNumPrimeFactors);
+    public BilinearGroupRequirement(BilinearGroup.Type type, int numPrimeFactorsOfSize) {
+        this(type, false, false, false, numPrimeFactorsOfSize);
     }
 
     public BilinearGroup.Type getType() {
@@ -117,7 +117,10 @@ public class BilinearGroupRequirement {
         return hashIntoGTNeeded;
     }
 
-    public int getCardinalityNumPrimeFactors() {
-        return cardinalityNumPrimeFactors;
+    /**
+     * Returns how many prime factors the group size shall have.
+     */
+    public int getNumPrimeFactorsOfSize() {
+        return numPrimeFactorsOfSize;
     }
 }

@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.*;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -19,28 +20,41 @@ public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
     }
 
     @Override
+    public void forEachChild(Consumer<Expression> action) {
+        //Nothing to do
+    }
+
+    @Override
     public Zn.ZnElement evaluate(Zn zn) {
         throw new EvaluationException(this, "Variable cannot be evaluated");
     }
 
     @Override
-    public ExponentExpr substitute(Substitutions variableValues) {
-        Expression result = variableValues.getSubstitution(this);
-        return result == null ? this : (ExponentExpr) result;
+    public BigInteger evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+        ExponentExpr substitution = (ExponentExpr) substitutions.apply(this);
+        if (substitution == null)
+            throw new EvaluationException(this, "Variable cannot be evaluated");
+        return substitution.evaluate();
     }
 
     @Override
-    public ExponentExpr precompute() {
+    public Zn.ZnElement evaluate(Zn zn, Function<VariableExpression, ? extends Expression> substitutions) {
+        ExponentExpr substitution = (ExponentExpr) substitutions.apply(this);
+        if (substitution == null)
+            throw new EvaluationException(this, "Variable cannot be evaluated");
+        return substitution.evaluate(zn);
+    }
+
+    @Override
+    public ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        Expression replacement = substitutions.apply(this);
+        if (replacement != null)
+            return (ExponentExpr) replacement;
         return this;
     }
 
     @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
     }
 }

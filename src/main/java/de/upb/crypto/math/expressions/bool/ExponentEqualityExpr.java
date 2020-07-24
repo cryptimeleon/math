@@ -1,10 +1,10 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 
+import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -17,24 +17,18 @@ public class ExponentEqualityExpr implements BooleanExpression {
     }
 
     @Override
-    public boolean evaluate() {
-        return lhs.evaluate().equals(rhs.evaluate());
+    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return lhs.substitute(substitutions).isEqualTo(rhs.substitute(substitutions));
     }
 
     @Override
-    public ExponentEqualityExpr substitute(Substitutions variableValues) {
-        return new ExponentEqualityExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
+    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+        return lhs.sub(rhs).evaluate().equals(BigInteger.ZERO);
     }
 
     @Override
-    public BooleanExpression precompute() {
-        return new ExponentEqualityExpr(lhs.precompute(), rhs.precompute());
-    }
-
-    @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-        lhs.treeWalk(visitor);
-        rhs.treeWalk(visitor);
+    public void forEachChild(Consumer<Expression> action) {
+        action.accept(lhs);
+        action.accept(rhs);
     }
 }

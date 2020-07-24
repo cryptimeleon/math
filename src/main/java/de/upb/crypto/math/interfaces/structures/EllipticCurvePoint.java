@@ -1,6 +1,8 @@
 package de.upb.crypto.math.interfaces.structures;
 
-public interface EllipticCurvePoint extends GroupElement {
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
+
+public interface EllipticCurvePoint extends GroupElementImpl {
     public EllipticCurvePoint normalize();
 
     boolean isNormalized();
@@ -37,10 +39,9 @@ public interface EllipticCurvePoint extends GroupElement {
 
 
     @Override
-    public default GroupElement op(Element e) throws IllegalArgumentException {
+    public default GroupElementImpl op(GroupElementImpl e) throws IllegalArgumentException {
         EllipticCurvePoint P = (EllipticCurvePoint) e;
 
         return this.add(P, this.computeLine(P));
     }
-
 }

@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -31,24 +30,18 @@ public class ExponentMulExpr implements ExponentExpr {
     }
 
     @Override
+    public void forEachChild(Consumer<Expression> action) {
+        action.accept(lhs);
+        action.accept(rhs);
+    }
+
+    @Override
     public Zn.ZnElement evaluate(Zn zn) {
         return lhs.evaluate(zn).mul(rhs.evaluate(zn));
     }
 
     @Override
-    public ExponentMulExpr substitute(Substitutions variableValues) {
-        return new ExponentMulExpr(lhs.substitute(variableValues), rhs.substitute(variableValues));
-    }
-
-    @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-        lhs.treeWalk(visitor);
-        rhs.treeWalk(visitor);
-    }
-
-    @Override
-    public ExponentExpr precompute() {
-        return new ExponentMulExpr(lhs.precompute(), rhs.precompute());
+    public ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return lhs.substitute(substitutions).mul(rhs.substitute(substitutions));
     }
 }

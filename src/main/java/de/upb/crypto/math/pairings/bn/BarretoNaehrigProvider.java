@@ -2,9 +2,6 @@ package de.upb.crypto.math.pairings.bn;
 
 import de.upb.crypto.math.factory.BilinearGroupProvider;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
-import de.upb.crypto.math.hash.impl.SHA256HashFunction;
-import de.upb.crypto.math.hash.impl.SHA512HashFunction;
-import de.upb.crypto.math.interfaces.hash.HashFunction;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
@@ -68,14 +65,14 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
      * @param P2 - Generator of G2
      * @param gT - Target group
      */
-    private void init(BarretoNaehrigGroup1Element P1, BarretoNaehrigGroup2Element P2, BarretoNaehrigTargetGroup gT) {
-        BarretoNaehrigGroup1 G1 = (BarretoNaehrigGroup1) P1.getStructure();
-        BarretoNaehrigGroup2 G2 = (BarretoNaehrigGroup2) P2.getStructure();
+    private void init(BarretoNaehrigGroup1ElementImpl P1, BarretoNaehrigGroup2ElementImpl P2, BarretoNaehrigTargetGroupImpl gT) {
+        BarretoNaehrigGroup1Impl G1 = (BarretoNaehrigGroup1Impl) P1.getStructure();
+        BarretoNaehrigGroup2Impl G2 = (BarretoNaehrigGroup2Impl) P2.getStructure();
 
         BarretoNaehrigTatePairing pairing = new BarretoNaehrigTatePairing(G1, G2, gT);
         BarretoNaehrigPointEncoding H1 = new BarretoNaehrigPointEncoding(G1);
         BarretoNaehrigPointEncoding H2 = new BarretoNaehrigPointEncoding(G2);
-        this.params = new BarretoNaehrigBilinearGroup(H1, H2, pairing);
+        this.params = new BarretoNaehrigBilinearGroup(G1, G2, gT, H1, H2, pairing);
     }
 
     // public Representation compressParameters() {
@@ -108,12 +105,12 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
      * Basically implements Algorithm 2.1 of [1]
      */
     private void init(int groupBitSize) {
-        BarretoNaehrigGroup1 g1;
-        BarretoNaehrigGroup2 g2;
-        BarretoNaehrigTargetGroup gT;
+        BarretoNaehrigGroup1Impl g1;
+        BarretoNaehrigGroup2Impl g2;
+        BarretoNaehrigTargetGroupImpl gT;
 
-        BarretoNaehrigGroup1Element P1;
-        BarretoNaehrigGroup2Element P2;
+        BarretoNaehrigGroup1ElementImpl P1;
+        BarretoNaehrigGroup2ElementImpl P2;
 
         BigInteger u = BigInteger.ONE.shiftLeft(groupBitSize / 4 + 1);
 
@@ -176,11 +173,11 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
                 } while (true);
 
                 /* setup curve based on b */
-                g1 = new BarretoNaehrigGroup1(n, BigInteger.ONE, b);
+                g1 = new BarretoNaehrigGroup1Impl(n, BigInteger.ONE, b);
 
                 /* possibly y^2-b = 1-b is not a cubic residue in Z_q and we cannont find point with y-coordinate 1 */
                 try {
-                    P1 = (BarretoNaehrigGroup1Element) g1.mapToSubgroup(y, 0);
+                    P1 = (BarretoNaehrigGroup1ElementImpl) g1.mapToSubgroup(y, 0);
                     /* if we found Point with y-coordinate 1 we are done */
                     g1.setGenerator(P1);
                     break;
@@ -227,12 +224,12 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
                 ExtensionFieldElement bTwist = (ExtensionFieldElement) bInExt.div(v).neg();
 
                 /* setup twist */
-                g2 = new BarretoNaehrigGroup2(n, t, bTwist);
+                g2 = new BarretoNaehrigGroup2Impl(n, t, bTwist);
 
                 /* search for generator of g2 */
                 do {
                     /* uses cofactor multiplication to map to subgroup */
-                    P2 = (BarretoNaehrigGroup2Element) g2.getUniformlyRandomElement();
+                    P2 = (BarretoNaehrigGroup2ElementImpl) g2.getUniformlyRandomElement();
                 } while (P2.isNeutralElement());
 
                 g2.setGenerator(P2);
@@ -242,8 +239,8 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
                  * order
                  */
                 if (P2.pow(g2.size()).isNeutralElement()) {
-                    /* chacka, we are done */
-                    gT = new BarretoNaehrigTargetGroup(v, n);
+                    /* tschakka, we are done */
+                    gT = new BarretoNaehrigTargetGroupImpl(v, n);
 
                     init(P1, P2, gT);
 
@@ -292,7 +289,7 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
 
     @Override
     public boolean checkRequirements(int securityParameter, BilinearGroupRequirement requirements) {
-        return requirements.getCardinalityNumPrimeFactors() == 1
+        return requirements.getNumPrimeFactorsOfSize() == 1
                 && requirements.getType() == TYPE_3 && !requirements.isHashIntoGTNeeded();
     }
 
@@ -300,75 +297,7 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
      * Reconstruct {@link BarretoNaehrigBilinearGroup} from efficient representation.
      */
     public BarretoNaehrigBilinearGroup decompressParameters(BarretoNaehrigParameterSpec spec) {
-        /* get size of groups */
-        BigInteger n = spec.size;
-
-        /* get characteristic of fields */
-        BigInteger p = spec.characteristic;
-
-        /* setup base field of size p */
-        ExtensionField baseField = new ExtensionField(p);
-        baseField.generatePrimitiveCubeRoot();
-
-        /* get element a_6 of Weierstrass equation defining G1 */
-        ExtensionFieldElement b = baseField.createElement(spec.b);
-
-        /* setup group based on given parameters */
-        BarretoNaehrigGroup1 g1 = new BarretoNaehrigGroup1(n, BigInteger.ONE, b);
-
-        /* get elemnet defining first extension field of degree 2 */
-        ExtensionFieldElement alpha = baseField.createElement(spec.alpha);
-
-        ExtensionField F2 = new ExtensionField(alpha, 2);
-        F2.generatePrimitiveCubeRoot();
-
-        /* get element defining extension field of degree 6 over previous degree 2 extension */
-        ExtensionFieldElement beta = F2.createElement(baseField.createElement(spec.beta0),
-                baseField.createElement(spec.beta1));
-
-        // #E(F_p)=n=p+1-t
-        BigInteger t = p.add(BigInteger.ONE).subtract(n);
-
-        /* construct G2 */
-        BarretoNaehrigGroup2 g2 = new BarretoNaehrigGroup2(n, t, (ExtensionFieldElement) F2.lift(b).div(beta.neg()));
-
-        /* get generators of G1 and G2 */
-        BarretoNaehrigGroup1Element P1 = g1.getElement(baseField.createElement(spec.x1),
-                baseField.createElement(spec.y1));
-        BarretoNaehrigGroup2Element P2 = g2.getElement(
-                F2.createElement(baseField.createElement(spec.x20), baseField.createElement(spec.x21)),
-                F2.createElement(baseField.createElement(spec.y20), baseField.createElement(spec.y21)));
-
-        g1.setGenerator(P1);
-        g2.setGenerator(P2);
-
-        /* construct Gt of size n over degree 12 extension field implicitly given by beta */
-        BarretoNaehrigTargetGroup gt = new BarretoNaehrigTargetGroup(beta, n);
-
-        /* construct hash functions to G1 and G2 based on given algorithm */
-        HashFunction hash;
-        switch (spec.hash) {
-            case "SHA-256":
-                hash = new SHA256HashFunction();
-                break;
-            case "SHA-512":
-                hash = new SHA512HashFunction();
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown hash function " + spec.hash);
-        }
-        BarretoNaehrigPointEncoding H1 = new BarretoNaehrigPointEncoding(hash, g1);
-        BarretoNaehrigPointEncoding H2 = new BarretoNaehrigPointEncoding(hash, g2);
-
-        /* construct new bilinearMap based on its name */
-        BarretoNaehrigTatePairing pairing;
-        if ("Tate".equals(spec.pairing)) {
-            pairing = new BarretoNaehrigTatePairing(g1, g2, gt);
-        } else {
-            throw new IllegalArgumentException("Pairing of type " + spec.pairing + " not supported.");
-        }
-
-        return new BarretoNaehrigBilinearGroup(H1, H2, pairing);
+        return new BarretoNaehrigBilinearGroup(spec);
     }
 
     public static class ParamSpecs {

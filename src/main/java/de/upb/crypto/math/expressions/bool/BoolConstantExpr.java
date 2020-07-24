@@ -1,8 +1,7 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -15,22 +14,17 @@ public class BoolConstantExpr implements BooleanExpression {
     }
 
     @Override
-    public boolean evaluate() {
+    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+        return this;
+    }
+
+    @Override
+    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
         return value;
     }
 
     @Override
-    public BooleanExpression substitute(Substitutions variableValues) {
-        return this;
-    }
-
-    @Override
-    public void treeWalk(Consumer<Expression> visitor) {
-        visitor.accept(this);
-    }
-
-    @Override
-    public BooleanExpression precompute() {
-        return this;
+    public void forEachChild(Consumer<Expression> action) {
+        //Nothing to do
     }
 }

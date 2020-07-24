@@ -1,27 +1,32 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitutions;
 import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.VariableExpression;
 
 import java.util.function.Function;
 
 public interface BooleanExpression extends Expression {
-    boolean evaluate();
-
-    /**
-     * Substitutes the expression and then evaluates it.
-     * This may be more efficient than calling substitute(...).evaluate()
-     */
-    default boolean evaluate(Substitutions substitutionMap) {
-        return substitute(substitutionMap).evaluate();
+    @Override
+    default BooleanExpression substitute(ValueBundle values) {
+        return (BooleanExpression) Expression.super.substitute(values);
     }
 
     @Override
-    BooleanExpression substitute(Substitutions variableValues);
+    BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions);
 
     @Override
-    BooleanExpression precompute();
+    default BooleanExpression substitute(String variable, Expression substitution) {
+        return (BooleanExpression) Expression.super.substitute(variable, substitution);
+    }
+
+    @Override
+    default Boolean evaluate() {
+        return evaluate(e -> null);
+    }
+
+    @Override
+    Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions);
 
     default BooleanExpression and(BooleanExpression rhs) {
         return new BoolAndExpr(this, rhs);
