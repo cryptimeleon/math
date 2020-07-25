@@ -1,6 +1,5 @@
 package de.upb.crypto.math.structures.test;
 
-import de.upb.crypto.math.interfaces.structures.Structure;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
@@ -54,7 +53,7 @@ public class GroupImplTests {
 
         // Drawing uniformly random non neutral elements works or throws the right exception
         try {
-            a = group.getUniformlyRandomNonNeutral();
+            a = groupImpl.getUniformlyRandomNonNeutral();
         } catch (Exception ex) {
             assertTrue(ex instanceof UnsupportedOperationException);
         }
