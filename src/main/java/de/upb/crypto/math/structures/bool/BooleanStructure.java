@@ -75,7 +75,7 @@ public class BooleanStructure implements Ring {
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof BooleanStructure;
+        return this.getClass() == other.getClass();
     }
 
     @Override

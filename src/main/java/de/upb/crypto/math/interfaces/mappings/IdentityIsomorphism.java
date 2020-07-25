@@ -31,7 +31,7 @@ public class IdentityIsomorphism implements GroupHomomorphism {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return (o instanceof IdentityIsomorphism);
+    public boolean equals(Object other) {
+        return this.getClass() == other.getClass();
     }
 }

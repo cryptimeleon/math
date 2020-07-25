@@ -12,6 +12,7 @@ import de.upb.crypto.math.serialization.annotations.AnnotatedRepresentationUtil;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
 import de.upb.crypto.math.structures.groups.basic.*;
+import de.upb.crypto.math.structures.groups.lazy.LazyGroupElement;
 import de.upb.crypto.math.structures.zn.HashIntoZn;
 
 import java.math.BigInteger;
@@ -24,7 +25,7 @@ import static de.upb.crypto.math.factory.BilinearGroup.Type.*;
  * Creates bilinear groups based on the integer ring modulo n for some number n.
  * The bilinear map (Zn,+) x (Zn,+) -> (Zn,+) is the ring multiplication.
  * <p>
- * This is intentionally not a {@link BilinearGroupProvider}, because the returned group are not secure!
+ * This is intentionally not a {@link BilinearGroupProvider}, because the returned group is not secure!
  */
 public class DebugBilinearGroup extends BasicBilinearGroup {
     @Represented
@@ -63,6 +64,21 @@ public class DebugBilinearGroup extends BasicBilinearGroup {
     public DebugBilinearGroup(Representation repr) {
         ReprUtil.deserialize(this, repr);
         init();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || this.getClass() != other.getClass()) return false;
+        DebugBilinearGroup that = (DebugBilinearGroup) other;
+        return Objects.equals(pairingType, that.pairingType) &&
+                Objects.equals(size, that.size) &&
+                Objects.equals(wantHashes, that.wantHashes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pairingType.ordinal(), size, wantHashes);
     }
 
     @Override

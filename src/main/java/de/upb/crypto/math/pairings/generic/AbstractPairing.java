@@ -8,6 +8,7 @@ import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
  * Base class for pairings based on BN curves such as Tate Pairing, Ate Pairing and Optimal Ate Pairing.
@@ -18,59 +19,6 @@ public abstract class AbstractPairing implements BilinearMapImpl {
     protected PairingSourceGroupImpl g1;
     protected PairingSourceGroupImpl g2;
     protected PairingTargetGroupImpl gT;
-
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((g1 == null) ? 0 : g1.hashCode());
-        result = prime * result + ((g2 == null) ? 0 : g2.hashCode());
-        result = prime * result + ((gT == null) ? 0 : gT.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof AbstractPairing)) {
-            return false;
-        }
-        AbstractPairing other = (AbstractPairing) obj;
-        if (g1 == null) {
-            if (other.g1 != null) {
-                return false;
-            }
-        } else if (!g1.equals(other.g1)) {
-            return false;
-        }
-        if (g2 == null) {
-            if (other.g2 != null) {
-                return false;
-            }
-        } else if (!g2.equals(other.g2)) {
-            return false;
-        }
-        if (gT == null) {
-            if (other.gT != null) {
-                return false;
-            }
-        } else if (!gT.equals(other.gT)) {
-            return false;
-        }
-        return true;
-    }
 
     protected void init(PairingSourceGroupImpl g1, PairingSourceGroupImpl g2, PairingTargetGroupImpl gT) {
         this.g1 = g1;
@@ -234,5 +182,18 @@ public abstract class AbstractPairing implements BilinearMapImpl {
         return (ExtensionFieldElement) millerVariable;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || this.getClass() != other.getClass()) return false;
+        AbstractPairing that = (AbstractPairing) other;
+        return Objects.equals(g1, that.g1) &&
+                Objects.equals(g2, that.g2) &&
+                Objects.equals(gT, that.gT);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(g1, g2, gT);
+    }
 }
