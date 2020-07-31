@@ -4,13 +4,15 @@ import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
+import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.debug.DebugBilinearGroup;
-import de.upb.crypto.math.pairings.debug.DebugBilinearMapImpl;
+import de.upb.crypto.math.pairings.debug.DebugBilinearGroupImpl;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
-import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroup;
+import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroupImpl;
+import de.upb.crypto.math.standalone.test.DebugBilinearGroup;
+import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
@@ -139,17 +141,17 @@ public class PairingTests {
     @Parameters(name = "Test: {0}") // add (name="Test: {0}") for jUnit 4.12+ to print Pairing's name to test
     public static Collection<BilinearMap[]> data() {
         //Debug curve
-        DebugBilinearGroup debugMap1 = new DebugBilinearGroup(BilinearGroup.Type.TYPE_1, BigInteger.valueOf(19));
-        DebugBilinearGroup debugMap2 = new DebugBilinearGroup(BilinearGroup.Type.TYPE_2, BigInteger.valueOf(19));
-        DebugBilinearGroup debugMap3 = new DebugBilinearGroup(BilinearGroup.Type.TYPE_3, BigInteger.valueOf(19));
+        BilinearGroup debugMap1 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_1, BigInteger.valueOf(19)));
+        BilinearGroup debugMap2 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_2, BigInteger.valueOf(19)));
+        BilinearGroup debugMap3 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_3, BigInteger.valueOf(19)));
 
         // Supersingular curve groups
         SupersingularProvider supsingFac = new SupersingularProvider();
-        SupersingularTateGroup supsingGroup = supsingFac.provideBilinearGroup(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
+        BilinearGroup supsingGroup = supsingFac.provideBilinearGroup(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
 
         // BN curves
         BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
-        BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
+        BilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
 
         // Collect parameters
         BilinearMap params[][] = new BilinearMap[][] {

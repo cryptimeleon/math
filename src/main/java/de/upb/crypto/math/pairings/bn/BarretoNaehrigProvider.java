@@ -1,10 +1,12 @@
 package de.upb.crypto.math.pairings.bn;
 
+import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupProvider;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
+import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
 
 import java.math.BigInteger;
 
@@ -21,7 +23,7 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
     /**
      * {@link de.upb.crypto.math.factory.BilinearGroup} produced by this factory.
      */
-    private BarretoNaehrigBilinearGroup params;
+    private BarretoNaehrigBilinearGroupImpl result;
 
     /**
      * Create an uninitialized instance of the factory.
@@ -72,7 +74,7 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
         BarretoNaehrigTatePairing pairing = new BarretoNaehrigTatePairing(G1, G2, gT);
         BarretoNaehrigPointEncoding H1 = new BarretoNaehrigPointEncoding(G1);
         BarretoNaehrigPointEncoding H2 = new BarretoNaehrigPointEncoding(G2);
-        this.params = new BarretoNaehrigBilinearGroup(G1, G2, gT, H1, H2, pairing);
+        this.result = new BarretoNaehrigBilinearGroupImpl(G1, G2, gT, H1, H2, pairing);
     }
 
     // public Representation compressParameters() {
@@ -250,6 +252,11 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
         } while (true);
     }
 
+    @Override
+    public BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
+        return new LazyBilinearGroup(provideBilinearGroupImpl(securityParameter, requirements));
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -259,17 +266,17 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
      * requirements given in {@code requirements}
      */
     @Override
-    public BarretoNaehrigBilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
+    public BarretoNaehrigBilinearGroupImpl provideBilinearGroupImpl(int securityParameter, BilinearGroupRequirement requirements) {
         if (!checkRequirements(securityParameter, requirements))
             throw new UnsupportedOperationException("The requirements are not fulfilled by this Bilinear Group!");
 
         init(securityParameter * 2);
 
-        return params;
+        return result;
     }
 
     /**
-     * Provides a BN group {@link BarretoNaehrigBilinearGroup} according to a given specification.
+     * Provides a BN group {@link BarretoNaehrigBilinearGroupImpl} according to a given specification.
      * <p>
      * The returned group will for a given specification always be the same, see
      * {@link BarretoNaehrigParameterSpec#sfc256()}.
@@ -277,14 +284,14 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
      * @param spec group specification
      * @return BN group from given {@code spec}
      */
-    public BarretoNaehrigBilinearGroup provideBilinearGroupFromSpec(String spec) {
+    public BarretoNaehrigBilinearGroupImpl provideBilinearGroupFromSpec(String spec) {
         if (spec.equals(ParamSpecs.SFC256))
             // security parameter is 128, ie bit length of group order is at least 256
-            this.params = decompressParameters(BarretoNaehrigParameterSpec.sfc256());
+            this.result = decompressParameters(BarretoNaehrigParameterSpec.sfc256());
         else
             throw new IllegalArgumentException("Cannot find given specification!");
 
-        return params;
+        return result;
     }
 
     @Override
@@ -294,10 +301,10 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
     }
 
     /**
-     * Reconstruct {@link BarretoNaehrigBilinearGroup} from efficient representation.
+     * Reconstruct {@link BarretoNaehrigBilinearGroupImpl} from efficient representation.
      */
-    public BarretoNaehrigBilinearGroup decompressParameters(BarretoNaehrigParameterSpec spec) {
-        return new BarretoNaehrigBilinearGroup(spec);
+    public BarretoNaehrigBilinearGroupImpl decompressParameters(BarretoNaehrigParameterSpec spec) {
+        return new BarretoNaehrigBilinearGroupImpl(spec);
     }
 
     public static class ParamSpecs {

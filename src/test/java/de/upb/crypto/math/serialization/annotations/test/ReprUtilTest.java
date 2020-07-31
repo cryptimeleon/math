@@ -7,15 +7,13 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
+import de.upb.crypto.math.standalone.test.StandaloneTestParams;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,7 +34,7 @@ public class ReprUtilTest {
         }
 
         public Foo(Representation repr) {
-
+            ReprUtil.deserialize(this, repr);
         }
 
         public Zp getZp() {
@@ -49,7 +47,24 @@ public class ReprUtilTest {
 
         @Override
         public Representation getRepresentation() {
-            return null;
+            return ReprUtil.serialize(this);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Foo foo = (Foo) o;
+            return Objects.equals(zp, foo.zp);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(zp);
+        }
+
+        public static StandaloneTestParams getStandaloneTestParams() {
+            return new StandaloneTestParams(new Foo(new Zp(BigInteger.valueOf(2))));
         }
     }
 

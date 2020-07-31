@@ -12,7 +12,7 @@ public class LazyBilinearMap implements BilinearMap {
     protected BilinearMapImpl impl;
     protected LazyGroup g1, g2, gt;
 
-    public LazyBilinearMap(BilinearMapImpl impl, LazyGroup g1, LazyGroup g2, LazyGroup gt) {
+    public LazyBilinearMap(LazyGroup g1, LazyGroup g2, LazyGroup gt, BilinearMapImpl impl) {
         this.impl = impl;
         this.g1 = g1;
         this.g2 = g2;

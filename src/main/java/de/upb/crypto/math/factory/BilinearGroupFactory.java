@@ -1,7 +1,6 @@
 package de.upb.crypto.math.factory;
 
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.debug.DebugBilinearGroup;
 import de.upb.crypto.math.pairings.debug.DebugBilinearGroupProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 

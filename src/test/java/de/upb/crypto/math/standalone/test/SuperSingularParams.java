@@ -11,7 +11,7 @@ import java.util.List;
 public class SuperSingularParams {
     public static Collection<StandaloneTestParams> get() {
         SupersingularProvider fac = new SupersingularProvider();
-        SupersingularTateGroup supsingGrp = fac.provideBilinearGroup(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
+        SupersingularTateGroupImpl supsingGrp = fac.provideBilinearGroupImpl(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
         List<StandaloneTestParams> toReturn = new ArrayList<>();
 
         toReturn.add(new StandaloneTestParams(supsingGrp));

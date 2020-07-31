@@ -7,6 +7,7 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
+import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
 import de.upb.crypto.math.structures.helpers.FiniteFieldTools;
 
 import java.math.BigInteger;
@@ -21,6 +22,11 @@ public class SupersingularProvider implements BilinearGroupProvider {
     public SupersingularProvider() {
     }
 
+    @Override
+    public BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
+        return new LazyBilinearGroup(provideBilinearGroupImpl(securityParameter, requirements));
+    }
+
     /**
      * Sets up the factory and constructs the required structures.
      *
@@ -28,7 +34,7 @@ public class SupersingularProvider implements BilinearGroupProvider {
      *                          i.e., the complexity of DLOG in G1, G2, GT.
      */
     @Override
-    public SupersingularTateGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
+    public SupersingularTateGroupImpl provideBilinearGroupImpl(int securityParameter, BilinearGroupRequirement requirements) {
         if (!checkRequirements(securityParameter, requirements))
             throw new UnsupportedOperationException("The requirements are not fulfilled by this Bilinear Group!");
 
@@ -90,7 +96,7 @@ public class SupersingularProvider implements BilinearGroupProvider {
         ExtensionField targetGroupField = new ExtensionField(qnr.neg(), 2);
         SupersingularTargetGroupImpl targetGroup = new SupersingularTargetGroupImpl(targetGroupField, groupOrder);
 
-        return new SupersingularTateGroup(sourceGroup, targetGroup, new SupersingularTatePairing(sourceGroup, targetGroup), new SupersingularSourceHash(sourceGroup));
+        return new SupersingularTateGroupImpl(sourceGroup, targetGroup, new SupersingularTatePairing(sourceGroup, targetGroup), new SupersingularSourceHash(sourceGroup));
     }
 
     @Override

@@ -1,28 +1,21 @@
 package de.upb.crypto.math.pairings.bn;
 
-import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupImpl;
 import de.upb.crypto.math.hash.impl.SHA256HashFunction;
 import de.upb.crypto.math.hash.impl.SHA512HashFunction;
 import de.upb.crypto.math.interfaces.hash.HashFunction;
-import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
 import de.upb.crypto.math.interfaces.mappings.impl.BilinearMapImpl;
 import de.upb.crypto.math.interfaces.mappings.impl.GroupHomomorphismImpl;
-import de.upb.crypto.math.interfaces.structures.Group;
+import de.upb.crypto.math.interfaces.mappings.impl.HashIntoGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
-import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
-import de.upb.crypto.math.serialization.util.RepresentationUtil;
-import de.upb.crypto.math.structures.groups.lazy.LazyBilinearMap;
-import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
-import de.upb.crypto.math.structures.groups.lazy.LazyHashIntoStructure;
-import de.upb.crypto.math.structures.zn.HashIntoZn;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 
 /**
@@ -37,7 +30,7 @@ import java.math.BigInteger;
  *
  * @author Peter Guenther (peter.guenther@wincor-nixdorf.com)
  */
-public class BarretoNaehrigBilinearGroup implements BilinearGroup {
+public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     //Impl
     @Represented
     private BarretoNaehrigGroup1Impl g1impl;
@@ -51,41 +44,24 @@ public class BarretoNaehrigBilinearGroup implements BilinearGroup {
     @Represented
     private BarretoNaehrigPointEncoding hashIntoG2impl;
 
-    //User facing
-    private Group g1, g2, gt;
-    private BilinearMap bilinearMap;
-    private HashIntoStructure hashIntoG1, hashIntoG2;
 
-
-
-    public BarretoNaehrigBilinearGroup(BarretoNaehrigGroup1Impl g1impl, BarretoNaehrigGroup2Impl g2impl, BarretoNaehrigTargetGroupImpl gtimpl,
-                                       BarretoNaehrigPointEncoding hashIntoG1impl, BarretoNaehrigPointEncoding hashIntoG2impl,
-                                       BarretoNaehrigTatePairing bilinearMapImpl) {
+    public BarretoNaehrigBilinearGroupImpl(BarretoNaehrigGroup1Impl g1impl, BarretoNaehrigGroup2Impl g2impl, BarretoNaehrigTargetGroupImpl gtimpl,
+                                           BarretoNaehrigPointEncoding hashIntoG1impl, BarretoNaehrigPointEncoding hashIntoG2impl,
+                                           BarretoNaehrigTatePairing bilinearMapImpl) {
         this.hashIntoG1impl = hashIntoG1impl;
         this.hashIntoG2impl = hashIntoG2impl;
         this.g1impl = g1impl;
         this.g2impl = g2impl;
         this.gtimpl = gtimpl;
         this.bilinearMapImpl = bilinearMapImpl;
-        setPublicFacingStuff();
     }
 
-    public BarretoNaehrigBilinearGroup(Representation representation) {
+    public BarretoNaehrigBilinearGroupImpl(Representation representation) {
         new ReprUtil(this).deserialize(representation);
         bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gtimpl);
-        setPublicFacingStuff();
     }
 
-    private void setPublicFacingStuff() {
-        g1 = new LazyGroup(g1impl);
-        g2 = new LazyGroup(g2impl);
-        gt = new LazyGroup(gtimpl);
-        bilinearMap = new LazyBilinearMap(bilinearMapImpl, (LazyGroup) g1, (LazyGroup) g2, (LazyGroup) gt);
-        hashIntoG1 = new LazyHashIntoStructure(hashIntoG1impl, (LazyGroup) g1);
-        hashIntoG2 = new LazyHashIntoStructure(hashIntoG2impl, (LazyGroup) g2);
-    }
-
-    public BarretoNaehrigBilinearGroup(BarretoNaehrigParameterSpec spec) {
+    public BarretoNaehrigBilinearGroupImpl(BarretoNaehrigParameterSpec spec) {
         /* get size of groups */
         BigInteger n = spec.size;
 
@@ -152,9 +128,6 @@ public class BarretoNaehrigBilinearGroup implements BilinearGroup {
         } else {
             throw new IllegalArgumentException("Pairing of type " + spec.pairing + " not supported.");
         }
-
-
-        setPublicFacingStuff();
     }
 
     @Override
@@ -163,53 +136,51 @@ public class BarretoNaehrigBilinearGroup implements BilinearGroup {
     }
 
     @Override
-    public Group getG1() {
-        return g1;
+    public GroupImpl getG1() {
+        return g1impl;
     }
 
     @Override
-    public Group getG2() {
-        return g2;
+    public GroupImpl getG2() {
+        return g2impl;
     }
 
     @Override
-    public Group getGT() {
-        return gt;
+    public GroupImpl getGT() {
+        return gtimpl;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        BarretoNaehrigBilinearGroup that = (BarretoNaehrigBilinearGroup) o;
-
-        if (hashIntoG1impl != null ? !hashIntoG1impl.equals(that.hashIntoG1impl) : that.hashIntoG1impl != null) return false;
-        if (hashIntoG2impl != null ? !hashIntoG2impl.equals(that.hashIntoG2impl) : that.hashIntoG2impl != null) return false;
-        return bilinearMap != null ? bilinearMap.equals(that.bilinearMap) : that.bilinearMap == null;
+        BarretoNaehrigBilinearGroupImpl that = (BarretoNaehrigBilinearGroupImpl) o;
+        return g1impl.equals(that.g1impl) &&
+                g2impl.equals(that.g2impl) &&
+                gtimpl.equals(that.gtimpl) &&
+                bilinearMapImpl.equals(that.bilinearMapImpl) &&
+                hashIntoG1impl.equals(that.hashIntoG1impl) &&
+                hashIntoG2impl.equals(that.hashIntoG2impl);
     }
 
     @Override
     public int hashCode() {
-        int result = hashIntoG1impl != null ? hashIntoG1impl.hashCode() : 0;
-        result = 31 * result + (hashIntoG2impl != null ? hashIntoG2impl.hashCode() : 0);
-        result = 31 * result + (bilinearMap != null ? bilinearMap.hashCode() : 0);
-        return result;
+        return Objects.hash(g1impl);
     }
 
     @Override
-    public BilinearMap getBilinearMap() {
-        return bilinearMap;
+    public BilinearMapImpl getBilinearMap() {
+        return bilinearMapImpl;
     }
 
     @Override
-    public HashIntoStructure getHashIntoG1() throws UnsupportedOperationException {
-        return this.hashIntoG1;
+    public HashIntoGroupImpl getHashIntoG1() throws UnsupportedOperationException {
+        return this.hashIntoG1impl;
     }
 
     @Override
-    public HashIntoStructure getHashIntoG2() {
-        return this.hashIntoG2;
+    public HashIntoGroupImpl getHashIntoG2() {
+        return this.hashIntoG2impl;
     }
 
     /* We only know how to hash into GT for embedding degree 1.
@@ -221,7 +192,7 @@ public class BarretoNaehrigBilinearGroup implements BilinearGroup {
      * @see de.upb.crypto.math.factory.BilinearGroup#getHomomorphismG2toG1()
      */
     @Override
-    public HashIntoStructure getHashIntoGT() {
+    public HashIntoGroupImpl getHashIntoGT() {
         throw new UnsupportedOperationException();
     }
 
@@ -230,13 +201,8 @@ public class BarretoNaehrigBilinearGroup implements BilinearGroup {
      * This functions throws an exception because for type 3 pairings there is not efficient map H:G2->G1.
      */
     @Override
-    public GroupHomomorphism getHomomorphismG2toG1() {
+    public GroupHomomorphismImpl getHomomorphismG2toG1() {
         throw new UnsupportedOperationException("Map G2->G1 not available for BN Type 3 Pairings.");
-    }
-
-    @Override
-    public HashIntoStructure getHashIntoZGroupExponent() {
-        return new HashIntoZn(this.getG1().getZn());
     }
 
     @Override

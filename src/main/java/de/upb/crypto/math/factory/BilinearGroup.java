@@ -14,12 +14,12 @@ import de.upb.crypto.math.structures.zn.Zn;
  */
 public interface BilinearGroup extends StandaloneRepresentable {
     /**
-     * The three types of a {@link BilinearGroup}.
+     * The types of a {@link BilinearGroup}.
      * <p>
      * The types have the following properties:
      * TYPE_1: G1 = G2
      * TYPE_2: G1 != G2 and there exists a computable isomorphism G2 -> G1
-     * TYPE_3: G1 != G2 and there exists no efficiently computable isomorphism  G2 -> G1
+     * TYPE_3: G1 != G2 and we assume there is no efficiently computable isomorphism  G2 -> G1
      */
     enum Type {
         TYPE_1,

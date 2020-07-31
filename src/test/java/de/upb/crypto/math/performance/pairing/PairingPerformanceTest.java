@@ -8,6 +8,7 @@ import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
+import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
 import de.upb.crypto.math.structures.zn.Zn;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +52,7 @@ public class PairingPerformanceTest {
                 new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3)).getBilinearMap());
         // Barreto-Naehrig non-native, SFC-256
         pairings.add(
-                bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256).getBilinearMap());
+                new LazyBilinearGroup(bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256)).getBilinearMap());
 
         return pairings;
     }

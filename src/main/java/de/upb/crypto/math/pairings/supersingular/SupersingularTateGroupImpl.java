@@ -1,10 +1,12 @@
 package de.upb.crypto.math.pairings.supersingular;
 
-import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupImpl;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.IdentityIsomorphism;
-import de.upb.crypto.math.interfaces.structures.Group;
+import de.upb.crypto.math.interfaces.mappings.impl.BilinearMapImpl;
+import de.upb.crypto.math.interfaces.mappings.impl.HashIntoGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.AnnotatedRepresentationUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;
@@ -13,7 +15,9 @@ import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
 import de.upb.crypto.math.structures.groups.lazy.LazyHashIntoStructure;
 import de.upb.crypto.math.structures.zn.HashIntoZn;
 
-public class SupersingularTateGroup implements BilinearGroup {
+import java.util.Objects;
+
+public class SupersingularTateGroupImpl implements BilinearGroupImpl {
 
     @Represented
     private SupersingularSourceGroupImpl g1;
@@ -23,36 +27,36 @@ public class SupersingularTateGroup implements BilinearGroup {
     @Represented
     private SupersingularSourceHash hashIntoG1;
 
-    public SupersingularTateGroup(SupersingularSourceGroupImpl g1, SupersingularTargetGroupImpl gt, SupersingularTatePairing pairing, SupersingularSourceHash hashIntoG1) {
+    public SupersingularTateGroupImpl(SupersingularSourceGroupImpl g1, SupersingularTargetGroupImpl gt, SupersingularTatePairing pairing, SupersingularSourceHash hashIntoG1) {
         this.g1 = g1;
         this.gt = gt;
         this.pairing = pairing;
         this.hashIntoG1 = hashIntoG1;
     }
 
-    public SupersingularTateGroup(Representation repr) {
+    public SupersingularTateGroupImpl(Representation repr) {
         AnnotatedRepresentationUtil.restoreAnnotatedRepresentation(repr, this);
         pairing = new SupersingularTatePairing(g1, gt);
     }
 
     @Override
-    public LazyGroup getG1() {
-        return new LazyGroup(g1);
+    public GroupImpl getG1() {
+        return g1;
     }
 
     @Override
-    public LazyGroup getG2() {
+    public GroupImpl getG2() {
         return getG1();
     }
 
     @Override
-    public LazyGroup getGT() {
-        return new LazyGroup(gt);
+    public GroupImpl getGT() {
+        return gt;
     }
 
     @Override
-    public BilinearMap getBilinearMap() {
-        return new LazyBilinearMap(pairing, getG1(), getG2(), getGT());
+    public BilinearMapImpl getBilinearMap() {
+        return pairing;
     }
 
     @Override
@@ -61,25 +65,19 @@ public class SupersingularTateGroup implements BilinearGroup {
     }
 
     @Override
-    public LazyHashIntoStructure getHashIntoG1() throws UnsupportedOperationException {
-        return new LazyHashIntoStructure(hashIntoG1, (LazyGroup) getG1());
+    public HashIntoGroupImpl getHashIntoG1() throws UnsupportedOperationException {
+        return hashIntoG1;
     }
 
     @Override
-    public LazyHashIntoStructure getHashIntoG2() throws UnsupportedOperationException {
+    public HashIntoGroupImpl getHashIntoG2() throws UnsupportedOperationException {
         return getHashIntoG1();
     }
 
     @Override
-    public HashIntoStructure getHashIntoGT() throws UnsupportedOperationException {
+    public HashIntoGroupImpl getHashIntoGT() throws UnsupportedOperationException {
         throw new UnsupportedOperationException("The hash function into the target group is not implemented yet!");
     }
-
-    @Override
-    public HashIntoStructure getHashIntoZGroupExponent() throws UnsupportedOperationException {
-        return new HashIntoZn(this.getG1().size());
-    }
-
 
     @Override
     public Representation getRepresentation() {
@@ -90,21 +88,15 @@ public class SupersingularTateGroup implements BilinearGroup {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        SupersingularTateGroup that = (SupersingularTateGroup) o;
-
-        if (g1 != null ? !g1.equals(that.g1) : that.g1 != null) return false;
-        if (gt != null ? !gt.equals(that.gt) : that.gt != null) return false;
-        if (pairing != null ? !pairing.equals(that.pairing) : that.pairing != null) return false;
-        return hashIntoG1 != null ? hashIntoG1.equals(that.hashIntoG1) : that.hashIntoG1 == null;
+        SupersingularTateGroupImpl that = (SupersingularTateGroupImpl) o;
+        return g1.equals(that.g1) &&
+                gt.equals(that.gt) &&
+                pairing.equals(that.pairing) &&
+                hashIntoG1.equals(that.hashIntoG1);
     }
 
     @Override
     public int hashCode() {
-        int result = g1 != null ? g1.hashCode() : 0;
-        result = 31 * result + (gt != null ? gt.hashCode() : 0);
-        result = 31 * result + (pairing != null ? pairing.hashCode() : 0);
-        result = 31 * result + (hashIntoG1 != null ? hashIntoG1.hashCode() : 0);
-        return result;
+        return Objects.hash(g1);
     }
 }

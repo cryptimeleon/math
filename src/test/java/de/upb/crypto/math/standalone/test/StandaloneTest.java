@@ -2,6 +2,7 @@ package de.upb.crypto.math.standalone.test;
 
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
+import de.upb.crypto.math.serialization.annotations.test.ReprUtilTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -116,7 +117,7 @@ public class StandaloneTest {
         toReturn.addAll(SHAHashParams.get());
         toReturn.addAll(SuperSingularParams.get());
         toReturn.addAll(DebugBilinearGroup.get());
-        toReturn.addAll(LazyGroupParams.get());
+        toReturn.addAll(BasicAndLazyGroupParams.get());
         toReturn.add(ZnParams.get());
         toReturn.add(ZpParams.get());
         toReturn.add(SnParams.get());
@@ -125,10 +126,10 @@ public class StandaloneTest {
         toReturn.add(VariableOutputLengthHashFunctionParams.get());
         toReturn.add(NullTestParams.get());
         toReturn.add(RepresentedEnumParams.get());
-        toReturn.addAll(LazyGroupParams.get());
         toReturn.add(BooleanStructureParams.get());
         toReturn.add(ProductRingParams.get());
         toReturn.add(ProductGroupParams.get());
+        toReturn.add(ReprUtilTest.Foo.getStandaloneTestParams());
         // remove all provided params
         for (StandaloneTestParams stp : toReturn) {
             classes.remove(stp.toTest);
