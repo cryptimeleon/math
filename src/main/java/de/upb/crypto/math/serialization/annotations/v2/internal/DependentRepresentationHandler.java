@@ -11,11 +11,11 @@ import java.util.function.Function;
  * Handles representations that depend on some RepresentationRestorer in order to be recreated.
  */
 public class DependentRepresentationHandler implements RepresentationHandler {
-    protected String restorerName;
+    protected String restorerString;
     protected Type typeToRestore;
 
-    public DependentRepresentationHandler(String restorerName, Type typeToRestore) {
-        this.restorerName = restorerName;
+    public DependentRepresentationHandler(String restorerString, Type typeToRestore) {
+        this.restorerString = restorerString;
         this.typeToRestore = typeToRestore;
     }
 
@@ -25,7 +25,7 @@ public class DependentRepresentationHandler implements RepresentationHandler {
 
     @Override
     public Object deserializeFromRepresentation(Representation repr, Function<String, RepresentationRestorer> getRegisteredRestorer) {
-        return getRegisteredRestorer.apply(restorerName).recreateFromRepresentation(typeToRestore, repr);
+        return getRegisteredRestorer.apply(restorerString).recreateFromRepresentation(typeToRestore, repr);
     }
 
     @Override

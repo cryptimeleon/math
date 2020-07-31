@@ -8,12 +8,13 @@ import de.upb.crypto.math.serialization.annotations.v2.internal.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -28,6 +29,8 @@ import java.util.stream.Stream;
  * - In the constructor(Representation repr), call: new ReprUtil(this).deserialize(repr);
  * - In getRepresentation(), call ReprUtil.serialize(this);
  *
+ * You can also refer to a restorer as, for example, "bilGroup::getG1", where bilGroup is as above (another field of the class or something registered) and getG1 is a method that returns a RepresentationRestorer.
+ *
  * - The framework can handle Lists, Sets, and Maps as well. For example, @Represented(restorer="[group]") handles a list or set of group elements
  *   and @Represented(restorer="String -> [group]") handles a map of Strings to lists of group elements.
  *   Check {@link Represented#restorer()} for details.
@@ -38,6 +41,7 @@ import java.util.stream.Stream;
  *   getRepresentation() would still just call ReprUtil.serialize(this);
  */
 public class ReprUtil {
+    static Pattern methodCallSeparator = Pattern.compile("::");
     /**
      * RepresentationRestorer that can help during recreation of the instance.
      */
@@ -213,24 +217,44 @@ public class ReprUtil {
      * Gets restorer from registered restorers or - if it's not there - look for it within the fields instance's class
      * (and restore it if annotated).
      */
-    RepresentationRestorer getOrRecreateRestorer(String name, Representation topLevelRepr) {
-        if (restorers.containsKey(name))
-            return restorers.get(name);
+    RepresentationRestorer getOrRecreateRestorer(String restorerString, Representation topLevelRepr) {
+        //Parse restorerString of form "baseName::methodToCall::methodToCall::..."
+        String[] parsed = methodCallSeparator.split(restorerString);
+        String baseName = parsed[0];
 
-        //Restorer is some field
-        Field field = getFieldByName(name);
+        //Look for base name
+        if (restorers.containsKey(baseName))
+            return restorers.get(baseName);
+
+        //Base is some field
+        Field field = getFieldByName(baseName);
         if (field == null)
-            throw new IllegalArgumentException("\""+name+"\" is neither the name of a restorer given through ReprUtil.register, nor is it a member of the class being recreated.");
+            throw new IllegalArgumentException("\""+baseName+"\" is neither the name of a restorer given through ReprUtil.register, nor is it a member of the class being recreated.");
 
-        Object result = restoreField(field, topLevelRepr);
+        Object restoredBase = restoreField(field, topLevelRepr);
 
-        if (result == null)
-            throw new NullPointerException("The member \""+name+"\" is null and hence cannot be used to recreate further objects from representation");
+        if (restoredBase == null)
+            throw new NullPointerException("The member \""+baseName+"\" is null and hence cannot be used to recreate further objects from representation");
 
-        if (!(result instanceof RepresentationRestorer))
-            throw new IllegalArgumentException("\""+name+"\" is the name of a member of your class, but its value does not seem to implement the RepresentationRestorer interface.");
+        return callMethods(restoredBase, parsed);
+    }
 
-        return (RepresentationRestorer) result;
+    private static RepresentationRestorer callMethods(Object baseObject, String[] parsedRestorerString) {
+        Object currentObject = baseObject;
+        for (int i=1;i<parsedRestorerString.length;i++) {
+            String methodToCall = parsedRestorerString[i];
+            try {
+                currentObject = currentObject.getClass().getMethod(methodToCall).invoke(currentObject);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException("Cannot call desired method "+methodToCall+" on "+currentObject.getClass().getName(), e);
+            }
+        }
+
+        if (!(currentObject instanceof RepresentationRestorer))
+            throw new IllegalArgumentException("\""+baseObject.getClass().getName()+"\" is not a RepresentationRestorer.");
+
+        return (RepresentationRestorer) currentObject;
     }
 
     /**
