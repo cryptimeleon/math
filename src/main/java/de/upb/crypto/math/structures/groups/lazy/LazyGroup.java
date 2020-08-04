@@ -4,6 +4,8 @@ import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
+import de.upb.crypto.math.pairings.debug.DebugGroupElementImpl;
+import de.upb.crypto.math.pairings.debug.DebugGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
@@ -12,6 +14,7 @@ import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
 import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
+import sun.security.ssl.Debug;
 
 import java.math.BigInteger;
 import java.util.Objects;
@@ -28,6 +31,8 @@ public class LazyGroup implements Group {
     int exponentiationWindowSize = 4;
     int precomputationWindowSize = 8;
     @Represented
+    Boolean containsDebugGroup;
+    @Represented
     GroupImpl impl;
     BigInteger size;
     boolean isPrimeOrder;
@@ -42,6 +47,7 @@ public class LazyGroup implements Group {
         this.impl = impl;
         this.exponentiationWindowSize = exponentiationWindowSize;
         this.precomputationWindowSize = precomputationWindowSize;
+        containsDebugGroup = impl instanceof DebugGroupImpl;
         init();
     }
 
@@ -147,13 +153,21 @@ public class LazyGroup implements Group {
     public GroupElementImpl compute(Multiexponentiation multiexp) {
         if (multiexp.isEmpty())
             return impl.getNeutralElement();
-        return ExponentiationAlgorithms.interleavingWnafMultiExp(multiexp, Math.max(exponentiationWindowSize, multiexp.getMinPrecomputedWindowSize()));
+        GroupElementImpl result = ExponentiationAlgorithms.interleavingWnafMultiExp(multiexp, Math.max(exponentiationWindowSize, multiexp.getMinPrecomputedWindowSize()));
+        if (containsDebugGroup) {
+            ((DebugGroupImpl) multiexp.getTerms().get(0).getBase().getStructure()).addMultiExp(multiexp.getTerms().size());
+        }
+        return result;
         //TODO some multiexponentiation algorithms may be able to handle different windows sizes for each base.
         // Generally, using the minimum for window size is "safe", but not necessarily clever performance-wise. Example: \prof h_i^x_i * (g^a)^b. The latter has no precomputation at all (even if g may have it), so ...
     }
 
     public GroupElementImpl compute(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
-        return ExponentiationAlgorithms.wnafExp(base, exponent, precomputation, exponentiationWindowSize);
+        GroupElementImpl result = ExponentiationAlgorithms.wnafExp(base, exponent, precomputation, exponentiationWindowSize);
+        if (containsDebugGroup) {
+            ((DebugGroupImpl) base.getStructure()).incrementNumExps();
+        }
+        return result;
     }
 
     public int getExponentiationWindowSize() {

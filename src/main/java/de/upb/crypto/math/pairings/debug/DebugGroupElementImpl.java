@@ -29,7 +29,9 @@ public class DebugGroupElementImpl implements GroupElementImpl {
     @Override
     public GroupElementImpl inv() {
         //DebugGroupLogger.log(group.name, "inv");
-        return group.wrap(elem.neg());
+        GroupElementImpl result = group.wrap(elem.neg());
+        group.incrementNumInversions();
+        return result;
     }
 
     @Override
@@ -42,13 +44,20 @@ public class DebugGroupElementImpl implements GroupElementImpl {
                     + (e instanceof DebugGroupElementImpl ? ((DebugGroupElementImpl) e).group.name + "(" + ((DebugGroupElementImpl) e).group.size() + ")"
                     : e == null ? "null" : e.getStructure())
             );
-        
-        return group.wrap(elem.add(((DebugGroupElementImpl) e).elem));
+        GroupElementImpl result = group.wrap(elem.add(((DebugGroupElementImpl) e).elem));
+        if (this.equals(e)) {
+            group.incrementNumSquarings();
+        } else {
+            group.incrementNumOps();
+        }
+        return result;
     }
 
     @Override
     public GroupElementImpl pow(BigInteger k) {
-        return group.wrap(elem.mul(k));
+        GroupElementImpl result = group.wrap(elem.mul(k));
+        group.incrementNumExps();
+        return result;
     }
 
     @Override

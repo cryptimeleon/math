@@ -6,9 +6,13 @@ import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StringRepresentation;
+import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.v2.Represented;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,6 +25,14 @@ import java.util.Optional;
 public class DebugGroupImpl implements GroupImpl {
     protected String name;
     protected Zn zn;
+    protected long numInversions;
+    protected long numOps;
+    protected long numSquarings;
+    protected long numExps;
+    /**
+     * Contains number of bases for each multi-exponentiation performed
+     */
+    protected List<Integer> multiExpData;
 
     /**
      * Instantiates the debug group (Zn,+)
@@ -31,11 +43,21 @@ public class DebugGroupImpl implements GroupImpl {
     public DebugGroupImpl(String name, BigInteger n) {
         zn = new Zn(n);
         this.name = name;
+        numInversions = 0;
+        numOps = 0;
+        numSquarings = 0;
+        numExps = 0;
+        multiExpData = new LinkedList<>();
     }
 
     public DebugGroupImpl(Representation repr) {
         this.zn = new Zn(repr.obj().get("n").bigInt().get());
         this.name = repr.obj().get("name").str().get();
+        numInversions = 0;
+        numOps = 0;
+        numSquarings = 0;
+        numExps = 0;
+        multiExpData = new LinkedList<>();
     }
 
     @Override
@@ -112,5 +134,67 @@ public class DebugGroupImpl implements GroupImpl {
      */
     protected DebugGroupElementImpl wrap(Zn.ZnElement elem) {
         return new DebugGroupElementImpl(this, elem);
+    }
+
+    protected void incrementNumOps() {
+        ++numOps;
+    }
+
+    protected void incrementNumInversions() {
+        ++numInversions;
+    }
+
+    protected void incrementNumSquarings() {
+        ++numSquarings;
+    }
+
+    public void incrementNumExps() {
+        ++numExps;
+    }
+
+    public void addMultiExp(int numTerms) {
+        multiExpData.add(numTerms);
+    }
+
+    public long getNumInversions() {
+        return numInversions;
+    }
+
+    public long getNumOps() {
+        return numOps;
+    }
+
+    public long getNumSquarings() {
+        return numSquarings;
+    }
+
+    public long getNumExps() { return numExps; }
+
+    public List<Integer> getMultiExpData() {
+        return multiExpData;
+    }
+
+    public void resetOpsCounter() {
+        numOps = 0;
+    }
+
+    public void resetInvsCounter() {
+        numInversions = 0;
+    }
+
+    public void resetSquaringsCounter() {
+        numSquarings = 0;
+    }
+
+    public void resetExpsCounter() { numExps = 0; }
+
+    public void resetMultiExpData() { multiExpData = new LinkedList<>(); }
+
+    public void resetCounters() {
+        resetOpsCounter();
+        resetInvsCounter();
+        resetSquaringsCounter();
+        resetExpsCounter();
+        resetMultiExpData();
     }
 }
