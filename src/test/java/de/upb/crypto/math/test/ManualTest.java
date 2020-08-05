@@ -17,9 +17,7 @@ public class ManualTest {
         LazyGroup lazyGroup = new LazyGroup(debugGroup);
         GroupElement elem = lazyGroup.getUniformlyRandomNonNeutral();
         GroupElement elem2 = lazyGroup.getUniformlyRandomNonNeutral();
-        elem = elem.op(elem2.pow(16));
-        elem = elem.op(elem2.pow(16));
-        elem = elem.computeSync();
+        Representation repr = lazyGroup.getRepresentation();
 
         System.out.println("Ops: " + debugGroup.getNumOps());
         System.out.println("Sqs: " + debugGroup.getNumSquarings());

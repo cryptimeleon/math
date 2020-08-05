@@ -30,8 +30,7 @@ public class LazyGroup implements Group {
     static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     int exponentiationWindowSize = 4;
     int precomputationWindowSize = 8;
-    @Represented
-    Boolean containsDebugGroup;
+    public Boolean containsDebugGroup;
     @Represented
     GroupImpl impl;
     BigInteger size;
@@ -63,11 +62,13 @@ public class LazyGroup implements Group {
 
     public LazyGroup(Representation repr) {
         ReprUtil.deserialize(this, repr);
+        containsDebugGroup = impl instanceof DebugGroupImpl;
         init();
     }
 
     public LazyGroup(Representation repr, int exponentiationWindowSize, int precomputationWindowSize) {
         ReprUtil.deserialize(this, repr);
+        containsDebugGroup = impl instanceof DebugGroupImpl;
         this.exponentiationWindowSize = exponentiationWindowSize;
         this.precomputationWindowSize = precomputationWindowSize;
         init();
