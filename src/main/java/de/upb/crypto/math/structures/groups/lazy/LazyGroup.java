@@ -30,7 +30,7 @@ public class LazyGroup implements Group {
     static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     int exponentiationWindowSize = 4;
     int precomputationWindowSize = 8;
-    public Boolean containsDebugGroup;
+    Boolean containsDebugGroup;
     @Represented
     GroupImpl impl;
     BigInteger size;
