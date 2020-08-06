@@ -1,4 +1,4 @@
-package de.upb.crypto.math.random.SimpleRandomGenerator;
+package de.upb.crypto.math.random;
 
 import de.upb.crypto.math.random.interfaces.RandomGenerator;
 

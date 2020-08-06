@@ -1,6 +1,6 @@
 package de.upb.crypto.math.random.interfaces;
 
-import de.upb.crypto.math.random.SimpleRandomGenerator.SimpleRandomGenerator;
+import de.upb.crypto.math.random.SimpleRandomGenerator;
 
 /**
  * A static way to obtain random generators.
