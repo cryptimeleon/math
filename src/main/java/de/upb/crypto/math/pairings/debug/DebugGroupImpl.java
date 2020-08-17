@@ -8,6 +8,9 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StringRepresentation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
+import de.upb.crypto.math.structures.groups.exp.MultiExpTerm;
+import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
+import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -25,6 +28,9 @@ import java.util.Optional;
 public class DebugGroupImpl implements GroupImpl {
     protected String name;
     protected Zn zn;
+
+    protected boolean enableExpCounting;
+    protected boolean enableMultiExpCounting;
     protected long numInversions;
     protected long numOps;
     protected long numSquarings;
@@ -41,8 +47,24 @@ public class DebugGroupImpl implements GroupImpl {
      * @param n    the size of Zn
      */
     public DebugGroupImpl(String name, BigInteger n) {
+        this(name, n, false, false);
+    }
+
+    /**
+     * Instantiates the debug group (Zn,+)
+     *
+     * @param name a unique name for this group. Group operations only work between Groups with the same name (and same n)
+     * @param n    the size of Zn
+     * @param enableExpCounting if {@code true}, {@link de.upb.crypto.math.structures.groups.lazy.LazyGroup}
+     *                          will count exponentiations as single units, else contained ops will be counted
+     * @param enableMultiExpCounting if {@code true}, {@link de.upb.crypto.math.structures.groups.lazy.LazyGroup}
+     *                               will track multi-exponentiations, else contained ops will be counted
+     */
+    public DebugGroupImpl(String name, BigInteger n, boolean enableExpCounting, boolean enableMultiExpCounting) {
         zn = new Zn(n);
         this.name = name;
+        this.enableExpCounting = enableExpCounting;
+        this.enableMultiExpCounting = enableMultiExpCounting;
         numInversions = 0;
         numOps = 0;
         numSquarings = 0;
@@ -127,6 +149,33 @@ public class DebugGroupImpl implements GroupImpl {
     @Override
     public boolean hasPrimeSize() throws UnsupportedOperationException {
         return zn.hasPrimeSize();
+    }
+
+    @Override
+    public boolean implementsOwnExp() {
+        return enableExpCounting;
+    }
+
+    @Override
+    public GroupElementImpl exp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
+        return base.pow(exponent); // this method already counts the exponentiation
+    }
+
+    @Override
+    public boolean implementsOwnMultiExp() {
+        return enableMultiExpCounting;
+    }
+
+    @Override
+    public GroupElementImpl multiexp(Multiexponentiation mexp) {
+        DebugGroupElementImpl result = (DebugGroupElementImpl) mexp.getConstantFactor().orElse(getNeutralElement());
+        for (MultiExpTerm term : mexp.getTerms()) {
+            // Use methods where we can disable counting since we only want to count the multi-exponentiation here
+            result = (DebugGroupElementImpl) result
+                    .op(((DebugGroupElementImpl) term.getBase()).pow(term.getExponent(),false), false);
+        }
+        addMultiExp(mexp.getTerms().size());
+        return result;
     }
 
     /**

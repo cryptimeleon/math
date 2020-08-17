@@ -3,6 +3,8 @@ package de.upb.crypto.math.interfaces.structures.group.impl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
+import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
+import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -19,7 +21,7 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
 
     GroupElementImpl getUniformlyRandomElement() throws UnsupportedOperationException;
 
-    public default GroupElementImpl getUniformlyRandomNonNeutral() throws UnsupportedOperationException {
+    default GroupElementImpl getUniformlyRandomNonNeutral() throws UnsupportedOperationException {
         GroupElementImpl result;
         do {
             result = getUniformlyRandomElement();
@@ -55,6 +57,31 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
      * Returns true if the size of this structure is known and prime.
      */
     boolean hasPrimeSize();
+
+    default boolean implementsOwnExp() {
+        return false;
+    }
+
+    default GroupElementImpl exp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
+        throw new UnsupportedOperationException("Exponentiation is not implemented for group " + this);
+    }
+
+    /**
+     * Indicates whether this group implements its own multi-exponentiation algorithm.
+     * @return {@code true} if the group implements its own multi-exponentiation algorithm {@code false} otherwise
+     */
+    default boolean implementsOwnMultiExp() {
+        return false;
+    }
+
+    /**
+     * Allows the group to implement its own multi-exponentiation algorithm.
+     * @param mexp  Contains the multi-exponentiation terms
+     * @return Result of computing the multi-exponentiation
+     */
+    default GroupElementImpl multiexp(Multiexponentiation mexp) {
+        throw new UnsupportedOperationException("Multi-exponentiation is not implemented for group " + this);
+    }
 
     @Override
     default GroupElementImpl recreateFromRepresentation(Type type, Representation repr) {
