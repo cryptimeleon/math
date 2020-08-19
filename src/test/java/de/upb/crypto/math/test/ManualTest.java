@@ -18,12 +18,15 @@ public class ManualTest {
         GroupElement elem = lazyGroup.getUniformlyRandomNonNeutral();
         GroupElement elem2 = lazyGroup.getUniformlyRandomNonNeutral();
 
-        GroupElement elem3 = elem.op(elem2).compute();
+        for (int i = 0; i < 10; ++i) {
+            elem.getRepresentation();
+        }
 
         System.out.println("Ops: " + debugGroup.getNumOps());
         System.out.println("Sqs: " + debugGroup.getNumSquarings());
         System.out.println("Invs: " + debugGroup.getNumInversions());
         System.out.println("Exps: " + debugGroup.getNumExps());
         System.out.println("MultiExps: " + debugGroup.getMultiExpData().toString());
+        System.out.println("Retrieved Representations: " + debugGroup.getNumRetrievedRepresentations());
     }
 }

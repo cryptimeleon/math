@@ -101,7 +101,9 @@ public class DebugGroupElementImpl implements GroupElementImpl {
 
     @Override
     public Representation getRepresentation() {
-        return elem.getRepresentation();
+        Representation result = elem.getRepresentation();
+        group.incrementNumRetrievedRepresentations();
+        return result;
     }
 
     @Override

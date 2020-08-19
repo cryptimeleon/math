@@ -35,6 +35,11 @@ public class DebugGroupImpl implements GroupImpl {
     protected long numOps;
     protected long numSquarings;
     protected long numExps;
+
+    /**
+     * Number of retrieved representations for elements of this group.
+     */
+    protected long numRetrievedRepresentations;
     /**
      * Contains number of bases for each multi-exponentiation performed
      */
@@ -70,6 +75,7 @@ public class DebugGroupImpl implements GroupImpl {
         numSquarings = 0;
         numExps = 0;
         multiExpData = new LinkedList<>();
+        numRetrievedRepresentations = 0;
     }
 
     public DebugGroupImpl(Representation repr) {
@@ -80,6 +86,7 @@ public class DebugGroupImpl implements GroupImpl {
         numSquarings = 0;
         numExps = 0;
         multiExpData = new LinkedList<>();
+        numRetrievedRepresentations = 0;
     }
 
     @Override
@@ -205,6 +212,10 @@ public class DebugGroupImpl implements GroupImpl {
         multiExpData.add(numTerms);
     }
 
+    public void incrementNumRetrievedRepresentations() {
+        ++numRetrievedRepresentations;
+    }
+
     public long getNumInversions() {
         return numInversions;
     }
@@ -223,6 +234,10 @@ public class DebugGroupImpl implements GroupImpl {
         return multiExpData;
     }
 
+    public long getNumRetrievedRepresentations() {
+        return numRetrievedRepresentations;
+    }
+
     public void resetOpsCounter() {
         numOps = 0;
     }
@@ -239,11 +254,15 @@ public class DebugGroupImpl implements GroupImpl {
 
     public void resetMultiExpData() { multiExpData = new LinkedList<>(); }
 
-    public void resetCounters() {
+    public void resetGroupOpCounters() {
         resetOpsCounter();
         resetInvsCounter();
         resetSquaringsCounter();
         resetExpsCounter();
         resetMultiExpData();
+    }
+
+    public void resetRetrievedRepresentationsCounter() {
+        numRetrievedRepresentations = 0;
     }
 }
