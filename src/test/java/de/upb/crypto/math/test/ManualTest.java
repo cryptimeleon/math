@@ -5,6 +5,7 @@ import de.upb.crypto.math.pairings.debug.DebugGroupElementImpl;
 import de.upb.crypto.math.pairings.debug.DebugGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.converter.BinaryFormatConverter;
+import de.upb.crypto.math.structures.groups.count.CountingGroup;
 import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
 
 import java.math.BigInteger;
@@ -15,11 +16,12 @@ public class ManualTest {
     public static void main(String[] args) {
         DebugGroupImpl debugGroup = new DebugGroupImpl("D1", BigInteger.valueOf(1000000));
         LazyGroup lazyGroup = new LazyGroup(debugGroup);
-        GroupElement elem = lazyGroup.getUniformlyRandomNonNeutral();
-        GroupElement elem2 = lazyGroup.getUniformlyRandomNonNeutral();
+        CountingGroup countingGroup = new CountingGroup(lazyGroup);
+        GroupElement elem = countingGroup.getUniformlyRandomNonNeutral();
+        GroupElement elem2 = countingGroup.getUniformlyRandomNonNeutral();
 
         for (int i = 0; i < 10; ++i) {
-            elem.getRepresentation();
+            elem.op(elem2).compute();
         }
 
         System.out.println("Ops: " + debugGroup.getNumOps());
