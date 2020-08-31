@@ -2,9 +2,12 @@ package de.upb.crypto.math.structures.groups.count;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.pairings.debug.DebugGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
+import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
+import de.upb.crypto.math.structures.groups.lazy.LazyGroupElement;
 
 import java.math.BigInteger;
 import java.util.Optional;
@@ -12,10 +15,19 @@ import java.util.Optional;
 public class CountingGroup implements Group {
 
     @Represented
-    Group wrappedGroup;
+    LazyGroup groupTotal;
 
-    public CountingGroup(Group group) {
-        wrappedGroup = group;
+    @Represented
+    LazyGroup groupExpMultiExp;
+
+    public CountingGroup(String name, BigInteger n) {
+        groupTotal = new LazyGroup(new DebugGroupImpl(name, n, false, false));
+        groupExpMultiExp = new LazyGroup(new DebugGroupImpl(name, n, true, true));
+    }
+
+    public CountingGroup(LazyGroup groupTotal, LazyGroup groupExpMultiExp) {
+        this.groupTotal = groupTotal;
+        this.groupExpMultiExp = groupExpMultiExp;
     }
 
     public CountingGroup(Representation repr) {
@@ -24,17 +36,23 @@ public class CountingGroup implements Group {
 
     @Override
     public GroupElement getNeutralElement() {
-        return new CountingGroupElement(wrappedGroup.getNeutralElement());
+        return new CountingGroupElement(
+                (LazyGroupElement) groupTotal.getNeutralElement(),
+                (LazyGroupElement) groupExpMultiExp.getNeutralElement()
+        );
     }
 
     @Override
     public BigInteger size() throws UnsupportedOperationException {
-        return wrappedGroup.size();
+        return groupTotal.size();
     }
 
     @Override
     public GroupElement getUniformlyRandomElement() throws UnsupportedOperationException {
-        return new CountingGroupElement(wrappedGroup.getUniformlyRandomElement());
+        return new CountingGroupElement(
+                (LazyGroupElement) groupTotal.getUniformlyRandomElement(),
+                (LazyGroupElement) groupExpMultiExp.getUniformlyRandomElement()
+        );
     }
 
     @Override
@@ -44,12 +62,19 @@ public class CountingGroup implements Group {
 
     @Override
     public Optional<Integer> getUniqueByteLength() {
-        return wrappedGroup.getUniqueByteLength(); // TODO: Is this correct?
+        // TODO: Is this correct?
+        Optional<Integer> totalLength = groupTotal.getUniqueByteLength();
+        Optional<Integer> expMultiExpLength = groupExpMultiExp.getUniqueByteLength();
+        if (!totalLength.isPresent() || !expMultiExpLength.isPresent()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(totalLength.get() + expMultiExpLength.get());
+        }
     }
 
     @Override
     public boolean isCommutative() {
-        return wrappedGroup.isCommutative();
+        return groupTotal.isCommutative();
     }
 
     @Override

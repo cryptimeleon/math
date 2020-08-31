@@ -14,9 +14,7 @@ import java.util.BitSet;
 
 public class ManualTest {
     public static void main(String[] args) {
-        DebugGroupImpl debugGroup = new DebugGroupImpl("D1", BigInteger.valueOf(1000000));
-        LazyGroup lazyGroup = new LazyGroup(debugGroup);
-        CountingGroup countingGroup = new CountingGroup(lazyGroup);
+        CountingGroup countingGroup = new CountingGroup("test", BigInteger.valueOf(1000000));
         GroupElement elem = countingGroup.getUniformlyRandomNonNeutral();
         GroupElement elem2 = countingGroup.getUniformlyRandomNonNeutral();
 
@@ -24,11 +22,11 @@ public class ManualTest {
             elem.op(elem2).compute();
         }
 
-        System.out.println("Ops: " + debugGroup.getNumOps());
+        /*System.out.println("Ops: " + debugGroup.getNumOps());
         System.out.println("Sqs: " + debugGroup.getNumSquarings());
         System.out.println("Invs: " + debugGroup.getNumInversions());
         System.out.println("Exps: " + debugGroup.getNumExps());
         System.out.println("MultiExps: " + debugGroup.getMultiExpData().toString());
-        System.out.println("Retrieved Representations: " + debugGroup.getNumRetrievedRepresentations());
+        System.out.println("Retrieved Representations: " + debugGroup.getNumRetrievedRepresentations());*/
     }
 }
