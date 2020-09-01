@@ -130,6 +130,8 @@ public class StandaloneTest {
         toReturn.add(ProductRingParams.get());
         toReturn.add(ProductGroupParams.get());
         toReturn.add(ReprUtilTest.Foo.getStandaloneTestParams());
+        toReturn.add(CountingGroupParams.get());
+
         // remove all provided params
         for (StandaloneTestParams stp : toReturn) {
             classes.remove(stp.toTest);

@@ -99,7 +99,6 @@ public class CountingGroupElement implements GroupElement {
 
     @Override
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
-        // TODO: Is this correct?
         return elemExpMultiExp.updateAccumulator(elemTotal.updateAccumulator(accumulator));
     }
 
@@ -120,5 +119,10 @@ public class CountingGroupElement implements GroupElement {
     @Override
     public int hashCode() {
         return Objects.hash(elemTotal, elemExpMultiExp);
+    }
+
+    @Override
+    public String toString() {
+        return elemTotal.computeSync().getRepresentation() + ";" + elemExpMultiExp.computeSync().getRepresentation();
     }
 }

@@ -6,8 +6,6 @@ import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StringRepresentation;
-import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
-import de.upb.crypto.math.serialization.annotations.v2.Represented;
 import de.upb.crypto.math.structures.groups.exp.MultiExpTerm;
 import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
 import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
@@ -37,13 +35,13 @@ public class DebugGroupImpl implements GroupImpl {
     protected long numExps;
 
     /**
-     * Number of retrieved representations for elements of this group.
+     * Number of retrieved representations for elements of this group
      */
     protected long numRetrievedRepresentations;
     /**
-     * Contains number of bases for each multi-exponentiation performed
+     * Contains number of terms for each multi-exponentiation performed
      */
-    protected List<Integer> multiExpData;
+    protected List<Integer> multiExpTermNumbers;
 
     /**
      * Instantiates the debug group (Zn,+)
@@ -74,7 +72,7 @@ public class DebugGroupImpl implements GroupImpl {
         numOps = 0;
         numSquarings = 0;
         numExps = 0;
-        multiExpData = new LinkedList<>();
+        multiExpTermNumbers = new LinkedList<>();
         numRetrievedRepresentations = 0;
     }
 
@@ -85,7 +83,7 @@ public class DebugGroupImpl implements GroupImpl {
         numOps = 0;
         numSquarings = 0;
         numExps = 0;
-        multiExpData = new LinkedList<>();
+        multiExpTermNumbers = new LinkedList<>();
         numRetrievedRepresentations = 0;
     }
 
@@ -181,7 +179,7 @@ public class DebugGroupImpl implements GroupImpl {
             result = (DebugGroupElementImpl) result
                     .op(((DebugGroupElementImpl) term.getBase()).pow(term.getExponent(),false), false);
         }
-        addMultiExp(mexp.getTerms().size());
+        addMultiExpBaseNumber(mexp.getTerms().size());
         return result;
     }
 
@@ -208,8 +206,10 @@ public class DebugGroupImpl implements GroupImpl {
         ++numExps;
     }
 
-    public void addMultiExp(int numTerms) {
-        multiExpData.add(numTerms);
+    public void addMultiExpBaseNumber(int numTerms) {
+        if (numTerms > 1) {
+            multiExpTermNumbers.add(numTerms);
+        }
     }
 
     public void incrementNumRetrievedRepresentations() {
@@ -230,8 +230,8 @@ public class DebugGroupImpl implements GroupImpl {
 
     public long getNumExps() { return numExps; }
 
-    public List<Integer> getMultiExpData() {
-        return multiExpData;
+    public List<Integer> getMultiExpTermNumbers() {
+        return multiExpTermNumbers;
     }
 
     public long getNumRetrievedRepresentations() {
@@ -252,17 +252,19 @@ public class DebugGroupImpl implements GroupImpl {
 
     public void resetExpsCounter() { numExps = 0; }
 
-    public void resetMultiExpData() { multiExpData = new LinkedList<>(); }
-
-    public void resetGroupOpCounters() {
-        resetOpsCounter();
-        resetInvsCounter();
-        resetSquaringsCounter();
-        resetExpsCounter();
-        resetMultiExpData();
-    }
+    public void resetMultiExpTermNumbers() { multiExpTermNumbers = new LinkedList<>(); }
 
     public void resetRetrievedRepresentationsCounter() {
         numRetrievedRepresentations = 0;
     }
+
+    public void resetCounters() {
+        resetOpsCounter();
+        resetInvsCounter();
+        resetSquaringsCounter();
+        resetExpsCounter();
+        resetMultiExpTermNumbers();
+        resetRetrievedRepresentationsCounter();
+    }
+
 }
