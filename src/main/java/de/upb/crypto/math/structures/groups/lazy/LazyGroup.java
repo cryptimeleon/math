@@ -177,4 +177,8 @@ public class LazyGroup implements Group {
     public void setPrecomputationWindowSize(int precomputationWindowSize) {
         this.precomputationWindowSize = precomputationWindowSize;
     }
+
+    public GroupImpl getImpl() {
+        return impl;
+    }
 }

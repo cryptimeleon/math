@@ -1,14 +1,14 @@
-package de.upb.crypto.math.structures.groups.count;
+package de.upb.crypto.math.pairings.debug;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.debug.DebugGroupElementImpl;
-import de.upb.crypto.math.pairings.debug.DebugGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
+import de.upb.crypto.math.structures.groups.lazy.ConstLazyGroupElement;
 import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
 import de.upb.crypto.math.structures.groups.lazy.LazyGroupElement;
+import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -51,9 +51,16 @@ public class CountingGroup implements Group {
         this(name, BigInteger.valueOf(n));
     }
 
+    /**
+     * This constructor allows instantiating the {@link CountingGroup} with specific {@link LazyGroup} instances.
+     * This can be, for example, be used to change the choice of (multi-)exponentiation algorithm by configuring
+     * the {@link LazyGroup} instances to use a different (multi-)exponentiation algorithm.
+     */
     public CountingGroup(LazyGroup groupTotal, LazyGroup groupExpMultiExp) {
         this.groupTotal = groupTotal;
         this.groupExpMultiExp = groupExpMultiExp;
+        this.debugGroupTotal = (DebugGroupImpl) groupTotal.getImpl();
+        this.debugGroupExpMultiExp = (DebugGroupImpl) groupExpMultiExp.getImpl();
     }
 
     public CountingGroup(Representation repr) {
@@ -63,6 +70,7 @@ public class CountingGroup implements Group {
     @Override
     public GroupElement getNeutralElement() {
         return new CountingGroupElement(
+                this,
                 (LazyGroupElement) groupTotal.getNeutralElement(),
                 (LazyGroupElement) groupExpMultiExp.getNeutralElement()
         );
@@ -76,6 +84,7 @@ public class CountingGroup implements Group {
     @Override
     public GroupElement getUniformlyRandomElement() throws UnsupportedOperationException {
         return new CountingGroupElement(
+                this,
                 (LazyGroupElement) groupTotal.getUniformlyRandomElement(),
                 (LazyGroupElement) groupExpMultiExp.getUniformlyRandomElement()
         );
@@ -84,6 +93,14 @@ public class CountingGroup implements Group {
     @Override
     public GroupElement getElement(Representation repr) {
         return new CountingGroupElement(repr);
+    }
+
+    public CountingGroupElement wrap(Zn.ZnElement elem) {
+        return new CountingGroupElement(
+                this,
+                new ConstLazyGroupElement(groupTotal, debugGroupTotal.wrap(elem)),
+                new ConstLazyGroupElement(groupExpMultiExp, debugGroupExpMultiExp.wrap(elem))
+        );
     }
 
     @Override
@@ -210,5 +227,10 @@ public class CountingGroup implements Group {
     @Override
     public int hashCode() {
         return Objects.hash(groupTotal, groupExpMultiExp);
+    }
+
+    @Override
+    public String toString() {
+        return "CountingGroup(" + debugGroupTotal + ";" + debugGroupExpMultiExp + ")";
     }
 }

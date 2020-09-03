@@ -1,4 +1,4 @@
-package de.upb.crypto.math.structures.groups.count;
+package de.upb.crypto.math.pairings.debug;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.structures.Element;
@@ -16,12 +16,16 @@ import java.util.Objects;
 public class CountingGroupElement implements GroupElement {
 
     @Represented
-    LazyGroupElement elemTotal;
+    protected CountingGroup group;
 
     @Represented
-    LazyGroupElement elemExpMultiExp;
+    protected LazyGroupElement elemTotal;
 
-    public CountingGroupElement(LazyGroupElement elemTotal, LazyGroupElement elemExpMultiExp) {
+    @Represented
+    protected LazyGroupElement elemExpMultiExp;
+
+    public CountingGroupElement(CountingGroup group, LazyGroupElement elemTotal, LazyGroupElement elemExpMultiExp) {
+        this.group = group;
         this.elemTotal = elemTotal;
         this.elemExpMultiExp = elemExpMultiExp;
     }
@@ -41,6 +45,7 @@ public class CountingGroupElement implements GroupElement {
     @Override
     public GroupElement inv() {
         return new CountingGroupElement(
+                group,
                 (LazyGroupElement) elemTotal.inv(),
                 (LazyGroupElement) elemExpMultiExp.inv()
         );
@@ -54,6 +59,7 @@ public class CountingGroupElement implements GroupElement {
             throw new IllegalArgumentException("Argument element is not a CountingGroupElement");
         CountingGroupElement other = (CountingGroupElement) e;
         return new CountingGroupElement(
+                group,
                 (LazyGroupElement) elemTotal.op(other.elemTotal),
                 (LazyGroupElement) elemExpMultiExp.op(other.elemExpMultiExp)
         );
@@ -62,6 +68,7 @@ public class CountingGroupElement implements GroupElement {
     @Override
     public GroupElement pow(BigInteger exponent) {
         return new CountingGroupElement(
+                group,
                 (LazyGroupElement) elemTotal.pow(exponent),
                 (LazyGroupElement) elemExpMultiExp.pow(exponent)
         );
@@ -70,6 +77,7 @@ public class CountingGroupElement implements GroupElement {
     @Override
     public GroupElement precomputePow() {
         return new CountingGroupElement(
+                group,
                 (LazyGroupElement) elemTotal.precomputePow(),
                 (LazyGroupElement) elemExpMultiExp.precomputePow()
         );
@@ -79,6 +87,7 @@ public class CountingGroupElement implements GroupElement {
     public GroupElement compute() {
         // counting requires synchronization so we always do computeSync
         return new CountingGroupElement(
+                group,
                 (LazyGroupElement) elemTotal.computeSync(),
                 (LazyGroupElement) elemExpMultiExp.computeSync()
         );
@@ -87,6 +96,7 @@ public class CountingGroupElement implements GroupElement {
     @Override
     public GroupElement computeSync() {
         return new CountingGroupElement(
+                group,
                 (LazyGroupElement) elemTotal.computeSync(),
                 (LazyGroupElement) elemExpMultiExp.computeSync()
         );
@@ -111,18 +121,20 @@ public class CountingGroupElement implements GroupElement {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CountingGroupElement that = (CountingGroupElement) o;
-        return Objects.equals(elemTotal, that.elemTotal)
-                && Objects.equals(elemExpMultiExp, that.elemExpMultiExp);
+        CountingGroupElement other = (CountingGroupElement) o;
+        return Objects.equals(group, other.group)
+                && Objects.equals(elemTotal, other.elemTotal)
+                && Objects.equals(elemExpMultiExp, other.elemExpMultiExp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(elemTotal, elemExpMultiExp);
+        return Objects.hash(group, elemTotal, elemExpMultiExp);
     }
 
     @Override
     public String toString() {
-        return elemTotal.computeSync().getRepresentation() + ";" + elemExpMultiExp.computeSync().getRepresentation();
+        return group + " element " + elemTotal.computeSync().getRepresentation() + ";"
+                + elemExpMultiExp.computeSync().getRepresentation();
     }
 }

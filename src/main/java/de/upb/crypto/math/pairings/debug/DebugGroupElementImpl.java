@@ -29,7 +29,6 @@ public class DebugGroupElementImpl implements GroupElementImpl {
 
     @Override
     public GroupElementImpl inv() {
-        //DebugGroupLogger.log(group.name, "inv");
         GroupElementImpl result = group.wrap(elem.neg());
         group.incrementNumInversions();
         return result;
@@ -38,7 +37,6 @@ public class DebugGroupElementImpl implements GroupElementImpl {
     /**
      * Allows to configure whether to count this operation.
      * Helpful for the {@link DebugGroupImpl#multiexp(Multiexponentiation)} method.
-     * @param k exponent
      * @param count {@code true} if we want to count the operation, {@code false} otherwise
      */
     protected GroupElementImpl op(GroupElementImpl e, boolean count) {
