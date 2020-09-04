@@ -11,6 +11,9 @@ import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import java.math.BigInteger;
 
+import static de.upb.crypto.math.factory.BilinearGroup.Type.TYPE_1;
+import static de.upb.crypto.math.factory.BilinearGroup.Type.TYPE_2;
+
 public class CountingBilinearGroup implements BilinearGroup {
 
     @Represented
@@ -19,9 +22,13 @@ public class CountingBilinearGroup implements BilinearGroup {
     @Represented
     private boolean wantHashes;
 
-    public CountingBilinearGroup(BilinearGroup.Type pairingType, BigInteger size, boolean wantHashes) {
-        bilinearMap = new CountingBilinearMap(pairingType, size);
+    @Represented
+    private BilinearGroup.Type pairingType;
+
+    public CountingBilinearGroup(BilinearGroup.Type pairingType, BigInteger size, boolean wantHashes, PairingExpGroup pairingExpGroup) {
+        bilinearMap = new CountingBilinearMap(pairingType, size, pairingExpGroup);
         this.wantHashes = wantHashes;
+        this.pairingType = pairingType;
     }
 
     public CountingBilinearGroup(Representation repr) {
@@ -51,7 +58,9 @@ public class CountingBilinearGroup implements BilinearGroup {
 
     @Override
     public GroupHomomorphism getHomomorphismG2toG1() throws UnsupportedOperationException {
-        return null;
+        if (pairingType != TYPE_1 && pairingType != TYPE_2)
+            throw new UnsupportedOperationException("Didn't require existence of a group homomorphism");
+        return new CountingIsomorphism((CountingGroup) getG2(), (CountingGroup) getG1());
     }
 
     @Override

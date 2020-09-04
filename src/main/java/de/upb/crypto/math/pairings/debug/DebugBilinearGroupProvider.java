@@ -6,6 +6,7 @@ import de.upb.crypto.math.factory.BilinearGroupProvider;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
+import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -32,9 +33,7 @@ public class DebugBilinearGroupProvider implements BilinearGroupProvider {
 
     @Override
     public BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
-
-        return new CountingBilinearGroup(securityParameter, requirements);
-        //return new BasicBilinearGroup(provideBilinearGroupImpl(securityParameter, requirements));
+        return new BasicBilinearGroup(provideBilinearGroupImpl(securityParameter, requirements));
     }
 
     @Override

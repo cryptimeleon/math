@@ -2,6 +2,7 @@ package de.upb.crypto.math.pairings.test;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.Group;
@@ -9,6 +10,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.debug.DebugBilinearGroupImpl;
+import de.upb.crypto.math.pairings.debug.PairingExpGroup;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroupImpl;
 import de.upb.crypto.math.standalone.test.DebugBilinearGroup;
@@ -145,6 +147,15 @@ public class PairingTests {
         BilinearGroup debugMap2 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_2, BigInteger.valueOf(19)));
         BilinearGroup debugMap3 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_3, BigInteger.valueOf(19)));
 
+        // Counting curves
+        BilinearGroupFactory fac = new BilinearGroupFactory(128);
+        fac.setRequirements(BilinearGroup.Type.TYPE_1, true, true, true);
+        BilinearGroup countingGroup1 = fac.createCountingBilinearGroup(PairingExpGroup.G1);
+        fac.setRequirements(BilinearGroup.Type.TYPE_2, true, true, true);
+        BilinearGroup countingGroup2 = fac.createCountingBilinearGroup(PairingExpGroup.G1);
+        fac.setRequirements(BilinearGroup.Type.TYPE_3, true, true, true);
+        BilinearGroup countingGroup3 = fac.createCountingBilinearGroup(PairingExpGroup.G1);
+
         // Supersingular curve groups
         SupersingularProvider supsingFac = new SupersingularProvider();
         BilinearGroup supsingGroup = supsingFac.provideBilinearGroup(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
@@ -156,6 +167,7 @@ public class PairingTests {
         // Collect parameters
         BilinearMap params[][] = new BilinearMap[][] {
                 {debugMap1.getBilinearMap()}, {debugMap2.getBilinearMap()}, {debugMap3.getBilinearMap()},
+                {countingGroup1.getBilinearMap()}, {countingGroup2.getBilinearMap()}, {countingGroup3.getBilinearMap()},
                 {supsingGroup.getBilinearMap()},
                 {bnGroup.getBilinearMap()}
         };

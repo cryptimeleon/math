@@ -7,6 +7,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
+import de.upb.crypto.math.structures.groups.lazy.LazyGroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -71,27 +72,44 @@ public class CountingBilinearMap implements BilinearMap {
                     + (!(g2 instanceof CountingGroupElement) ? g2.getStructure() : ((CountingGroupElement) g2).group));
         }
 
-        // TODO: Count pairings.
-        // TODO: Where to count the exponentiation? This depends on the actual groups.
-        //  Let user configure this for now.
+        // We extract the LazyGroupElement instances so we can do the exponentiation in the selected group.
+        // This is done on the LazyGroupElement so it can count the exponentiation as configured, so
+        //  either the group operations in the exponentiation algorithm or the exponentiation as a single unit.
 
-        DebugGroupElementImpl g1TotalElement = (DebugGroupElementImpl) ((CountingGroupElement) g1).elemTotal.getConcreteGroupElement();
-        DebugGroupElementImpl g1ExpMultiExpElement = (DebugGroupElementImpl) ((CountingGroupElement) g1).elemExpMultiExp.getConcreteGroupElement();
+        LazyGroupElement g1TotalElement = ((CountingGroupElement) g1).elemTotal;
+        LazyGroupElement g1ExpMultiExpElement = ((CountingGroupElement) g1).elemExpMultiExp;
 
-        DebugGroupElementImpl g2TotalElement = (DebugGroupElementImpl) ((CountingGroupElement) g2).elemTotal.getConcreteGroupElement();
-        DebugGroupElementImpl g2ExpMultiExpElement = (DebugGroupElementImpl) ((CountingGroupElement) g2).elemExpMultiExp.getConcreteGroupElement();
+        LazyGroupElement g2TotalElement = ((CountingGroupElement) g2).elemTotal;
+        LazyGroupElement g2ExpMultiExpElement = ((CountingGroupElement) g2).elemExpMultiExp;
+
+        DebugGroupElementImpl g1DebugTotalElement;
+        DebugGroupElementImpl g2DebugTotalElement;
+
+        // TODO: So we do all computations before applying pairing.
+        //  This does not do what the LazyGroup would usually do though, it could still optimize after the pairing
+        //  has been "applied" since it is only actually computed once the element is required.
 
         if (pairingExpGroup == PairingExpGroup.G1) {
-            g1TotalElement = (DebugGroupElementImpl) g1TotalElement.pow(exponent);
+            g1DebugTotalElement = (DebugGroupElementImpl)
+                    ((LazyGroupElement) g1TotalElement.pow(exponent)).getConcreteGroupElement();
+            g2DebugTotalElement = (DebugGroupElementImpl) g2TotalElement.getConcreteGroupElement();
+
             // don't need result, only for counting the operation
-            g1ExpMultiExpElement.pow(exponent);
+            g1ExpMultiExpElement.pow(exponent).computeSync();
+            g2ExpMultiExpElement.computeSync();
         } else if (pairingExpGroup == PairingExpGroup.G2) {
-            g2TotalElement = (DebugGroupElementImpl) g2TotalElement.pow(exponent);
-            g2ExpMultiExpElement.pow(exponent);
+            g1DebugTotalElement = (DebugGroupElementImpl) g1TotalElement.getConcreteGroupElement();
+            g2DebugTotalElement = (DebugGroupElementImpl)
+                    ((LazyGroupElement) g2TotalElement.pow(exponent)).getConcreteGroupElement();
+
+            g1ExpMultiExpElement.computeSync();
+            g2ExpMultiExpElement.pow(exponent).computeSync();
+        } else {
+
         }
 
         // Only need to do it once since both results should be equal
-        CountingGroupElement pairResult = ((CountingGroup) getGT()).wrap(g1TotalElement.elem.mul(g2TotalElement.elem));
+        CountingGroupElement pairResult = ((CountingGroup) getGT()).wrap(g1DebugTotalElement.elem.mul(g2DebugTotalElement.elem));
         if (pairingExpGroup == PairingExpGroup.GT) {
             pairResult = (CountingGroupElement) pairResult.pow(exponent);
         }

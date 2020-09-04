@@ -1,7 +1,9 @@
 package de.upb.crypto.math.factory;
 
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
+import de.upb.crypto.math.pairings.debug.CountingBilinearGroupProvider;
 import de.upb.crypto.math.pairings.debug.DebugBilinearGroupProvider;
+import de.upb.crypto.math.pairings.debug.PairingExpGroup;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 
 import java.util.Arrays;
@@ -135,5 +137,14 @@ public class BilinearGroupFactory {
         }
 
         return suitableProvider.get(0).provideBilinearGroup(securityParameter, requirements);
+    }
+
+    public BilinearGroup createCountingBilinearGroup(PairingExpGroup pairingExpGroup) {
+        if (requirements == null) {
+            throw new IllegalArgumentException(
+                    "Please set appropriate requirements for the factory " + "using setRequirements!");
+        }
+        CountingBilinearGroupProvider provider = new CountingBilinearGroupProvider();
+        return provider.provideBilinearGroup(securityParameter, requirements, pairingExpGroup);
     }
 }
