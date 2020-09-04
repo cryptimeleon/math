@@ -3,29 +3,38 @@ package de.upb.crypto.math.pairings.debug;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.v2.Represented;
+import de.upb.crypto.math.structures.groups.lazy.LazyHashIntoStructure;
 import de.upb.crypto.math.structures.zn.HashIntoZn;
 
 public class CountingHashIntoStructure implements HashIntoStructure {
 
-    private CountingGroup group;
-    private HashIntoZn hash;
+    @Represented
+    private LazyHashIntoStructure totalHashIntoStructure;
+    @Represented
+    private LazyHashIntoStructure expMultiExpHashIntoStructure;
 
-    public CountingHashIntoStructure(CountingGroup group) {
-        this.group = group;
-        this.hash = new HashIntoZn(group.size());
+    public CountingHashIntoStructure(LazyHashIntoStructure totalHashIntoStructure, LazyHashIntoStructure expMultiExpHashIntoStructure) {
+        this.totalHashIntoStructure = totalHashIntoStructure;
+        this.expMultiExpHashIntoStructure = expMultiExpHashIntoStructure;
     }
 
     public CountingHashIntoStructure(Representation repr) {
-        this(new CountingGroup(repr));
+        new ReprUtil(this).deserialize(repr);
     }
 
     @Override
     public Element hashIntoStructure(byte[] x) {
-        return group.wrap(hash.hashIntoStructure(x));
+        return new CountingGroupElement(
+                new CountingGroup(totalHashIntoStructure.getTarget(), expMultiExpHashIntoStructure.getTarget()),
+                totalHashIntoStructure.hashIntoStructure(x),
+                expMultiExpHashIntoStructure.hashIntoStructure(x)
+        );
     }
 
     @Override
     public Representation getRepresentation() {
-        return group.getRepresentation();
+        return ReprUtil.serialize(this);
     }
 }

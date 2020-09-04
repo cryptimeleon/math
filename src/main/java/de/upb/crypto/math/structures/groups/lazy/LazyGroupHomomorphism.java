@@ -48,4 +48,8 @@ public class LazyGroupHomomorphism implements GroupHomomorphism {
     public int hashCode() {
         return Objects.hash(impl);
     }
+
+    public LazyGroup getTargetGroup() {
+        return targetGroup;
+    }
 }

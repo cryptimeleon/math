@@ -29,16 +29,16 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
      * @param type type of the pairing (type 1: G1 = G2; type 2: G1 != G2 and there is a nondegenerate homomorphism G2 -> G1; type 3: G1 != G2 and there are no efficiently computable injective homomorphisms between G1 and G2
      * @param groupSize size of g1, g2, and gt (number of group elements)
      */
-    public DebugBilinearMapImpl(BilinearGroup.Type type, BigInteger groupSize) {
+    public DebugBilinearMapImpl(BilinearGroup.Type type, BigInteger groupSize, boolean enableExpCounting, boolean enableMultiExpCounting) {
         this.size = groupSize;
         this.zn = new Zn(groupSize);
         this.pairingType = type;
-        g1 = new DebugGroupImpl("G1", groupSize);
+        g1 = new DebugGroupImpl("G1", groupSize, enableExpCounting, enableMultiExpCounting);
         if (type == BilinearGroup.Type.TYPE_1)
             g2 = g1;
         else
-            g2 = new DebugGroupImpl("G2", groupSize);
-        gt = new DebugGroupImpl("GT", groupSize);
+            g2 = new DebugGroupImpl("G2", groupSize, enableExpCounting, enableMultiExpCounting);
+        gt = new DebugGroupImpl("GT", groupSize, enableExpCounting, enableMultiExpCounting);
     }
 
     @Override

@@ -5,15 +5,10 @@ import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.debug.DebugBilinearGroupImpl;
-import de.upb.crypto.math.pairings.debug.PairingExpGroup;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
-import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroupImpl;
-import de.upb.crypto.math.standalone.test.DebugBilinearGroup;
 import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
@@ -150,11 +145,11 @@ public class PairingTests {
         // Counting curves
         BilinearGroupFactory fac = new BilinearGroupFactory(128);
         fac.setRequirements(BilinearGroup.Type.TYPE_1, true, true, true);
-        BilinearGroup countingGroup1 = fac.createCountingBilinearGroup(PairingExpGroup.G1);
+        BilinearGroup countingGroup1 = fac.createCountingBilinearGroup();
         fac.setRequirements(BilinearGroup.Type.TYPE_2, true, true, true);
-        BilinearGroup countingGroup2 = fac.createCountingBilinearGroup(PairingExpGroup.G1);
+        BilinearGroup countingGroup2 = fac.createCountingBilinearGroup();
         fac.setRequirements(BilinearGroup.Type.TYPE_3, true, true, true);
-        BilinearGroup countingGroup3 = fac.createCountingBilinearGroup(PairingExpGroup.G1);
+        BilinearGroup countingGroup3 = fac.createCountingBilinearGroup();
 
         // Supersingular curve groups
         SupersingularProvider supsingFac = new SupersingularProvider();

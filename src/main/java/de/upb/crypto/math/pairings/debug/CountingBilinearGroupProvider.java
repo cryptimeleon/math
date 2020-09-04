@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class CountingBilinearGroupProvider {
 
-    public BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements, PairingExpGroup pairingExpGroup) {
+    public BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {
         if (securityParameter < 2)
             throw new IllegalArgumentException("Cannot create debug pairing of bit size " + securityParameter);
 
@@ -26,8 +26,7 @@ public class CountingBilinearGroupProvider {
         return new CountingBilinearGroup(
                 requirements.getType(),
                 primeFactors.stream().reduce(BigInteger.ONE, BigInteger::multiply),
-                wantHash,
-                pairingExpGroup
+                wantHash
         );
     }
 }

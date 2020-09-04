@@ -14,6 +14,7 @@ import de.upb.crypto.math.structures.zn.Zn;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -132,8 +133,14 @@ public class DebugGroupImpl implements GroupImpl {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof DebugGroupImpl && ((DebugGroupImpl) obj).name.equals(this.name) && ((DebugGroupImpl) obj).zn.equals(this.zn);
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || this.getClass() != other.getClass()) return false;
+        DebugGroupImpl that = (DebugGroupImpl) other;
+        return Objects.equals(name, that.name)
+                && Objects.equals(zn, that.zn)
+                && Objects.equals(enableExpCounting, that.enableExpCounting)
+                && Objects.equals(enableMultiExpCounting, that.enableMultiExpCounting);
     }
 
     @Override

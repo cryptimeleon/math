@@ -30,22 +30,32 @@ public class DebugBilinearGroupImpl implements BilinearGroupImpl {
     protected BigInteger size;
     @Represented
     protected Boolean wantHashes;
+    @Represented
+    protected Boolean enableExpCounting;
+    @Represented
+    protected Boolean enableMultiExpCounting;
 
     DebugBilinearMapImpl bilinearMapImpl;
 
     public DebugBilinearGroupImpl(BilinearGroup.Type pairingType, BigInteger size) {
-        this(pairingType, size, false);
+        this(pairingType, size, false, false, false);
     }
 
     public DebugBilinearGroupImpl(BilinearGroup.Type pairingType, BigInteger size, boolean wantHashes) {
+        this(pairingType, size, wantHashes, false, false);
+    }
+
+    public DebugBilinearGroupImpl(BilinearGroup.Type pairingType, BigInteger size, boolean wantHashes, boolean enableExpCounting, boolean enableMultiExpCounting) {
         this.pairingType = pairingType;
         this.size = size;
         this.wantHashes = wantHashes;
+        this.enableExpCounting = enableExpCounting;
+        this.enableMultiExpCounting = enableMultiExpCounting;
         init();
     }
 
     protected void init() {
-        bilinearMapImpl = new DebugBilinearMapImpl(pairingType, size);
+        bilinearMapImpl = new DebugBilinearMapImpl(pairingType, size, enableExpCounting, enableMultiExpCounting);
     }
 
     public DebugBilinearGroupImpl(Representation repr) {
@@ -58,9 +68,11 @@ public class DebugBilinearGroupImpl implements BilinearGroupImpl {
         if (this == other) return true;
         if (other == null || this.getClass() != other.getClass()) return false;
         DebugBilinearGroupImpl that = (DebugBilinearGroupImpl) other;
-        return Objects.equals(pairingType, that.pairingType) &&
-                Objects.equals(size, that.size) &&
-                Objects.equals(wantHashes, that.wantHashes);
+        return Objects.equals(pairingType, that.pairingType)
+                && Objects.equals(size, that.size)
+                && Objects.equals(wantHashes, that.wantHashes)
+                && Objects.equals(enableExpCounting, that.enableExpCounting)
+                && Objects.equals(enableMultiExpCounting, that.enableMultiExpCounting);
     }
 
     @Override

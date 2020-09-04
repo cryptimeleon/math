@@ -45,4 +45,8 @@ public class LazyHashIntoStructure implements HashIntoStructure {
     public int hashCode() {
         return Objects.hash(impl);
     }
+
+    public LazyGroup getTarget() {
+        return target;
+    }
 }
