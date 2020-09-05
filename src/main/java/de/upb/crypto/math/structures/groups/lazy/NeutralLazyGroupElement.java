@@ -9,12 +9,13 @@ public class NeutralLazyGroupElement extends LazyGroupElement {
     }
 
     @Override
-    protected GroupElementImpl computeConcreteValue() {
-        return group.impl.getNeutralElement();
+    protected void computeConcreteValue() {
+        //Already set in constructor
     }
 
     @Override
-    protected void accumulateMultiexp(Multiexponentiation multiexp) {
+    protected GroupElementImpl accumulateMultiexp(Multiexponentiation multiexp) {
         //Nothing to do here.
+        return null;
     }
 }

@@ -17,8 +17,8 @@ public class PairingResultLazyGroupElement extends LazyGroupElement {
     }
 
     @Override
-    protected GroupElementImpl computeConcreteValue() {
-        return bilMap.impl.apply(lhs.getConcreteGroupElement(), rhs.getConcreteGroupElement());
+    protected void computeConcreteValue() {
+        setConcreteValue(bilMap.impl.apply(lhs.getConcreteValue(), rhs.getConcreteValue()));
         //TODO optimize: (1) draw exponents e(g,h)^x into e(g^x, h) [maybe don't enforce this, but use the pow() override to auto-format it as such]. (2) A product e(g,h)*e(g2,h2)*... can share the final exponentiation. (3) precomputation of pairings
     }
 

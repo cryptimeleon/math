@@ -24,7 +24,13 @@ import java.util.concurrent.Executors;
  * Assumes abelian cyclic group of known finite order.
  */
 public class LazyGroup implements Group {
-    static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); //I'm guessing this may perform better
+    // than the workStealingPool because this generally observes the order of tasks thrown at it (which generally the user will choose "correctly", i.e. smaller
+    // expressions first, dependent expressions later). Everything still works with a workStealingPool, but the fear is that at some point, a thread steals
+    // some computation that depends on lots of other LazyGroupElements that are currently in the process of being evaluated
+    // and then possibly has to block a long time to wait for the other threads to finish while it could have computed something useful.
+    // Honestly, we should try this out in a proper performance test.
+
     int exponentiationWindowSize = 4;
     int precomputationWindowSize = 8;
     @Represented

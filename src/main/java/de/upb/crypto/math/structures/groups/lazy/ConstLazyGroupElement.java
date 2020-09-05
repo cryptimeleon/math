@@ -10,11 +10,7 @@ public class ConstLazyGroupElement extends LazyGroupElement {
     }
 
     @Override
-    protected GroupElementImpl computeConcreteValue() {
-        try {
-            return concreteValue.get();
-        } catch (InterruptedException|ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+    protected void computeConcreteValue() {
+        //nothing to do, value is already known from constructor call
     }
 }

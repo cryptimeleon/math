@@ -13,7 +13,7 @@ public class HomomorphismResultLazyGroupElement extends LazyGroupElement {
     }
 
     @Override
-    protected GroupElementImpl computeConcreteValue() {
-        return homomorphism.impl.apply(preimage.getConcreteGroupElement());
+    protected void computeConcreteValue() {
+        setConcreteValue(homomorphism.impl.apply(preimage.getConcreteValue()));
     }
 }
