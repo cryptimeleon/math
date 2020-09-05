@@ -136,8 +136,7 @@ public class ExponentiationAlgorithms {
      * approach.
      */
     public static GroupElementImpl interleavingSlidingWindowMultiExp(Multiexponentiation multiexp, int windowSize) {
-        int maxExp = (1 << windowSize) - 1;
-        multiexp.ensurePrecomputation(maxExp);
+        multiexp.ensurePrecomputation(windowSize);
         List<MultiExpTerm> terms = multiexp.getTerms();
         int numTerms = terms.size();
         if (terms.isEmpty()) //nothing to do here.
@@ -189,8 +188,7 @@ public class ExponentiationAlgorithms {
      * curves.
      */
     public static GroupElementImpl interleavingWnafMultiExp(Multiexponentiation multiexp, int windowSize) {
-        int maxExp = (1 << windowSize) - 1;
-        multiexp.ensurePrecomputation(maxExp); //TODO choose larger maxExp if possible, e.g., all bases have had more precomputation anyway? Add setting for "usual window size" and "precomputation window size". maxExp = Math.max(windowSize, multiexp.minPrecomputedPower); Need to adapt windowSize
+        multiexp.ensurePrecomputation(windowSize); //TODO choose larger windowSize if possible, e.g., all bases have had more precomputation anyway? Add setting for "usual window size" and "precomputation window size". maxExp = Math.max(windowSize, multiexp.minPrecomputedPower); Need to adapt windowSize
         List<MultiExpTerm> terms = multiexp.getTerms();
         if (terms.isEmpty()) //nothing to do here.
             return multiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
