@@ -155,7 +155,7 @@ public class LazyGroup implements Group {
             return impl.getNeutralElement();
         return ExponentiationAlgorithms.interleavingWnafMultiExp(multiexp, Math.max(exponentiationWindowSize, multiexp.getMinPrecomputedWindowSize()));
         //TODO some multiexponentiation algorithms may be able to handle different windows sizes for each base.
-        // Generally, using the minimum for window size is "safe", but not necessarily clever performance-wise. Example: \prof h_i^x_i * (g^a)^b. The latter has no precomputation at all (even if g may have it), so ...
+        // Generally, using the minimum for window size is "safe", but not necessarily clever performance-wise. Example: \prod h_i^x_i * (g^a)^b. The latter has no precomputation at all (even if g may have it), so ...
     }
 
     public GroupElementImpl compute(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {

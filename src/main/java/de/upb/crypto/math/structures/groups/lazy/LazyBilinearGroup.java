@@ -123,4 +123,11 @@ public class LazyBilinearGroup implements BilinearGroup {
     public int hashCode() {
         return Objects.hash(impl);
     }
+
+    @Override
+    public String toString() {
+        return "LazyBilinearGroup{" +
+                "impl=" + impl +
+                '}';
+    }
 }

@@ -61,13 +61,15 @@ public abstract class LazyGroupElement implements GroupElement {
 
     @Override
     public GroupElement op(Element e) throws IllegalArgumentException {
+        if (!(e instanceof LazyGroupElement) || !((LazyGroupElement) e).group.equals(this.group))
+            throw new IllegalArgumentException("Groups don't match: "+group.toString()+" vs "+e.getStructure().toString());
         return new OpLazyGroupElement(group, this, (LazyGroupElement) e);
     }
 
     @Override
     public GroupElement square() {
         return new OpLazyGroupElement(group, this, this);
-    } //TODO
+    }
 
     @Override
     public GroupElement pow(BigInteger exponent) {
@@ -179,8 +181,6 @@ public abstract class LazyGroupElement implements GroupElement {
         if (!(o instanceof LazyGroupElement)) return false;
         LazyGroupElement that = (LazyGroupElement) o;
         if (!group.equals(that.group)) return false;
-        if (!isComputed() && !that.isComputed())
-            return op(that.inv()).isNeutralElement();
         return getConcreteValue().equals(that.getConcreteValue());
     }
 
@@ -203,5 +203,14 @@ public abstract class LazyGroupElement implements GroupElement {
     @Override
     public Representation getRepresentation() {
         return getConcreteValue().getRepresentation();
+    }
+
+    @Override
+    public String toString() {
+        if (computationState == ComputationState.DONE)
+            return concreteValue.toString();
+        return "LazyGroupElement{" +
+                "computationState=" + computationState +
+                '}';
     }
 }
