@@ -28,6 +28,9 @@ public class OpLazyGroupElement extends LazyGroupElement {
 
     @Override
     protected GroupElementImpl accumulateMultiexp(Multiexponentiation multiexp) {
+        if (isComputed()) //we already know the exact value. Use that.
+            return getConcreteValue();
+
         if (terms != null) { //accumulation was already computed earlier. Reusing those instead of descending into the children
             for (int i=firstTermIndex;i<=lastTermIndex;i++)
                 multiexp.put(terms.get(i));
@@ -38,7 +41,7 @@ public class OpLazyGroupElement extends LazyGroupElement {
         firstTermIndex = multiexp.getNumberOfTerms();
         GroupElementImpl lhsConstant = lhs.isDefinitelySupposedToGetConcreteValue() ? lhs.getConcreteValue() : lhs.accumulateMultiexp(multiexp);
         GroupElementImpl rhsConstant = rhs.isDefinitelySupposedToGetConcreteValue() ? rhs.getConcreteValue() : rhs.accumulateMultiexp(multiexp);
-        accumulatedConstant = lhsConstant == null ? lhsConstant : (rhsConstant == null ? lhsConstant : lhsConstant.op(rhsConstant));
+        accumulatedConstant = lhsConstant == null ? rhsConstant : (rhsConstant == null ? lhsConstant : lhsConstant.op(rhsConstant));
         lastTermIndex = multiexp.getNumberOfTerms()-1;
 
         if (firstTermIndex <= lastTermIndex) //this value depends on the result of some multiexponentiation stuff.
