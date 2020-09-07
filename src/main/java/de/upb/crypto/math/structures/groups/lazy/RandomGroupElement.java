@@ -11,10 +11,10 @@ public class RandomGroupElement extends LazyGroupElement {
     }
 
     @Override
-    protected synchronized GroupElementImpl computeConcreteValue() {
+    protected synchronized void computeConcreteValue() {
         if (value == null)
             value = group.impl.getUniformlyRandomElement();
 
-        return value;
+        setConcreteValue(value);
     }
 }

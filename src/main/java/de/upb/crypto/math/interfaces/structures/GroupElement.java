@@ -12,10 +12,10 @@ import java.math.BigInteger;
 /**
  * Immutable objects representing elements of a group.
  *
- * Usually, most calls here should return immediately and not block.
- * For example, g.op(h) will immediately return an object representing the
+ * Potentially calls here may return immediately and not block.
+ * For example, g.op(h) may immediately return an object representing the
  * result of the group operation applied to g and h. This object is usable as such.
- * Internally, however, the actual computation of the group operation is deferred
+ * Internally, however, the actual computation of the group operation may be deferred
  * until the value is really needed.
  * This has performance advantages, for example, we can use multiexponentation
  * algorithms for computations of values like g.pow(x).op(h.pow(y)).

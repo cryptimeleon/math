@@ -13,7 +13,7 @@ public class HashResultLazyGroupElement extends LazyGroupElement {
     }
 
     @Override
-    protected GroupElementImpl computeConcreteValue() {
-        return hash.impl.hashIntoGroupImpl(preimage);
+    protected void computeConcreteValue() {
+        setConcreteValue(hash.impl.hashIntoGroupImpl(preimage));
     }
 }

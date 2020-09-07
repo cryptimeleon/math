@@ -16,12 +16,16 @@ public class ExpLazyGroupElement extends LazyGroupElement {
     }
 
     @Override
-    protected GroupElementImpl computeConcreteValue() {
-        return group.compute(base.getConcreteGroupElement(), exponent, base.precomputedSmallExponents);
+    protected void computeConcreteValue() {
+        setConcreteValue(group.compute(base.getConcreteValue(), exponent, base.getPrecomputedSmallExponents()));
     }
 
     @Override
-    protected void accumulateMultiexp(Multiexponentiation multiexp) {
-        multiexp.put(base.getConcreteGroupElement(), exponent, base.precomputedSmallExponents);
+    protected GroupElementImpl accumulateMultiexp(Multiexponentiation multiexp) {
+        if (isDefinitelySupposedToGetConcreteValue())
+            return getConcreteValue();
+
+        multiexp.put(base.getConcreteValue(), exponent, base.getPrecomputedSmallExponents());
+        return null;
     }
 }

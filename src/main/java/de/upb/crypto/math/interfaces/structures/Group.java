@@ -91,5 +91,12 @@ public interface Group extends Structure, RepresentationRestorer {
     default Zn.ZnElement getUniformlyRandomUnitExponent() {
         return getZn().getUniformlyRandomUnit();
     }
+
+    /**
+     * Returns a random integer between 1 and size()-1.
+     */
+    default Zn.ZnElement getUniformlyRandomNonzeroExponent() {
+        return getZn().getUniformlyRandomNonzeroElement();
+    }
 }
 
