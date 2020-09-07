@@ -94,6 +94,8 @@ public class Zn implements Ring {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
         return obj instanceof Zn && n.equals(((Zn) obj).n);
     }
 
@@ -117,10 +119,10 @@ public class Zn implements Ring {
         protected final BigInteger v;
 
         /**
-         * Construct a new ZnElement initialized as [v] mod n (no need to reduce v before calling)
+         * Construct a new ZnElement initialized as [v] mod n (must reduce v before calling!)
          */
         protected ZnElement(BigInteger v) {
-            this.v = v.mod(n);
+            this.v = v;
         }
 
         /**
@@ -137,27 +139,36 @@ public class Zn implements Ring {
 
         @Override
         public ZnElement add(Element e) {
-            return createZnElement(v.add(((ZnElement) e).v));
+            checkSameModulus(e);
+            BigInteger result = v.add(((ZnElement) e).v);
+            if (result.compareTo(n) >= 0)
+                result = result.subtract(n);
+            return createZnElementUnsafe(result);
         }
 
         @Override
         public ZnElement neg() {
-            return createZnElement(v.negate());
+            return createZnElementUnsafe(n.subtract(v));
         }
     
         @Override
         public ZnElement sub(Element e) {
-            return createZnElement(v.subtract(((ZnElement)e).v));
+            checkSameModulus(e);
+            BigInteger result = v.subtract(((ZnElement)e).v);
+            if (result.signum() == -1)
+                result = result.add(n);
+            return createZnElementUnsafe(result);
         }
 
         @Override
         public ZnElement mul(Element e) {
-            return createZnElement(v.multiply(((ZnElement) e).v));
+            checkSameModulus(e);
+            return createZnElementUnsafe(v.multiply(((ZnElement) e).v).mod(n));
         }
 
         @Override
         public ZnElement mul(BigInteger k) {
-            return createZnElement(v.multiply(k));
+            return createZnElementUnsafe(v.multiply(k).mod(n));
         }
 
         @Override
@@ -167,7 +178,7 @@ public class Zn implements Ring {
 
         @Override
         public ZnElement pow(BigInteger k) {
-            return createZnElement(v.modPow(k, n));
+            return createZnElementUnsafe(v.modPow(k, n));
         }
 
         @Override
@@ -178,7 +189,7 @@ public class Zn implements Ring {
         @Override
         public ZnElement inv() throws UnsupportedOperationException {
             try {
-                return createZnElement(v.modInverse(n));
+                return createZnElementUnsafe(v.modInverse(n));
             } catch (ArithmeticException e) {
                 throw new UnsupportedOperationException("This element (" + v + ") is not invertible modulo " + n);
             }
@@ -198,6 +209,11 @@ public class Zn implements Ring {
         @Override
         public BigInteger getRank() throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
+        }
+
+        protected void checkSameModulus(Element e) {
+            if (!(e instanceof ZnElement) || !getStructure().equals(e.getStructure()))
+                throw new IllegalArgumentException("Cannot compute operations between "+getStructure()+" and "+e.getStructure());
         }
 
         @Override
@@ -344,7 +360,15 @@ public class Zn implements Ring {
      * Creates an element from a BigInteger (formally, the projection of v from Z to Zn). (Implementation detail: This factory method allows the subclass Zp to use its own kind of Elements while reusing the Zn implementation)
      */
     public ZnElement createZnElement(BigInteger v) {
-        return new ZnElement(v);
+        return createZnElementUnsafe(v.mod(n));
+    }
+
+    /**
+     * Instantiates an ZnElement without checking that the representant is within the proper range.
+     * @param vBetween0andN the representant of the element to instantiate. Must be between 0 (inclusive) and n (exclusive)
+     */
+    protected ZnElement createZnElementUnsafe(BigInteger vBetween0andN) {
+        return new ZnElement(vBetween0andN);
     }
 
     @Override

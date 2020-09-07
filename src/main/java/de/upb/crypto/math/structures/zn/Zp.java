@@ -219,7 +219,12 @@ public class Zp extends Zn implements Field {
 
     @Override
     public ZpElement createZnElement(BigInteger v) {
-        return new ZpElement(v);
+        return createZnElementUnsafe(v.mod(n));
+    }
+
+    @Override
+    protected ZpElement createZnElementUnsafe(BigInteger vBetween0andN) {
+        return new ZpElement(vBetween0andN);
     }
 
     @Override
