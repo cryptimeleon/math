@@ -1,6 +1,6 @@
 package de.upb.crypto.math.standalone.test;
 
-import de.upb.crypto.math.pairings.debug.CountingGroup;
+import de.upb.crypto.math.pairings.debug.count.CountingGroup;
 
 public class CountingGroupParams {
 

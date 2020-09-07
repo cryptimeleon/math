@@ -144,12 +144,13 @@ public class PairingTests {
 
         // Counting curves
         BilinearGroupFactory fac = new BilinearGroupFactory(128);
+        fac.setDebugMode(true);
         fac.setRequirements(BilinearGroup.Type.TYPE_1, true, true, true);
-        BilinearGroup countingGroup1 = fac.createCountingBilinearGroup();
+        BilinearGroup countingGroup1 = fac.createBilinearGroup();
         fac.setRequirements(BilinearGroup.Type.TYPE_2, true, true, true);
-        BilinearGroup countingGroup2 = fac.createCountingBilinearGroup();
+        BilinearGroup countingGroup2 = fac.createBilinearGroup();
         fac.setRequirements(BilinearGroup.Type.TYPE_3, true, true, true);
-        BilinearGroup countingGroup3 = fac.createCountingBilinearGroup();
+        BilinearGroup countingGroup3 = fac.createBilinearGroup();
 
         // Supersingular curve groups
         SupersingularProvider supsingFac = new SupersingularProvider();

@@ -1,4 +1,4 @@
-package de.upb.crypto.math.pairings.debug;
+package de.upb.crypto.math.pairings.debug.count;
 
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;

@@ -1,6 +1,5 @@
-package de.upb.crypto.math.pairings.debug;
+package de.upb.crypto.math.pairings.debug.count;
 
-import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -10,9 +9,9 @@ import de.upb.crypto.math.serialization.annotations.v2.Represented;
 import de.upb.crypto.math.structures.groups.lazy.LazyBilinearMap;
 import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
 import de.upb.crypto.math.structures.groups.lazy.LazyGroupElement;
-import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 public class CountingBilinearMap implements BilinearMap {
 
@@ -60,5 +59,19 @@ public class CountingBilinearMap implements BilinearMap {
     @Override
     public boolean isSymmetric() {
         return totalBilMap.isSymmetric() && expMultiExpBilMap.isSymmetric();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || this.getClass() != other.getClass()) return false;
+        CountingBilinearMap that = (CountingBilinearMap) other;
+        return Objects.equals(totalBilMap, that.totalBilMap)
+                && Objects.equals(expMultiExpBilMap, that.expMultiExpBilMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(totalBilMap, expMultiExpBilMap);
     }
 }

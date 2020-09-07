@@ -6,6 +6,8 @@ import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StringRepresentation;
+import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.v2.Represented;
 import de.upb.crypto.math.structures.groups.exp.MultiExpTerm;
 import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
 import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
@@ -25,11 +27,15 @@ import java.util.Optional;
  * This group does support a bilinear map, namely e(a,b) = a*b.
  */
 public class DebugGroupImpl implements GroupImpl {
+    @Represented
     protected String name;
+    @Represented
     protected Zn zn;
 
-    protected boolean enableExpCounting;
-    protected boolean enableMultiExpCounting;
+    @Represented
+    protected Boolean enableExpCounting;
+    @Represented
+    protected Boolean enableMultiExpCounting;
     protected long numInversions;
     protected long numOps;
     protected long numSquarings;
@@ -78,8 +84,7 @@ public class DebugGroupImpl implements GroupImpl {
     }
 
     public DebugGroupImpl(Representation repr) {
-        this.zn = new Zn(repr.obj().get("n").bigInt().get());
-        this.name = repr.obj().get("name").str().get();
+        new ReprUtil(this).deserialize(repr);
         numInversions = 0;
         numOps = 0;
         numSquarings = 0;
@@ -90,11 +95,7 @@ public class DebugGroupImpl implements GroupImpl {
 
     @Override
     public Representation getRepresentation() {
-        ObjectRepresentation repr = new ObjectRepresentation();
-        repr.put("name", new StringRepresentation(name));
-        repr.put("n", new BigIntegerRepresentation(zn.size()));
-
-        return repr;
+        return ReprUtil.serialize(this);
     }
 
     @Override
@@ -193,7 +194,7 @@ public class DebugGroupImpl implements GroupImpl {
     /**
      * Wraps an RingAdditiveGroupElement into a DebugGroupElement
      */
-    protected DebugGroupElementImpl wrap(Zn.ZnElement elem) {
+    public DebugGroupElementImpl wrap(Zn.ZnElement elem) {
         return new DebugGroupElementImpl(this, elem);
     }
 

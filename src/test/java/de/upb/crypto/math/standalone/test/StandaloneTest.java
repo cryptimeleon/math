@@ -131,6 +131,7 @@ public class StandaloneTest {
         toReturn.add(ProductGroupParams.get());
         toReturn.add(ReprUtilTest.Foo.getStandaloneTestParams());
         toReturn.add(CountingGroupParams.get());
+        toReturn.addAll(CountingBilinearGroupParams.get());
 
         // remove all provided params
         for (StandaloneTestParams stp : toReturn) {

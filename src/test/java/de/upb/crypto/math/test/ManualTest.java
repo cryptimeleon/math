@@ -1,7 +1,7 @@
 package de.upb.crypto.math.test;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.debug.CountingGroup;
+import de.upb.crypto.math.pairings.debug.count.CountingGroup;
 
 import java.math.BigInteger;
 

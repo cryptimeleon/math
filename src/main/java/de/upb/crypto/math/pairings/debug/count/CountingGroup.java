@@ -1,7 +1,8 @@
-package de.upb.crypto.math.pairings.debug;
+package de.upb.crypto.math.pairings.debug.count;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.pairings.debug.DebugGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
@@ -221,12 +222,14 @@ public class CountingGroup implements Group {
         if (o == null || getClass() != o.getClass()) return false;
         CountingGroup other = (CountingGroup) o;
         return Objects.equals(groupTotal, other.groupTotal)
-                && Objects.equals(groupExpMultiExp, other.groupExpMultiExp);
+                && Objects.equals(groupExpMultiExp, other.groupExpMultiExp)
+                && Objects.equals(debugGroupTotal, other.debugGroupTotal)
+                && Objects.equals(debugGroupExpMultiExp, other.debugGroupExpMultiExp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupTotal, groupExpMultiExp);
+        return Objects.hash(groupTotal, groupExpMultiExp, debugGroupTotal, debugGroupExpMultiExp);
     }
 
     @Override
