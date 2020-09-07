@@ -138,9 +138,9 @@ public class ExponentiationAlgorithms {
     public static GroupElementImpl interleavingSlidingWindowMultiExp(Multiexponentiation multiexp, int windowSize) {
         multiexp.ensurePrecomputation(windowSize);
         List<MultiExpTerm> terms = multiexp.getTerms();
-        int numTerms = terms.size();
         if (terms.isEmpty()) //nothing to do here.
             return multiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
+        int numTerms = terms.size();
 
         // we are assuming that every base has same underlying group
         GroupElementImpl result = terms.get(0).getBase().getStructure().getNeutralElement();
@@ -199,7 +199,7 @@ public class ExponentiationAlgorithms {
             exponentDigits[i] = precomputeExponentDigitsForWnaf(terms.get(i).exponent, windowSize);
             longestExponentDigitLength = Math.max(longestExponentDigitLength, exponentDigits[i].length);
         }
-        // padding with zerosß
+        // padding with zeros
         for (int i = 0; i < exponentDigits.length; ++i) {
             int[] paddedArray = new int[longestExponentDigitLength];
             System.arraycopy(exponentDigits[i], 0, paddedArray, 0, exponentDigits[i].length);
@@ -344,6 +344,12 @@ public class ExponentiationAlgorithms {
      * @return Array of exponent digits in WNAF form.
      */
     public static int[] precomputeExponentDigitsForWnaf(BigInteger exponent, int windowSize) {
+        boolean invertEverything = false;
+        if (exponent.signum() < 0) {
+            invertEverything = true;
+            exponent = exponent.negate();
+        }
+
         BigInteger c = exponent;
         int[] bi = new int[exponent.bitLength()+1];
         int i = 0;
@@ -356,7 +362,7 @@ public class ExponentiationAlgorithms {
                 }
                 c = c.subtract(BigInteger.valueOf(b));
             }
-            bi[i] = b;
+            bi[i] = invertEverything ? -b : b;
             i++;
             c = c.shiftRight(1);
         }

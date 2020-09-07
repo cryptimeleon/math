@@ -28,11 +28,6 @@ public class OpLazyGroupElement extends LazyGroupElement {
 
     @Override
     protected GroupElementImpl accumulateMultiexp(Multiexponentiation multiexp) {
-        if (isDefinitelySupposedToGetConcreteValue()) { //we'll need this result later, so let's compute it in plain instead of adding stuff to the multiexp.
-            setConcreteValue(lhs.getConcreteValue().op(rhs.getConcreteValue()));
-            return getConcreteValue();
-        }
-
         if (terms != null) { //accumulation was already computed earlier. Reusing those instead of descending into the children
             for (int i=firstTermIndex;i<=lastTermIndex;i++)
                 multiexp.put(terms.get(i));
@@ -41,15 +36,17 @@ public class OpLazyGroupElement extends LazyGroupElement {
 
         //Value is not yet cached. Accumulate it.
         firstTermIndex = multiexp.getNumberOfTerms();
-        GroupElementImpl lhsConstant = lhs.accumulateMultiexp(multiexp);
-        GroupElementImpl rhsConstant = rhs.accumulateMultiexp(multiexp);
-        accumulatedConstant = lhsConstant.op(rhsConstant);
+        GroupElementImpl lhsConstant = lhs.isDefinitelySupposedToGetConcreteValue() ? lhs.getConcreteValue() : lhs.accumulateMultiexp(multiexp);
+        GroupElementImpl rhsConstant = rhs.isDefinitelySupposedToGetConcreteValue() ? rhs.getConcreteValue() : rhs.accumulateMultiexp(multiexp);
+        accumulatedConstant = lhsConstant == null ? lhsConstant : (rhsConstant == null ? lhsConstant : lhsConstant.op(rhsConstant));
         lastTermIndex = multiexp.getNumberOfTerms()-1;
 
         if (firstTermIndex <= lastTermIndex) //this value depends on the result of some multiexponentiation stuff.
             this.terms = multiexp.getTerms(); //cache it for later
-        else
+        else if (accumulatedConstant != null)
             setConcreteValue(accumulatedConstant); //we haven't added anything to the multiexp. So we know the proper concrete value of this already.
+        else
+            setConcreteValue(group.impl.getNeutralElement());
 
         return accumulatedConstant;
     }
