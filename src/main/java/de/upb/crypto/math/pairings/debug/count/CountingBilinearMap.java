@@ -3,6 +3,7 @@ package de.upb.crypto.math.pairings.debug.count;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.pairings.debug.DebugBilinearMapImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
@@ -20,17 +21,13 @@ public class CountingBilinearMap implements BilinearMap {
     @Represented
     LazyBilinearMap expMultiExpBilMap;
 
-    private long numPairings;
-
     public CountingBilinearMap(LazyBilinearMap totalBilMap, LazyBilinearMap expMultiExpBilMap) {
         this.totalBilMap = totalBilMap;
         this.expMultiExpBilMap = expMultiExpBilMap;
-        numPairings = 0;
     }
 
     public CountingBilinearMap(Representation repr) {
         ReprUtil.deserialize(this, repr);
-        numPairings = 0;
     }
 
     @Override
@@ -55,7 +52,6 @@ public class CountingBilinearMap implements BilinearMap {
         LazyGroupElement g1Result = (LazyGroupElement) totalBilMap.apply(g1Cast.elemTotal, g2Cast.elemTotal, exponent);
         LazyGroupElement g2Result =
                 (LazyGroupElement) expMultiExpBilMap.apply(g1Cast.elemExpMultiExp, g2Cast.elemExpMultiExp, exponent);
-        incrementNumPairings();
         return new CountingGroupElement(
                 (CountingGroup) getGT(),
                 g1Result,
@@ -86,18 +82,16 @@ public class CountingBilinearMap implements BilinearMap {
      * Retrieves number of pairings computed in this bilinear group.
      */
     public long getNumPairings() {
-        return numPairings;
-    }
-
-    private void incrementNumPairings() {
-        ++numPairings;
+        // one of them suffices since both count
+        return ((DebugBilinearMapImpl) totalBilMap.getImpl()).getNumPairings();
     }
 
     /**
      * Resets pairing counter.
      */
     public void resetNumPairings() {
-        numPairings = 0;
+        ((DebugBilinearMapImpl) totalBilMap.getImpl()).resetNumPairings();
+        ((DebugBilinearMapImpl) expMultiExpBilMap.getImpl()).resetNumPairings();
     }
 
     @Override

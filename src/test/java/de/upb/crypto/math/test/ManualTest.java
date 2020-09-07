@@ -35,9 +35,13 @@ public class ManualTest {
 
         CountingGroup G2 = (CountingGroup) bilGroup.getG2();
         GroupElement elemG2 = G2.getUniformlyRandomNonNeutral();
-        bilGroup.getBilinearMap().apply(elem, elemG2);
-        bilGroup.getBilinearMap().apply(elem, elemG2, BigInteger.TEN);
+        bilGroup.getBilinearMap().apply(elem, elemG2).computeSync();
+        bilGroup.getBilinearMap().apply(elem, elemG2, BigInteger.TEN).computeSync();
 
         System.out.println(bilGroup.formatCounterData());
+
+        bilGroup.resetNumPairings();
+
+        System.out.println(bilGroup.getNumPairings());
     }
 }

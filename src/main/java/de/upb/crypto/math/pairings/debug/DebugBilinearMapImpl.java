@@ -23,6 +23,8 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
     protected BigInteger size;
     protected BilinearGroup.Type pairingType;
 
+    private long numPairings;
+
     /**
      * Instantiates a debug bilinear map emulating pairing type "type"
      *
@@ -39,6 +41,7 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
         else
             g2 = new DebugGroupImpl("G2", groupSize, enableExpCounting, enableMultiExpCounting);
         gt = new DebugGroupImpl("GT", groupSize, enableExpCounting, enableMultiExpCounting);
+        numPairings = 0;
     }
 
     @Override
@@ -55,7 +58,9 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
             throw new IllegalArgumentException("first pairing argument is not in " + this.g2.name + ". It's in "
                     + (!(g2 instanceof DebugGroupElementImpl) ? g2.getStructure() : g2 == null ? null : ((DebugGroupElementImpl) g2).group.name));
 
-        return gt.wrap(((DebugGroupElementImpl) g1).elem.mul(((DebugGroupElementImpl) g2).elem));
+        GroupElementImpl result = gt.wrap(((DebugGroupElementImpl) g1).elem.mul(((DebugGroupElementImpl) g2).elem));
+        incrementNumPairings();
+        return result;
     }
 
     @Override
@@ -80,5 +85,23 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
     @Override
     public int hashCode() {
         return Objects.hash(size, pairingType);
+    }
+
+    /**
+     * Retrieves number of pairings computed in this bilinear group.
+     */
+    public long getNumPairings() {
+        return numPairings;
+    }
+
+    /**
+     * Resets pairing counter.
+     */
+    public void resetNumPairings() {
+        numPairings = 0;
+    }
+
+    private void incrementNumPairings() {
+        ++numPairings;
     }
 }

@@ -69,4 +69,8 @@ public class LazyBilinearMap implements BilinearMap {
     public int hashCode() {
         return Objects.hash(impl);
     }
+
+    public BilinearMapImpl getImpl() {
+        return impl;
+    }
 }

@@ -28,8 +28,6 @@ public class CountingGroup implements Group {
      * Tracks total numbers, meaning that group operations done in (multi-)exp algorithms are also tracked.
      */
     @Represented
-    DebugGroupImpl debugGroupTotal;
-    @Represented
     LazyGroup groupTotal;
 
     /**
@@ -37,15 +35,11 @@ public class CountingGroup implements Group {
      * and multi-exponentiation data.
      */
     @Represented
-    DebugGroupImpl debugGroupExpMultiExp;
-    @Represented
     LazyGroup groupExpMultiExp;
 
     public CountingGroup(String name, BigInteger n) {
-        debugGroupTotal = new DebugGroupImpl(name, n, false, false);
-        debugGroupExpMultiExp = new DebugGroupImpl(name, n, true, true);
-        groupTotal = new LazyGroup(debugGroupTotal);
-        groupExpMultiExp = new LazyGroup(debugGroupExpMultiExp);
+        groupTotal = new LazyGroup(new DebugGroupImpl(name, n, false, false));
+        groupExpMultiExp = new LazyGroup(new DebugGroupImpl(name, n, true, true));
     }
 
     public CountingGroup(String name, long n) {
@@ -60,8 +54,6 @@ public class CountingGroup implements Group {
     public CountingGroup(LazyGroup groupTotal, LazyGroup groupExpMultiExp) {
         this.groupTotal = groupTotal;
         this.groupExpMultiExp = groupExpMultiExp;
-        this.debugGroupTotal = (DebugGroupImpl) groupTotal.getImpl();
-        this.debugGroupExpMultiExp = (DebugGroupImpl) groupExpMultiExp.getImpl();
     }
 
     public CountingGroup(Representation repr) {
@@ -99,8 +91,8 @@ public class CountingGroup implements Group {
     public CountingGroupElement wrap(Zn.ZnElement elem) {
         return new CountingGroupElement(
                 this,
-                new ConstLazyGroupElement(groupTotal, debugGroupTotal.wrap(elem)),
-                new ConstLazyGroupElement(groupExpMultiExp, debugGroupExpMultiExp.wrap(elem))
+                new ConstLazyGroupElement(groupTotal, ((DebugGroupImpl) groupTotal.getImpl()).wrap(elem)),
+                new ConstLazyGroupElement(groupExpMultiExp, ((DebugGroupImpl) groupExpMultiExp.getImpl()).wrap(elem))
         );
     }
 
@@ -129,56 +121,56 @@ public class CountingGroup implements Group {
      * Retrieves number of group squarings including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumSquaringsTotal() {
-        return debugGroupTotal.getNumSquarings();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumSquarings();
     }
 
     /**
      * Retrieves number of group inversions including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumInversionsTotal() {
-        return debugGroupTotal.getNumInversions();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumInversions();
     }
 
     /**
      * Retrieves number of group ops including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumOpsTotal() {
-        return debugGroupTotal.getNumOps();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOps();
     }
 
     /**
      * Retrieves number of group squarings not including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumSquaringsNoExpMultiExp() {
-        return debugGroupExpMultiExp.getNumSquarings();
+        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumSquarings();
     }
 
     /**
      * Retrieves number of group inversions not including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumInversionsNoExpMultiExp() {
-        return debugGroupExpMultiExp.getNumInversions();
+        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumInversions();
     }
 
     /**
      * Retrieves number of group ops not including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumOpsNoExpMultiExp() {
-        return debugGroupExpMultiExp.getNumOps();
+        return((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumOps();
     }
 
     /**
      * Retrieves number of group exponentiations done.
      */
     public long getNumExps() {
-        return debugGroupExpMultiExp.getNumExps();
+        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumExps();
     }
 
     /**
      * Retrieves number of terms of each multi-exponentiation done.
      */
     public List<Integer> getMultiExpTermNumbers() {
-        return debugGroupExpMultiExp.getMultiExpTermNumbers();
+        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getMultiExpTermNumbers();
     }
 
     /**
@@ -186,15 +178,15 @@ public class CountingGroup implements Group {
      */
     public long getNumRetrievedRepresentations() {
         // one of the groups suffices since we represent both elements
-        return debugGroupTotal.getNumRetrievedRepresentations();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentations();
     }
 
     /**
      * Resets all counters.
      */
     public void resetCounters() {
-        debugGroupTotal.resetCounters();
-        debugGroupExpMultiExp.resetCounters();
+        ((DebugGroupImpl) groupTotal.getImpl()).resetCounters();
+        ((DebugGroupImpl) groupExpMultiExp.getImpl()).resetCounters();
     }
 
     /**
@@ -223,18 +215,16 @@ public class CountingGroup implements Group {
         if (o == null || getClass() != o.getClass()) return false;
         CountingGroup other = (CountingGroup) o;
         return Objects.equals(groupTotal, other.groupTotal)
-                && Objects.equals(groupExpMultiExp, other.groupExpMultiExp)
-                && Objects.equals(debugGroupTotal, other.debugGroupTotal)
-                && Objects.equals(debugGroupExpMultiExp, other.debugGroupExpMultiExp);
+                && Objects.equals(groupExpMultiExp, other.groupExpMultiExp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupTotal, groupExpMultiExp, debugGroupTotal, debugGroupExpMultiExp);
+        return Objects.hash(groupTotal, groupExpMultiExp);
     }
 
     @Override
     public String toString() {
-        return "CountingGroup(" + debugGroupTotal + ";" + debugGroupExpMultiExp + ")";
+        return "CountingGroup(" + groupTotal + ";" + groupExpMultiExp + ")";
     }
 }
