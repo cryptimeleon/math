@@ -8,6 +8,13 @@ import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
+/**
+ * Special provider for the {@link CountingBilinearGroup}. Necessary since this class hierarchy does not provide
+ * a {@link de.upb.crypto.math.factory.BilinearGroupImpl} which would be required for the
+ * {@link de.upb.crypto.math.factory.BilinearGroupProvider} interface.
+ *
+ * @author Raphael Heitjohann
+ */
 public class CountingBilinearGroupProvider {
 
     public BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements) {

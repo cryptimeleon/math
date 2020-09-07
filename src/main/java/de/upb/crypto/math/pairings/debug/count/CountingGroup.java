@@ -201,8 +201,9 @@ public class CountingGroup implements Group {
      * Formats the counted data for printing.
      * @return A string detailing the results of counting
      */
-    public String formatCounters() {
-        return "----- Total group operation data: -----\n"
+    public String formatCounterData() {
+        return "------- Operation data for " + toString() + " -------\n"
+                + "----- Total group operation data: -----\n"
                 + "    Number of Group Operations: " + getNumOpsTotal() + "\n"
                 + "    Number of Group Inversions: " + getNumInversionsTotal() + "\n"
                 + "    Number of Group Squarings: " + getNumSquaringsTotal() + "\n"

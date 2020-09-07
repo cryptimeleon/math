@@ -210,17 +210,17 @@ public class DebugGroupImpl implements GroupImpl {
         ++numSquarings;
     }
 
-    public void incrementNumExps() {
+    protected void incrementNumExps() {
         ++numExps;
     }
 
-    public void addMultiExpBaseNumber(int numTerms) {
+    protected void addMultiExpBaseNumber(int numTerms) {
         if (numTerms > 1) {
             multiExpTermNumbers.add(numTerms);
         }
     }
 
-    public void incrementNumRetrievedRepresentations() {
+    protected void incrementNumRetrievedRepresentations() {
         ++numRetrievedRepresentations;
     }
 

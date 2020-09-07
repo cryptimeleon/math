@@ -20,13 +20,17 @@ public class CountingBilinearMap implements BilinearMap {
     @Represented
     LazyBilinearMap expMultiExpBilMap;
 
+    private long numPairings;
+
     public CountingBilinearMap(LazyBilinearMap totalBilMap, LazyBilinearMap expMultiExpBilMap) {
         this.totalBilMap = totalBilMap;
         this.expMultiExpBilMap = expMultiExpBilMap;
+        numPairings = 0;
     }
 
     public CountingBilinearMap(Representation repr) {
         ReprUtil.deserialize(this, repr);
+        numPairings = 0;
     }
 
     @Override
@@ -46,13 +50,16 @@ public class CountingBilinearMap implements BilinearMap {
 
     @Override
     public GroupElement apply(GroupElement g1, GroupElement g2, BigInteger exponent) {
-        // TODO: Add pairing counting
         CountingGroupElement g1Cast = (CountingGroupElement) g1;
         CountingGroupElement g2Cast = (CountingGroupElement) g2;
+        LazyGroupElement g1Result = (LazyGroupElement) totalBilMap.apply(g1Cast.elemTotal, g2Cast.elemTotal, exponent);
+        LazyGroupElement g2Result =
+                (LazyGroupElement) expMultiExpBilMap.apply(g1Cast.elemExpMultiExp, g2Cast.elemExpMultiExp, exponent);
+        incrementNumPairings();
         return new CountingGroupElement(
                 (CountingGroup) getGT(),
-                (LazyGroupElement) totalBilMap.apply(g1Cast.elemTotal, g2Cast.elemTotal, exponent),
-                (LazyGroupElement) expMultiExpBilMap.apply(g1Cast.elemExpMultiExp, g2Cast.elemExpMultiExp, exponent)
+                g1Result,
+                g2Result
         );
     }
 
@@ -73,5 +80,40 @@ public class CountingBilinearMap implements BilinearMap {
     @Override
     public int hashCode() {
         return Objects.hash(totalBilMap, expMultiExpBilMap);
+    }
+
+    /**
+     * Retrieves number of pairings computed in this bilinear group.
+     */
+    public long getNumPairings() {
+        return numPairings;
+    }
+
+    private void incrementNumPairings() {
+        ++numPairings;
+    }
+
+    /**
+     * Resets pairing counter.
+     */
+    public void resetNumPairings() {
+        numPairings = 0;
+    }
+
+    @Override
+    public String toString() {
+        if (isSymmetric()) {
+            return "Symmetric CountingBilinearMap(" + totalBilMap + ";" + expMultiExpBilMap + ")";
+        } else {
+            return "Asymmetric CountingBilinearMap(" + totalBilMap + ";" + expMultiExpBilMap + ")";
+        }
+    }
+
+    public String formatCounterData()  {
+        return "---------- Operation data for " + toString() + "----------\n"
+                + ((CountingGroup) getG1()).formatCounterData()
+                + ((isSymmetric()) ? "" : ((CountingGroup) getG2()).formatCounterData())
+                + ((CountingGroup) getGT()).formatCounterData()
+                + "------- Number of pairings: " + getNumPairings() + " -------";
     }
 }

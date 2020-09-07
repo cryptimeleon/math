@@ -14,6 +14,14 @@ import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * {@link BilinearGroup} wrapping two {@link LazyBilinearGroup} which contain {@link DebugBilinearGroupImpl}
+ * themselves. Allows for counting group operations and (multi-)exponentiations as well as pairings on the bilinear
+ * group level. For this purpose all operations are executed in both groups, one counts total group operations
+ * and one counts each (multi-)exponentiation as one unit.
+ *
+ * @author Raphael Heitjohann
+ */
 public class CountingBilinearGroup implements BilinearGroup {
 
     @Represented
@@ -103,5 +111,23 @@ public class CountingBilinearGroup implements BilinearGroup {
     @Override
     public int hashCode() {
         return Objects.hash(totalBilGroup, expMultiExpBilGroup, bilMap);
+    }
+
+    /**
+     * Retrieves number of pairings computed in this bilinear group.
+     */
+    public long getNumPairings() {
+        return bilMap.getNumPairings();
+    }
+
+    /**
+     * Resets pairing counter.
+     */
+    public void resetNumPairings() {
+        bilMap.resetNumPairings();
+    }
+
+    public String formatCounterData() {
+        return bilMap.formatCounterData();
     }
 }

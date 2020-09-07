@@ -1,13 +1,25 @@
 package de.upb.crypto.math.test;
 
+import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.pairings.debug.count.CountingBilinearGroup;
+import de.upb.crypto.math.pairings.debug.count.CountingBilinearGroupProvider;
 import de.upb.crypto.math.pairings.debug.count.CountingGroup;
 
 import java.math.BigInteger;
 
 public class ManualTest {
     public static void main(String[] args) {
-        CountingGroup countingGroup = new CountingGroup("test", BigInteger.valueOf(1000000));
+        CountingBilinearGroup bilGroup = (CountingBilinearGroup) new CountingBilinearGroupProvider()
+                .provideBilinearGroup(
+                    128,
+                    new BilinearGroupRequirement(
+                            BilinearGroup.Type.TYPE_1, true, true, true
+                    )
+        );
+
+        CountingGroup countingGroup = (CountingGroup) bilGroup.getG1();
         GroupElement elem = countingGroup.getUniformlyRandomNonNeutral();
         GroupElement elem2 = countingGroup.getUniformlyRandomNonNeutral();
         GroupElement elem3 = countingGroup.getUniformlyRandomNonNeutral();
@@ -21,6 +33,11 @@ public class ManualTest {
 
         elem.op(elem).op(elem2).inv().compute();
 
-        System.out.println(countingGroup.formatCounters());
+        CountingGroup G2 = (CountingGroup) bilGroup.getG2();
+        GroupElement elemG2 = G2.getUniformlyRandomNonNeutral();
+        bilGroup.getBilinearMap().apply(elem, elemG2);
+        bilGroup.getBilinearMap().apply(elem, elemG2, BigInteger.TEN);
+
+        System.out.println(bilGroup.formatCounterData());
     }
 }
