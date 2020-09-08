@@ -25,18 +25,18 @@ public class ManualTest {
         GroupElement elem3 = countingGroup.getUniformlyRandomNonNeutral();
         GroupElement elem4 = countingGroup.getUniformlyRandomNonNeutral();
 
-        elem.pow(10).op(elem2.pow(10)).op(elem3.pow(10)).op(elem4.pow(10)).compute();
+        //elem.pow(10).op(elem2.pow(10)).op(elem3.pow(10)).op(elem4.pow(10)).compute();
 
         elem.getRepresentation();
 
-        elem.pow(10).computeSync();
+        //elem.pow(10).computeSync();
 
-        elem.op(elem).op(elem2).inv().compute();
+        //elem.op(elem).op(elem2).inv().compute();
 
         CountingGroup G2 = (CountingGroup) bilGroup.getG2();
         GroupElement elemG2 = G2.getUniformlyRandomNonNeutral();
         bilGroup.getBilinearMap().apply(elem, elemG2).computeSync();
-        bilGroup.getBilinearMap().apply(elem, elemG2, BigInteger.TEN).computeSync();
+        //bilGroup.getBilinearMap().apply(elem, elemG2, BigInteger.TEN).computeSync();
 
         System.out.println(bilGroup.formatCounterData());
 

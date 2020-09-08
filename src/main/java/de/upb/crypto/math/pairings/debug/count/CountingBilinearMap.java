@@ -60,6 +60,22 @@ public class CountingBilinearMap implements BilinearMap {
     }
 
     @Override
+    public GroupElement apply(GroupElement g1, GroupElement g2) {
+        // We overwrite this to prevent the default method from BilinearMap to be used which would
+        // execute an exponentiation with exponent one. This introduces an unnecessary exponentiation into the counting.
+        CountingGroupElement g1Cast = (CountingGroupElement) g1;
+        CountingGroupElement g2Cast = (CountingGroupElement) g2;
+        LazyGroupElement g1Result = (LazyGroupElement) totalBilMap.apply(g1Cast.elemTotal, g2Cast.elemTotal);
+        LazyGroupElement g2Result =
+                (LazyGroupElement) expMultiExpBilMap.apply(g1Cast.elemExpMultiExp, g2Cast.elemExpMultiExp);
+        return new CountingGroupElement(
+                (CountingGroup) getGT(),
+                g1Result,
+                g2Result
+        );
+    }
+
+    @Override
     public boolean isSymmetric() {
         return totalBilMap.isSymmetric() && expMultiExpBilMap.isSymmetric();
     }

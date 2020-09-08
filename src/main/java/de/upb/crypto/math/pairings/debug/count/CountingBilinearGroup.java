@@ -127,6 +127,16 @@ public class CountingBilinearGroup implements BilinearGroup {
         bilMap.resetNumPairings();
     }
 
+    /**
+     * Resets all counters, including the ones in groups G1, G2, GT.
+     */
+    public void resetCounters() {
+        resetNumPairings();
+        ((CountingGroup) getG1()).resetCounters();
+        ((CountingGroup) getG2()).resetCounters();
+        ((CountingGroup) getGT()).resetCounters();
+    }
+
     public String formatCounterData() {
         return bilMap.formatCounterData();
     }
