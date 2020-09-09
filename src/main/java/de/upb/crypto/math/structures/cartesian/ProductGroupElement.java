@@ -10,9 +10,18 @@ import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.List;
 
 public class ProductGroupElement implements GroupElement {
     protected GroupElement[] elems;
+
+    public ProductGroupElement(List<? extends GroupElement> elems) {
+        //this.elems = elems.toArray(GroupElement[]::new); //Java 11
+        this.elems = new GroupElement[elems.size()];
+        for (int i = 0; i < this.elems.length; i++) {
+            this.elems[i] = elems.get(i);
+        }
+    }
 
     public ProductGroupElement(GroupElement... elems) {
         this.elems = elems;

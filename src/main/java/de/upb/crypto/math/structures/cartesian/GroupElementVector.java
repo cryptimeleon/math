@@ -2,7 +2,6 @@ package de.upb.crypto.math.structures.cartesian;
 
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.serialization.ListRepresentation;
 import de.upb.crypto.math.serialization.Representable;
 import de.upb.crypto.math.serialization.Representation;
@@ -21,11 +20,19 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
         super(values);
     }
 
+    public GroupElementVector(List<GroupElement> values) {
+        super(values);
+    }
+
     public GroupElementVector(Vector<? extends GroupElement> vector) {
         this(vector.values, true);
     }
 
     protected GroupElementVector(GroupElement[] values, boolean isSafe) {
+        super(values, isSafe);
+    }
+
+    protected GroupElementVector(List<? extends GroupElement> values, boolean isSafe) {
         super(values, isSafe);
     }
 
@@ -77,7 +84,7 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
         return zipReduce(rightHandSide, bilinearMap::apply, GroupElement::op, bilinearMap.getGT().getNeutralElement());
     }
 
-    private static GroupElementVector instantiateWithSafeArray(GroupElement[] array) {
+    private static GroupElementVector instantiateWithSafeArray(List<? extends GroupElement> array) {
         return new GroupElementVector(array, true);
     }
 
@@ -108,5 +115,20 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
 
     public ProductGroupElement asElementInProductGroup() {
         return new ProductGroupElement(values);
+    }
+
+    public GroupElementVector compute() {
+        forEach(GroupElement::compute);
+        return this;
+    }
+
+    public GroupElementVector computeSync() {
+        forEach(GroupElement::computeSync);
+        return this;
+    }
+
+    public GroupElementVector precomputePow() {
+        forEach(GroupElement::precomputePow);
+        return this;
     }
 }

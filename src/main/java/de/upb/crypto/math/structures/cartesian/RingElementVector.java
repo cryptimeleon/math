@@ -9,6 +9,7 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -19,7 +20,15 @@ public class RingElementVector extends Vector<RingElement> implements Representa
         super(values);
     }
 
+    public RingElementVector(List<RingElement> values) {
+        super(values);
+    }
+
     protected RingElementVector(RingElement[] values, boolean isSafe) {
+        super(values, isSafe);
+    }
+
+    protected RingElementVector(List<? extends RingElement> values, boolean isSafe) {
         super(values, isSafe);
     }
 
@@ -70,7 +79,7 @@ public class RingElementVector extends Vector<RingElement> implements Representa
         return innerProduct(rightHandSide, null);
     }
 
-    private static RingElementVector instantiateWithSafeArray(RingElement[] array) {
+    private static RingElementVector instantiateWithSafeArray(List<? extends RingElement> array) {
         return new RingElementVector(array, true);
     }
 

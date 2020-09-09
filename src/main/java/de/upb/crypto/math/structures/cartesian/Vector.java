@@ -7,18 +7,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("unchecked")
 public class Vector<X> {
-    protected X[] values;
+    protected List<? extends X> values;
 
     public Vector(X... values) {
         this(values, false);
     }
 
+    public Vector(List<X> values) {
+        this(values, false);
+    }
+
     protected Vector(X[] values, boolean isSafe){
-        this.values = isSafe ? values : Arrays.copyOf(values, values.length);
+        this.values = isSafe ? Arrays.asList(values) : new ArrayList<>(Arrays.asList(values));
+    }
+
+    protected Vector(List<? extends X> values, boolean isSafe){
+        this.values = isSafe ? values : new ArrayList<>(values);
     }
 
     public static <Y> Vector<Y> of(Y... vals) {
@@ -37,12 +46,15 @@ public class Vector<X> {
         return iterate(initialValue, nextValue, n, Vector::instantiateWithSafeArray);
     }
 
-    protected static <Y,V extends Vector<Y>> V iterate(Y initialValue, Function<Y, Y> nextValue, int n, Function<Y[], V> vectorInstantiator) {
-        Y[] result = (Y[]) new Object[n];
+    protected static <Y,V extends Vector<Y>> V iterate(Y initialValue, Function<Y, Y> nextValue, int n, Function<List<Y>, V> vectorInstantiator) {
+        List<Y> result = new ArrayList<>(n);
         if (n > 0) {
-            result[0] = initialValue;
-            for (int i = 1; i < n; i++)
-                result[i] = nextValue.apply(result[i - 1]);
+            result.add(initialValue);
+            Y currentValue = initialValue;
+            for (int i = 1; i < n; i++) {
+                currentValue = nextValue.apply(currentValue);
+                result.add(currentValue);
+            }
         }
         return vectorInstantiator.apply(result);
     }
@@ -55,35 +67,35 @@ public class Vector<X> {
         return generatePlain(generator, n, Vector::instantiateWithSafeArray);
     }
 
-    public static <Y, V extends Vector<Y>> V generatePlain(Function<Integer, ? extends Y> generator, int n, Function<Y[], V> vectorInstantiator) {
-        Y[] result = (Y[]) new Object[n];
+    public static <Y, V extends Vector<Y>> V generatePlain(Function<Integer, ? extends Y> generator, int n, Function<List<Y>, V> vectorInstantiator) {
+        List<Y> result = new ArrayList<>(n);
         for (int i = 0; i < n; i++)
-            result[i] = generator.apply(i);
+            result.add(generator.apply(i));
         return vectorInstantiator.apply(result);
     }
 
-    public static <Y, V extends Vector<Y>> V generatePlain(Supplier<? extends Y> generator, int n, Function<Y[], V> vectorInstantiator) {
-        Y[] result = (Y[]) new Object[n];
+    public static <Y, V extends Vector<Y>> V generatePlain(Supplier<? extends Y> generator, int n, Function<List<Y>, V> vectorInstantiator) {
+        List<Y> result = new ArrayList<>(n);
         for (int i = 0; i < n; i++)
-            result[i] = generator.get();
+            result.add(generator.get());
         return vectorInstantiator.apply(result);
     }
 
-    protected static <Z, V extends Vector<Z>> V fromStreamPlain (Stream<? extends Z> stream, Function<Z[], V> vectorInstantiator) {
-        return vectorInstantiator.apply((Z[]) stream.toArray());
+    protected static <Z, V extends Vector<Z>> V fromStreamPlain (Stream<? extends Z> stream, Function<List<Z>, V> vectorInstantiator) {
+        return vectorInstantiator.apply(stream.collect(Collectors.toList()));
     }
 
     public static <Z> Vector<Z> fromStreamPlain(Stream<Z> stream) {
         return fromStreamPlain(stream, Vector::instantiateWithSafeArray);
     }
 
-    protected <Y,Z, V extends Vector<Z>> V zip(Vector<Y> other, BiFunction<X, Y, Z> combiner, Function<Z[], V> vectorInstantiator) {
-        if (values.length != other.values.length)
+    protected <Y,Z, V extends Vector<Z>> V zip(Vector<Y> other, BiFunction<X, Y, Z> combiner, Function<List<Z>, V> vectorInstantiator) {
+        if (values.size() != other.values.size())
             throw new IllegalArgumentException("Can only zip two vectors of the same length");
 
-        Z[] result = (Z[]) new Object[this.values.length];
-        for (int i=0;i<values.length;i++)
-            result[i] = combiner.apply(this.values[i], other.values[i]);
+        ArrayList<Z> result = new ArrayList<>(this.values.size());
+        for (int i=0;i<values.size();i++)
+            result.add(combiner.apply(this.values.get(i), other.values.get(i)));
 
         return vectorInstantiator.apply(result);
     }
@@ -92,11 +104,11 @@ public class Vector<X> {
         return zip(other, combiner, Vector::instantiateWithSafeArray);
     }
 
-    protected <Y, V extends Vector<Y>> V map(Function<X, Y> map, Function<Y[], ? extends V> vectorInstantiator) {
-        Y[] result = (Y[]) new Object[this.values.length];
+    protected <Y, V extends Vector<Y>> V map(Function<X, Y> map, Function<List<Y>, ? extends V> vectorInstantiator) {
+        ArrayList<Y> result = new ArrayList<>(this.values.size());
 
-        for (int i=0;i<values.length;i++)
-            result[i] = map.apply(values[i]);
+        for (X value : values)
+            result.add(map.apply(value));
 
         return vectorInstantiator.apply(result);
     }
@@ -111,21 +123,21 @@ public class Vector<X> {
     }
 
     public X reduce(BinaryOperator<X> combiner) {
-        if (values.length == 0)
+        if (values.size() == 0)
             throw new RuntimeException("Cannot reduce empty vector without explicit neutral element");
 
         return reduce(combiner, null);
     }
 
     public X reduce(BinaryOperator<X> combiner, X neutralElement) {
-        if (values.length == 0)
+        if (values.size() == 0)
             return neutralElement;
-        if (values.length == 1)
-            return values[0];
+        if (values.size() == 1)
+            return values.get(0);
 
-        X result = values[0];
-        for (int i=1;i<values.length;i++)
-            result = combiner.apply(result, values[i]);
+        X result = values.get(0);
+        for (int i=1;i<values.size();i++)
+            result = combiner.apply(result, values.get(i));
         return result;
     }
 
@@ -133,16 +145,16 @@ public class Vector<X> {
      * Equivalent to zip(other, zipMap).reduce(combiner, neutralElement)
      */
     public <Y, Z> Z zipReduce(Vector<Y> other, BiFunction<X, Y, Z> zipMap, BinaryOperator<Z> combiner, Z neutralElement) {
-        if (values.length != other.values.length)
+        if (values.size() != other.values.size())
             throw new IllegalArgumentException("Can only zip two vectors of the same length");
-        if (values.length == 0)
+        if (values.size() == 0)
             return neutralElement;
-        if (values.length == 1)
-            return zipMap.apply(values[0], other.values[0]);
+        if (values.size() == 1)
+            return zipMap.apply(values.get(0), other.values.get(0));
 
-        Z result = zipMap.apply(values[0], other.values[0]);
-        for (int i=1;i<values.length;i++)
-            result = combiner.apply(result, zipMap.apply(values[i], other.values[i]));
+        Z result = zipMap.apply(values.get(0), other.values.get(0));
+        for (int i=1;i<values.size();i++)
+            result = combiner.apply(result, zipMap.apply(values.get(i), other.values.get(i)));
         return result;
     }
 
@@ -150,34 +162,34 @@ public class Vector<X> {
      * Equivalent to zip(other, zipMap).reduce(combiner, neutralElement)
      */
     public <Y, Z> Z zipReduce(Vector<Y> other, BiFunction<X, Y, Z> zipMap, BinaryOperator<Z> combiner) {
-        if (values.length == 0)
+        if (values.size() == 0)
             throw new RuntimeException("Cannot zipReduce empty vector without explicit neutral element");
         return zipReduce(other, zipMap, combiner, null);
     }
 
     public List<X> toList() {
-        return new ArrayList<>(Arrays.asList(values));
+        return new ArrayList<>(values);
     }
 
-    public Stream<X> stream() {
-        return toList().stream();
+    public Stream<? extends X> stream() {
+        return values.stream();
     }
 
     public int length() {
-        return values.length;
+        return values.size();
     }
 
     public X get(int index) {
-        return values[index];
+        return values.get(index);
     }
 
-    private static <Y> Vector<Y> instantiateWithSafeArray(Y[] array) {
+    private static <Y> Vector<Y> instantiateWithSafeArray(List<Y> array) {
         return new Vector<>(array, true);
     }
 
     @Override
     public String toString() {
-        return Arrays.toString(values);
+        return values.toString();
     }
 
     @Override
@@ -185,11 +197,11 @@ public class Vector<X> {
         if (this == o) return true;
         if (!(o instanceof Vector)) return false;
         Vector<?> vector = (Vector<?>) o;
-        return Arrays.equals(values, vector.values);
+        return values.equals(vector.values);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(values);
+        return values.hashCode();
     }
 }
