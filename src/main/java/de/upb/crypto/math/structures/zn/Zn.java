@@ -148,7 +148,7 @@ public class Zn implements Ring {
 
         @Override
         public ZnElement neg() {
-            return createZnElementUnsafe(n.subtract(v));
+            return v.equals(BigInteger.ZERO) ? this : createZnElementUnsafe(n.subtract(v));
         }
     
         @Override
