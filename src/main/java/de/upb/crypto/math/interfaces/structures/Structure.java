@@ -2,6 +2,7 @@ package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
+import de.upb.crypto.math.structures.cartesian.Vector;
 
 import java.math.BigInteger;
 import java.util.Optional;
@@ -42,6 +43,13 @@ public interface Structure extends StandaloneRepresentable {
      * @throws UnsupportedOperationException
      */
     Element getUniformlyRandomElement() throws UnsupportedOperationException;
+
+    /**
+     * Returns n elements of this structure that are drawn uniformly and independently at random (using a cryptographically strong RNG)
+     *
+     * @throws UnsupportedOperationException
+     */
+    Vector<? extends Element> getUniformlyRandomElements(int n) throws UnsupportedOperationException;
 
     /**
      * Creates an Element of this Structure from its representation.
