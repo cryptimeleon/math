@@ -43,23 +43,27 @@ public class SmallExponentPrecomputation {
     }
 
     public void compute(int windowSize) {
-        int maximumPower = (1 << windowSize) - 1;
-        int numElements = (maximumPower+1)/2;
+        if (this.windowSize < windowSize) {
+            int maximumPower = (1 << windowSize) - 1;
+            int numElements = (maximumPower+1)/2;
 
-        if (oddPowers == null) {
-            oddPowers = new ArrayList<>(numElements);
-            oddPowers.add(base);
-        }
+            synchronized (this) {
+                if (this.windowSize < windowSize) {
+                    if (oddPowers == null) {
+                        oddPowers = new ArrayList<>(numElements);
+                        oddPowers.add(base);
+                    }
 
-        if (oddPowers.size() < numElements) {
-            GroupElementImpl square = base.square();
-            GroupElementImpl currentSmallPower = oddPowers.get(oddPowers.size() - 1);
-            for (int i = oddPowers.size(); i < numElements; i++) {
-                currentSmallPower = currentSmallPower.op(square);
-                oddPowers.add(currentSmallPower);
+                    GroupElementImpl square = base.square();
+                    GroupElementImpl currentSmallPower = oddPowers.get(oddPowers.size() - 1);
+                    for (int i = oddPowers.size(); i < numElements; i++) {
+                        currentSmallPower = currentSmallPower.op(square);
+                        oddPowers.add(i, currentSmallPower);
+                    }
+
+                    this.windowSize = windowSize;
+                }
             }
         }
-
-        this.windowSize = Math.max(this.windowSize, windowSize);
     }
 }

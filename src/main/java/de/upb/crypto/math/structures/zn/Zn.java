@@ -284,7 +284,7 @@ public class Zn implements Ring {
      * @param modulus      the ring size
      */
     public static ZnElement valueOf(BigInteger representant, BigInteger modulus) {
-        return new Zn(modulus).new ZnElement(representant);
+        return new Zn(modulus).valueOf(representant);
     }
 
     /**
