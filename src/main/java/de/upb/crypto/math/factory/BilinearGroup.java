@@ -50,7 +50,7 @@ public interface BilinearGroup extends StandaloneRepresentable {
      * @throws UnsupportedOperationException if this factory does not support a hash into exponents or G1,G2,GT don't
      *                                       have the same group exponent
      */
-    default HashIntoStructure getHashIntoZGroupExponent() throws UnsupportedOperationException {
+    default HashIntoZn getHashIntoZGroupExponent() throws UnsupportedOperationException {
         return new HashIntoZn(getZn());
     }
 

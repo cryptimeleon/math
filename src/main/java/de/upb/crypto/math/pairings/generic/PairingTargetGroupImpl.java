@@ -129,7 +129,7 @@ public abstract class PairingTargetGroupImpl implements GroupImpl, Representable
 
     @Override
     public String toString() {
-        return "Multiplicative subgroup of " + this.getFieldOfDefinition() + " of size " + this.size();
+        return "Multiplicative subgroup of " + this.getFieldOfDefinition();
     }
 
     @Override

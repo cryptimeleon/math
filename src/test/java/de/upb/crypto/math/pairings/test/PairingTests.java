@@ -39,6 +39,8 @@ public class PairingTests {
     public void testBasicProperties() {
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
         GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
+        Zn.ZnElement randomExp1 = pairing.getG1().getUniformlyRandomNonzeroExponent();
+        Zn.ZnElement randomExp2 = pairing.getG1().getUniformlyRandomNonzeroExponent();
 
         GroupElement t1, t2, t3, t4;
 
@@ -72,6 +74,11 @@ public class PairingTests {
         //Bilinearity in second argument
         // e(R1,P2+R2)e(-R1,P2)e(-R1,R2)=1
         assertTrue("Bilinearity in second argument", pairing.apply(r1, p2.op(r2)).op(pairing.apply(r1.inv(), p2)).op(pairing.apply(r1.inv(), r2)).isNeutralElement());
+
+        //Bilinearity with exponent
+        assertEquals(pairing.apply(p1.pow(randomExp1), p2), pairing.apply(p1, p2.pow(randomExp1)));
+        assertEquals(pairing.apply(p1.pow(randomExp1), p2), pairing.apply(p1, p2).pow(randomExp1));
+        assertEquals(pairing.apply(p1.pow(randomExp1), p2.pow(randomExp2)), pairing.apply(p1, p2).pow(randomExp1.mul(randomExp2)));
 
         //Basic other properties
         assertTrue(pairing.apply(pairing.getG1().getNeutralElement(), p2).isNeutralElement());

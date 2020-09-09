@@ -207,16 +207,13 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
 
     @Override
     public String toString() {
-        String s = "";
-
-        s += "G1: " + this.getG1().toString() + "\n";
-        s += "G2: " + this.getG2().toString() + "\n";
-        s += "Gt: " + this.getGT().toString() + "\n";
-        s += "P1: " + this.getG1().getGenerator().toString() + "\n";
-        s += "P2: " + this.getG2().getGenerator().toString() + "\n";
-        s += "gt: " + this.getGT().getGenerator().toString() + "\n";
-        return s;
-
+        return "BarretoNaehrigBilinearGroupImpl{" +
+                "g1impl=" + g1impl +
+                ", g2impl=" + g2impl +
+                ", gtimpl=" + gtimpl +
+                ", bilinearMapImpl=" + bilinearMapImpl +
+                ", hashIntoG1impl=" + hashIntoG1impl +
+                ", hashIntoG2impl=" + hashIntoG2impl +
+                '}';
     }
-
 }
