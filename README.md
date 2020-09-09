@@ -19,11 +19,15 @@ These include:
     * Ring of integers modulo n
     * Ring of polynomials
     
+## Hints
+* The included java pairing is not optimized for performance
+* Please use your own or one of our provided wrappers to a more performant pairing library (see [below](#bilinear_group)).
+    
 ## Example Code
     
 As a starting point, we provide exemplary code of common tasks.
 
-##### Setting up a Type 3 Bilinear Group
+##### Setting up a Type 3 Bilinear Group <a name="bilinear_group"></a>
 
 Given a security parameter `securityParameter`, we can set up a type 3 bilinear group using this library as follows:
 
