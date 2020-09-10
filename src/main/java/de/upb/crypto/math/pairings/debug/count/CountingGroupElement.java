@@ -4,6 +4,7 @@ import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
@@ -15,13 +16,10 @@ import java.util.Objects;
 
 public class CountingGroupElement implements GroupElement {
 
-    @Represented
     protected CountingGroup group;
 
-    @Represented
     protected LazyGroupElement elemTotal;
 
-    @Represented
     protected LazyGroupElement elemExpMultiExp;
 
     public CountingGroupElement(CountingGroup group, LazyGroupElement elemTotal, LazyGroupElement elemExpMultiExp) {
@@ -31,7 +29,19 @@ public class CountingGroupElement implements GroupElement {
     }
 
     public CountingGroupElement(Representation repr) {
-        new ReprUtil(this).deserialize(repr);
+        ObjectRepresentation objRepr = repr.obj();
+        group = new CountingGroup(objRepr.get("group"));
+        elemTotal = (LazyGroupElement) group.groupTotal.getElement(objRepr.get("elemTotal"));
+        elemExpMultiExp = (LazyGroupElement) group.groupExpMultiExp.getElement(objRepr.get("elemExpMultiExp"));
+    }
+
+    @Override
+    public Representation getRepresentation() {
+        ObjectRepresentation repr = new ObjectRepresentation();
+        repr.put("group", group.getRepresentation());
+        repr.put("elemTotal", elemTotal.getRepresentation());
+        repr.put("elemExpMultiExp", elemExpMultiExp.getRepresentation());
+        return repr;
     }
 
     @Override
@@ -110,11 +120,6 @@ public class CountingGroupElement implements GroupElement {
     @Override
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
         return elemExpMultiExp.updateAccumulator(elemTotal.updateAccumulator(accumulator));
-    }
-
-    @Override
-    public Representation getRepresentation() {
-        return ReprUtil.serialize(this);
     }
 
     @Override
