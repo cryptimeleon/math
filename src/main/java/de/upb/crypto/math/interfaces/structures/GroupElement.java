@@ -3,6 +3,7 @@ package de.upb.crypto.math.interfaces.structures;
 import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.structures.cartesian.GroupElementVector;
+import de.upb.crypto.math.structures.cartesian.RingElementVector;
 import de.upb.crypto.math.structures.cartesian.Vector;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
@@ -73,7 +74,15 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * Note that this is only well-defined if k is from Zn, such that getStructure().size() divides n.
      */
     default GroupElement pow(ZnElement k) {
-        return pow(k.getInteger());
+        return pow(k.asExponent());
+    }
+
+    /**
+     * Calculates the result of applying the group operation k times.
+     * Note that this is only well-defined if k has an integer-like structure (e.g., Zn).
+     */
+    default GroupElement pow(RingElement k) {
+        return pow(k.asExponent());
     }
 
     /**
@@ -93,7 +102,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * @param exponents the exponents to use (BigInteger, Long, or ZnElements)
      * @return (g^exponents[0], g^exponents[1], ...)
      */
-    default GroupElementVector pow(Vector<?> exponents) {
+    default GroupElementVector pow(Vector<? extends RingElement> exponents) {
         return GroupElementVector.generate(i -> this, exponents.length()).pow(exponents);
     }
 

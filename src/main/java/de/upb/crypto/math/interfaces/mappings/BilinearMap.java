@@ -7,6 +7,7 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
+import de.upb.crypto.math.structures.cartesian.GroupElementVector;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
 import java.math.BigInteger;
@@ -39,6 +40,14 @@ public interface BilinearMap extends BiFunction<GroupElement, GroupElement, Grou
      */
     default GroupElement apply(GroupElement g1, GroupElement g2, ZnElement exponent) {
         return apply(g1, g2, exponent.getInteger());
+    }
+
+    default GroupElementVector apply(GroupElementVector lhs, GroupElementVector rhs) {
+        return new GroupElementVector(lhs.zip(rhs, this));
+    }
+
+    default GroupElement innerProduct(GroupElementVector lhs, GroupElementVector rhs) {
+        return lhs.innerProduct(rhs, this);
     }
 
     default PairingExpr expr(GroupElementExpression g1elem, GroupElementExpression g2elem) {

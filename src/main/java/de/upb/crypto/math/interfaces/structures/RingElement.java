@@ -1,8 +1,5 @@
 package de.upb.crypto.math.interfaces.structures;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
-import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
-
 import java.math.BigInteger;
 
 /**
@@ -183,5 +180,16 @@ public interface RingElement extends Element {
 
     public default RingElement square() {
         return this.mul(this);
+    }
+
+    /**
+     * Interprets this element as an exponent for the given group.
+     * For example, for a group of size n, ZnElements can usefully serve as exponents.
+     *
+     * @return a useful integer value such that the expression groupElement.pow(this).equals(groupElement.pow(this.asExponent()) makes sense.
+     * @throws UnsupportedOperationException if this ring is not fit to be interpreted as exponents for a group
+     */
+    default BigInteger asExponent() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Cannot interpret "+getClass().getName()+" as an exponent");
     }
 }

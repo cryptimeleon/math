@@ -123,6 +123,8 @@ public class Zn implements Ring {
          */
         protected ZnElement(BigInteger v) {
             this.v = v;
+            if (v.compareTo(n) > 0 || v.signum() < 0)
+                throw new RuntimeException("We have a problem.");
         }
 
         /**
@@ -264,6 +266,11 @@ public class Zn implements Ring {
 
         public ExponentConstantExpr asExponentExpression() {
             return new ExponentConstantExpr(this);
+        }
+
+        @Override
+        public BigInteger asExponent() throws UnsupportedOperationException {
+            return v;
         }
     }
 
