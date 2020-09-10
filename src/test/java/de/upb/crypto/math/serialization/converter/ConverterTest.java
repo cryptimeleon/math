@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ConverterTest {
     protected Converter converter;
 

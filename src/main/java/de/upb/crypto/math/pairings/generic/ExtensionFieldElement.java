@@ -206,6 +206,9 @@ public class ExtensionFieldElement implements FieldElement, UniqueByteRepresenta
 
     @Override
     public String toString() {
+        if (field.extensionDegree == 1)
+            return coefficients[0].toString(); //no brackets for trivial "extensions"
+
         return "["+Arrays.stream(coefficients).map(Object::toString).collect(Collectors.joining(", "))+"]";
     }
 

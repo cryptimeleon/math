@@ -197,7 +197,7 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
     }
 
     public String toString() {
-        return "(" + x.toString() + "," + y.toString() + ")";
+        return isNeutralElement() ? "point at infinity" : "(" + x.toString() + "," + y.toString() + ")";
     }
 
     @Override

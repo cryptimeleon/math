@@ -16,15 +16,19 @@ import de.upb.crypto.math.structures.zn.Zp;
 import java.math.BigInteger;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * A group optimized for groups with somewhat expensive operations (and, particularly, exponentiations).
  * Assumes abelian cyclic group of known finite order.
  */
 public class LazyGroup implements Group {
-    static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); //I'm guessing this may perform better
+    static final ExecutorService executor = ForkJoinPool.commonPool();  //using the commonPool because it automatically terminates with the JVM.
+    // Alternative: Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); //but in that case, you'd have to handle shutdown gracefully yourself, probably via Runtime.getRuntime().addShutdownHook
+    // I'm guessing the newFixedThreadPool may perform better
     // than the workStealingPool because this generally observes the order of tasks thrown at it (which generally the user will choose "correctly", i.e. smaller
     // expressions first, dependent expressions later). Everything still works with a workStealingPool, but the fear is that at some point, a thread steals
     // some computation that depends on lots of other LazyGroupElements that are currently in the process of being evaluated

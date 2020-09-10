@@ -18,5 +18,5 @@ public interface RepresentationRestorer {
      * @return the recreated object.
      * @throws IllegalArgumentException if unable to return the required type.
      */
-    Object recreateFromRepresentation(Type type, Representation repr);
+    Object recreateFromRepresentation(Type type, Representation repr) throws IllegalArgumentException;
 }

@@ -2,6 +2,7 @@ package de.upb.crypto.math.structures.cartesian;
 
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.structures.Element;
+import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.Ring;
 import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.serialization.ListRepresentation;
@@ -9,9 +10,18 @@ import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.List;
 
 public class ProductRingElement implements RingElement {
     protected RingElement[] elems;
+
+    public ProductRingElement(List<? extends RingElement> elems) {
+        //this.elems = elems.toArray(GroupElement[]::new); //Java 11
+        this.elems = new RingElement[elems.size()];
+        for (int i = 0; i < this.elems.length; i++) {
+            this.elems[i] = elems.get(i);
+        }
+    }
 
     public ProductRingElement(RingElement... elems) {
         this.elems = elems;

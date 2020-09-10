@@ -1,10 +1,9 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
-import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
-import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.cartesian.GroupElementVector;
+import de.upb.crypto.math.structures.cartesian.Vector;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
 import java.math.BigInteger;
@@ -87,6 +86,15 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      */
     default GroupElement pow(long k) {
         return pow(BigInteger.valueOf(k));
+    }
+
+    /**
+     * Computes vector (g^exponents[0], g^exponents[1], ...)
+     * @param exponents the exponents to use (BigInteger, Long, or ZnElements)
+     * @return (g^exponents[0], g^exponents[1], ...)
+     */
+    default GroupElementVector pow(Vector<?> exponents) {
+        return GroupElementVector.generate(i -> this, exponents.length()).pow(exponents);
     }
 
     /**

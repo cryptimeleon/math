@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
@@ -73,6 +74,12 @@ public class GroupTests {
             everythingRaisedToZ = everythingRaisedToZ.op(h.get(i).pow(exponents.get(i).mul(z)));
 
         assertEquals(resultMultiexp.pow(z), everythingRaisedToZ);
+
+        //Checking some exponent math
+        List<Zn.ZnElement> otherExponents = Stream.generate(group::getUniformlyRandomExponent).limit(n).collect(Collectors.toList());
+        Zn.ZnElement innerProduct = IntStream.range(0, n).mapToObj(i -> otherExponents.get(i).mul(exponents.get(i))).reduce(Zn.ZnElement::add).get();
+        assertEquals(g.pow(innerProduct), IntStream.range(0, n).mapToObj(i -> g.pow(otherExponents.get(i)).pow(exponents.get(i))).reduce(GroupElement::op).get());
+        assertEquals(g.pow(exponents.get(0)).pow(exponents.get(1)), g.pow(exponents.get(1)).pow(exponents.get(0)));
     }
 
     @Test
@@ -144,6 +151,9 @@ public class GroupTests {
                 // Otherwise (or if not sure): a^r b^r b^{-r} = a^r
                 assertEquals(a.pow(r).op(b.pow(r)).op(b.pow(r.negate())), a.pow(r));
             }
+
+            //Computing in the exponent
+            assertEquals(a.pow(r.multiply(BigInteger.valueOf(42))), a.pow(r).pow(42));
         }
     }
 

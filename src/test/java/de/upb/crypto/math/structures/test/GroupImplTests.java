@@ -1,9 +1,13 @@
 package de.upb.crypto.math.structures.test;
 
+import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupImpl;
+import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
+import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
 import de.upb.crypto.math.pairings.debug.DebugGroupImpl;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
@@ -40,7 +44,7 @@ public class GroupImplTests {
         this.elementSupplier = params.elementSupplier;
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void testBasicProperties() {
         GroupElementImpl a = null, b = null, c;
 
@@ -186,6 +190,13 @@ public class GroupImplTests {
         // Debug group
         DebugGroupImpl debugGroupImpl = new DebugGroupImpl("Testgroup", BigInteger.valueOf(1000));
 
+        // BarretoNaehrig
+        BilinearGroupImpl bnGroup = new BarretoNaehrigProvider().provideBilinearGroupImpl(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3));
+        GroupImpl bnG1 = bnGroup.getG1(), bnG2 = bnGroup.getG2(), bnGT = bnGroup.getGT();
+
+        BilinearGroupImpl bnGroup2 = new BarretoNaehrigProvider().provideBilinearGroupImpl(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3));
+        GroupImpl bnG12 = bnGroup2.getG1(), bnG22 = bnGroup2.getG2(), bnGT2 = bnGroup2.getGT();
+
         // Sn
         Sn sn = new Sn(10);
 
@@ -194,6 +205,8 @@ public class GroupImplTests {
                 {new TestParams(ringUnitGroupImpl)}, {new TestParams(ringAddGroup)},
                 {new TestParams(ringAddGroupInt, () -> ringAddGroupInt.new RingAdditiveGroupElementImpl(new IntegerElement(RandomGeneratorSupplier.getRnd().getRandomElement(BigInteger.valueOf(100000)))))}, {new TestParams(sn)},
                 {new TestParams(debugGroupImpl)},
+                {new TestParams(bnG1)}, {new TestParams(bnG2)}, {new TestParams(bnGT)},
+                {new TestParams(bnG12)}, {new TestParams(bnG22)}, {new TestParams(bnGT2)}
         };
         return Arrays.asList(params);
     }
