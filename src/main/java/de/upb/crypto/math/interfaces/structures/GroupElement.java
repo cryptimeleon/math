@@ -139,7 +139,10 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      *
      * @return the same object (for chaining calls)
      */
-    GroupElement precomputePow();
+    default GroupElement precomputePow() {
+        precomputePow(8);
+        return this;
+    }
 
     /**
      * Advises the GroupElement to prepare it for later pow() calls.
