@@ -1,5 +1,6 @@
 package de.upb.crypto.math.structures.test;
 
+import de.upb.crypto.math.elliptic.Secp256k1;
 import de.upb.crypto.math.factory.BilinearGroup;
 import de.upb.crypto.math.factory.BilinearGroupImpl;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
@@ -206,7 +207,8 @@ public class GroupImplTests {
                 {new TestParams(ringAddGroupInt, () -> ringAddGroupInt.new RingAdditiveGroupElementImpl(new IntegerElement(RandomGeneratorSupplier.getRnd().getRandomElement(BigInteger.valueOf(100000)))))}, {new TestParams(sn)},
                 {new TestParams(debugGroupImpl)},
                 {new TestParams(bnG1)}, {new TestParams(bnG2)}, {new TestParams(bnGT)},
-                {new TestParams(bnG12)}, {new TestParams(bnG22)}, {new TestParams(bnGT2)}
+                {new TestParams(bnG12)}, {new TestParams(bnG22)}, {new TestParams(bnGT2)},
+                {new TestParams(new Secp256k1())}
         };
         return Arrays.asList(params);
     }
