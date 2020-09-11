@@ -6,6 +6,8 @@ import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.groups.exp.ExponentiationAlgorithms;
+import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
 
 import java.math.BigInteger;
 import java.util.Objects;
@@ -13,6 +15,7 @@ import java.util.Objects;
 public class BasicGroupElement implements GroupElement {
     protected BasicGroup group;
     protected GroupElementImpl impl;
+    protected SmallExponentPrecomputation precomputedSmallExponents;
 
     public BasicGroupElement(BasicGroup group, GroupElementImpl impl) {
         this.group = group;
@@ -41,7 +44,7 @@ public class BasicGroupElement implements GroupElement {
 
     @Override
     public GroupElement pow(BigInteger exponent) {
-        return new BasicGroupElement(group, impl.pow(exponent));
+        return new BasicGroupElement(group, ExponentiationAlgorithms.wnafExp(impl, exponent, getPrecomputedSmallExponents(), 4));
     }
 
     @Override
@@ -51,7 +54,19 @@ public class BasicGroupElement implements GroupElement {
 
     @Override
     public GroupElement precomputePow() {
-        return this;
+        return precomputePow(8);
+    }
+
+    @Override
+    public GroupElement precomputePow(int windowSize) {
+         getPrecomputedSmallExponents().compute(windowSize);
+         return this;
+    }
+
+    public SmallExponentPrecomputation getPrecomputedSmallExponents() {
+        if (precomputedSmallExponents == null)
+            precomputedSmallExponents = new SmallExponentPrecomputation(impl);
+        return precomputedSmallExponents;
     }
 
     @Override

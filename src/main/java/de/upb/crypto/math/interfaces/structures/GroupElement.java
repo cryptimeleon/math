@@ -135,9 +135,31 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * g.precomputePow().pow(x).compute();
      * unless you're planning to do more exponentiations of g in the future.
      *
+     * Uses a reasonable default for the memory consumed by this. Use precomputePow(int) to customize.
+     *
      * @return the same object (for chaining calls)
      */
     GroupElement precomputePow();
+
+    /**
+     * Advises the GroupElement to prepare it for later pow() calls.
+     * This will take some time and should only be done ahead of time.
+     * That is, the usual usage pattern should be:
+     *
+     * //Setting up your encryption scheme (or whatever)
+     * GroupElement g = group.getUniformlyRandomElement().precomputPow();
+     * //Then (maybe even multiple) future calls of
+     * GroupElement encrypt(GroupElement m) {
+     *     return m.op(g.pow(sk)).compute();
+     * }
+     * Don't use
+     * g.precomputePow().pow(x).compute();
+     * unless you're planning to do more exponentiations of g in the future.
+     *
+     * @param windowSize an indicator for how much memory you're willing to invest. Precomputation will take up space of roughly 2^(windowSize-1) group elements.
+     * @return the same object (for chaining calls)
+     */
+    GroupElement precomputePow(int windowSize);
 
     /**
      * Hint that the concrete value of this GroupElement will be accessed soon (e.g., via getRepresentation() or equals()).
