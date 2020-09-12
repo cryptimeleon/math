@@ -94,10 +94,10 @@ public class CountingTest {
 
         bilGroup.getBilinearMap().apply(elemG1, elemG2, BigInteger.TEN).computeSync();
         assertEquals(2, bilGroup.getNumPairings());
-        // exp is done in G1 usually (tested with WNAF exponentiation algorithm)
-        assertEquals(8, groupG1.getNumOpsTotal());
-        assertEquals(2, groupG1.getNumSquaringsTotal());
-        assertEquals(1, groupG1.getNumExps());
+        // exp is done in GT currently (tested with WNAF exponentiation algorithm)
+        assertEquals(8, groupGT.getNumOpsTotal());
+        assertEquals(2, groupGT.getNumSquaringsTotal());
+        assertEquals(1, groupGT.getNumExps());
     }
 
     @Test
