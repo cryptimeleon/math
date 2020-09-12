@@ -94,6 +94,15 @@ public class CountingGroupElement implements GroupElement {
     }
 
     @Override
+    public GroupElement precomputePow(int windowSize) {
+        return new CountingGroupElement(
+                group,
+                (LazyGroupElement) elemTotal.precomputePow(windowSize),
+                (LazyGroupElement) elemExpMultiExp.precomputePow(windowSize)
+        );
+    }
+
+    @Override
     public GroupElement compute() {
         // counting requires synchronization so we always do computeSync
         return new CountingGroupElement(
