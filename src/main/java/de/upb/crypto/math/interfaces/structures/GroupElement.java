@@ -3,6 +3,7 @@ package de.upb.crypto.math.interfaces.structures;
 import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.structures.cartesian.GroupElementVector;
+import de.upb.crypto.math.structures.cartesian.RingElementVector;
 import de.upb.crypto.math.structures.cartesian.Vector;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
@@ -73,7 +74,15 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * Note that this is only well-defined if k is from Zn, such that getStructure().size() divides n.
      */
     default GroupElement pow(ZnElement k) {
-        return pow(k.getInteger());
+        return pow(k.asExponent());
+    }
+
+    /**
+     * Calculates the result of applying the group operation k times.
+     * Note that this is only well-defined if k has an integer-like structure (e.g., Zn).
+     */
+    default GroupElement pow(RingElement k) {
+        return pow(k.asExponent());
     }
 
     /**
@@ -93,7 +102,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * @param exponents the exponents to use (BigInteger, Long, or ZnElements)
      * @return (g^exponents[0], g^exponents[1], ...)
      */
-    default GroupElementVector pow(Vector<?> exponents) {
+    default GroupElementVector pow(Vector<? extends RingElement> exponents) {
         return GroupElementVector.generate(i -> this, exponents.length()).pow(exponents);
     }
 
@@ -126,9 +135,34 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * g.precomputePow().pow(x).compute();
      * unless you're planning to do more exponentiations of g in the future.
      *
+     * Uses a reasonable default for the memory consumed by this. Use precomputePow(int) to customize.
+     *
      * @return the same object (for chaining calls)
      */
-    GroupElement precomputePow();
+    default GroupElement precomputePow() {
+        precomputePow(8);
+        return this;
+    }
+
+    /**
+     * Advises the GroupElement to prepare it for later pow() calls.
+     * This will take some time and should only be done ahead of time.
+     * That is, the usual usage pattern should be:
+     *
+     * //Setting up your encryption scheme (or whatever)
+     * GroupElement g = group.getUniformlyRandomElement().precomputPow();
+     * //Then (maybe even multiple) future calls of
+     * GroupElement encrypt(GroupElement m) {
+     *     return m.op(g.pow(sk)).compute();
+     * }
+     * Don't use
+     * g.precomputePow().pow(x).compute();
+     * unless you're planning to do more exponentiations of g in the future.
+     *
+     * @param windowSize an indicator for how much memory you're willing to invest. Precomputation will take up space of roughly 2^(windowSize-1) group elements.
+     * @return the same object (for chaining calls)
+     */
+    GroupElement precomputePow(int windowSize);
 
     /**
      * Hint that the concrete value of this GroupElement will be accessed soon (e.g., via getRepresentation() or equals()).

@@ -18,7 +18,7 @@ public class IntegerElement implements RingElement {
     private static IntegerRing ring = new IntegerRing();
 
     @UniqueByteRepresented
-    private BigInteger v;
+    private final BigInteger v;
 
     public IntegerElement(BigInteger v) {
         this.v = v;
@@ -106,5 +106,10 @@ public class IntegerElement implements RingElement {
     @Override
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
         return AnnotatedUbrUtil.autoAccumulate(accumulator, this);
+    }
+
+    @Override
+    public BigInteger asExponent() throws UnsupportedOperationException {
+        return v;
     }
 }

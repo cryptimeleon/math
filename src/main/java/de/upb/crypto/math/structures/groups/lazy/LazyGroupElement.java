@@ -78,8 +78,13 @@ public abstract class LazyGroupElement implements GroupElement {
 
     @Override
     public GroupElement precomputePow() {
-        if (group.precomputationWindowSize > 0)
-            getPrecomputedSmallExponents().compute(group.precomputationWindowSize);
+        return precomputePow(group.precomputationWindowSize);
+    }
+
+    @Override
+    public GroupElement precomputePow(int windowSize) {
+        if (windowSize > 0)
+            getPrecomputedSmallExponents().compute(windowSize);
         return this;
     }
 

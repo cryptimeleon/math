@@ -6,6 +6,7 @@ import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
+import de.upb.crypto.math.serialization.Representation;
 
 public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
 
@@ -32,6 +33,10 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
                 curve.getFieldOfDefinition().getOneElement(),
                 curve.getFieldOfDefinition().getZeroElement()
         );
+    }
+
+    public AffineEllipticCurvePoint(WeierstrassCurve curve, Representation repr) {
+        super(curve, repr);
     }
 
     @Override
@@ -196,10 +201,6 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
 
     }
 
-    public String toString() {
-        return isNeutralElement() ? "point at infinity" : "(" + x.toString() + "," + y.toString() + ")";
-    }
-
     @Override
     public boolean equals(Object element) {
         if (element == this)
@@ -325,4 +326,6 @@ public class AffineEllipticCurvePoint extends AbstractEllipticCurvePoint {
         }
         return accumulator;
     }
+
+
 }

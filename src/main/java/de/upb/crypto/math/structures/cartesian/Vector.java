@@ -167,6 +167,34 @@ public class Vector<X> {
         return zipReduce(other, zipMap, combiner, null);
     }
 
+    public Vector<X> pad(X valueToPadWith, int desiredLength) {
+        ArrayList<X> result = new ArrayList<>(desiredLength);
+        result.addAll(values);
+        while (result.size() < desiredLength)
+            result.add(valueToPadWith);
+
+        return instantiateWithSafeArray(result);
+    }
+
+    public Vector<X> replace(int index, X substitute) {
+        ArrayList<X> result = new ArrayList<>(values);
+        result.set(index, substitute);
+        return instantiateWithSafeArray(result);
+    }
+
+    public Vector<X> truncate(int newLength) {
+        ArrayList<X> result = new ArrayList<>(values.subList(0, newLength));
+        return instantiateWithSafeArray(result);
+    }
+
+    public Vector<X> concatenate(Vector<? extends X> secondPart) {
+        ArrayList<X> result = new ArrayList<>(values.size() + secondPart.values.size());
+        result.addAll(values);
+        result.add((X) secondPart.values);
+
+        return instantiateWithSafeArray(result);
+    }
+
     public List<X> toList() {
         return new ArrayList<>(values);
     }

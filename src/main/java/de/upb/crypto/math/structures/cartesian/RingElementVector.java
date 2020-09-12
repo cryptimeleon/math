@@ -108,6 +108,25 @@ public class RingElementVector extends Vector<RingElement> implements Representa
         return new ListRepresentation(map(Representable::getRepresentation).toList());
     }
 
+    @Override
+    public RingElementVector pad(RingElement valueToPadWith, int desiredLength) {
+        return new RingElementVector(super.pad(valueToPadWith, desiredLength));
+    }
+
+    @Override
+    public RingElementVector replace(int index, RingElement substitute) {
+        return new RingElementVector(super.replace(index, substitute));
+    }
+
+    @Override
+    public RingElementVector truncate(int newLength) {
+        return new RingElementVector(super.truncate(newLength));
+    }
+
+    public RingElementVector concatenate(Vector<? extends RingElement> secondPart) {
+        return new RingElementVector(super.concatenate(secondPart));
+    }
+
     public ProductRingElement asElementInProductRing() {
         return new ProductRingElement(values);
     }

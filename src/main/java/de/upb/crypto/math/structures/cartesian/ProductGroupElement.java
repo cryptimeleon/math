@@ -59,9 +59,9 @@ public class ProductGroupElement implements GroupElement {
     }
 
     @Override
-    public GroupElement precomputePow() {
+    public GroupElement precomputePow(int windowSize) {
         for (GroupElement elem : elems)
-            elem.precomputePow();
+            elem.precomputePow(windowSize);
         return this;
     }
 
