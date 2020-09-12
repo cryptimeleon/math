@@ -2,6 +2,7 @@ package de.upb.crypto.math.standalone.test;
 
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
+import de.upb.crypto.math.serialization.annotations.test.ReprUtilTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -16,14 +17,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @RunWith(value = Parameterized.class)
 public class StandaloneTest {
 
-    private Class<? extends StandaloneRepresentable> toTest;
-    private Object instance;
+    private final Class<? extends StandaloneRepresentable> toTest;
+    private final Object instance;
 
     public StandaloneTest(StandaloneTestParams params) {
         this.toTest = params.toTest;
@@ -39,8 +39,7 @@ public class StandaloneTest {
             Constructor<? extends StandaloneRepresentable> c = toTest.getConstructor(Representation.class);
             assertTrue(c != null);
         } catch (NoSuchMethodException | SecurityException e) {
-            // no constructor given or constructor not visible
-            fail();
+            fail("Any StandaloneRepresentable class must provide a constructor with a single 'Representation' parameter");
         }
     }
 
@@ -53,7 +52,7 @@ public class StandaloneTest {
             // class overwrites equals
             assertTrue(!equals.getDeclaringClass().equals(Object.class));
         } catch (NoSuchMethodException | SecurityException e) {
-            fail();
+            fail("StandaloneRepresentable classes must implement equals() and hashCode()");
         }
     }
 
@@ -65,7 +64,7 @@ public class StandaloneTest {
             // class overwrites hashcode
             assertTrue(!hashCode.getDeclaringClass().equals(Object.class));
         } catch (NoSuchMethodException | SecurityException e) {
-            fail();
+            fail("StandaloneRepresentable classes must implement equals() and hashCode()");
         }
     }
 
@@ -74,14 +73,16 @@ public class StandaloneTest {
         // tests whether the deserialization of the serialized object equals the
         // original object
         if (instance == null) {
-            System.out.println("No object given for " + toTest.getName());
-            fail();
+            System.out.println();
+            fail("No object given for " + toTest.getName() + " - add appropriate StandaloneTestParams to the StandaloneTest");
         } else {
             try {
                 Constructor<? extends StandaloneRepresentable> c = toTest.getConstructor(Representation.class);
-                assertTrue(c != null);
+                assertNotNull(c);
                 Representation repr = (Representation) toTest.getMethod("getRepresentation").invoke(instance);
-                assertTrue("Recreated object isn't equal to the original one", instance.equals(c.newInstance(repr)));
+                Object recreated = c.newInstance(repr);
+                assertEquals("Recreated object isn't equal to the original one", instance, recreated);
+                assertEquals("Recreated object doesn't have same hash value as the original one", instance.hashCode(), recreated.hashCode());
 
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassCastException
                     | InstantiationException e) {
@@ -112,13 +113,11 @@ public class StandaloneTest {
         toReturn.add(IdentityIsomorphismParams.get());
         toReturn.add(IntegerRingParams.get());
         toReturn.add(PolynomialRingParams.get());
-        toReturn.add(RingAdditiveGroupParams.get());
-        toReturn.add(RingMultiplicationParams.get());
-        toReturn.add(RingUnitGroupParams.get());
+        toReturn.addAll(RingGroupParams.get());
         toReturn.addAll(SHAHashParams.get());
-        toReturn.add(SubgroupParams.get());
         toReturn.addAll(SuperSingularParams.get());
         toReturn.addAll(DebugBilinearGroup.get());
+        toReturn.addAll(BasicAndLazyGroupParams.get());
         toReturn.add(ZnParams.get());
         toReturn.add(ZpParams.get());
         toReturn.add(SnParams.get());
@@ -127,7 +126,14 @@ public class StandaloneTest {
         toReturn.add(VariableOutputLengthHashFunctionParams.get());
         toReturn.add(NullTestParams.get());
         toReturn.add(RepresentedEnumParams.get());
-        toReturn.addAll(LazyGroupParams.get());
+        toReturn.add(BooleanStructureParams.get());
+        toReturn.add(ProductRingParams.get());
+        toReturn.add(ProductGroupParams.get());
+        toReturn.add(ReprUtilTest.Foo.getStandaloneTestParams());
+        toReturn.add(CountingGroupParams.get());
+        toReturn.addAll(CountingBilinearGroupParams.get());
+        toReturn.add(Secp256k1Params.get());
+
         // remove all provided params
         for (StandaloneTestParams stp : toReturn) {
             classes.remove(stp.toTest);

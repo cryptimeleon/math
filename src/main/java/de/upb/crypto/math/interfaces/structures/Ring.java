@@ -1,7 +1,12 @@
 package de.upb.crypto.math.interfaces.structures;
 
+import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
+import de.upb.crypto.math.structures.cartesian.GroupElementVector;
+import de.upb.crypto.math.structures.cartesian.RingElementVector;
+import de.upb.crypto.math.structures.cartesian.Vector;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -18,15 +23,15 @@ public interface Ring extends Structure, RepresentationRestorer {
     /**
      * Returns an object representing the additive group of this ring
      */
-    default RingAdditiveGroup asAdditiveGroup() {
-        return new RingAdditiveGroup(this);
+    default RingGroup asAdditiveGroup() {
+        return RingGroup.additiveGroupOf(this);
     }
 
     /**
      * Returns an object representing the (multiplicative) unit group of this ring
      */
-    default RingUnitGroup asUnitGroup() {
-        return new RingUnitGroup(this);
+    default RingGroup asUnitGroup() {
+        return RingGroup.unitGroupOf(this);
     }
 
     /**
@@ -50,16 +55,31 @@ public interface Ring extends Structure, RepresentationRestorer {
     @Override
     RingElement getElement(Representation repr);
 
-    @Override
-    default RingElement recreateFromRepresentation(Type type, Representation repr) {
-        if (!(type instanceof Class && RingElement.class.isAssignableFrom((Class) type)))
-            throw new IllegalArgumentException("Ring cannot recreate type "+type.getTypeName()+" from representation");
+    /**
+     * Recreates a RingElementVector containing group elements from this Ring
+     * @param repr a representation of a RingElementVector (obtained via RingElementVector::getRepresentation).
+     */
+    default RingElementVector getVector(Representation repr) {
+        return RingElementVector.fromStream(repr.list().stream().map(this::getElement));
+    }
 
-        return getElement(repr);
+    @Override
+    default Object recreateFromRepresentation(Type type, Representation repr) {
+        if (type instanceof Class && RingElement.class.isAssignableFrom((Class) type))
+            return getElement(repr);
+        if (type instanceof Class && RingElementVector.class.isAssignableFrom((Class) type))
+            return getVector(repr);
+
+        throw new IllegalArgumentException("Group cannot recreate type "+type.getTypeName()+" from representation");
     }
 
     @Override
     RingElement getUniformlyRandomElement() throws UnsupportedOperationException;
+
+    @Override
+    default RingElementVector getUniformlyRandomElements(int n) throws UnsupportedOperationException {
+        return RingElementVector.generate(this::getUniformlyRandomElement, n);
+    }
 
     /**
      * Generates an invertible element from this ring uniformly at random (using cryptographically strong RNG).
@@ -79,6 +99,44 @@ public interface Ring extends Structure, RepresentationRestorer {
         } catch (RuntimeException e) {
             throw new UnsupportedOperationException(e);
         }
+    }
+
+    /**
+     * Generates n invertible elements from this ring uniformly and independently at random (using cryptographically strong RNG).
+     * <p>
+     * The default implementation generates random ring elements until it hits a unit.
+     * Implementors should override if this is not feasible or if there is a better way!
+     *
+     * @throws UnsupportedOperationException
+     */
+    default RingElementVector getUniformlyRandomUnits(int n) throws UnsupportedOperationException {
+        return RingElementVector.generate(this::getUniformlyRandomUnit, n);
+    }
+
+    /**
+     * Generates a nonzero element from this ring uniformly at random (using cryptographically strong RNG).
+     *
+     * @throws UnsupportedOperationException
+     */
+    default RingElement getUniformlyRandomNonzeroElement() {
+        try {
+            RingElement result;
+            do {
+                result = getUniformlyRandomElement();
+            } while (result.isZero());
+            return result;
+        } catch (RuntimeException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    /**
+     * Generates n nonzero elements from this ring uniformly and independently at random (using cryptographically strong RNG).
+     *
+     * @throws UnsupportedOperationException
+     */
+    default RingElementVector getUniformlyRandomNonzeroElements(int n) {
+        return RingElementVector.generate(this::getUniformlyRandomNonzeroElement, n);
     }
 
     /**
@@ -118,11 +176,11 @@ public interface Ring extends Structure, RepresentationRestorer {
      * <p>
      * This algorithm only works on euclidean domains (i.e. RingElements must implement divideWithRemainder())
      *
-     * @param a
-     * @param b
-     * @returns [x, y, gcd(a,b)]
+     * @param a First argument to the extended euclidean algorithm.
+     * @param b Second argument to the extended euclidean algorithm.
+     * @return [x, y, gcd(a,b)]
      */
-    public default RingElement[] extendedEuclideanAlgorithm(RingElement a, RingElement b) {
+    default RingElement[] extendedEuclideanAlgorithm(RingElement a, RingElement b) {
         //Variable names and algorithm taken from http://anh.cs.luc.edu/331/notes/xgcd.pdf
         RingElement x = getZeroElement(), prevx = getOneElement();
         RingElement y = getOneElement(), prevy = getZeroElement();
@@ -157,9 +215,8 @@ public interface Ring extends Structure, RepresentationRestorer {
      * <p>
      * This algorithm only works on euclidean domains (i.e. RingElements must implement divideWithRemainder())
      *
-     * @param a
-     * @param b
-     * @returns an array with coefficients and the gcd: [x[0], x[1], ..., x[n-1], gcd(elements)]
+     * @param elements List of elements to apply the extended euclidean algorithm to.
+     * @return an array with coefficients and the gcd: [x[0], x[1], ..., x[n-1], gcd(elements)]
      */
     public default ArrayList<RingElement> extendedEuclideanAlgorithm(List<RingElement> elements) {
         if (elements == null || elements.size() == 0)

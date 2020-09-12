@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'de.upb.crypto'
-version = '1.0.0' + (Boolean.valueOf(System.getProperty("disablesnapshot")) ? "" : "-SNAPSHOT")
+version = '2.0.0' + (Boolean.valueOf(System.getProperty("disablesnapshot")) ? "" : "-SNAPSHOT")
 
 description = """"""
 
@@ -27,7 +27,6 @@ repositories {
 }
 
 dependencies {
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version:'1.1'
@@ -39,7 +38,8 @@ dependencies {
             'junit:junit:4.12'
     )
     testImplementation(
-            'org.junit.jupiter:junit-jupiter-api:5.1.0'
+            'org.junit.jupiter:junit-jupiter-api:5.1.0',
+            'com.github.noconnor:junitperf:1.15.0'
     )
     testRuntimeOnly(
             'org.junit.jupiter:junit-jupiter-engine:5.1.0',

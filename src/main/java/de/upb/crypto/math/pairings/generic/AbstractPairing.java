@@ -1,105 +1,37 @@
 package de.upb.crypto.math.pairings.generic;
 
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
+import de.upb.crypto.math.interfaces.mappings.impl.BilinearMapImpl;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
  * Base class for pairings based on BN curves such as Tate Pairing, Ate Pairing and Optimal Ate Pairing.
  *
  * @author peter.guenther
  */
-public abstract class AbstractPairing implements BilinearMap {
-    protected PairingSourceGroup g1;
-    protected PairingSourceGroup g2;
-    protected PairingTargetGroup gT;
+public abstract class AbstractPairing implements BilinearMapImpl {
+    protected PairingSourceGroupImpl g1;
+    protected PairingSourceGroupImpl g2;
+    protected PairingTargetGroupImpl gT;
 
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((g1 == null) ? 0 : g1.hashCode());
-        result = prime * result + ((g2 == null) ? 0 : g2.hashCode());
-        result = prime * result + ((gT == null) ? 0 : gT.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof AbstractPairing)) {
-            return false;
-        }
-        AbstractPairing other = (AbstractPairing) obj;
-        if (g1 == null) {
-            if (other.g1 != null) {
-                return false;
-            }
-        } else if (!g1.equals(other.g1)) {
-            return false;
-        }
-        if (g2 == null) {
-            if (other.g2 != null) {
-                return false;
-            }
-        } else if (!g2.equals(other.g2)) {
-            return false;
-        }
-        if (gT == null) {
-            if (other.gT != null) {
-                return false;
-            }
-        } else if (!gT.equals(other.gT)) {
-            return false;
-        }
-        return true;
-    }
-
-    protected void init(PairingSourceGroup g1, PairingSourceGroup g2, PairingTargetGroup gT) {
+    protected void init(PairingSourceGroupImpl g1, PairingSourceGroupImpl g2, PairingTargetGroupImpl gT) {
         this.g1 = g1;
         this.g2 = g2;
         this.gT = gT;
     }
 
-    public AbstractPairing(PairingSourceGroup g1, PairingSourceGroup g2, PairingTargetGroup gT) {
+    public AbstractPairing(PairingSourceGroupImpl g1, PairingSourceGroupImpl g2, PairingTargetGroupImpl gT) {
         init(g1, g2, gT);
     }
 
     @Override
-    public PairingTargetGroupElement evaluate(PairingProductExpression expr) {
-        expr = expr.dynamicOptimization();
-        //we assume that operations in g1 are more efficient than in g2 and gt
-        FieldElement result = expr.stream()
-                .map(x -> this.pair(
-                        (PairingSourceGroupElement) x.getKey().getGExpression().pow(x.getValue()).evaluate(), //exponentiate in G1
-                        (PairingSourceGroupElement) x.getKey().getH()))
-                .reduce(ExtensionFieldElement::mul)
-                .orElse(this.getGT().getFieldOfDefinition().getOneElement());
-
-        /*perform final exponentiation at product*/
-        return this.exponentiate(result);
-    }
-
-    @Override
-    public PairingTargetGroupElement apply(GroupElement g, GroupElement h, BigInteger exponent) {
+    public PairingTargetGroupElementImpl apply(GroupElementImpl g, GroupElementImpl h, BigInteger exponent) {
         return exponentiate(pair((PairingSourceGroupElement) g.pow(exponent), (PairingSourceGroupElement) h));
     }
 
@@ -112,46 +44,19 @@ public abstract class AbstractPairing implements BilinearMap {
      * @param f the element to exponentiate
      * @return f^e
      */
-    public PairingTargetGroupElement exponentiate(FieldElement f) {
-        PairingTargetGroupElement result = gT.getElement((ExtensionFieldElement) f.pow(gT.getCofactor()));
+    public PairingTargetGroupElementImpl exponentiate(FieldElement f) {
+        PairingTargetGroupElementImpl result = gT.getElement((ExtensionFieldElement) f.pow(gT.getCofactor()));
         return result;
-    }
-
-    @Override
-    public Representation getRepresentation() {
-        ObjectRepresentation or = new ObjectRepresentation();
-
-
-        or.put("G1", new RepresentableRepresentation(this.getG1()));
-        or.put("G2", new RepresentableRepresentation(this.getG2()));
-        or.put("GT", new RepresentableRepresentation(this.getGT()));
-
-        return or;
     }
 
     public AbstractPairing(Representation r) {
         ObjectRepresentation or = (ObjectRepresentation) r;
 
         init(
-                (PairingSourceGroup) ((RepresentableRepresentation) or.get("G1")).recreateRepresentable(),
-                (PairingSourceGroup) ((RepresentableRepresentation) or.get("G2")).recreateRepresentable(),
-                (PairingTargetGroup) ((RepresentableRepresentation) or.get("GT")).recreateRepresentable()
+                (PairingSourceGroupImpl) ((RepresentableRepresentation) or.get("G1")).recreateRepresentable(),
+                (PairingSourceGroupImpl) ((RepresentableRepresentation) or.get("G2")).recreateRepresentable(),
+                (PairingTargetGroupImpl) ((RepresentableRepresentation) or.get("GT")).recreateRepresentable()
         );
-    }
-
-    @Override
-    public PairingSourceGroup getG1() {
-        return g1;
-    }
-
-    @Override
-    public PairingSourceGroup getG2() {
-        return g2;
-    }
-
-    @Override
-    public PairingTargetGroup getGT() {
-        return gT;
     }
 
     /**
@@ -196,7 +101,7 @@ public abstract class AbstractPairing implements BilinearMap {
      */
     protected ExtensionFieldElement miller(PairingSourceGroupElement P, PairingSourceGroupElement Q, BigInteger n) {
         FieldElement[] line;
-        ExtensionField targetField = (ExtensionField) this.getGT().getFieldOfDefinition();
+        ExtensionField targetField = (ExtensionField) gT.getFieldOfDefinition();
         /*
          * f_1=1; f_2=1 R=P;
          */
@@ -277,5 +182,18 @@ public abstract class AbstractPairing implements BilinearMap {
         return (ExtensionFieldElement) millerVariable;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || this.getClass() != other.getClass()) return false;
+        AbstractPairing that = (AbstractPairing) other;
+        return Objects.equals(g1, that.g1) &&
+                Objects.equals(g2, that.g2) &&
+                Objects.equals(gT, that.gT);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(g1, g2, gT);
+    }
 }

@@ -3,20 +3,23 @@ package de.upb.crypto.math.factory;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
+import de.upb.crypto.math.interfaces.mappings.impl.GroupHomomorphismImpl;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
+import de.upb.crypto.math.structures.zn.HashIntoZn;
+import de.upb.crypto.math.structures.zn.Zn;
 
 /**
  * Parameters for a pairing group setting.
  */
 public interface BilinearGroup extends StandaloneRepresentable {
     /**
-     * The three types of a {@link BilinearGroup}.
+     * The types of a {@link BilinearGroup}.
      * <p>
      * The types have the following properties:
      * TYPE_1: G1 = G2
      * TYPE_2: G1 != G2 and there exists a computable isomorphism G2 -> G1
-     * TYPE_3: G1 != G2 and there exists no efficiently computable isomorphism  G2 -> G1
+     * TYPE_3: G1 != G2 and we assume there is no efficiently computable isomorphism  G2 -> G1
      */
     enum Type {
         TYPE_1,
@@ -47,5 +50,11 @@ public interface BilinearGroup extends StandaloneRepresentable {
      * @throws UnsupportedOperationException if this factory does not support a hash into exponents or G1,G2,GT don't
      *                                       have the same group exponent
      */
-    HashIntoStructure getHashIntoZGroupExponent() throws UnsupportedOperationException;
+    default HashIntoZn getHashIntoZGroupExponent() throws UnsupportedOperationException {
+        return new HashIntoZn(getZn());
+    }
+
+    default Zn getZn() {
+        return getG1().getZn();
+    }
 }

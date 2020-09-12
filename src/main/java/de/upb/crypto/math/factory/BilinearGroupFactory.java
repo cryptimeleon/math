@@ -1,8 +1,7 @@
 package de.upb.crypto.math.factory;
 
-import de.upb.crypto.math.lazy.LazyBilinearGroup;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.debug.DebugBilinearGroupProvider;
+import de.upb.crypto.math.pairings.debug.count.CountingBilinearGroupProvider;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
 
 import java.util.Arrays;
@@ -26,10 +25,6 @@ import java.util.stream.Collectors;
  * Default providers are {@link SupersingularProvider} for Type 1 groups and {@link BarretoNaehrigProvider} for Type
  * 3 groups.
  * </li>
- * <li>
- * Optionally: Set whether the returned bilinear group should be a (non-secure) debug group or an (optimized)
- * lazy group using {@link #setDebugMode(boolean)} and {@link #setLazyGroups(boolean)}, respectively.
- * </li>
  * <li>Create the bilinear group fulfilling the defined requirements by {@link #createBilinearGroup()}.</li>
  * </ol>
  */
@@ -38,7 +33,6 @@ public class BilinearGroupFactory {
      * Security parameter
      */
     protected int securityParameter;
-    protected boolean lazygroup = false;
     private BilinearGroupRequirement requirements;
     private List<? extends BilinearGroupProvider> registeredProvider = Arrays.asList(new SupersingularProvider(),
             new BarretoNaehrigProvider());
@@ -108,16 +102,8 @@ public class BilinearGroupFactory {
     }
 
     /**
-     * If set to true, the factory is going to output a lazy version of the pairing and its groups. In that case,
-     * computation of values is deferred until needed and the lazy group will try to optimize computation.
-     */
-    public void setLazyGroups(boolean lazygroups) {
-        this.lazygroup = lazygroups;
-    }
-
-    /**
      * If set to true, a special bilinear group for non-secure pairings Zn x Zn -> Zn is returned. In this case, n =
-     * [largest prime <= securityParameter]
+     * [largest prime >= 2^securityParameter]
      */
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
@@ -133,13 +119,11 @@ public class BilinearGroupFactory {
             throw new IllegalArgumentException(
                     "Please set appropriate requirements for the factory " + "using setRequirements!");
         }
-        BilinearGroup.Type type = requirements.getType();
-        int primeFactors = requirements.getCardinalityNumPrimeFactors();
 
         if (debugMode) {
             // DLOG is trivial in (Zn,+), use for debug only!
-            DebugBilinearGroupProvider fac = new DebugBilinearGroupProvider();
-            return fac.provideBilinearGroup(securityParameter, type, primeFactors);
+            CountingBilinearGroupProvider provider = new CountingBilinearGroupProvider();
+            return provider.provideBilinearGroup(securityParameter, requirements);
         }
 
         // filter registered bilinear group provider for the suitable ones
@@ -150,8 +134,6 @@ public class BilinearGroupFactory {
             throw new UnsupportedOperationException("Unable to create a group with the given constraints");
         }
 
-        BilinearGroup result = suitableProvider.get(0).provideBilinearGroup(securityParameter, requirements);
-
-        return lazygroup ? new LazyBilinearGroup(result) : result;
+        return suitableProvider.get(0).provideBilinearGroup(securityParameter, requirements);
     }
 }

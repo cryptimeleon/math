@@ -139,7 +139,7 @@ public class PolynomialRing implements Ring {
          * <p>
          * (i.e. this is a helper constructor for polynomials in the galois field)
          *
-         * @param coefficients the coefficients in descending order (!)
+         * @param seed Bit string representing coefficients of new polynomial in ascending order.
          */
         public Polynomial(Seed seed) {
             if (!baseRing.equals(new Zp(BigInteger.valueOf(2)))) {

@@ -52,6 +52,11 @@ public class Zp extends Zn implements Field {
     }
 
     @Override
+    public ZpElement getUniformlyRandomNonzeroElement() {
+        return (ZpElement) super.getUniformlyRandomNonzeroElement();
+    }
+
+    @Override
     public ZpElement getUniformlyRandomElement() throws UnsupportedOperationException {
         return (ZpElement) super.getUniformlyRandomElement();
     }
@@ -69,7 +74,6 @@ public class Zp extends Zn implements Field {
     @Override
     public ZpElement getPrimitiveElement() throws UnsupportedOperationException {
         throw new UnsupportedOperationException("Not implemented");
-
     }
 
     @Override
@@ -121,12 +125,22 @@ public class Zp extends Zn implements Field {
         }
 
         @Override
+        public ZpElement mul(long k) {
+            return (ZpElement) super.mul(k);
+        }
+
+        @Override
         public ZpElement inv() throws UnsupportedOperationException {
             return (ZpElement) super.inv();
         }
 
         @Override
         public ZpElement pow(BigInteger k) {
+            return (ZpElement) super.pow(k);
+        }
+
+        @Override
+        public ZpElement pow(long k) {
             return (ZpElement) super.pow(k);
         }
 
@@ -205,7 +219,12 @@ public class Zp extends Zn implements Field {
 
     @Override
     public ZpElement createZnElement(BigInteger v) {
-        return new ZpElement(v);
+        return createZnElementUnsafe(v.mod(n));
+    }
+
+    @Override
+    protected ZpElement createZnElementUnsafe(BigInteger vBetween0andN) {
+        return new ZpElement(vBetween0andN);
     }
 
     @Override

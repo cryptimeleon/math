@@ -1,16 +1,20 @@
 package de.upb.crypto.math.serialization.annotations.v2;
 
 import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.serialization.*;
+import de.upb.crypto.math.interfaces.mappings.BilinearMap;
+import de.upb.crypto.math.serialization.ObjectRepresentation;
+import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.internal.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -25,6 +29,8 @@ import java.util.stream.Stream;
  * - In the constructor(Representation repr), call: new ReprUtil(this).deserialize(repr);
  * - In getRepresentation(), call ReprUtil.serialize(this);
  *
+ * You can also refer to a restorer as, for example, "bilGroup::getG1", where bilGroup is as above (another field of the class or something registered) and getG1 is a method that returns a RepresentationRestorer.
+ *
  * - The framework can handle Lists, Sets, and Maps as well. For example, @Represented(restorer="[group]") handles a list or set of group elements
  *   and @Represented(restorer="String -> [group]") handles a map of Strings to lists of group elements.
  *   Check {@link Represented#restorer()} for details.
@@ -35,6 +41,7 @@ import java.util.stream.Stream;
  *   getRepresentation() would still just call ReprUtil.serialize(this);
  */
 public class ReprUtil {
+    static Pattern methodCallSeparator = Pattern.compile("::");
     /**
      * RepresentationRestorer that can help during recreation of the instance.
      */
@@ -73,9 +80,14 @@ public class ReprUtil {
     }
 
     public ReprUtil register(BilinearGroup bilinearGroup) {
-        register(bilinearGroup.getG1(), "G1");
-        register(bilinearGroup.getG2(), "G2");
-        register(bilinearGroup.getGT(), "GT");
+        register(bilinearGroup.getBilinearMap());
+        return this;
+    }
+
+    public ReprUtil register(BilinearMap bilinearMap) {
+        register(bilinearMap.getG1(), "G1");
+        register(bilinearMap.getG2(), "G2");
+        register(bilinearMap.getGT(), "GT");
         return this;
     }
 
@@ -161,6 +173,18 @@ public class ReprUtil {
     }
 
     /**
+     * Restores the instance from representation.
+     * For more control over the deserialization process (e.g., if there are dependencies),
+     * use new ReprUtil(this).register(...).deserialize(repr)
+     *
+     * @param instance an object of a class that has fields annotated with @Represented
+     * @param repr the representation created by ReprUtil::serialize
+     */
+    public static void deserialize(Object instance, Representation repr) {
+        new ReprUtil(instance).deserialize(repr);
+    }
+
+    /**
      * Recreates the instance from representation.
      * @param repr a Representation you got from serialize()
      */
@@ -178,9 +202,9 @@ public class ReprUtil {
         try {
             field.setAccessible(true);
             Object value = field.get(instance);
-            if (value != null)
+            if (value != null) {
                 return value;
-
+            }
             value = getHandlerForField(field).deserializeFromRepresentation(topLevelRepr.obj().get(field.getName()), name -> getOrRecreateRestorer(name, topLevelRepr));
             field.set(instance, value);
             return value;
@@ -193,24 +217,44 @@ public class ReprUtil {
      * Gets restorer from registered restorers or - if it's not there - look for it within the fields instance's class
      * (and restore it if annotated).
      */
-    RepresentationRestorer getOrRecreateRestorer(String name, Representation topLevelRepr) {
-        if (restorers.containsKey(name))
-            return restorers.get(name);
+    RepresentationRestorer getOrRecreateRestorer(String restorerString, Representation topLevelRepr) {
+        //Parse restorerString of form "baseName::methodToCall::methodToCall::..."
+        String[] parsed = methodCallSeparator.split(restorerString);
+        String baseName = parsed[0];
 
-        //Restorer is some field
-        Field field = getFieldByName(name);
+        //Look for base name
+        if (restorers.containsKey(baseName))
+            return restorers.get(baseName);
+
+        //Base is some field
+        Field field = getFieldByName(baseName);
         if (field == null)
-            throw new IllegalArgumentException("\""+name+"\" is neither the name of a restorer given through ReprUtil.register, nor is it a member of the class being recreated.");
+            throw new IllegalArgumentException("\""+baseName+"\" is neither the name of a restorer given through ReprUtil.register, nor is it a member of the class being recreated.");
 
-        Object result = restoreField(field, topLevelRepr);
+        Object restoredBase = restoreField(field, topLevelRepr);
 
-        if (result == null)
-            throw new NullPointerException("The member \""+name+"\" is null and hence cannot be used to recreate further objects from representation");
+        if (restoredBase == null)
+            throw new NullPointerException("The member \""+baseName+"\" is null and hence cannot be used to recreate further objects from representation");
 
-        if (!(result instanceof RepresentationRestorer))
-            throw new IllegalArgumentException("\""+name+"\" is the name of a member of your class, but its value does not seem to implement the RepresentationRestorer interface.");
+        return callMethods(restoredBase, parsed);
+    }
 
-        return (RepresentationRestorer) result;
+    private static RepresentationRestorer callMethods(Object baseObject, String[] parsedRestorerString) {
+        Object currentObject = baseObject;
+        for (int i=1;i<parsedRestorerString.length;i++) {
+            String methodToCall = parsedRestorerString[i];
+            try {
+                currentObject = currentObject.getClass().getMethod(methodToCall).invoke(currentObject);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+                throw new IllegalArgumentException("Cannot call desired method "+methodToCall+" on "+currentObject.getClass().getName(), e);
+            }
+        }
+
+        if (!(currentObject instanceof RepresentationRestorer))
+            throw new IllegalArgumentException("\""+baseObject.getClass().getName()+"\" is not a RepresentationRestorer.");
+
+        return (RepresentationRestorer) currentObject;
     }
 
     /**
@@ -251,6 +295,17 @@ public class ReprUtil {
      * This is done statically, i.e. with static type information.
      */
     protected static RepresentationHandler getHandler(Type type, String restorerString) {
+        if (restorerString == null || restorerString.trim().length() == 0) //the distinction is basically made because each method recursively calls itself and we want consistent behavior depending on whether or not a restorer String was originally given (as opposed to a given String like "[] -> ", which eventually is broken down into an empty String but should be handled as a syntax error.)
+            return getHandlerWithoutRestorerString(type);
+        else
+            return getHandlerWithRestorerString(type, restorerString);
+    }
+
+    /**
+     * Derives the ReputationHandler for a certain Type (and restorerString).
+     * This is done statically, i.e. with static type information.
+     */
+    protected static RepresentationHandler getHandlerWithRestorerString(Type type, String restorerString) {
         if (StandaloneRepresentationHandler.canHandle(type))
             return new StandaloneRepresentationHandler((Class) type);
 
@@ -262,24 +317,63 @@ public class ReprUtil {
 
         if (ListAndSetRepresentationHandler.canHandle(type) && trimmedString.startsWith("[") && trimmedString.endsWith("]")) {
             Type elementType = ListAndSetRepresentationHandler.getElementType(type);
-            return new ListAndSetRepresentationHandler(getHandler(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
+            return new ListAndSetRepresentationHandler(getHandlerWithRestorerString(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
         }
 
         if (ArrayRepresentationHandler.canHandle(type) && trimmedString.startsWith("[") && trimmedString.endsWith("]")) {
             Type elementType = ArrayRepresentationHandler.getTypeOfElements(type);
-            return new ArrayRepresentationHandler(getHandler(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
+            return new ArrayRepresentationHandler(getHandlerWithRestorerString(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
         }
 
         int mapArrowIndex = findMapArrow(trimmedString);
         if (MapRepresentationHandler.canHandle(type) && mapArrowIndex != -1) {
             Type keyType = MapRepresentationHandler.getKeyType(type);
             Type valueType = MapRepresentationHandler.getValueType(type);
-            return new MapRepresentationHandler(getHandler(keyType, trimmedString.substring(0, mapArrowIndex)),
-                    getHandler(valueType, trimmedString.substring(mapArrowIndex+2)),
+            return new MapRepresentationHandler(getHandlerWithRestorerString(keyType, trimmedString.substring(0, mapArrowIndex)),
+                    getHandlerWithRestorerString(valueType, trimmedString.substring(mapArrowIndex+2)),
                     type);
         }
 
         throw new IllegalArgumentException("Don't know how to handle type "+type.getTypeName()+" using restorer String \""+restorerString+"\"");
+    }
+
+
+
+    /**
+     * Derives the ReputationHandler for a certain Type (for empty restorer string).
+     * This is done statically, i.e. with static type information.
+     */
+    protected static RepresentationHandler getHandlerWithoutRestorerString(Type type) {
+        // For generic type we need to extract the raw type. Only for StandaloneRepresentable though, as stuff
+        // like list and map handling can handle generic types by themselves.
+        // TODO: What about DependentRepresentations?
+        Type rawType = type;
+        if (type instanceof ParameterizedType) {
+            rawType = ((ParameterizedType) type).getRawType();
+        }
+        if (StandaloneRepresentationHandler.canHandle(rawType))
+            return new StandaloneRepresentationHandler((Class) rawType);
+
+        if (DependentRepresentationHandler.canHandle(type))
+            return new DependentRepresentationHandler("", type);
+
+        if (ListAndSetRepresentationHandler.canHandle(type)) {
+            Type elementType = ListAndSetRepresentationHandler.getElementType(type);
+            return new ListAndSetRepresentationHandler(getHandlerWithoutRestorerString(elementType), type);
+        }
+
+        if (ArrayRepresentationHandler.canHandle(type)) {
+            Type elementType = ArrayRepresentationHandler.getTypeOfElements(type);
+            return new ArrayRepresentationHandler(getHandlerWithoutRestorerString(elementType), type);
+        }
+
+        if (MapRepresentationHandler.canHandle(type)) {
+            Type keyType = MapRepresentationHandler.getKeyType(type);
+            Type valueType = MapRepresentationHandler.getValueType(type);
+            return new MapRepresentationHandler(getHandlerWithoutRestorerString(keyType), getHandlerWithoutRestorerString(valueType), type);
+        }
+
+        throw new IllegalArgumentException("Don't know how to handle type "+type.getTypeName()+" using empty restorer String (you can add one within the @Represented annotation)");
     }
 
     /**

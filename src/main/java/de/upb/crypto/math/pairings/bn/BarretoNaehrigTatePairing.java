@@ -16,13 +16,13 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
     /**
      * Construct Tate pairing {@code g1} x {@code g2} -> {@code gT}.
      */
-    public BarretoNaehrigTatePairing(BarretoNaehrigGroup1 g1, BarretoNaehrigGroup2 g2, BarretoNaehrigTargetGroup gT) {
+    public BarretoNaehrigTatePairing(BarretoNaehrigGroup1Impl g1, BarretoNaehrigGroup2Impl g2, BarretoNaehrigTargetGroupImpl gT) {
         super(g1, g2, gT);
 
     }
 
-    public BarretoNaehrigTatePairing(BarretoNaehrigSourceGroup g1, BarretoNaehrigSourceGroup g2,
-                                     BarretoNaehrigTargetGroup gT) {
+    public BarretoNaehrigTatePairing(BarretoNaehrigSourceGroupImpl g1, BarretoNaehrigSourceGroupImpl g2,
+                                     BarretoNaehrigTargetGroupImpl gT) {
         super(g1, g2, gT);
     }
 
@@ -32,7 +32,7 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
 
     @Override
     protected ExtensionFieldElement evaluateLine(FieldElement[] line, PairingSourceGroupElement P, PairingSourceGroupElement Q) {
-        ExtensionField targetField = (ExtensionField) this.getGT().getFieldOfDefinition();
+        ExtensionField targetField = (ExtensionField) gT.getFieldOfDefinition();
         ExtensionField extField = (ExtensionField) Q.getFieldOfDefinition();
 
         /*
@@ -63,7 +63,7 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
 
     @Override
     protected ExtensionFieldElement pair(PairingSourceGroupElement P, PairingSourceGroupElement Q) {
-        ExtensionFieldElement result = this.miller(P, Q, this.getG1().size());
+        ExtensionFieldElement result = this.miller(P, Q, g1.size());
         /*this might happen, if P and Q are from same subgroup. In this case, we get neutral element for Tate pairing.*/
         if (result.isZero()) {
             return result.getStructure().getOneElement();
@@ -71,21 +71,6 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
             return result;
         }
 
-    }
-
-    @Override
-    public BarretoNaehrigSourceGroup getG1() {
-        return (BarretoNaehrigSourceGroup) super.getG1();
-    }
-
-    @Override
-    public BarretoNaehrigSourceGroup getG2() {
-        return (BarretoNaehrigSourceGroup) super.getG2();
-    }
-
-    @Override
-    public BarretoNaehrigTargetGroup getGT() {
-        return (BarretoNaehrigTargetGroup) super.getGT();
     }
 
     @Override

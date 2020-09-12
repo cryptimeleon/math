@@ -274,12 +274,10 @@ public class ExtensionField implements Field {
 
     @Override
     public String toString() {
-        String s = "";
-
-        s += "degree " + this.extensionDegree + " extension of " + this.getBaseField() +
-                "defined by x^" + this.extensionDegree + "+" + this.constant.toString();
-
-        return s;
+        if (this.extensionDegree == 1)
+            return this.getBaseField().toString();
+        else
+            return "degree " + this.extensionDegree + " extension of " + this.getBaseField();
     }
 
     @Override

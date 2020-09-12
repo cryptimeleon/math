@@ -1,10 +1,12 @@
 package de.upb.crypto.math.interfaces.mappings;
 
+import de.upb.crypto.math.interfaces.mappings.impl.GroupHomomorphismImpl;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
-public class IdentityIsomorphism implements GroupHomomorphism {
+public class IdentityIsomorphism implements GroupHomomorphismImpl {
 
     public IdentityIsomorphism() {
 
@@ -15,7 +17,7 @@ public class IdentityIsomorphism implements GroupHomomorphism {
     }
 
     @Override
-    public GroupElement apply(GroupElement t) {
+    public GroupElementImpl apply(GroupElementImpl t) {
         return t;
     }
 
@@ -30,7 +32,7 @@ public class IdentityIsomorphism implements GroupHomomorphism {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return (o instanceof IdentityIsomorphism);
+    public boolean equals(Object other) {
+        return this.getClass() == other.getClass();
     }
 }

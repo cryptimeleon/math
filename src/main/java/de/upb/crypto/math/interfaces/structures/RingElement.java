@@ -12,15 +12,15 @@ public interface RingElement extends Element {
     /**
      * Interprets this element as an element of this R's unit group
      */
-    default RingUnitGroup.RingUnitGroupElement toUnitGroupElement() {
-        return new RingUnitGroup(getStructure()).new RingUnitGroupElement(this);
+    default GroupElement toUnitGroupElement() {
+        return RingGroup.unitGroupOf(getStructure()).getElement(this);
     }
 
     /**
      * Interprets this element as an element of this R's additive group
      */
-    default RingAdditiveGroup.RingAdditiveGroupElement toAdditiveGroupElement() {
-        return new RingAdditiveGroup(getStructure()).new RingAdditiveGroupElement(this);
+    default GroupElement toAdditiveGroupElement() {
+        return RingGroup.additiveGroupOf(getStructure()).getElement(this);
     }
 
     /**
@@ -74,6 +74,10 @@ public interface RingElement extends Element {
         return result;
     }
 
+    default RingElement mul(long k) {
+        return mul(BigInteger.valueOf(k));
+    }
+
     /**
      * Calculates this^k.
      * (Note that (anything)^0 = 1, particularly 0^0 = 1)
@@ -88,6 +92,10 @@ public interface RingElement extends Element {
                 result = result.mul(this);
         }
         return result;
+    }
+
+    default RingElement pow(long k) {
+        return pow(BigInteger.valueOf(k));
     }
 
     /**
@@ -172,5 +180,16 @@ public interface RingElement extends Element {
 
     public default RingElement square() {
         return this.mul(this);
+    }
+
+    /**
+     * Interprets this element as an exponent for the given group.
+     * For example, for a group of size n, ZnElements can usefully serve as exponents.
+     *
+     * @return a useful integer value such that the expression groupElement.pow(this).equals(groupElement.pow(this.asExponent()) makes sense.
+     * @throws UnsupportedOperationException if this ring is not fit to be interpreted as exponents for a group
+     */
+    default BigInteger asExponent() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Cannot interpret "+getClass().getName()+" as an exponent");
     }
 }

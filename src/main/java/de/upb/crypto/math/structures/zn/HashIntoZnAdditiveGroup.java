@@ -1,8 +1,9 @@
 package de.upb.crypto.math.structures.zn;
 
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
-import de.upb.crypto.math.interfaces.structures.RingAdditiveGroup;
-import de.upb.crypto.math.interfaces.structures.RingAdditiveGroup.RingAdditiveGroupElement;
+import de.upb.crypto.math.interfaces.structures.RingGroup;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl.RingAdditiveGroupElementImpl;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
@@ -18,7 +19,7 @@ public class HashIntoZnAdditiveGroup implements HashIntoStructure {
     /**
      * target group
      */
-    protected RingAdditiveGroup structure;
+    protected RingGroup structure;
 
     /**
      * Corresponds to new HashIntoZn()
@@ -31,26 +32,24 @@ public class HashIntoZnAdditiveGroup implements HashIntoStructure {
      * Corresponds to new HashIntoZn(String)
      */
     public HashIntoZnAdditiveGroup(Zn ring) {
-        znHash = new HashIntoZn(ring.n);
-        structure = new RingAdditiveGroup(znHash.getTargetStructure());
+        this(new HashIntoZn(ring.n));
     }
 
     /**
      * Recreate hash function from representation
      */
     public HashIntoZnAdditiveGroup(Representation repr) {
-        znHash = new HashIntoZn(repr);
-        structure = new RingAdditiveGroup(znHash.getTargetStructure());
+        this(new HashIntoZn(repr));
     }
 
     public HashIntoZnAdditiveGroup(HashIntoZn hashIntoZn) {
         znHash = hashIntoZn;
-        structure = new RingAdditiveGroup(znHash.getTargetStructure());
+        structure = znHash.getTargetStructure().asAdditiveGroup();
     }
 
     @Override
-    public RingAdditiveGroupElement hashIntoStructure(byte[] x) {
-        return structure.new RingAdditiveGroupElement(znHash.hashIntoStructure(x));
+    public RingGroup.RingGroupElement hashIntoStructure(byte[] x) {
+        return structure.getElement(znHash.hashIntoStructure(x));
     }
 
     @Override

@@ -12,16 +12,6 @@ package de.upb.crypto.math.serialization;
  */
 public interface Representable {
     /**
-     * A String, uniquely identifying the kind of object encoded in the representation (not the object itself).
-     * By convention, this is the fully qualified class name of the object.
-     * @Deprecated not needed: has never been overwritten and is not used anywhere anymore. Will be removed in next major release.
-     */
-    @Deprecated
-    default String getRepresentedTypeName() {
-        return this.getClass().getName();
-    }
-
-    /**
      * The representation of this object. Used for serialization.
      * A convenient way to implement this is using @link {@link de.upb.crypto.math.serialization.annotations.v2.ReprUtil}
      *

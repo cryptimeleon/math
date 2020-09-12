@@ -1,16 +1,13 @@
 package de.upb.crypto.math.structures.test;
 
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupRequirement;
-import de.upb.crypto.math.interfaces.structures.*;
-import de.upb.crypto.math.lazy.LazyGroup;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.debug.DebugGroup;
-import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
-import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroup;
+import de.upb.crypto.math.interfaces.structures.Group;
+import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.pairings.debug.DebugGroupImpl;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
-import de.upb.crypto.math.random.interfaces.RandomUtil;
+import de.upb.crypto.math.serialization.RepresentableRepresentation;
+import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.groups.basic.BasicGroup;
+import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
 import de.upb.crypto.math.structures.integers.IntegerElement;
 import de.upb.crypto.math.structures.integers.IntegerRing;
 import de.upb.crypto.math.structures.sn.Sn;
@@ -22,11 +19,12 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.security.SecureRandom;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,13 +33,53 @@ import static org.junit.Assert.assertTrue;
  * Does generic testing of groups
  */
 @RunWith(Parameterized.class)
-public class GroupTests extends StructureTests {
+public class GroupTests {
     protected Group group;
     protected Supplier<GroupElement> elementSupplier;
 
     public GroupTests(TestParams params) {
         this.group = params.group;
         this.elementSupplier = params.elementSupplier;
+    }
+
+    @Test
+    public void testMultiexp() {
+        try {
+            group.size();
+        } catch (UnsupportedOperationException e) {
+            return; //don't test unknown order groups here, for simplicity.
+        }
+        int n = 20;
+
+        GroupElement g = elementSupplier.get();
+        List<GroupElement> h = Stream.generate(elementSupplier).limit(n).collect(Collectors.toList());
+        List<Zn.ZnElement> exponents = Stream.generate(group::getUniformlyRandomExponent).limit(n).collect(Collectors.toList());
+
+        //Computing g * h_i^x_i
+        GroupElement resultMultiexp = g;
+        for (int i=0; i<n; i++)
+            resultMultiexp = resultMultiexp.op(h.get(i).pow(exponents.get(i)));
+
+        GroupElement resultMultexpWay2 = g;
+        for (int i=0; i<n; i++)
+            resultMultexpWay2 = resultMultexpWay2.op(h.get(i).pow(exponents.get(i))).computeSync();
+
+        resultMultiexp.compute();
+        assertEquals(resultMultiexp, resultMultexpWay2);
+
+        //Computing (g * h_i^x_i)^z
+        Zn.ZnElement z = group.getUniformlyRandomUnitExponent();
+        GroupElement everythingRaisedToZ = g.pow(z);
+        for (int i=0; i<n; i++)
+            everythingRaisedToZ = everythingRaisedToZ.op(h.get(i).pow(exponents.get(i).mul(z)));
+
+        assertEquals(resultMultiexp.pow(z), everythingRaisedToZ);
+
+        //Checking some exponent math
+        List<Zn.ZnElement> otherExponents = Stream.generate(group::getUniformlyRandomExponent).limit(n).collect(Collectors.toList());
+        Zn.ZnElement innerProduct = IntStream.range(0, n).mapToObj(i -> otherExponents.get(i).mul(exponents.get(i))).reduce(Zn.ZnElement::add).get();
+        assertEquals(g.pow(innerProduct), IntStream.range(0, n).mapToObj(i -> g.pow(otherExponents.get(i)).pow(exponents.get(i))).reduce(GroupElement::op).get());
+        assertEquals(g.pow(exponents.get(0)).pow(exponents.get(1)), g.pow(exponents.get(1)).pow(exponents.get(0)));
     }
 
     @Test
@@ -55,34 +93,41 @@ public class GroupTests extends StructureTests {
             assertTrue(ex instanceof UnsupportedOperationException);
         }
 
+        // Drawing uniformly random non neutral elements works or throws the right exception
+        try {
+            a = group.getUniformlyRandomNonNeutral();
+        } catch (Exception ex) {
+            assertTrue(ex instanceof UnsupportedOperationException);
+        }
+
         a = elementSupplier.get();
         b = elementSupplier.get();
         c = elementSupplier.get();
 
         // a/a = 1
-        assertTrue(a.inv().op(a).equals(group.getNeutralElement()));
-        assertTrue(a.op(a.inv()).equals(group.getNeutralElement()));
+        assertEquals(a.inv().op(a), group.getNeutralElement());
+        assertEquals(a.op(a.inv()), group.getNeutralElement());
 
         // Associativity
-        assertTrue(a.op(b).op(c).equals(a.op(b.op(c))));
+        assertEquals(a.op(b).op(c), a.op(b.op(c)));
 
         // Commutativity
         if (group.isCommutative())
             assertEquals("Commutativity", a.op(b), b.op(a));
 
         //(ab)^x = a^xb^x
-        long exponent = 10;
+        BigInteger exponent = BigInteger.TEN;
         if (group.isCommutative())
             assertEquals("Exponentiation+Commutativity", a.op(b).pow(exponent), a.pow(exponent).op(b.pow(exponent)));
 
         // Neutral element
-        assertTrue(a.op(group.getNeutralElement()).equals(a));
-        assertTrue(group.getNeutralElement().op(a).equals(a));
+        assertEquals(a.op(group.getNeutralElement()), a);
+        assertEquals(group.getNeutralElement().op(a), a);
 
         //Exponentiation
         GroupElement aToTheFifth = a.op(a).op(a).op(a).op(a);
-        assertEquals("Exponentiation", a.pow(BigInteger.valueOf(5)), aToTheFifth);
-        assertEquals("Exponentiation with negative exponent", a.pow(BigInteger.valueOf(-5)), aToTheFifth.inv());
+        assertEquals("Exponentiation", a.pow(5), aToTheFifth);
+        assertEquals("Exponentiation with negative exponent", a.pow(-5), aToTheFifth.inv());
 
         // Size
         BigInteger size = null;
@@ -96,20 +141,23 @@ public class GroupTests extends StructureTests {
         if (size != null) {
             // Lagrange
             assertTrue("Lagrange", a.pow(size).isNeutralElement());
-            assertTrue("Lagrange inversion", a.pow(size.subtract(BigInteger.ONE)).equals(a.inv()));
+            assertEquals("Lagrange inversion", a.pow(size.subtract(BigInteger.ONE)), a.inv());
 
-            Zn.ZnElement r = new Zn(group.size()).getUniformlyRandomElement();
+            BigInteger r = new Zn(group.size()).getUniformlyRandomElement().getInteger();
             if (size.isProbablePrime(100)) {
                 // If commutative: (ab)^r b^{-r} = a^r
-                assertTrue(a.op(b).pow(r).op(b.pow(r.neg())).equals(a.pow(r)));
+                assertEquals(a.op(b).pow(r).op(b.pow(r.negate())), a.pow(r));
             } else {
                 // Otherwise (or if not sure): a^r b^r b^{-r} = a^r
-                assertTrue(a.pow(r).op(b.pow(r)).op(b.pow(r.neg())).equals(a.pow(r)));
+                assertEquals(a.pow(r).op(b.pow(r)).op(b.pow(r.negate())), a.pow(r));
             }
+
+            //Computing in the exponent
+            assertEquals(a.pow(r.multiply(BigInteger.valueOf(42))), a.pow(r).pow(42));
         }
     }
 
-    @Test
+    /*@Test
     public void testBatchOp() {
         ArrayList<GroupElement> elems = new ArrayList<>();
         ArrayList<BigInteger> exponents = new ArrayList<>();
@@ -134,7 +182,7 @@ public class GroupTests extends StructureTests {
 
         GroupElement resultBatch = group.evaluate(elems, exponents);
         assertEquals("Batch operations", resultNaive, resultBatch);
-    }
+    }*/
 
     @Test
     public void testEqualsAndHashCode() {
@@ -142,10 +190,10 @@ public class GroupTests extends StructureTests {
         GroupElement b = a.op(a).op(a.inv()); // b = a ("duplicated")
 
         if (a == b)
-            System.out.println("Warning: could not test hash code implementation for " + group); // if a == b, the default "Object" hashCode implementation will simply work just like that
+            System.out.println("Warning: could not test hash code ementation for " + group); // if a == b, the default "Object" hashCode ementation will sy work just like that
 
-        assertTrue(a.equals(b) && b.equals(b));
-        assertTrue("Equal elements should have the same hashCode", a.hashCode() == b.hashCode());
+        assertTrue(a.equals(b) && b.equals(a));
+        assertEquals("Equal elements should have the same hashCode", a.hashCode(), b.hashCode());
     }
 
     @Test
@@ -167,55 +215,18 @@ public class GroupTests extends StructureTests {
                 assertTrue(e instanceof UnsupportedOperationException);
             }
         }
-
     }
 
-    @Parameters(name = "Test: {0}") // add (name="Test: {0}") for jUnit 4.12+ to print group's name to test
+    @Parameters(name = "Test: {0}")
     public static Collection<TestParams[]> data() {
         // Some setup
-        // Unit group of a ring
-        RingUnitGroup ringUnitGroup = new RingUnitGroup(new Zp(BigInteger.valueOf(13)));
-
-        // Additive group of a ring
-        RingAdditiveGroup ringAddGroup = new RingAdditiveGroup(new Zn(BigInteger.valueOf(12)));
-        RingAdditiveGroup ringAddGroupInt = new RingAdditiveGroup(new IntegerRing());
-
-        // Debug group
-        DebugGroup debugGroup = new DebugGroup("Testgroup", BigInteger.valueOf(10));
-
-        // Sn
-        Sn sn = new Sn(10);
-
-        // Supersingular curve groups
-		/*SupersingularProvider supsingfac = new SupersingularProvider();
-		supsingfac.init(80);
-		Group supsingG1 = supsingfac.getG1();
-		Group supsingGT = supsingfac.getGT();*/
-
-        // Supersingular curve groups
-        SupersingularProvider supsingFac = new SupersingularProvider();
-        SupersingularTateGroup supsingGrp = supsingFac.provideBilinearGroup(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
-        Group supsingG1 = supsingGrp.getG1();
-        Group supsingGT = supsingGrp.getGT();
-
-        //BarretoNaehrig groups
-        BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
-        BarretoNaehrigBilinearGroup bnGrp = bnFac.provideBilinearGroup(256, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
-        Group bnG1 = bnGrp.getG1();
-        Group bnG2 = bnGrp.getG2();
-        Group bnGT = bnGrp.getGT();
-
-        //Lazy group
-        LazyGroup lazyGroup = new LazyGroup(bnGT);
+        DebugGroupImpl debugGroupImpl = new DebugGroupImpl("testGroupImpl", BigInteger.probablePrime(128, new Random()));
+        BasicGroup basicGroup = new BasicGroup(debugGroupImpl);
+        LazyGroup lazyGroup = new LazyGroup(debugGroupImpl);
 
         // Collect parameters
-        TestParams params[][] = new TestParams[][]{
-                {new TestParams(ringUnitGroup)}, {new TestParams(ringAddGroup)},
-                {new TestParams(ringAddGroupInt, () -> ringAddGroupInt.new RingAdditiveGroupElement(new IntegerElement(RandomGeneratorSupplier.getRnd().getRandomElement(BigInteger.valueOf(100000)))))}, {new TestParams(sn)},
-                {new TestParams(debugGroup)},
-                {new TestParams(supsingG1)}, {new TestParams(supsingGT)},
-                {new TestParams(bnG1)}, {new TestParams(bnG2)}, {new TestParams(bnGT)},
-                {new TestParams(lazyGroup)}
+        TestParams[][] params = new TestParams[][]{
+                {new TestParams(basicGroup)}, {new TestParams(lazyGroup)}
         };
         return Arrays.asList(params);
     }
@@ -247,13 +258,22 @@ public class GroupTests extends StructureTests {
         }
     }
 
-    @Override
-    public Structure getStructureToTest() {
-        return group;
+    @Test
+    public void testStructureRepresentation() {
+        RepresentableRepresentation repr = new RepresentableRepresentation(group);
+        Group s2 = (Group) repr.recreateRepresentable();
+        assertEquals("Reserialized Group should be equal to original", group, s2);
+        assertEquals("Reserialized Group's hashCode should be equal to original", group.hashCode(), s2.hashCode());
     }
 
-    @Override
-    public Element getElementToTest() {
-        return elementSupplier.get();
+    @Test
+    public void testElementRepresentation() {
+        GroupElement elem = elementSupplier.get();
+
+        Representation repr = elem.getRepresentation();
+        GroupElement elem2 = group.getElement(repr);
+
+        assertEquals("Reserialized element should be equal to original", elem, elem2);
+        assertEquals("Reserialized element's hashCode should be equal to original", elem.hashCode(), elem2.hashCode());
     }
 }

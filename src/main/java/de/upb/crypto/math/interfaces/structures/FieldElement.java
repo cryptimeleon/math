@@ -26,8 +26,18 @@ public interface FieldElement extends RingElement {
     }
 
     @Override
+    public default FieldElement mul(long k) {
+        return mul(BigInteger.valueOf(k));
+    }
+
+    @Override
     public default FieldElement pow(BigInteger k) {
         return (FieldElement) RingElement.super.pow(k);
+    }
+
+    @Override
+    public default FieldElement pow(long k) {
+        return pow(BigInteger.valueOf(k));
     }
 
     @Override

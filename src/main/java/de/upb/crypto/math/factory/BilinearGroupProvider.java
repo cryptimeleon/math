@@ -22,11 +22,23 @@ public interface BilinearGroupProvider {
      * Provides a bilinear group for the given {@code securityParameter}. Before the group is provided it should be
      * checked whether the provider meets the {@code requirements} stated by the user.
      *
-     * @param securityParameter Discrete logarithm of the groups G1, G2, GT of the bilinear group provided.
+     * @param securityParameter Supposed security of discrete logarithm of the groups G1, G2, GT of the bilinear group provided (in bits).
      * @param requirements      Requirements the provided bilinear group need to fulfill.
      * @return A concrete instance of a {@link BilinearGroup} meeting the given parameters
      */
     BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements);
+
+    /**
+     * Provides a bilinear group for the given {@code securityParameter}. Before the group is provided it should be
+     * checked whether the provider meets the {@code requirements} stated by the user.
+     *
+     * Note that this returns a BilinearGroupImpl, which usually should not be used directly (call provideBilinearGroup instead or wrap this result in, for example, a BasicBilinearGroup)
+     *
+     * @param securityParameter Supposed security of discrete logarithm of the groups G1, G2, GT of the bilinear group provided (in bits).
+     * @param requirements      Requirements the provided bilinear group need to fulfill.
+     * @return A concrete instance of a {@link BilinearGroupImpl} meeting the given parameters
+     */
+    BilinearGroupImpl provideBilinearGroupImpl(int securityParameter, BilinearGroupRequirement requirements);
 
     /**
      * @param requirements      requirements to be checked

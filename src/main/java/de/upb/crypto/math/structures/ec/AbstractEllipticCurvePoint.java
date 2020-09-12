@@ -19,6 +19,12 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
         this.z = z;
     }
 
+    public AbstractEllipticCurvePoint(WeierstrassCurve curve, Representation repr) {
+        this(curve, curve.getFieldOfDefinition().getElement(repr.obj().get("x")),
+                curve.getFieldOfDefinition().getElement(repr.obj().get("y")),
+                curve.getFieldOfDefinition().getElement(repr.obj().get("z")));
+    }
+
     public Field getFieldOfDefinition() {
         return structure.getFieldOfDefinition();
     }
@@ -42,7 +48,7 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
     @Override
     public Representation getRepresentation() {
         /*
-         * normalize point to save memory for z-coordinates
+         * normalize point to save memory for z-coordinates and to avoid information leaks
          */
         AbstractEllipticCurvePoint normalized = (AbstractEllipticCurvePoint) this.normalize();
         ObjectRepresentation r = new ObjectRepresentation();
@@ -53,7 +59,9 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
     }
 
     public String toString() {
-        return "(" + x.toString() + ":" + y.toString() + ":" + z.toString() + ")";
+        return isNeutralElement() ? "point at infinity" :
+                z.isOne() ? "(" + x.toString() + "," + y.toString() + ")" :
+                        "(" + x.toString() + "," + y.toString() + ", "+ z.toString() +")";
     }
 
     @Override

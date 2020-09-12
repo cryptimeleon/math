@@ -1,16 +1,15 @@
 package de.upb.crypto.math.pairings.test;
 
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupFactory;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.PairingProductExpression;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.lazy.LazyPairing;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigBilinearGroup;
 import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.debug.DebugBilinearMap;
+import de.upb.crypto.math.pairings.debug.DebugBilinearGroupImpl;
 import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
-import de.upb.crypto.math.pairings.supersingular.SupersingularTateGroup;
+import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
@@ -37,6 +36,8 @@ public class PairingTests {
     public void testBasicProperties() {
         GroupElement p1 = pairing.getG1().getUniformlyRandomElement(), r1 = pairing.getG1().getUniformlyRandomElement();
         GroupElement p2 = pairing.getG2().getUniformlyRandomElement(), r2 = pairing.getG2().getUniformlyRandomElement();
+        Zn.ZnElement randomExp1 = pairing.getG1().getUniformlyRandomNonzeroExponent();
+        Zn.ZnElement randomExp2 = pairing.getG1().getUniformlyRandomNonzeroExponent();
 
         GroupElement t1, t2, t3, t4;
 
@@ -71,6 +72,11 @@ public class PairingTests {
         // e(R1,P2+R2)e(-R1,P2)e(-R1,R2)=1
         assertTrue("Bilinearity in second argument", pairing.apply(r1, p2.op(r2)).op(pairing.apply(r1.inv(), p2)).op(pairing.apply(r1.inv(), r2)).isNeutralElement());
 
+        //Bilinearity with exponent
+        assertEquals(pairing.apply(p1.pow(randomExp1), p2), pairing.apply(p1, p2.pow(randomExp1)));
+        assertEquals(pairing.apply(p1.pow(randomExp1), p2), pairing.apply(p1, p2).pow(randomExp1));
+        assertEquals(pairing.apply(p1.pow(randomExp1), p2.pow(randomExp2)), pairing.apply(p1, p2).pow(randomExp1.mul(randomExp2)));
+
         //Basic other properties
         assertTrue(pairing.apply(pairing.getG1().getNeutralElement(), p2).isNeutralElement());
         assertTrue(pairing.apply(p1, pairing.getG2().getNeutralElement()).isNeutralElement());
@@ -95,10 +101,10 @@ public class PairingTests {
         }
         exp[0] = zp.getZeroElement();
 
-        //Compute result using expression
-        PairingProductExpression expr = pairing.pairingProductExpression();
+        //Compute result using expression TODO
+        GroupElementExpression expr = pairing.getGT().expr();
         for (int i = 0; i < g.length; i++) {
-            expr.op(g[i], h[i], exp[i]);
+            expr = expr.op(pairing.expr(g[i], h[i]).pow(exp[i]));
         }
         GroupElement resultExpr = expr.evaluate();
 
@@ -124,9 +130,9 @@ public class PairingTests {
         assertEquals(naive, resultExpr);
 
         //Try nested expressions: e(g[i] * g[i+1], h[i])^2
-        expr = pairing.pairingProductExpression();
+        expr = pairing.getGT().expr();
         for (int i = 0; i + 1 < g.length; i += 2) {
-            expr.op(g[i].asPowProductExpression().op(g[i + 1]).pow(exp[i]), h[i].asPowProductExpression(), BigInteger.valueOf(2));
+            expr = expr.opPow(pairing.expr(g[i].expr().op(g[i + 1]).pow(exp[i]), h[i].expr()), BigInteger.valueOf(2));
         }
         resultExpr = expr.evaluate();
         naive = pairing.getGT().getNeutralElement();
@@ -139,27 +145,35 @@ public class PairingTests {
     @Parameters(name = "Test: {0}") // add (name="Test: {0}") for jUnit 4.12+ to print Pairing's name to test
     public static Collection<BilinearMap[]> data() {
         //Debug curve
-        DebugBilinearMap debugMap1 = new DebugBilinearMap(1, BigInteger.valueOf(19));
-        DebugBilinearMap debugMap2 = new DebugBilinearMap(2, BigInteger.valueOf(19));
-        DebugBilinearMap debugMap3 = new DebugBilinearMap(3, BigInteger.valueOf(19));
+        BilinearGroup debugMap1 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_1, BigInteger.valueOf(19)));
+        BilinearGroup debugMap2 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_2, BigInteger.valueOf(19)));
+        BilinearGroup debugMap3 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_3, BigInteger.valueOf(19)));
+
+        // Counting curves
+        BilinearGroupFactory fac = new BilinearGroupFactory(128);
+        fac.setDebugMode(true);
+        fac.setRequirements(BilinearGroup.Type.TYPE_1, true, true, true);
+        BilinearGroup countingGroup1 = fac.createBilinearGroup();
+        fac.setRequirements(BilinearGroup.Type.TYPE_2, true, true, true);
+        BilinearGroup countingGroup2 = fac.createBilinearGroup();
+        fac.setRequirements(BilinearGroup.Type.TYPE_3, true, true, true);
+        BilinearGroup countingGroup3 = fac.createBilinearGroup();
 
         // Supersingular curve groups
         SupersingularProvider supsingFac = new SupersingularProvider();
-        SupersingularTateGroup supsingGroup = supsingFac.provideBilinearGroup(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
+        BilinearGroup supsingGroup = supsingFac.provideBilinearGroup(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
 
         // BN curves
         BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
-        BarretoNaehrigBilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
-
-        //Lazy bn curve
-        LazyPairing lazyPairing = new LazyPairing(supsingGroup.getBilinearMap());
+        BilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
 
         // Collect parameters
-        BilinearMap params[][] = new BilinearMap[][]{
-                {debugMap1}, {debugMap2}, {debugMap3},
+        BilinearMap params[][] = new BilinearMap[][] {
+                {debugMap1.getBilinearMap()}, {debugMap2.getBilinearMap()}, {debugMap3.getBilinearMap()},
+                {countingGroup1.getBilinearMap()}, {countingGroup2.getBilinearMap()}, {countingGroup3.getBilinearMap()},
                 {supsingGroup.getBilinearMap()},
-                {bnGroup.getBilinearMap()},
-                {lazyPairing}};
+                {bnGroup.getBilinearMap()}
+        };
         return Arrays.asList(params);
     }
 }

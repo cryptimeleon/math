@@ -7,11 +7,11 @@ public abstract class PairingSourceGroupElement extends AffineEllipticCurvePoint
 
     //EllipticCurve structure;
 
-    public PairingSourceGroupElement(PairingSourceGroup curve, FieldElement x, FieldElement y) {
+    public PairingSourceGroupElement(PairingSourceGroupImpl curve, FieldElement x, FieldElement y) {
         super(curve, x, y);
     }
 
-    public PairingSourceGroupElement(PairingSourceGroup curve) {
+    public PairingSourceGroupElement(PairingSourceGroupImpl curve) {
         super(curve);
     }
 }

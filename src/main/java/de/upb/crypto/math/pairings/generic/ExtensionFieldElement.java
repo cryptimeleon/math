@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Elements in ExtensionField.
@@ -205,16 +206,10 @@ public class ExtensionFieldElement implements FieldElement, UniqueByteRepresenta
 
     @Override
     public String toString() {
-        String r = "";
-        r += "[";
+        if (field.extensionDegree == 1)
+            return coefficients[0].toString(); //no brackets for trivial "extensions"
 
-        for (FieldElement e : coefficients) {
-            r += e.toString();
-            r += " ,";
-        }
-
-        r += "]";
-        return r;
+        return "["+Arrays.stream(coefficients).map(Object::toString).collect(Collectors.joining(", "))+"]";
     }
 
     public ArrayList<BigInteger> asBigIntegerList() {
