@@ -11,8 +11,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CountingTest {
 
@@ -161,5 +160,17 @@ public class CountingTest {
         assertArrayEquals(new Integer[] {}, groupG1.getMultiExpTermNumbers().toArray(new Integer[] {}));
 
         assertEquals(0, bilGroup.getNumPairings());
+    }
+
+    @Test
+    public void testCountingHomomorphism() {
+        CountingGroup groupG1 = (CountingGroup) bilGroup.getG1();
+        CountingGroup groupG2 = (CountingGroup) bilGroup.getG2();
+
+        GroupElement elemG1;
+        GroupElement elemG2 = groupG2.getUniformlyRandomNonNeutral();
+
+        elemG1 = bilGroup.getHomomorphismG2toG1().apply(elemG2);
+        assertEquals(elemG1.getStructure(), groupG1);
     }
 }

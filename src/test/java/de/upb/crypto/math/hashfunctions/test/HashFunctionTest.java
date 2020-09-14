@@ -1,4 +1,4 @@
-package de.upb.crypto.math.hahsfunctions.test;
+package de.upb.crypto.math.hashfunctions.test;
 
 
 import de.upb.crypto.math.hash.impl.SHA256HashFunction;
