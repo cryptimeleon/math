@@ -34,8 +34,8 @@ public class CountingHomomorphism implements GroupHomomorphism {
     public GroupElement apply(GroupElement groupElement) {
         return new CountingGroupElement(
                 new CountingGroup(totalHom.getTargetGroup(), expMultiExpHom.getTargetGroup()),
-                totalHom.apply(groupElement),
-                expMultiExpHom.apply(groupElement)
+                totalHom.apply(((CountingGroupElement) groupElement).elemTotal),
+                expMultiExpHom.apply(((CountingGroupElement) groupElement).elemExpMultiExp)
         );
     }
 
