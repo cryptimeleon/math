@@ -193,26 +193,30 @@ public class ExponentiationAlgorithms {
         if (terms.isEmpty()) //nothing to do here.
             return multiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
 
-        int longestExponentDigitLength = 0; //TODO leading zeros are just a bunch of neutral element operations, so just choose a maximum length and go with that instead of copying arrays around so many times (once in precomputeExponentForWnaf and then again here for padding)
+        int longestExponentDigitLength = 0;
         int[][] exponentDigits = new int[terms.size()][];
         for (int i = 0; i < terms.size(); ++i) {
             exponentDigits[i] = precomputeExponentDigitsForWnaf(terms.get(i).exponent, windowSize);
             longestExponentDigitLength = Math.max(longestExponentDigitLength, exponentDigits[i].length);
         }
-        // padding with zeros
+        /*// padding with zeros
         for (int i = 0; i < exponentDigits.length; ++i) {
             int[] paddedArray = new int[longestExponentDigitLength];
             System.arraycopy(exponentDigits[i], 0, paddedArray, 0, exponentDigits[i].length);
             exponentDigits[i] = paddedArray;
-        }
+        }*/
+
         // now evaluate
         GroupImpl group = terms.get(0).base.getStructure();
-        GroupElementImpl result = group.getNeutralElement();
+        GroupElementImpl neutral = group.getNeutralElement();
+        GroupElementImpl result = neutral;
         for (int j = longestExponentDigitLength - 1; j >= 0; j--) {
-            if (j != longestExponentDigitLength - 1) {
+            if (result != neutral) {
                 result = result.square();
             }
             for (int i = 0; i < exponentDigits.length; i++) {
+                if (exponentDigits[i].length<=j) //only necessary if we don't pad.
+                    continue;
                 int exponentDigit = exponentDigits[i][j];
                 if (exponentDigit != 0) {
                     result = result.op(terms.get(i).getPrecomputation().get(exponentDigit));
@@ -316,9 +320,10 @@ public class ExponentiationAlgorithms {
 
         // now evaluate
         GroupImpl group = base.getStructure();
-        GroupElementImpl result = group.getNeutralElement();
+        GroupElementImpl neutral = group.getNeutralElement();
+        GroupElementImpl result = neutral;
         for (int j = exponentDigitsLen - 1; j >= 0; j--) {
-            if (j != exponentDigitsLen - 1) {
+            if (result != neutral) {
                 result = result.square();
             }
             int exponentDigit = exponentDigits[j];
@@ -333,16 +338,12 @@ public class ExponentiationAlgorithms {
     /**
      * @return Lowest n bits of i. Works for all n < 32.
      */
-    public static int getNLeastSignificantBits(int i, int numberOfLowBits) {
-        return i & ((1 << numberOfLowBits) - 1);
+    public static int getNLeastSignificantBits(long i, int numberOfLowBits) {
+        return (int) (i & ((1 << numberOfLowBits) - 1));
     }
 
-    /**
-     * Prepares WNAF representation (see master thesis by Swante Scholz) of exponent.
-     * @param exponent The exponent to compute WNAF representation for.
-     * @param windowSize The window size to use. This determines width of the WNAF representation.
-     * @return Array of exponent digits in WNAF form.
-     */
+
+    /* //in here because it's slightly more readable than the currently implemented version (though much slower)
     public static int[] precomputeExponentDigitsForWnaf(BigInteger exponent, int windowSize) {
         boolean invertEverything = false;
         if (exponent.signum() < 0) {
@@ -369,5 +370,59 @@ public class ExponentiationAlgorithms {
         int[] bWithoutLeadingZeros = new int[i];
         System.arraycopy(bi, 0, bWithoutLeadingZeros, 0, i);
         return bWithoutLeadingZeros;
+    }*/
+
+
+    /**
+     * Prepares WNAF representation (see master thesis by Swante Scholz) of exponent.
+     * @param exponent The exponent to compute WNAF representation for.
+     * @param windowSize The window size to use. This determines width of the WNAF representation.
+     * @return Array of exponent digits in WNAF form.
+     */
+    public static int[] precomputeExponentDigitsForWnaf(BigInteger exponent, int windowSize) {
+        if (windowSize > 30)
+            throw new IllegalArgumentException("Cannot handle window sizes > 30");
+        boolean invertEverything = false;
+        if (exponent.signum() < 0) {
+            invertEverything = true;
+            exponent = exponent.negate();
+        }
+
+        byte[] c = exponent.toByteArray();
+        int bitsCurrentlyLoaded = 0; //currentValue contains bitsCurrentlyLoaded bits from exponent.
+        int byteArrayIndexToLoadNext = 0; //we'll progressively load bytes into currentValue. This denotes how many bytes we've already loaded (starting with the least significant byte).
+        long currentValue = 0; //contains some of the bits from exponent (see variables above). We'll also change this value during the algorithm.
+
+        int[] result = new int[exponent.bitLength()+1];
+        int i = 0;
+        while (currentValue != 0 || byteArrayIndexToLoadNext < c.length) {
+            //Load new bytes into currentValue
+            while (bitsCurrentlyLoaded < 32 && byteArrayIndexToLoadNext < c.length) {
+                currentValue += Byte.toUnsignedLong(c[c.length-byteArrayIndexToLoadNext-1/*big endian*/]) << bitsCurrentlyLoaded; //using += to respect potential carries
+                bitsCurrentlyLoaded += 8;
+                byteArrayIndexToLoadNext++;
+            }
+
+            //We have enough bits accumulated, so let's compute the next digits.
+            int shiftAmount;
+            if ((currentValue & 1) == 1) {
+                int digit = getNLeastSignificantBits(currentValue, windowSize+1);
+                if (digit >= 1 << windowSize) { //if bit windowSize is set
+                    digit -= 1 << (windowSize+1);
+                }
+
+                result[i] = invertEverything ? -digit : digit;
+                currentValue = currentValue - digit;
+                shiftAmount = windowSize;
+            } else {
+                shiftAmount = Math.min(Long.numberOfTrailingZeros(currentValue), bitsCurrentlyLoaded);
+            }
+
+            i += shiftAmount;
+            currentValue = currentValue >> shiftAmount;
+            bitsCurrentlyLoaded -= shiftAmount;
+        }
+
+        return result;
     }
 }
