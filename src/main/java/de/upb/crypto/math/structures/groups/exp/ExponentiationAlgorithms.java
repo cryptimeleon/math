@@ -262,8 +262,109 @@ public class ExponentiationAlgorithms {
         return result;
     }
 
-    public static GroupElementImpl slidingWindowExp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation, int windowSize) {
-        //TODO in this and other algorithms: what happens with negative exponents? Or are those just forbidden?
+    public static GroupElementImpl slidingWindowExpA1(GroupElementImpl base, BigInteger exponent,
+                                                      SmallExponentPrecomputation precomputation, int windowSize) {
+        if (exponent.signum() < 0) {
+            return slidingWindowExpA1(base.inv(), exponent.negate(), null, windowSize);
+        }
+        if (precomputation == null)
+            precomputation = new SmallExponentPrecomputation(base);
+        else
+            windowSize = Math.max(precomputation.getCurrentSupportedWindowSize(), windowSize);
+
+        precomputation.compute(windowSize);
+
+        // we are assuming that every base has same underlying group
+        GroupElementImpl result = base.getStructure().getNeutralElement();
+        int exponentBitlen = exponent.bitLength(); //TODO maybe skip this and always set it to log p?
+        int windowPos = -1; //position of the (sliding) window. -1 signifies next window position must be computed.
+        int windowVal = 0; //the exponent of the current window.
+
+        for (int j = exponentBitlen - 1; j >= 0; j--) {
+            if (j != exponentBitlen - 1) {
+                result = result.square();
+            }
+
+            if (windowPos == -1 && exponent.testBit(j)) { //start a new window
+                int J = j - windowSize + 1;
+                while (!testBit(exponent, J)) {
+                    J++;
+                }
+                windowPos = J;
+                windowVal = 0;
+                for (int k = j; k >= J; k--) {
+                    windowVal <<= 1;
+                    if (testBit(exponent, k)) {
+                        windowVal++;
+                    }
+                }
+            } //now wait for the window position to occur through the squaring steps
+            if (windowPos == j) { //found window position. Multiply the whole thing with base^windowVal
+                result = result.op(precomputation.get(windowVal));
+                windowPos = -1;
+            }
+        }
+
+        return result;
+    }
+
+    public static GroupElementImpl slidingWindowExpA2(GroupElementImpl base, BigInteger exponent,
+                                                      SmallExponentPrecomputation precomputation, int windowSize) {
+        BigInteger actualExponent = exponent;
+        boolean isExponentNegative = false;
+        if (exponent.signum() < 0) {
+            isExponentNegative = (exponent.signum() < 0);
+            actualExponent = exponent.negate();
+        }
+        if (precomputation == null)
+            precomputation = new SmallExponentPrecomputation(base);
+        else
+            windowSize = Math.max(precomputation.getCurrentSupportedWindowSize(), windowSize);
+
+        precomputation.compute(windowSize);
+
+        // we are assuming that every base has same underlying group
+        GroupElementImpl result = base.getStructure().getNeutralElement();
+        int exponentBitlen = actualExponent.bitLength(); //TODO maybe skip this and always set it to log p?
+        int windowPos = -1; //position of the (sliding) window. -1 signifies next window position must be computed.
+        int windowVal = 0; //the exponent of the current window.
+
+        for (int j = exponentBitlen - 1; j >= 0; j--) {
+            if (j != exponentBitlen - 1) {
+                result = result.square();
+            }
+
+            if (windowPos == -1 && actualExponent.testBit(j)) { //start a new window
+                int J = j - windowSize + 1;
+                while (!testBit(actualExponent, J)) {
+                    J++;
+                }
+                windowPos = J;
+                windowVal = 0;
+                for (int k = j; k >= J; k--) {
+                    windowVal <<= 1;
+                    if (testBit(actualExponent, k)) {
+                        windowVal++;
+                    }
+                }
+            } //now wait for the window position to occur through the squaring steps
+            if (windowPos == j) { //found window position. Multiply the whole thing with base^windowVal
+                if (isExponentNegative)
+                    result = result.op(precomputation.get(windowVal).inv());
+                else
+                    result = result.op(precomputation.get(windowVal));
+                windowPos = -1;
+            }
+        }
+
+        return result;
+    }
+
+    public static GroupElementImpl slidingWindowExpA3(GroupElementImpl base, BigInteger exponent,
+                                                      SmallExponentPrecomputation precomputation, int windowSize) {
+        if (exponent.signum() < 0) {
+            return slidingWindowExpA1(base, exponent.negate(), null, windowSize).inv();
+        }
         if (precomputation == null)
             precomputation = new SmallExponentPrecomputation(base);
         else
