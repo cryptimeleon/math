@@ -43,6 +43,16 @@ public class LazyGroup implements Group {
     boolean isPrimeOrder;
     Zn zn;
     GroupElement generator;
+    /**
+     * We use wNAF by default but you can enable sliding window multi-exponentiation algorithm by setting this to
+     * {@code true}. Keep in mind that for negative exponents, the precomputation is not cached.
+     */
+    boolean useSlidingWindowMultiexp;
+    /**
+     * We use wNAF by default but you can enable sliding window exponentiation algorithm by setting this to
+     * {@code true}. Keep in mind that for negative exponents, the precomputation is not cached.
+     */
+    boolean useSlidingWindowExp;
 
     public LazyGroup(GroupImpl impl) {
         this(impl, 4, 8);
@@ -63,6 +73,8 @@ public class LazyGroup implements Group {
         generator = wrap(impl.getGenerator());
         isPrimeOrder = size.isProbablePrime(100);
         zn = isPrimeOrder ? new Zp(size) : new Zn(size);
+        useSlidingWindowMultiexp = false;
+        useSlidingWindowExp = false;
     }
 
     public LazyGroup(Representation repr) {
@@ -160,7 +172,13 @@ public class LazyGroup implements Group {
         if (impl.implementsOwnMultiExp())
             return impl.multiexp(multiexp);
         // use generic if group does not implement own algorithm
-        return ExponentiationAlgorithms.interleavingWnafMultiExp(multiexp, Math.max(exponentiationWindowSize, multiexp.getMinPrecomputedWindowSize()));
+        if (useSlidingWindowMultiexp) {
+            return ExponentiationAlgorithms.interleavingSlidingWindowMultiExp(multiexp,
+                    Math.max(exponentiationWindowSize, multiexp.getMinPrecomputedWindowSize()));
+        } else {
+            return ExponentiationAlgorithms.interleavingWnafMultiExp(multiexp,
+                    Math.max(exponentiationWindowSize, multiexp.getMinPrecomputedWindowSize()));
+        }
         //TODO some multiexponentiation algorithms may be able to handle different windows sizes for each base.
         // Generally, using the minimum for window size is "safe", but not necessarily clever performance-wise. Example: \prod h_i^x_i * (g^a)^b. The latter has no precomputation at all (even if g may have it), so ...
     }
@@ -169,7 +187,11 @@ public class LazyGroup implements Group {
         if (impl.implementsOwnExp())
             return impl.exp(base, exponent, precomputation);
         // use generic if group does not implement own algorithm
-        return ExponentiationAlgorithms.wnafExp(base, exponent, precomputation, exponentiationWindowSize);
+        if (useSlidingWindowExp) {
+            return ExponentiationAlgorithms.slidingWindowExp(base, exponent, precomputation, exponentiationWindowSize);
+        } else {
+            return ExponentiationAlgorithms.wnafExp(base, exponent, precomputation, exponentiationWindowSize);
+        }
     }
 
     public int getExponentiationWindowSize() {
@@ -186,6 +208,14 @@ public class LazyGroup implements Group {
 
     public void setPrecomputationWindowSize(int precomputationWindowSize) {
         this.precomputationWindowSize = precomputationWindowSize;
+    }
+
+    public void setUseSlidingWindowMultiexp(boolean useSlidingWindowMultiexp) {
+        this.useSlidingWindowMultiexp = useSlidingWindowMultiexp;
+    }
+
+    public void setUseSlidingWindowExp(boolean useSlidingWindowExp) {
+        this.useSlidingWindowExp = useSlidingWindowExp;
     }
 
     public GroupImpl getImpl() {

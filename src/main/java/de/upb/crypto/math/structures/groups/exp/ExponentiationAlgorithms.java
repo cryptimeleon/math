@@ -133,8 +133,12 @@ public class ExponentiationAlgorithms {
      * approach. This means that cached powers can be reused in other multi-exponentiations, and,
      * for a large amount of bases, the precomputation is a lot cheaper than in the simultaneous
      * approach.
-     */
-    public static GroupElementImpl interleavingSlidingWindowMultiExpA1(Multiexponentiation multiexp, int windowSize) {
+     *
+     * For negative exponents, the base is inverted which does mean the precomputation has to be done anew.
+     * Therefore you should either make sure that you convert the bases to non-negative exponents ahead of time,
+     * or only use this method in groups with fast op compared to inversion and small window sizes.
+     * */
+    public static GroupElementImpl interleavingSlidingWindowMultiExp(Multiexponentiation multiexp, int windowSize) {
         Multiexponentiation newMultiexp = convertToNonNegativeExponents(multiexp);
         List<MultiExpTerm> terms = newMultiexp.getTerms();
         newMultiexp.ensurePrecomputation(windowSize);
@@ -200,71 +204,6 @@ public class ExponentiationAlgorithms {
             }
         }
         return newMultiexp;
-    }
-
-    public static GroupElementImpl interleavingSlidingWindowMultiExpA2(Multiexponentiation multiexp, int windowSize) {
-        List<MultiExpTerm> terms = multiexp.getTerms();
-        // Ensure every exponent is positive and store the ones that were negative
-        Set<Integer> negTermIndices = new HashSet<>();
-        Multiexponentiation newMultiexp = new Multiexponentiation();
-        newMultiexp.put(multiexp.getConstantFactor().orElse(null));
-        for (int i = 0; i < terms.size(); ++i) {
-            MultiExpTerm term = terms.get(i);
-            if (term.getExponent().signum() < 0) {
-                newMultiexp.put(new MultiExpTerm(term.getBase(), term.getExponent().negate(), term.getPrecomputation()));
-                negTermIndices.add(i);
-            } else {
-                newMultiexp.put(term);
-            }
-        }
-        terms = newMultiexp.getTerms();
-        newMultiexp.ensurePrecomputation(windowSize);
-        if (terms.isEmpty()) //nothing to do here.
-            return newMultiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
-        int numTerms = terms.size();
-
-        // we are assuming that every base has same underlying group
-        GroupElementImpl result = terms.get(0).getBase().getStructure().getNeutralElement();
-        int longestExponentBitLength = terms.stream().mapToInt(t -> t.getExponent().bitLength()).max().getAsInt();
-        int[] windowPos = new int[numTerms]; //position of the (sliding) window for each base. -1 signifies next window position must be computed.
-        Arrays.fill(windowPos, -1);
-        int[] windowVal = new int[numTerms]; //the exponent of the current window.
-
-        for (int j = longestExponentBitLength - 1; j >= 0; j--) {
-            if (j != longestExponentBitLength - 1) {
-                result = result.square();
-            }
-            for (int i = 0; i < numTerms; i++) { //for each term
-                BigInteger exponent = terms.get(i).getExponent();
-                if (windowPos[i] == -1 && exponent.testBit(j)) { //start a new window
-                    int J = j - windowSize + 1;
-                    while (!testBit(exponent, J)) {
-                        J++;
-                    }
-                    windowPos[i] = J;
-                    windowVal[i] = 0;
-                    for (int k = j; k >= J; k--) {
-                        windowVal[i] <<= 1;
-                        if (testBit(exponent, k)) {
-                            windowVal[i]++; // TODO e[i] = e[i] | 1 ?
-                        }
-                    }
-                } //now wait for the window position to occur through the squaring steps
-                if (windowPos[i] == j) { //found window position. Multiply the whole thing with base^windowVal
-                    if (negTermIndices.contains(i)) {
-                        result = result.op(terms.get(i).getPrecomputation().get(windowVal[i]).inv());
-                    } else {
-                        result = result.op(terms.get(i).getPrecomputation().get(windowVal[i]));
-                    }
-                    windowPos[i] = -1;
-                }
-            }
-        }
-
-        //Multiply with constant specified in the Multiexponentiation
-        result = newMultiexp.getConstantFactor().map(result::op).orElse(result);
-
-        return result;
     }
 
     /**
