@@ -14,7 +14,6 @@ import java.util.Optional;
  */
 public class Multiexponentiation {
     ArrayList<MultiExpTerm> terms = null;
-    int minPrecomputedWindowSize = Integer.MAX_VALUE;
     GroupElementImpl constantFactor = null;
 
     public void put(MultiExpTerm term) {
@@ -22,7 +21,6 @@ public class Multiexponentiation {
             terms = new ArrayList<>();
 
         terms.add(term);
-        minPrecomputedWindowSize = Math.min(minPrecomputedWindowSize, term.precomputation == null ? 0 : term.precomputation.getCurrentSupportedWindowSize());
     }
 
     public void put(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
@@ -33,10 +31,23 @@ public class Multiexponentiation {
         constantFactor = constantFactor == null ? groupelem : constantFactor.op(groupelem);
     }
 
-    public void ensurePrecomputation(int windowSize) {
-        if (terms != null && windowSize > minPrecomputedWindowSize) {
-            terms.forEach(t -> t.getPrecomputation().compute(windowSize));
-            minPrecomputedWindowSize = windowSize;
+    /**
+     * Ensures that all terms support the given window size by performing the precomputations that are necessary
+     * to reach the desired window size.
+     * If {@code computeNegativePowers} is set to {@code true}, terms with negative exponents will have the
+     * precomputation done for negative powers.
+     * @param windowSize The window size to ensure support for
+     * @param computeNegativePowers Whether to precompute negative powers when exponent is negative
+     */
+    public void ensurePrecomputation(int windowSize, boolean computeNegativePowers) {
+        if (terms != null && windowSize > computeMinPrecomputedWindowSize(computeNegativePowers)) {
+            for (MultiExpTerm term : terms) {
+                if (!computeNegativePowers || term.getExponent().signum() >= 0) {
+                    term.getPrecomputation().compute(windowSize);
+                } else {
+                    term.getPrecomputation().computeNegativePowers(windowSize);
+                }
+            }
         }
     }
 
@@ -48,8 +59,33 @@ public class Multiexponentiation {
         return terms == null ? 0 : terms.size();
     }
 
-    public int getMinPrecomputedWindowSize() {
-        return terms == null ? 0 : minPrecomputedWindowSize;
+    /**
+     * Computes the minimum window size currently offered by the precomputations of all terms.
+     * This is the window size such that all term's bases have cached precomputations of this size.
+     * When {@code considerNegativePowers} is set to {@code true}, terms with negative exponents will have their
+     * negative power precomputation window size used for this computation.
+     * @param considerNegativePowers Whether to consider the negative window size in the calculation
+     * @return The minimum window size supported by all terms.
+     */
+    public int computeMinPrecomputedWindowSize(boolean considerNegativePowers) {
+        if (terms == null) {
+            return 0;
+        }
+        int minPrecomputedWindowSize = Integer.MAX_VALUE;
+        for (MultiExpTerm term : terms) {
+            if (!considerNegativePowers || term.getExponent().signum() >= 0) {
+                minPrecomputedWindowSize = Math.min(
+                        minPrecomputedWindowSize,
+                        term.precomputation == null ? 0 : term.precomputation.getCurrentlySupportedPositiveWindowSize()
+                );
+            } else {
+                minPrecomputedWindowSize = Math.min(
+                        minPrecomputedWindowSize,
+                        term.precomputation == null ? 0 : term.precomputation.getCurrentlySupportedNegativeWindowSize()
+                );
+            }
+        }
+        return minPrecomputedWindowSize;
     }
 
     public Optional<GroupElementImpl> getConstantFactor() {

@@ -135,15 +135,12 @@ public class ExponentiationAlgorithms {
      * approach.
      *
      * For negative exponents, the base is inverted which does mean the precomputation has to be done anew.
-     * Therefore you should either make sure that you convert the bases to non-negative exponents ahead of time,
-     * or only use this method in groups with fast op compared to inversion and small window sizes.
      * */
     public static GroupElementImpl interleavingSlidingWindowMultiExp(Multiexponentiation multiexp, int windowSize) {
-        Multiexponentiation newMultiexp = convertToNonNegativeExponents(multiexp);
-        List<MultiExpTerm> terms = newMultiexp.getTerms();
-        newMultiexp.ensurePrecomputation(windowSize);
+        List<MultiExpTerm> terms = multiexp.getTerms();
+        multiexp.ensurePrecomputation(windowSize, true);
         if (terms.isEmpty()) //nothing to do here.
-            return newMultiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
+            return multiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
         int numTerms = terms.size();
 
         // we are assuming that every base has same underlying group
@@ -154,18 +151,24 @@ public class ExponentiationAlgorithms {
         int[] windowVal = new int[numTerms]; //the exponent of the current window.
 
         for (int j = longestExponentBitLength - 1; j >= 0; j--) {
+            // j is left edge of window
             if (j != longestExponentBitLength - 1) {
                 result = result.square();
             }
             for (int i = 0; i < numTerms; i++) { //for each term
                 BigInteger exponent = terms.get(i).getExponent();
+                boolean exponentNegative = exponent.signum() < 0;
+                exponent = exponentNegative ? exponent.negate() : exponent;
                 if (windowPos[i] == -1 && exponent.testBit(j)) { //start a new window
+                    // now find right edge of window
                     int J = j - windowSize + 1;
+                    // right edge is first occurrence of a "1"
                     while (!testBit(exponent, J)) {
                         J++;
                     }
                     windowPos[i] = J;
                     windowVal[i] = 0;
+                    // compute value of window
                     for (int k = j; k >= J; k--) {
                         windowVal[i] <<= 1;
                         if (testBit(exponent, k)) {
@@ -174,36 +177,18 @@ public class ExponentiationAlgorithms {
                     }
                 } //now wait for the window position to occur through the squaring steps
                 if (windowPos[i] == j) { //found window position. Multiply the whole thing with base^windowVal
-                    result = result.op(terms.get(i).getPrecomputation().get(windowVal[i]));
+                    result = result.op(
+                            terms.get(i).getPrecomputation().get(exponentNegative ? -windowVal[i] : windowVal[i])
+                    );
                     windowPos[i] = -1;
                 }
             }
         }
 
         //Multiply with constant specified in the Multiexponentiation
-        result = newMultiexp.getConstantFactor().map(result::op).orElse(result);
+        result = multiexp.getConstantFactor().map(result::op).orElse(result);
 
         return result;
-    }
-
-    /**
-     * Convert every negative exponent in the multiexponentiation by inverting the base instead.
-     * @param multiexp
-     * @return
-     */
-    public static Multiexponentiation convertToNonNegativeExponents(Multiexponentiation  multiexp) {
-        List<MultiExpTerm> terms = multiexp.getTerms();
-        Multiexponentiation newMultiexp = new Multiexponentiation();
-        newMultiexp.put(multiexp.getConstantFactor().orElse(null));
-        // Invert base of every term that has negative exponent
-        for (MultiExpTerm term : terms) {
-            if (term.getExponent().signum() < 0) {
-                newMultiexp.put(new MultiExpTerm(term.getBase().inv(), term.getExponent().negate()));
-            } else {
-                newMultiexp.put(term);
-            }
-        }
-        return newMultiexp;
     }
 
     /**
@@ -212,7 +197,7 @@ public class ExponentiationAlgorithms {
      * curves.
      */
     public static GroupElementImpl interleavingWnafMultiExp(Multiexponentiation multiexp, int windowSize) {
-        multiexp.ensurePrecomputation(windowSize); //TODO choose larger windowSize if possible, e.g., all bases have had more precomputation anyway? Add setting for "usual window size" and "precomputation window size". maxExp = Math.max(windowSize, multiexp.minPrecomputedPower); Need to adapt windowSize
+        multiexp.ensurePrecomputation(windowSize, false); //TODO choose larger windowSize if possible, e.g., all bases have had more precomputation anyway? Add setting for "usual window size" and "precomputation window size". maxExp = Math.max(windowSize, multiexp.minPrecomputedPower); Need to adapt windowSize
         List<MultiExpTerm> terms = multiexp.getTerms();
         if (terms.isEmpty()) //nothing to do here.
             return multiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
@@ -288,19 +273,22 @@ public class ExponentiationAlgorithms {
 
     public static GroupElementImpl slidingWindowExp(GroupElementImpl base, BigInteger exponent,
                                                     SmallExponentPrecomputation precomputation, int windowSize) {
-        if (exponent.signum() < 0) {
-            return slidingWindowExp(base, exponent.negate(), precomputation, windowSize).inv();
-        }
         if (precomputation == null)
             precomputation = new SmallExponentPrecomputation(base);
-        else
-            windowSize = Math.max(precomputation.getCurrentSupportedWindowSize(), windowSize);
 
-        precomputation.compute(windowSize);
+        if (exponent.signum() < 0) {
+            windowSize = Math.max(precomputation.getCurrentlySupportedNegativeWindowSize(), windowSize);
+            precomputation.computeNegativePowers(windowSize);
+        } else {
+            windowSize = Math.max(precomputation.getCurrentlySupportedPositiveWindowSize(), windowSize);
+            precomputation.compute(windowSize);
+        }
 
         // we are assuming that every base has same underlying group
         GroupElementImpl result = base.getStructure().getNeutralElement();
-        int exponentBitlen = exponent.bitLength(); //TODO maybe skip this and always set it to log p?
+        boolean exponentNegative = exponent.signum() < 0;
+        BigInteger posExponent = exponentNegative ? exponent.negate() : exponent;
+        int exponentBitlen = posExponent.bitLength(); //TODO maybe skip this and always set it to log p?
         int windowPos = -1; //position of the (sliding) window. -1 signifies next window position must be computed.
         int windowVal = 0; //the exponent of the current window.
 
@@ -309,22 +297,22 @@ public class ExponentiationAlgorithms {
                 result = result.square();
             }
 
-            if (windowPos == -1 && exponent.testBit(j)) { //start a new window
+            if (windowPos == -1 && posExponent.testBit(j)) { //start a new window
                 int J = j - windowSize + 1;
-                while (!testBit(exponent, J)) {
+                while (!testBit(posExponent, J)) {
                     J++;
                 }
                 windowPos = J;
                 windowVal = 0;
                 for (int k = j; k >= J; k--) {
                     windowVal <<= 1;
-                    if (testBit(exponent, k)) {
+                    if (testBit(posExponent, k)) {
                         windowVal++;
                     }
                 }
             } //now wait for the window position to occur through the squaring steps
             if (windowPos == j) { //found window position. Multiply the whole thing with base^windowVal
-                result = result.op(precomputation.get(windowVal));
+                result = result.op(precomputation.get(exponentNegative ? -windowVal : windowVal));
                 windowPos = -1;
             }
         }
@@ -333,11 +321,10 @@ public class ExponentiationAlgorithms {
     }
 
     public static GroupElementImpl wnafExp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation, int windowSize) {
-        //TODO in this and other algorithms: what happens with negative exponents? Or are those just forbidden?
         if (precomputation == null)
             precomputation = new SmallExponentPrecomputation(base);
         else
-            windowSize = Math.max(precomputation.getCurrentSupportedWindowSize(), windowSize);
+            windowSize = Math.max(precomputation.getCurrentlySupportedPositiveWindowSize(), windowSize);
 
         int maxExp = (1 << windowSize) - 1;
         precomputation.compute(windowSize);

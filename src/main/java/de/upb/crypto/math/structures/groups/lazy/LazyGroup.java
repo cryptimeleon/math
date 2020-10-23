@@ -16,9 +16,7 @@ import de.upb.crypto.math.structures.zn.Zp;
 import java.math.BigInteger;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -173,11 +171,21 @@ public class LazyGroup implements Group {
             return impl.multiexp(multiexp);
         // use generic if group does not implement own algorithm
         if (useSlidingWindowMultiexp) {
-            return ExponentiationAlgorithms.interleavingSlidingWindowMultiExp(multiexp,
-                    Math.max(exponentiationWindowSize, multiexp.getMinPrecomputedWindowSize()));
+            return ExponentiationAlgorithms.interleavingSlidingWindowMultiExp(
+                    multiexp,
+                    Math.max(
+                            exponentiationWindowSize,
+                            multiexp.computeMinPrecomputedWindowSize(true)
+                    )
+            );
         } else {
-            return ExponentiationAlgorithms.interleavingWnafMultiExp(multiexp,
-                    Math.max(exponentiationWindowSize, multiexp.getMinPrecomputedWindowSize()));
+            return ExponentiationAlgorithms.interleavingWnafMultiExp(
+                    multiexp,
+                    Math.max(
+                            exponentiationWindowSize,
+                            multiexp.computeMinPrecomputedWindowSize(false)
+                    )
+            );
         }
         //TODO some multiexponentiation algorithms may be able to handle different windows sizes for each base.
         // Generally, using the minimum for window size is "safe", but not necessarily clever performance-wise. Example: \prod h_i^x_i * (g^a)^b. The latter has no precomputation at all (even if g may have it), so ...
