@@ -63,6 +63,17 @@ public class BasicGroupElement implements GroupElement {
          return this;
     }
 
+    @Override
+    public GroupElement precomputeNegPow() {
+        return precomputeNegPow(8);
+    }
+
+    @Override
+    public GroupElement precomputeNegPow(int windowSize) {
+        getPrecomputedSmallExponents().computeNegativePowers(windowSize);
+        return this;
+    }
+
     public SmallExponentPrecomputation getPrecomputedSmallExponents() {
         if (precomputedSmallExponents == null)
             precomputedSmallExponents = new SmallExponentPrecomputation(impl);

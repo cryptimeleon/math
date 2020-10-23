@@ -103,6 +103,24 @@ public class CountingGroupElement implements GroupElement {
     }
 
     @Override
+    public GroupElement precomputeNegPow() {
+        return new CountingGroupElement(
+                group,
+                (LazyGroupElement) elemTotal.precomputeNegPow(),
+                (LazyGroupElement) elemExpMultiExp.precomputeNegPow()
+        );
+    }
+
+    @Override
+    public GroupElement precomputeNegPow(int windowSize) {
+        return new CountingGroupElement(
+                group,
+                (LazyGroupElement) elemTotal.precomputeNegPow(windowSize),
+                (LazyGroupElement) elemExpMultiExp.precomputeNegPow(windowSize)
+        );
+    }
+
+    @Override
     public GroupElement compute() {
         // counting requires synchronization so we always do computeSync
         return new CountingGroupElement(
