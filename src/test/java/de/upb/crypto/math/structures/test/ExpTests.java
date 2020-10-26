@@ -29,7 +29,7 @@ public class ExpTests {
         BilinearGroup bilGroup = fac.createBilinearGroup();
         for (int i = 0; i < 10; ++i) {
             Multiexponentiation multiexponentiation = genMultiExp(bilGroup.getG1(), 10);
-            // TODO: Add logging of chosen multiexponentiation to make debugging easier if test fails
+            System.out.println(multiexponentiation);
             GroupElementImpl naiveResult = naiveEval(multiexponentiation);
             GroupElementImpl slidingResult = ExponentiationAlgorithms
                     .interleavingSlidingWindowMultiExp(multiexponentiation, 4);

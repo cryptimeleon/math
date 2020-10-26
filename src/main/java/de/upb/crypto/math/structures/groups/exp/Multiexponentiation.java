@@ -95,4 +95,12 @@ public class Multiexponentiation {
     public boolean isEmpty() {
         return (terms == null || terms.size() == 0) && constantFactor == null;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringRepr = new StringBuilder();
+        stringRepr.append("Multiexponentiation:");
+        terms.forEach(t -> stringRepr.append("\n").append(t.toString()));
+        return stringRepr.toString();
+    }
 }
