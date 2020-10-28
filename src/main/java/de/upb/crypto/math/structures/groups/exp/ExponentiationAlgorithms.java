@@ -138,7 +138,7 @@ public class ExponentiationAlgorithms {
      * */
     public static GroupElementImpl interleavingSlidingWindowMultiExp(Multiexponentiation multiexp, int windowSize) {
         List<MultiExpTerm> terms = multiexp.getTerms();
-        multiexp.ensurePrecomputation(windowSize, true);
+        multiexp.ensureSlidingPrecomputation(windowSize);
         if (terms.isEmpty()) //nothing to do here.
             return multiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
         int numTerms = terms.size();
@@ -197,7 +197,7 @@ public class ExponentiationAlgorithms {
      * curves.
      */
     public static GroupElementImpl interleavingWnafMultiExp(Multiexponentiation multiexp, int windowSize) {
-        multiexp.ensurePrecomputation(windowSize, false); //TODO choose larger windowSize if possible, e.g., all bases have had more precomputation anyway? Add setting for "usual window size" and "precomputation window size". maxExp = Math.max(windowSize, multiexp.minPrecomputedPower); Need to adapt windowSize
+        multiexp.ensureWNafPrecomputation(windowSize); //TODO choose larger windowSize if possible, e.g., all bases have had more precomputation anyway? Add setting for "usual window size" and "precomputation window size". maxExp = Math.max(windowSize, multiexp.minPrecomputedPower); Need to adapt windowSize
         List<MultiExpTerm> terms = multiexp.getTerms();
         if (terms.isEmpty()) //nothing to do here.
             return multiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
@@ -324,10 +324,14 @@ public class ExponentiationAlgorithms {
         if (precomputation == null)
             precomputation = new SmallExponentPrecomputation(base);
         else
-            windowSize = Math.max(precomputation.getCurrentlySupportedPositiveWindowSize(), windowSize);
+            windowSize = Math.max(precomputation.getCurrentlySupportedWindowSize(), windowSize);
 
-        int maxExp = (1 << windowSize) - 1;
-        precomputation.compute(windowSize);
+        if (precomputation.getCurrentlySupportedNegativeWindowSize() >
+                precomputation.getCurrentlySupportedPositiveWindowSize()) {
+            precomputation.computeNegativePowers(windowSize);
+        } else {
+            precomputation.compute(windowSize);
+        }
 
         int[] exponentDigits = precomputeExponentDigitsForWnaf(exponent, windowSize);
         int exponentDigitsLen = exponentDigits.length;

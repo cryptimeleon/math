@@ -175,7 +175,7 @@ public class LazyGroup implements Group {
                     multiexp,
                     Math.max(
                             exponentiationWindowSize,
-                            multiexp.computeMinPrecomputedWindowSize(true)
+                            multiexp.computeSlidingMinPrecomputedWindowSize()
                     )
             );
         } else {
@@ -183,7 +183,7 @@ public class LazyGroup implements Group {
                     multiexp,
                     Math.max(
                             exponentiationWindowSize,
-                            multiexp.computeMinPrecomputedWindowSize(false)
+                            multiexp.computeWNafMinPrecomputedWindowSize()
                     )
             );
         }

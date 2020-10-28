@@ -15,11 +15,11 @@ import java.util.Optional;
 public class Multiexponentiation {
     ArrayList<MultiExpTerm> terms = null;
     GroupElementImpl constantFactor = null;
+    int minPrecomputedWindowSize = 0;
 
     public void put(MultiExpTerm term) {
         if (terms == null)
             terms = new ArrayList<>();
-
         terms.add(term);
     }
 
@@ -33,47 +33,61 @@ public class Multiexponentiation {
 
     /**
      * Ensures that all terms support the given window size by performing the precomputations that are necessary
-     * to reach the desired window size.
-     * If {@code computeNegativePowers} is set to {@code true}, terms with negative exponents will have the
-     * precomputation done for negative powers.
+     * to reach the desired window size for the interleaved sliding window algorithm.
+     * Terms with negative exponents will have the precomputation done for negative powers.
      * @param windowSize The window size to ensure support for
-     * @param computeNegativePowers Whether to precompute negative powers when exponent is negative
      */
-    public void ensurePrecomputation(int windowSize, boolean computeNegativePowers) {
-        if (terms != null && windowSize > computeMinPrecomputedWindowSize(computeNegativePowers)) {
+    public void ensureSlidingPrecomputation(int windowSize) {
+        if (terms != null) {
             for (MultiExpTerm term : terms) {
-                if (!computeNegativePowers || term.getExponent().signum() >= 0) {
-                    term.getPrecomputation().compute(windowSize);
-                } else {
+                if (term.getExponent().signum() < 0) {
                     term.getPrecomputation().computeNegativePowers(windowSize);
+                } else {
+                    term.getPrecomputation().compute(windowSize);
                 }
             }
         }
     }
 
-    public List<MultiExpTerm> getTerms() {
-        return terms == null ? Collections.emptyList() : Collections.unmodifiableList(terms);
-    }
-
-    public int getNumberOfTerms() {
-        return terms == null ? 0 : terms.size();
+    /**
+     * Ensures that all terms support the given window size by performing the precomputations that are necessary
+     * to reach the desired window size for the interleaved wNAF algorithm.
+     * wNAF does not care whether positive or negative powers are available, but it will compute positive powers
+     * if neither exist already.
+     * @param windowSize The window size to ensure support for
+     */
+    public void ensureWNafPrecomputation(int windowSize) {
+        if (terms != null) {
+            for (MultiExpTerm term : terms) {
+                if (term.getPrecomputation().getCurrentlySupportedWindowSize() < windowSize) {
+                    // if we already have negative powers, we can just finish computing those
+                    boolean precNegativePowers = (term.getPrecomputation().getCurrentlySupportedNegativeWindowSize()
+                                    > term.getPrecomputation().getCurrentlySupportedPositiveWindowSize());
+                    if (precNegativePowers) {
+                        term.getPrecomputation().computeNegativePowers(windowSize);
+                    } else {
+                        term.getPrecomputation().compute(windowSize);
+                    }
+                }
+            }
+        }
     }
 
     /**
-     * Computes the minimum window size currently offered by the precomputations of all terms.
+     * Computes the minimum window size currently offered by the precomputations of all terms as required for
+     * the interleaved sliding window algorithm.
      * This is the window size such that all term's bases have cached precomputations of this size.
-     * When {@code considerNegativePowers} is set to {@code true}, terms with negative exponents will have their
-     * negative power precomputation window size used for this computation.
-     * @param considerNegativePowers Whether to consider the negative window size in the calculation
+     * Terms with negative exponents will have their negative power precomputation window size used
+     * for this computation.
      * @return The minimum window size supported by all terms.
      */
-    public int computeMinPrecomputedWindowSize(boolean considerNegativePowers) {
+    public int computeSlidingMinPrecomputedWindowSize() {
         if (terms == null) {
             return 0;
         }
         int minPrecomputedWindowSize = Integer.MAX_VALUE;
         for (MultiExpTerm term : terms) {
-            if (!considerNegativePowers || term.getExponent().signum() >= 0) {
+            if (term.getExponent().signum() >= 0) {
                 minPrecomputedWindowSize = Math.min(
                         minPrecomputedWindowSize,
                         term.precomputation == null ? 0 : term.precomputation.getCurrentlySupportedPositiveWindowSize()
@@ -86,6 +100,35 @@ public class Multiexponentiation {
             }
         }
         return minPrecomputedWindowSize;
+    }
+
+    /**
+     * Computes the minimum window size currently offered by the precomputations of all terms as required for
+     * the interleaved sliding window algorithm.
+     * This is the window size such that all term's bases have cached precomputations of this size.
+     * wNAF does not care whether it uses negative or positive powers so both are considered for each term.
+     * @return The minimum window size supported by all terms.
+     */
+    public int computeWNafMinPrecomputedWindowSize() {
+        if (terms == null) {
+            return 0;
+        }
+        int minPrecomputedWindowSize = Integer.MAX_VALUE;
+        for (MultiExpTerm term : terms) {
+            minPrecomputedWindowSize = Math.min(
+                    minPrecomputedWindowSize,
+                    term.precomputation == null ? 0 : term.precomputation.getCurrentlySupportedWindowSize()
+            );
+        }
+        return minPrecomputedWindowSize;
+    }
+
+    public List<MultiExpTerm> getTerms() {
+        return terms == null ? Collections.emptyList() : Collections.unmodifiableList(terms);
+    }
+
+    public int getNumberOfTerms() {
+        return terms == null ? 0 : terms.size();
     }
 
     public Optional<GroupElementImpl> getConstantFactor() {

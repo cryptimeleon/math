@@ -20,7 +20,7 @@ public class SmallExponentPrecomputation {
     }
 
     public int getCurrentMaxNegativeExponent() {
-        return oddNegativePowers == null ? 0 : 2*oddNegativePowers.size()-1;
+        return oddNegativePowers == null ? 0 : -2*oddNegativePowers.size()+1;
     }
 
     public int getCurrentlySupportedPositiveWindowSize() {
@@ -29,6 +29,10 @@ public class SmallExponentPrecomputation {
 
     public int getCurrentlySupportedNegativeWindowSize() {
         return negativeWindowSize;
+    }
+
+    public int getCurrentlySupportedWindowSize() {
+        return Math.max(windowSize, negativeWindowSize);
     }
 
     public GroupElementImpl get(int exponent) {
@@ -43,12 +47,15 @@ public class SmallExponentPrecomputation {
     }
 
     public GroupElementImpl getOddPositivePower(int exponent) {
+        if (getCurrentMaxPositiveExponent() < exponent) {
+            return getOddNegativePower(-exponent).inv();
+        }
         int index = (exponent-1)/2;
         return oddPowers.get(index);
     }
 
     public GroupElementImpl getOddNegativePower(int exponent) {
-        if (getCurrentMaxNegativeExponent() < -exponent) {
+        if (getCurrentMaxNegativeExponent() > exponent) {
             return getOddPositivePower(-exponent).inv();
         }
         int index = (-exponent-1)/2;
