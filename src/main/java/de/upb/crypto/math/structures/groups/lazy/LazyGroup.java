@@ -1,5 +1,6 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
@@ -7,9 +8,7 @@ import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
-import de.upb.crypto.math.structures.groups.exp.ExponentiationAlgorithms;
-import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
-import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
+import de.upb.crypto.math.structures.groups.exp.*;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 
@@ -41,16 +40,8 @@ public class LazyGroup implements Group {
     boolean isPrimeOrder;
     Zn zn;
     GroupElement generator;
-    /**
-     * We use wNAF by default but you can enable sliding window multi-exponentiation algorithm by setting this to
-     * {@code true}. Keep in mind that for negative exponents, the precomputation is not cached.
-     */
-    boolean useSlidingWindowMultiexp;
-    /**
-     * We use wNAF by default but you can enable sliding window exponentiation algorithm by setting this to
-     * {@code true}. Keep in mind that for negative exponents, the precomputation is not cached.
-     */
-    boolean useSlidingWindowExp;
+    MultiExpAlgorithm selectedMultiExpAlgorithm;
+    ExpAlgorithm selectedExpAlgorithm;
 
     public LazyGroup(GroupImpl impl) {
         this(impl, 4, 8);
@@ -71,8 +62,8 @@ public class LazyGroup implements Group {
         generator = wrap(impl.getGenerator());
         isPrimeOrder = size.isProbablePrime(100);
         zn = isPrimeOrder ? new Zp(size) : new Zn(size);
-        useSlidingWindowMultiexp = false;
-        useSlidingWindowExp = false;
+        selectedMultiExpAlgorithm = MultiExpAlgorithm.WNAF;
+        selectedExpAlgorithm = ExpAlgorithm.WNAF;
     }
 
     public LazyGroup(Representation repr) {
@@ -170,7 +161,7 @@ public class LazyGroup implements Group {
         if (impl.implementsOwnMultiExp())
             return impl.multiexp(multiexp);
         // use generic if group does not implement own algorithm
-        if (useSlidingWindowMultiexp) {
+        if (selectedMultiExpAlgorithm == MultiExpAlgorithm.SLIDING) {
             return ExponentiationAlgorithms.interleavingSlidingWindowMultiExp(
                     multiexp,
                     Math.max(
@@ -195,7 +186,7 @@ public class LazyGroup implements Group {
         if (impl.implementsOwnExp())
             return impl.exp(base, exponent, precomputation);
         // use generic if group does not implement own algorithm
-        if (useSlidingWindowExp) {
+        if (selectedExpAlgorithm == ExpAlgorithm.WINDOW) {
             return ExponentiationAlgorithms.slidingWindowExp(base, exponent, precomputation, exponentiationWindowSize);
         } else {
             return ExponentiationAlgorithms.wnafExp(base, exponent, precomputation, exponentiationWindowSize);
@@ -218,12 +209,20 @@ public class LazyGroup implements Group {
         this.precomputationWindowSize = precomputationWindowSize;
     }
 
-    public void setUseSlidingWindowMultiexp(boolean useSlidingWindowMultiexp) {
-        this.useSlidingWindowMultiexp = useSlidingWindowMultiexp;
+    public MultiExpAlgorithm getSelectedMultiExpAlgorithm() {
+        return selectedMultiExpAlgorithm;
     }
 
-    public void setUseSlidingWindowExp(boolean useSlidingWindowExp) {
-        this.useSlidingWindowExp = useSlidingWindowExp;
+    public void setSelectedMultiExpAlgorithm(MultiExpAlgorithm selectedMultiExpAlgorithm) {
+        this.selectedMultiExpAlgorithm = selectedMultiExpAlgorithm;
+    }
+
+    public ExpAlgorithm getSelectedExpAlgorithm() {
+        return selectedExpAlgorithm;
+    }
+
+    public void setSelectedExpAlgorithm(ExpAlgorithm selectedExpAlgorithm) {
+        this.selectedExpAlgorithm = selectedExpAlgorithm;
     }
 
     public GroupImpl getImpl() {

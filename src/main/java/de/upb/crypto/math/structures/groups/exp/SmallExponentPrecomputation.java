@@ -100,6 +100,14 @@ public class SmallExponentPrecomputation {
                         oddNegativePowers.add(invBase);
                     }
 
+                    boolean invertExisting = false;
+                    // populate using existing positive powers if enabled
+                    if (invertExisting) {
+                        for (int i = oddNegativePowers.size(); i < oddPowers.size(); ++i) {
+                            oddNegativePowers.add(i, oddPowers.get(i).inv());
+                        }
+                    }
+
                     GroupElementImpl square = invBase.square();
                     GroupElementImpl currentSmallPower = oddNegativePowers.get(oddNegativePowers.size() - 1);
                     for (int i = oddNegativePowers.size(); i < numElements; i++) {

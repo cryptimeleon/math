@@ -33,4 +33,9 @@ public class BarretoNaehrigTargetGroupImpl extends PairingTargetGroupImpl {
     public boolean hasPrimeSize() throws UnsupportedOperationException {
         return true;
     }
+
+    @Override
+    public double estimateCostInvPerOp() {
+        return 614;
+    }
 }

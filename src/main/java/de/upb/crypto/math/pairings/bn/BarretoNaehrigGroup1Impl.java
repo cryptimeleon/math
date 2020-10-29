@@ -40,5 +40,8 @@ public class BarretoNaehrigGroup1Impl extends BarretoNaehrigSourceGroupImpl {
         return new BarretoNaehrigGroup1ElementImpl(this, x, y);
     }
 
-
+    @Override
+    public double estimateCostInvPerOp() {
+        return 307;
+    }
 }

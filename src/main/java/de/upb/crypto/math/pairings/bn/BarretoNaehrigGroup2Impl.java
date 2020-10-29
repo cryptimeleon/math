@@ -30,4 +30,9 @@ public class BarretoNaehrigGroup2Impl extends BarretoNaehrigSourceGroupImpl {
     public GroupElementImpl getNeutralElement() {
         return new BarretoNaehrigGroup2ElementImpl(this);
     }
+
+    @Override
+    public double estimateCostInvPerOp() {
+        return 600;
+    }
 }
