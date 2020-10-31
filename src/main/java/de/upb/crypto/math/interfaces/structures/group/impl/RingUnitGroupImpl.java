@@ -37,6 +37,13 @@ public class RingUnitGroupImpl extends RingGroupImpl {
     }
 
     @Override
+    public double estimateCostInvPerOp() {
+        // Does not really work here since the numbers depend on the exact ring
+        // Used Zn(2^128) here
+        return 0.1;
+    }
+
+    @Override
     public RingUnitGroupElementImpl getNeutralElement() {
         return new RingUnitGroupElementImpl(ring.getOneElement());
     }

@@ -59,8 +59,10 @@ public class BasicGroupElement implements GroupElement {
 
     @Override
     public GroupElement precomputePow(int windowSize) {
-         getPrecomputedSmallExponents().compute(windowSize);
-         return this;
+        getPrecomputedSmallExponents().compute(
+                windowSize, impl.getStructure().estimateCostInvPerOp() > 1
+        );
+        return this;
     }
 
     @Override
@@ -70,7 +72,9 @@ public class BasicGroupElement implements GroupElement {
 
     @Override
     public GroupElement precomputeNegPow(int windowSize) {
-        getPrecomputedSmallExponents().computeNegativePowers(windowSize);
+        getPrecomputedSmallExponents().computeNegativePowers(
+                windowSize, impl.getStructure().estimateCostInvPerOp() > 1
+        );
         return this;
     }
 

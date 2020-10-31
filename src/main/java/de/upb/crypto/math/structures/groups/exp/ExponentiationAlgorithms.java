@@ -138,7 +138,7 @@ public class ExponentiationAlgorithms {
      * */
     public static GroupElementImpl interleavingSlidingWindowMultiExp(Multiexponentiation multiexp, int windowSize) {
         List<MultiExpTerm> terms = multiexp.getTerms();
-        multiexp.ensureSlidingPrecomputation(windowSize);
+        multiexp.ensurePrecomputation(windowSize, MultiExpAlgorithm.SLIDING);
         if (terms.isEmpty()) //nothing to do here.
             return multiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
         int numTerms = terms.size();
@@ -197,10 +197,16 @@ public class ExponentiationAlgorithms {
      * curves.
      */
     public static GroupElementImpl interleavingWnafMultiExp(Multiexponentiation multiexp, int windowSize) {
-        multiexp.ensureWNafPrecomputation(windowSize); //TODO choose larger windowSize if possible, e.g., all bases have had more precomputation anyway? Add setting for "usual window size" and "precomputation window size". maxExp = Math.max(windowSize, multiexp.minPrecomputedPower); Need to adapt windowSize
+        //TODO choose larger windowSize if possible, e.g., all bases have had more precomputation anyway?
+        // Add setting for "usual window size" and "precomputation window size".
+        // maxExp = Math.max(windowSize, multiexp.minPrecomputedPower);
+        // Need to adapt windowSize
+        multiexp.ensurePrecomputation(windowSize, MultiExpAlgorithm.WNAF);
         List<MultiExpTerm> terms = multiexp.getTerms();
         if (terms.isEmpty()) //nothing to do here.
-            return multiexp.getConstantFactor().orElseThrow(() -> new IllegalArgumentException("Cannot compute an empty multiexp"));
+            return multiexp.getConstantFactor().orElseThrow(
+                    () -> new IllegalArgumentException("Cannot compute an empty multiexp")
+            );
 
         int longestExponentDigitLength = 0;
         int[][] exponentDigits = new int[terms.size()][];
@@ -276,12 +282,13 @@ public class ExponentiationAlgorithms {
         if (precomputation == null)
             precomputation = new SmallExponentPrecomputation(base);
 
+        boolean invertExisting = base.getStructure().estimateCostInvPerOp() > 1;
         if (exponent.signum() < 0) {
             windowSize = Math.max(precomputation.getCurrentlySupportedNegativeWindowSize(), windowSize);
-            precomputation.computeNegativePowers(windowSize);
+            precomputation.computeNegativePowers(windowSize, invertExisting);
         } else {
             windowSize = Math.max(precomputation.getCurrentlySupportedPositiveWindowSize(), windowSize);
-            precomputation.compute(windowSize);
+            precomputation.compute(windowSize, invertExisting);
         }
 
         // we are assuming that every base has same underlying group
@@ -326,11 +333,12 @@ public class ExponentiationAlgorithms {
         else
             windowSize = Math.max(precomputation.getCurrentlySupportedWindowSize(), windowSize);
 
+        // finish precomputing the powers of which we have more of already
         if (precomputation.getCurrentlySupportedNegativeWindowSize() >
                 precomputation.getCurrentlySupportedPositiveWindowSize()) {
-            precomputation.computeNegativePowers(windowSize);
+            precomputation.computeNegativePowers(windowSize, false);
         } else {
-            precomputation.compute(windowSize);
+            precomputation.compute(windowSize, false);
         }
 
         int[] exponentDigits = precomputeExponentDigitsForWnaf(exponent, windowSize);

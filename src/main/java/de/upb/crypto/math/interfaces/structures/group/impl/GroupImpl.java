@@ -88,9 +88,7 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
      * For example, {@code 2} would mean that an inversion costs half as much as a group operation, on average.
      * @return Estimated number of inversions that can be done per group operation for the same cost
      */
-    default double estimateCostInvPerOp() {
-        return 1;
-    }
+    double estimateCostInvPerOp();
 
     @Override
     default GroupElementImpl recreateFromRepresentation(Type type, Representation repr) {

@@ -1,6 +1,5 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
@@ -166,7 +165,7 @@ public class LazyGroup implements Group {
                     multiexp,
                     Math.max(
                             exponentiationWindowSize,
-                            multiexp.computeSlidingMinPrecomputedWindowSize()
+                            multiexp.computeMinPrecomputedWindowSize()
                     )
             );
         } else {

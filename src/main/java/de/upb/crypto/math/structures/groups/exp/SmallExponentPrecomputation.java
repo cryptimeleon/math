@@ -62,7 +62,7 @@ public class SmallExponentPrecomputation {
         return oddNegativePowers.get(index);
     }
 
-    public void compute(int windowSize) {
+    public void compute(int windowSize, boolean invertExisting) {
         if (this.windowSize < windowSize) {
             int maximumPower = (1 << windowSize) - 1;
             int numElements = (maximumPower+1)/2;
@@ -72,6 +72,13 @@ public class SmallExponentPrecomputation {
                     if (oddPowers == null) {
                         oddPowers = new ArrayList<>(numElements);
                         oddPowers.add(base);
+                    }
+
+                    // populate using existing negative powers if enabled
+                    if (invertExisting) {
+                        for (int i = oddPowers.size(); i < oddNegativePowers.size(); ++i) {
+                            oddPowers.add(i, oddNegativePowers.get(i).inv());
+                        }
                     }
 
                     GroupElementImpl square = base.square();
@@ -87,7 +94,7 @@ public class SmallExponentPrecomputation {
         }
     }
 
-    public void computeNegativePowers(int windowSize) {
+    public void computeNegativePowers(int windowSize, boolean invertExisting) {
         if (this.negativeWindowSize < windowSize) {
             int maximumPower = (1 << windowSize) - 1;
             int numElements = (maximumPower+1)/2;
@@ -100,7 +107,6 @@ public class SmallExponentPrecomputation {
                         oddNegativePowers.add(invBase);
                     }
 
-                    boolean invertExisting = false;
                     // populate using existing positive powers if enabled
                     if (invertExisting) {
                         for (int i = oddNegativePowers.size(); i < oddPowers.size(); ++i) {

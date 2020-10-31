@@ -84,7 +84,9 @@ public abstract class LazyGroupElement implements GroupElement {
     @Override
     public GroupElement precomputePow(int windowSize) {
         if (windowSize > 0)
-            getPrecomputedSmallExponents().compute(windowSize);
+            getPrecomputedSmallExponents().compute(
+                    windowSize, getConcreteValue().getStructure().estimateCostInvPerOp() > 1
+            );
         return this;
     }
 
@@ -96,7 +98,9 @@ public abstract class LazyGroupElement implements GroupElement {
     @Override
     public GroupElement precomputeNegPow(int windowSize) {
         if (windowSize > 0)
-            getPrecomputedSmallExponents().computeNegativePowers(windowSize);
+            getPrecomputedSmallExponents().computeNegativePowers(
+                    windowSize, getConcreteValue().getStructure().estimateCostInvPerOp() > 1
+            );
         return this;
     }
 
