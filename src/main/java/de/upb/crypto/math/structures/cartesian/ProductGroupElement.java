@@ -66,13 +66,6 @@ public class ProductGroupElement implements GroupElement {
     }
 
     @Override
-    public GroupElement precomputeNegPow(int windowSize) {
-        for (GroupElement elem : elems)
-            elem.precomputeNegPow(windowSize);
-        return this;
-    }
-
-    @Override
     public GroupElement compute() {
         for (GroupElement elem : elems)
             elem.compute();

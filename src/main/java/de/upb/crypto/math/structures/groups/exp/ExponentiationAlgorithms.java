@@ -14,6 +14,11 @@ import java.util.*;
 public class ExponentiationAlgorithms {
 
     /**
+     * If number of inversions per group op is at least this, use wNAF instead of the sliding window algorithm.
+     */
+    final public static double WNAF_INVERSION_COST_THRESHOLD = 1.5;
+
+    /**
      * Evaluates a multi-exponentiation using simultaneous sliding window approach. Uses power
      * products. Only useful for higher number of bases if the power products are cached as
      * computing power products for more than ~10 basis very expensive. Cached power products
