@@ -75,7 +75,7 @@ public class SmallExponentPrecomputation {
                     }
 
                     // populate using existing negative powers if enabled
-                    if (invertExisting) {
+                    if (invertExisting && oddNegativePowers != null) {
                         for (int i = oddPowers.size(); i < oddNegativePowers.size(); ++i) {
                             oddPowers.add(i, oddNegativePowers.get(i).inv());
                         }
@@ -108,7 +108,7 @@ public class SmallExponentPrecomputation {
                     }
 
                     // populate using existing positive powers if enabled
-                    if (invertExisting) {
+                    if (invertExisting && oddPowers != null) {
                         for (int i = oddNegativePowers.size(); i < oddPowers.size(); ++i) {
                             oddNegativePowers.add(i, oddPowers.get(i).inv());
                         }
