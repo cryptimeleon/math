@@ -127,7 +127,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      *
      * <pre>
      * //Setting up your encryption scheme (or whatever)
-     * {@code }GroupElement g = group.getUniformlyRandomElement().precomputePow();
+     * GroupElement g = group.getUniformlyRandomElement().precomputePow();
      * //Then (maybe even multiple) future calls of
      * GroupElement encrypt(GroupElement m) {
      *     return m.op(g.pow(sk)).compute();
@@ -152,7 +152,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      *
      * <pre>
      * //Setting up your encryption scheme (or whatever)
-     * {@code }GroupElement g = group.getUniformlyRandomElement().precomputePow();
+     * GroupElement g = group.getUniformlyRandomElement().precomputePow();
      * //Then (maybe even multiple) future calls of
      * GroupElement encrypt(GroupElement m) {
      *     return m.op(g.pow(sk)).compute();
