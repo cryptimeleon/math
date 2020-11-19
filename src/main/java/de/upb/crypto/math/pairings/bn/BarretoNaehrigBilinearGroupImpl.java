@@ -22,12 +22,13 @@ import java.util.Objects;
  * This class provides a minimal representation to reconstruct public parameters of pairings based schemes.
  * <p>
  * For BN curves, G1, G2, and GT are defined based on:
- * - a finite field F_p defined by a prime p
- * - a quadratic extension F2=F_p(alpha) defined by a QNR alpha and the irreducible binomial x^2-alpha
- * - a sextic extension F12=F_2(beta) defined by the irreducible binomial x^6-beta.
- * - an element b in F_p with prime order G1=E:y^2=x^3+b
- * - an element b'=b/alpha in F2 with G2 a subgroup of size n in E':y^2=x^3+b'
- *
+ * <ul>
+ * <li> a finite field F_p defined by a prime p
+ * <li> a quadratic extension F2=F_p(alpha) defined by a QNR alpha and the irreducible binomial x^2-alpha
+ * <li> a sextic extension F12=F_2(beta) defined by the irreducible binomial x^6-beta.
+ * <li> an element b in F_p with prime order G1=E:y^2=x^3+b
+ * <li> an element b'=b/alpha in F2 with G2 a subgroup of size n in E':y^2=x^3+b'
+ * </ul>
  * @author Peter Guenther (peter.guenther@wincor-nixdorf.com)
  */
 public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
@@ -198,7 +199,7 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
 
 
     /**
-     * This functions throws an exception because for type 3 pairings there is not efficient map H:G2->G1.
+     * This functions throws an exception because for type 3 pairings there is no efficient map H:G2->G1.
      */
     @Override
     public GroupHomomorphismImpl getHomomorphismG2toG1() {

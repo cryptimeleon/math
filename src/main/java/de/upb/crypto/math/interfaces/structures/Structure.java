@@ -74,7 +74,8 @@ public interface Structure extends StandaloneRepresentable {
      * For example, elements of {@link Zp} will always be represented by {@code ceil(ceil(log(p))/8)} bytes,
      * hence {@code getUniqueByteLength()} would return {@code ceil(ceil(log(p))/8)}.
      * <p>
-     * A polynomial ring would return null since a polynomial's unique byte representation length depends on its degree.
+     * A polynomial ring would return an empty {@code Optional} since a polynomial's unique byte representation length
+     * depends on its degree.
      *
      * @return the guaranteed fixed length of {@code getUniqueByteRepresentation()},
      *         or an empty {@code Optional}, if no guarantee

@@ -8,19 +8,21 @@ import java.math.BigInteger;
 
 public class BarretoNaehrigGroup1Impl extends BarretoNaehrigSourceGroupImpl {
     /**
-     * Construct subgroup of E:y^2=x^3+a6 with assumed size and cofactor.
+     * Construct subgroup of E:y^2=x^3+a6 using given parameters.
      *
-     * @param size
-     * @param cofactor
-     * @param a6
+     * @param size size of the subgroup
+     * @param cofactor the cofactor, i.e. the size of the base field divided by the size of the subgroup
+     * @param a6 curve parameter for weierstrass equation
      */
     public BarretoNaehrigGroup1Impl(BigInteger size, BigInteger cofactor, ExtensionFieldElement a6) {
         super(size, cofactor, a6);
     }
 
     /**
-     * standard constructor for StandaloneRepresentation
-     **/
+     * Recreates a group from the given representation.
+     *
+     * @param r the representation to use for reconstruction
+     */
     public BarretoNaehrigGroup1Impl(Representation r) {
         super(r);
     }
@@ -39,6 +41,4 @@ public class BarretoNaehrigGroup1Impl extends BarretoNaehrigSourceGroupImpl {
     public BarretoNaehrigGroup1ElementImpl getElement(FieldElement x, FieldElement y) {
         return new BarretoNaehrigGroup1ElementImpl(this, x, y);
     }
-
-
 }

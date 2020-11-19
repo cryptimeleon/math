@@ -30,6 +30,12 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
         super(r);
     }
 
+    /**
+     * TODO (rh): Write javadoc for this. I had some notes somewhere about how exactly this works
+     *  and especially the line parameterization format.
+     *
+     * @param line parameterization of the line
+     */
     @Override
     protected ExtensionFieldElement evaluateLine(FieldElement[] line, PairingSourceGroupElement P, PairingSourceGroupElement Q) {
         ExtensionField targetField = (ExtensionField) gT.getFieldOfDefinition();

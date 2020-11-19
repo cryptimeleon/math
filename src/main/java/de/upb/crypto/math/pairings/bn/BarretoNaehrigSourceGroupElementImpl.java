@@ -22,9 +22,11 @@ public abstract class BarretoNaehrigSourceGroupElementImpl extends PairingSource
     }
 
     /**
-     * Point compression.
+     * Compresses the point to an integer.
      * <p>
-     * Compress point (x,y) by mapping x to an integer i in {0,1,2} such that this.getStructure().mapToPoint(y,this.compress(x,y)).equals(this). Hence (y,i) is a compression of (x,y) of approximately half size.
+     * Compress point (x,y) by mapping x to an integer i in {0,1,2} such that
+     * {@code this.getStructure().mapToPoint(y,this.compress(x,y)).equals(this)}.
+     * Hence (y,i) is a compression of (x,y) of approximately half size.
      *
      * @return compression of x
      */

@@ -20,8 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * A group used for debugging purposes. Really fast, but
- * DLOG is trivial in this group.
+ * A group used for debugging purposes. Really fast, but DLOG is trivial in this group.
  * <p>
  * Concretely, the group is (Zn, +).
  * This group does support a bilinear map, namely e(a,b) = a*b.
@@ -42,18 +41,19 @@ public class DebugGroupImpl implements GroupImpl {
     protected long numExps;
 
     /**
-     * Number of retrieved representations for elements of this group
+     * Number of retrieved representations for elements of this group.
      */
     protected long numRetrievedRepresentations;
     /**
-     * Contains number of terms for each multi-exponentiation performed
+     * Contains number of terms for each multi-exponentiation performed.
      */
     protected List<Integer> multiExpTermNumbers;
 
     /**
-     * Instantiates the debug group (Zn,+)
+     * Instantiates the debug group (Zn,+).
      *
-     * @param name a unique name for this group. Group operations only work between Groups with the same name (and same n)
+     * @param name a unique name for this group. Group operations only work between Groups with the same name
+     *             (and same n)
      * @param n    the size of Zn
      */
     public DebugGroupImpl(String name, BigInteger n) {
@@ -63,7 +63,8 @@ public class DebugGroupImpl implements GroupImpl {
     /**
      * Instantiates the debug group (Zn,+)
      *
-     * @param name a unique name for this group. Group operations only work between Groups with the same name (and same n)
+     * @param name a unique name for this group. Group operations only work between Groups with the same name
+     *             (and same n)
      * @param n    the size of Zn
      * @param enableExpCounting if {@code true}, {@link de.upb.crypto.math.structures.groups.lazy.LazyGroup}
      *                          will count exponentiations as single units, else contained ops will be counted

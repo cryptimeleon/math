@@ -1,6 +1,8 @@
 package de.upb.crypto.math.pairings.debug.count;
 
 import de.upb.crypto.math.factory.BilinearGroup;
+import de.upb.crypto.math.factory.BilinearGroupImpl;
+import de.upb.crypto.math.factory.BilinearGroupProvider;
 import de.upb.crypto.math.factory.BilinearGroupRequirement;
 import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
@@ -9,9 +11,10 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
- * Special provider for the {@link CountingBilinearGroup}. Necessary since this class hierarchy does not provide
- * a {@link de.upb.crypto.math.factory.BilinearGroupImpl} which would be required for the
- * {@link de.upb.crypto.math.factory.BilinearGroupProvider} interface.
+ * Special provider for the {@link CountingBilinearGroup} which does not implement {@link BilinearGroupProvider}.
+ * <p>
+ * Necessary since this class hierarchy does not provide a {@link BilinearGroupImpl} which would be required
+ * for the {@link BilinearGroupProvider} interface.
  *
  * @author Raphael Heitjohann
  */
