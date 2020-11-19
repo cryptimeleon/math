@@ -11,12 +11,12 @@ public interface EllipticCurvePoint extends GroupElementImpl {
 
 
     /**
-     * Computes a parameterization of the line through this and Q.
+     * Computes a parameterization of the line through this and {@code Q}.
      * <p>
      * The result of this function should parameterize the line through this and Q.
-     * For example for affine points, a line through P is parameterized by a_0,a_1 with
+     * For example for affine points, a line through P is parameterized by a_0, a_1 with
      * a_0(y-yP)-a_1(x-xP). For Jacobian points, a line through P is parameterized by
-     * a_0,a_1 with a_0(yZp^3-Yp)-a_1(xZp^2-Xp).
+     * a_0, a_1 with a_0(yZp^3-Yp)-a_1(xZp^2-Xp).
      * <p>
      * This function is useful to assess the line as an intermediate result of point addition
      * for a an efficient pairing computation.
@@ -27,13 +27,13 @@ public interface EllipticCurvePoint extends GroupElementImpl {
     public FieldElement[] computeLine(EllipticCurvePoint Q);
 
     /**
-     * Add this to P with the help of line where line is the resul of this.computeLine(P).
+     * Add this to P with the help of line where line is the result of {@code this.computeLine(P)}.
      * <p>
-     * The contract is that this.op(P)=this.add(P,this.computeLine(P)).
+     * The contract is that {@code this.op(P).equals(this.add(P,this.computeLine(P)))}.
      *
-     * @param P
-     * @param line
-     * @return
+     * @param P The point to add
+     * @param line The line to use for the addition
+     * @return The resulting curve point
      */
     public EllipticCurvePoint add(EllipticCurvePoint P, FieldElement[] line);
 

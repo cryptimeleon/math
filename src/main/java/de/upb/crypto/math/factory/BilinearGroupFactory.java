@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 /**
  * Factory for {@link BilinearGroup}s that allows setting certain configuration parameters
- * ({@link BilinearGroupRequirement}). It then picks a bilinear group fitting this configuration.
+ *  via {@link BilinearGroupRequirement}. It then picks a bilinear group fitting this configuration.
  *
  * <p>
  * Usage of this factory:
@@ -25,12 +25,12 @@ import java.util.stream.Collectors;
  * Default providers are {@link SupersingularProvider} for Type 1 groups and {@link BarretoNaehrigProvider} for Type
  * 3 groups.
  * </li>
- * <li>Create the bilinear group fulfilling the defined requirements by {@link #createBilinearGroup()}.</li>
+ * <li>Create the bilinear group fulfilling the defined requirements using {@link #createBilinearGroup()}.</li>
  * </ol>
  */
 public class BilinearGroupFactory {
     /**
-     * Security parameter
+     * Security parameter.
      */
     protected int securityParameter;
     private BilinearGroupRequirement requirements;
@@ -39,7 +39,7 @@ public class BilinearGroupFactory {
     private boolean debugMode;
 
     /**
-     * Constructs a factory
+     * Constructs a factory.
      *
      * @param securityParameter The security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
      *                          G2, GT roughly in
@@ -87,23 +87,30 @@ public class BilinearGroupFactory {
         this.setRequirements(new BilinearGroupRequirement(type, hashIntoG1Needed, hashIntoG2Needed, hashIntoGTNeeded));
     }
 
+    /**
+     * Adds external providers to the list of used providers.
+     *
+     * @param bilinearGroupProvider The external providers in form of a {@code List}.
+     */
     public void registerProvider(List<? extends BilinearGroupProvider> bilinearGroupProvider) {
         this.registeredProvider = bilinearGroupProvider;
     }
 
     /**
+     * Configures the security parameter requirement for the group.
+     *
      * @param securityParameter The security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
-     *                          G2, GT roughly in
-     *                          terms of equivalent-security symmetric encryption key length (cf. http://www
-     *                          .keylength.com/)
+     *                          G2, GT roughly in terms of equivalent-security symmetric encryption key length
+     *                          (cf. http://www.keylength.com/)
      */
     public void setSecurityParameter(int securityParameter) {
         this.securityParameter = securityParameter;
     }
 
     /**
-     * If set to true, a special bilinear group for non-secure pairings Zn x Zn -> Zn is returned. In this case, n =
-     * [largest prime >= 2^securityParameter]
+     * If set to true, a special bilinear group for non-secure pairings Zn x Zn -> Zn with support for
+     * counting group operations is returned.
+     * In this case, n = [largest prime >= 2^securityParameter]
      */
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;

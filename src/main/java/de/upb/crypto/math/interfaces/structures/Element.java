@@ -5,7 +5,7 @@ import de.upb.crypto.math.serialization.Representable;
 
 
 /**
- * Elements are immutable objects that are connected to some Structure.
+ * Elements are immutable objects that are connected to some {@link Structure}.
  * <p>
  * Implementations are required to implement {@code equals()} and {@code hashCode()}
  * such that {@code x.equals(y)} implies {@code x.hashCode() == y.hashCode()}.
@@ -17,7 +17,7 @@ public interface Element extends Representable, UniqueByteRepresentable {
     String RECOVERY_METHOD = "getElement";
 
     /**
-     * Returns the {@code Structure} that this {@code Element} belongs to
+     * Returns the {@code Structure} that this {@code Element} belongs to.
      */
     Structure getStructure();
 

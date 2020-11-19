@@ -17,6 +17,8 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 /**
+ * An implementation of the secp256k1 curve.
+ * <p>
  * Parameters from https://www.secg.org/sec2-v2.pdf
  */
 public class Secp256k1 implements WeierstrassCurve {

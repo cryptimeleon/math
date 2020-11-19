@@ -8,20 +8,20 @@ import java.math.BigInteger;
 /**
  * Immutable objects representing elements of a group.
  * <p>
- * Implementations must properly implement equals() and hashCode()
+ * Implementations must properly implement {@code equals()} and {@code hashCode()}.
  */
 public interface GroupElementImpl extends Representable, UniqueByteRepresentable {
     GroupImpl getStructure();
 
     /**
-     * Calculates the inverse of this group element
+     * Calculates the inverse of this group element.
      *
-     * @return an element x such that x.op(this).equals(getStructure().getNeutralElement())
+     * @return an element x such that {@code x.op(this).equals(getStructure().getNeutralElement())}
      */
     GroupElementImpl inv();
 
     /**
-     * Calculates the result of e op this.
+     * Calculates the result of this op e.
      *
      * @param e right hand side of the operation
      * @return the element resulting from the group operation
@@ -30,9 +30,12 @@ public interface GroupElementImpl extends Representable, UniqueByteRepresentable
     GroupElementImpl op(GroupElementImpl e) throws IllegalArgumentException;
 
     /**
-     * @return this element "squared" (if op is an multiplication), or "doubled" (if op is an addition)
+     * Squares this if the group is multiplicative and doubles it if the group is additive.
+     * <p>
      * If there is a more efficient algorithm for squaring (e.g. for elliptic curve points),
-     * these classes should override this method.
+     * this method can be overwritten.
+     *
+     * @return this element "squared" (if op is an multiplication), or "doubled" (if op is an addition)
      */
     default GroupElementImpl square() {
         return this.op(this);

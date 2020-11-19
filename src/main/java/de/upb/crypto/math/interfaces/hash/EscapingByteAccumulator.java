@@ -1,18 +1,19 @@
 package de.upb.crypto.math.interfaces.hash;
 
 /**
- * A EscapingByteAccumulator A wraps some ByteAccumulator B.
- * On input x, A writes x.replace(SEPARATOR_BYTE with (SEPARATOR_BYTE concat SEPARATOR_BYTE)) to B.
+ * An {@code EscapingByteAccumulator} {@code A} wraps some {@code ByteAccumulator} {@code B} where a single escaped
+ * symbol is replaced by two of those symbols when writing to the accumulator.
  * <p>
  * This allows recursive calls for lists, i.e. one would use the following template:
- * <p>
- * for each item i in list {
- * i.appendAccumulator(new EscapingByteAccumulator(acc));
- * acc.appendSeparator();
+ * <pre>
+ * for (Object i : list) {
+ *     i.appendAccumulator(new EscapingByteAccumulator(acc));
+ *     acc.appendSeparator();
  * }
- * This ensures that the only unescaped separator bytes in acc are the ones
- * separating list items (all other separator bytes written by the items i are
- * escaped)
+ * </pre>
+ * This ensures that the only unescaped separator bytes in {@code acc} are the ones
+ * separating list items (all other separator bytes written by the items {@code i} are
+ * escaped).
  *
  * @author Jan
  */

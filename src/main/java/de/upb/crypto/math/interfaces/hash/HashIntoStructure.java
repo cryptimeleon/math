@@ -1,17 +1,17 @@
 package de.upb.crypto.math.interfaces.hash;
 
 import de.upb.crypto.math.interfaces.structures.Element;
+import de.upb.crypto.math.interfaces.structures.Structure;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Represents a hash function that maps byte[] -> Element
+ * Represents a hash function that maps a {@code byte[]} to an {@link Element} of a {@link Structure}.
  */
 public interface HashIntoStructure extends StandaloneRepresentable {
     /**
-     * Hashes a byte array into the Structure.
+     * Hashes a byte array into the {@link Structure}.
      *
      * @param x a sequence of bytes to hash
      * @return an element

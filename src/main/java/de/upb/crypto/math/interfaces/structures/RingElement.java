@@ -153,12 +153,14 @@ public interface RingElement extends Element {
 
     /**
      * Implements the euclidean function of a euclidean domain, i.e.
-     * a) rank(a) >= 0 for any a
-     * b) rank(ab) >= rank(a) for any a,b != 0
-     * c) the remainder rank after divideWithRemainder is less than the divisor's rank (see divideWithRemainder)
+     * <ul>
+     * <li>{@code a.getRank()} >= 0 for any a
+     * <li>{@code a.mul(b).getRank()} >= {@code a.getRank()} for any a, b != 0
+     * <li>the remainder rank after {@code divideWithRemainder} is less than the divisor's rank
+     * </ul>
+     * For example, for a polynomial ring this corresponds to the degree of the polynomial.
      * <p>
-     * (for example, this corresponds to degrees for polynomials with polynomial division)
-     * the rank of the zero element is undefined (no guarantee as to what this method returns in that case)
+     * The rank of the zero element is undefined (no guarantee as to what this method returns in that case).
      *
      * @throws UnsupportedOperationException if the ring is not a euclidean domain
      */
@@ -184,10 +186,13 @@ public interface RingElement extends Element {
 
     /**
      * Interprets this element as an exponent for the given group.
-     * For example, for a group of size n, ZnElements can usefully serve as exponents.
+     * <p>
+     * For example, for a group of size n, {@code ZnElement} instances can usefully serve as exponents.
      *
-     * @return a useful integer value such that the expression groupElement.pow(this).equals(groupElement.pow(this.asExponent()) makes sense.
-     * @throws UnsupportedOperationException if this ring is not fit to be interpreted as exponents for a group
+     * @return a useful integer value such that the expression
+     *         {@code groupElement.pow(this).equals(groupElement.pow(this.asExponent())} makes sense.
+     * @throws UnsupportedOperationException if elements of the ring are not fit to be interpreted
+     *                                       as exponents for a group
      */
     default BigInteger asExponent() throws UnsupportedOperationException {
         throw new UnsupportedOperationException("Cannot interpret "+getClass().getName()+" as an exponent");

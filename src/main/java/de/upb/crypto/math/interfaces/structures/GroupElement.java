@@ -17,7 +17,7 @@ import java.math.BigInteger;
  * result of the group operation applied to {@code g} and {@code h}. This object is usable as such.
  * Internally, however, the actual computation of the group operation may be deferred
  * until the value is really needed.
- * This has performance advantages, for example, we can use multiexponentation
+ * This has performance advantages, for example, we can use multi-exponentiation
  * algorithms for computations of values like {@code g.pow(x).op(h.pow(y))}.
  * <p>
  * You can (but don't have to) call {@code compute()} on a group element.

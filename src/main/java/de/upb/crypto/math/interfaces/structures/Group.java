@@ -48,8 +48,11 @@ public interface Group extends Structure, RepresentationRestorer {
     GroupElement getElement(Representation repr);
 
     /**
-     * Recreates a GroupElementVector containing group elements from this Group
-     * @param repr a representation of a GroupElementVector (obtained via GroupElementVector::getRepresentation).
+     * Recreates a {@link GroupElementVector} containing group elements from this {@code Group} from a
+     * {@code Representation} of that vector.
+     *
+     * @param repr a representation of a {@code GroupElementVector}
+     *             (obtained via {@link GroupElementVector#getRepresentation()}).
      */
     default GroupElementVector getVector(Representation repr) {
         return GroupElementVector.fromStream(repr.list().stream().map(this::getElement));
@@ -57,7 +60,9 @@ public interface Group extends Structure, RepresentationRestorer {
 
     /**
      * Returns any generator of this group if the group is cyclic and it's feasible to compute a generator.
-     * Repeated calls may or may not always supply the same generator again (i.e. the output is not guaranteed to be random)!
+     * <p>
+     * Repeated calls may or may not always supply the same generator again
+     * (i.e. the output is not guaranteed to be random)!
      *
      * @throws UnsupportedOperationException if the group doesn't know or have a generator
      */
@@ -90,7 +95,7 @@ public interface Group extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Returns Zn, where n = size()
+     * Returns {@code Zn}, where {@code n == size()}.
      */
     default Zn getZn() {
         BigInteger size = size();
@@ -101,42 +106,42 @@ public interface Group extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Returns a random integer between 0 and size()-1.
+     * Returns a random integer between {@code 0} and {@code size()-1}.
      */
     default Zn.ZnElement getUniformlyRandomExponent() {
         return getZn().getUniformlyRandomElement();
     }
 
     /**
-     * Returns n random integers between 0 and size()-1.
+     * Returns n random integers between {@code 0} and {@code size()-1}.
      */
     default RingElementVector getUniformlyRandomExponents(int n) {
         return RingElementVector.generate(this::getUniformlyRandomExponent, n);
     }
 
     /**
-     * Returns a random integer invertible mod size().
+     * Returns a random integer invertible mod {@code size()}.
      */
     default Zn.ZnElement getUniformlyRandomUnitExponent() {
         return getZn().getUniformlyRandomUnit();
     }
 
     /**
-     * Returns n random integers invertible mod size().
+     * Returns n random integers invertible mod {@code size()}.
      */
     default RingElementVector getUniformlyRandomUnitExponents(int n) {
         return RingElementVector.generate(this::getUniformlyRandomUnitExponent, n);
     }
 
     /**
-     * Returns a random integer between 1 and size()-1.
+     * Returns a random integer between {@code 1} and {@code size()-1}.
      */
     default Zn.ZnElement getUniformlyRandomNonzeroExponent() {
         return getZn().getUniformlyRandomNonzeroElement();
     }
 
     /**
-     * Returns n random integers between 1 and size()-1.
+     * Returns n random integers between {@code 1} and {@code size()-1}.
      */
     default RingElementVector getUniformlyRandomNonzeroExponents(int n) {
         return RingElementVector.generate(this::getUniformlyRandomNonzeroExponent, n);

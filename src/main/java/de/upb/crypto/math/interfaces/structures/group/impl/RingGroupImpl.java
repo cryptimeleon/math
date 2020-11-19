@@ -6,13 +6,13 @@ import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
 /**
- * Common base class for ring subgroups (additive/unit groups)
+ * Common base class for ring subgroups (additive/unit groups).
  */
 public abstract class RingGroupImpl implements GroupImpl {
     protected final Ring ring;
 
     /**
-     * Construct a RingGroup
+     * Construct a RingGroup.
      *
      * @param ring the ring to wrap
      */

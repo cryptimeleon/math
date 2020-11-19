@@ -22,9 +22,11 @@ public interface BilinearMap extends BiFunction<GroupElement, GroupElement, Grou
     Group getGT();
 
     /**
-     * Computes apply(g1,g2)^exponent.
-     * (Depending on the bilinear map and the involved groups, this may be more efficiently implemented than computing it directly.
-     * For example, implementations should do exponentiation in the group with the cheapest operation)
+     * Computes {@code apply(g1,g2)^exponent}.
+     * <p>
+     * Depending on the bilinear map and the involved groups, this may be more efficiently implemented than computing
+     * it directly via {@code apply(g1,g2).pow(exponent)}.
+     * For example, implementations should do exponentiation in the group with the cheapest group operation.
      */
     GroupElement apply(GroupElement g1, GroupElement g2, BigInteger exponent);
 
@@ -34,9 +36,11 @@ public interface BilinearMap extends BiFunction<GroupElement, GroupElement, Grou
     }
 
     /**
-     * Computes apply(g1,g2)^exponent.
-     * (Depending on the bilinear map and the involved groups, this may be more efficiently implemented than computing it directly.
-     * For example, implementations should do exponentiation in the group with the cheapest operation)
+     * Computes {@code apply(g1,g2)^exponent}.
+     * <p>
+     * Depending on the bilinear map and the involved groups, this may be more efficiently implemented than computing
+     * it directly via {@code apply(g1,g2).pow(exponent)}.
+     * For example, implementations should do exponentiation in the group with the cheapest group operation.
      */
     default GroupElement apply(GroupElement g1, GroupElement g2, ZnElement exponent) {
         return apply(g1, g2, exponent.getInteger());
@@ -59,7 +63,7 @@ public interface BilinearMap extends BiFunction<GroupElement, GroupElement, Grou
     }
 
     /**
-     * Returns true if e(g,h) == e(h,g) for all g,h.
+     * Returns true if {@code e(g,h).equals(e(h,g))} for all {@code g}, {@code h}.
      */
     boolean isSymmetric();
 }

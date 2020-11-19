@@ -1,19 +1,19 @@
 package de.upb.crypto.math.factory;
 
-import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
 import de.upb.crypto.math.interfaces.mappings.impl.BilinearMapImpl;
 import de.upb.crypto.math.interfaces.mappings.impl.GroupHomomorphismImpl;
 import de.upb.crypto.math.interfaces.mappings.impl.HashIntoGroupImpl;
-import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
-import de.upb.crypto.math.structures.zn.HashIntoZn;
-import de.upb.crypto.math.structures.zn.Zn;
+import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
+import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
 
 /**
- * Parameters for a pairing group setting.
+ * A concrete implementation of a bilinear group.
+ * <p>
+ * Usually not used directly, but instead wrapped in a {@link BilinearGroup} instance.
+ * This allows for either plain evaluation via {@link BasicBilinearGroup} or lazy evaluation via 
+ * {@link LazyBilinearGroup}.
  */
 public interface BilinearGroupImpl extends StandaloneRepresentable {
     GroupImpl getG1();

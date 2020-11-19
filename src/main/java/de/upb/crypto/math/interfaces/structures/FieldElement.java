@@ -3,7 +3,7 @@ package de.upb.crypto.math.interfaces.structures;
 import java.math.BigInteger;
 
 /**
- * Immutable objects representing a field element
+ * Immutable objects representing a field element.
  */
 public interface FieldElement extends RingElement {
     @Override

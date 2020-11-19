@@ -15,17 +15,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Utility class that allows users to annotate object member variables with @UniqueByteRepresented and then implement
- * their updateAccumulator() method simply as "return AnnotatedUbrUtil.autoAccumulate(accumulator, this)".
- * <p>
+ * Utility class that allows users to annotate object member variables with {@code @UniqueByteRepresented}
+ * and then implement their {@code updateAccumulator()} method simply as
+ * <pre>
+ * return AnnotatedUbrUtil.autoAccumulate(accumulator, this);
+ * </pre>
  * This will append the annotated object members (including those of superclasses) to the accumulator.
- * It is guaranteed that for objects i1 and i2, if !i1.x.equals(i2.x) (for some annotated object member x),
- * then the data appended by AnnotatedUbrUtil.autoAccumulate(acc, i1) is different from AnnotatedUbrUtil.autoAccumulate(acc, i1).
- * (This of course depends on correct implementation of the UniqueByteRepresentable interface of used classes. Furthermore,
- * the contract of UniqueByteRepresentable applies, i.e. ).
  * <p>
- * The utility can handle arbitrarily nested lists, sets, arrays, etc. For a complete list of types it can handle, refer to
- * the method accumulateObject().
+ * It is guaranteed that for objects {@code i1} and {@code i2}, if {@code !i1.x.equals(i2.x)}
+ * (for some annotated object member {@code x}), then the data appended by
+ * {@code AnnotatedUbrUtil.autoAccumulate(acc, i1)} is different from {@code AnnotatedUbrUtil.autoAccumulate(acc, i1)}.
+ * This depends on correct implementation of the {@link UniqueByteRepresentable} interface of used classes.
+ * Furthermore, the contract of {@code UniqueByteRepresentable} applies.
+ * <p>
+ * The utility can handle arbitrarily nested lists, sets, arrays, etc.
+ * For a complete list of types it can handle, refer to {@link #accumulateObject(ByteAccumulator, Object)}.
  */
 public class AnnotatedUbrUtil {
     /**
@@ -40,8 +44,8 @@ public class AnnotatedUbrUtil {
     /**
      * Adds all annotated fields within the given instance object to the accumulator.
      *
-     * @param accumulator ByteAccumulator to append to
-     * @param instance    instance of class with annotated members
+     * @param accumulator {@code ByteAccumulator} to append to
+     * @param instance    Instance of class with annotated members
      * @return the given accumulator (for chaining)
      */
     public static ByteAccumulator autoAccumulate(ByteAccumulator accumulator, Object instance) {

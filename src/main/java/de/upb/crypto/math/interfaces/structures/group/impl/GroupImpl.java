@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 public interface GroupImpl extends StandaloneRepresentable, RepresentationRestorer {
     /**
-     * Returns the neutral element for this group
+     * Returns the neutral element of this group.
      */
     GroupElementImpl getNeutralElement();
 
@@ -34,9 +34,11 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
 
     /**
      * Returns any generator of this group if the group is cyclic and it's feasible to compute a generator.
-     * Repeated calls may or may not always supply the same generator again (i.e. the output is not guaranteed to be random)!
+     * <p>
+     * Repeated calls may or may not always supply the same generator again
+     * (i.e. the output is not guaranteed to be random)!
      *
-     * @throws UnsupportedOperationException if group is not cyclic or it's hard to compute a generator
+     * @throws UnsupportedOperationException if group is not cyclic or it's too hard to compute a generator
      */
     GroupElementImpl getGenerator() throws UnsupportedOperationException;
 
@@ -46,10 +48,10 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
     boolean isCommutative();
 
     /**
-     * Size of the group
+     * Retrieves number of elements in the group if possible.
      *
      * @return size of this group (number of group elements in it) or null if infinite
-     * @throws UnsupportedOperationException if the number of elements is unknown / too expensive to compute
+     * @throws UnsupportedOperationException if the number of elements is unknown or is too expensive to compute
      */
     BigInteger size() throws UnsupportedOperationException;
 
@@ -58,25 +60,42 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
      */
     boolean hasPrimeSize();
 
+    /**
+     * Indicates whether this group implements its own custom exponentiation algorithm,
+     * i.e. overwrites {@link #exp}.
+     *
+     * @return true if the group overwrites {@link #exp}, else false
+     */
     default boolean implementsOwnExp() {
         return false;
     }
 
+    /**
+     * Can be overwritten to implement a custom exponentiation algorithm for the group.
+     *
+     * @param base The base of the exponentiation
+     * @param exponent The exponent of the exponentiation
+     * @param precomputation A set of precomputations that can be used to speed up the exponentiation
+     * @return The result of {@code base} base to the power of {@code exponent}
+     */
     default GroupElementImpl exp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
         throw new UnsupportedOperationException("Exponentiation is not implemented for group " + this);
     }
 
     /**
-     * Indicates whether this group implements its own multi-exponentiation algorithm.
-     * @return {@code true} if the group implements its own multi-exponentiation algorithm {@code false} otherwise
+     * Indicates whether this group implements its own multi-exponentiation algorithm,
+     * i.e. overwrites {@link #multiexp(Multiexponentiation)}.
+     *
+     * @return true if the group implements its own multi-exponentiation algorithm, else false
      */
     default boolean implementsOwnMultiExp() {
         return false;
     }
 
     /**
-     * Allows the group to implement its own multi-exponentiation algorithm.
-     * @param mexp  Contains the multi-exponentiation terms
+     * Can be overwritten to implement a custom multi-exponentiation algorithm for the group.
+     *
+     * @param mexp Contains the multi-exponentiation terms
      * @return Result of computing the multi-exponentiation
      */
     default GroupElementImpl multiexp(Multiexponentiation mexp) {
