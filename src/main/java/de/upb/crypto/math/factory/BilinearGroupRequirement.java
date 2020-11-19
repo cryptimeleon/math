@@ -94,8 +94,8 @@ public class BilinearGroupRequirement {
      * Constructor for composite order groups without any requirements for hashing, i. e. {@link #hashIntoG1Needed},
      * {@link #hashIntoG2Needed}, {@link #hashIntoGTNeeded} is set to false by default.
      *
-     * @param type                       the desired type of the resulting bilinear group
-     * @param numPrimeFactorsOfSize * number of prime factors of the resulting groups
+     * @param type the desired type of the resulting bilinear group
+     * @param numPrimeFactorsOfSize number of prime factors of the resulting groups
      */
     public BilinearGroupRequirement(BilinearGroup.Type type, int numPrimeFactorsOfSize) {
         this(type, false, false, false, numPrimeFactorsOfSize);

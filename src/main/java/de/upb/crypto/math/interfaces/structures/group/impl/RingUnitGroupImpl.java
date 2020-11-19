@@ -10,7 +10,10 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 /**
- * Allows interpreting a ring as its unit group (i.e. the set of elements with a multiplicative inverse, with the ring multiplication).
+ * Allows interpreting a ring as its unit group.
+ * <p>
+ * The unit group consists of the set of elements with a multiplicative inverse.
+ * The group operation is multiplication and the neutral element is called the one element.
  */
 public class RingUnitGroupImpl extends RingGroupImpl {
     public RingUnitGroupImpl(Ring ring) {

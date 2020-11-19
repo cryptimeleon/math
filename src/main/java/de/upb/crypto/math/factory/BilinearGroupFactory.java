@@ -41,7 +41,7 @@ public class BilinearGroupFactory {
     /**
      * Constructs a factory.
      *
-     * @param securityParameter The security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
+     * @param securityParameter the security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
      *                          G2, GT roughly in
      *                          terms of equivalent-security symmetric encryption key length (cf. http://www
      *                          .keylength.com/)
@@ -90,7 +90,7 @@ public class BilinearGroupFactory {
     /**
      * Adds external providers to the list of used providers.
      *
-     * @param bilinearGroupProvider The external providers in form of a {@code List}.
+     * @param bilinearGroupProvider the external providers in form of a {@code List}.
      */
     public void registerProvider(List<? extends BilinearGroupProvider> bilinearGroupProvider) {
         this.registeredProvider = bilinearGroupProvider;
@@ -99,7 +99,7 @@ public class BilinearGroupFactory {
     /**
      * Configures the security parameter requirement for the group.
      *
-     * @param securityParameter The security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
+     * @param securityParameter the security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
      *                          G2, GT roughly in terms of equivalent-security symmetric encryption key length
      *                          (cf. http://www.keylength.com/)
      */
@@ -119,7 +119,7 @@ public class BilinearGroupFactory {
     /**
      * Creates a bilinear group according to the defined requirements and registered provider.
      * <p>
-     * see {@link #setRequirements} and {@link #registerProvider(List)}
+     * See {@link #setRequirements} and {@link #registerProvider(List)}.
      */
     public BilinearGroup createBilinearGroup() {
         if (requirements == null) {

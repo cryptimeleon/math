@@ -24,9 +24,9 @@ public interface HashIntoStructure extends StandaloneRepresentable {
     }
 
     /**
-     * Hashes a String (UTF-8 encoded) into the Structure.
+     * Hashes a {@code String} (UTF-8 encoded) into the {@link Structure}.
      *
-     * @param x a String
+     * @param x a {@code String}
      * @return an element
      */
     default Element hashIntoStructure(String x) {

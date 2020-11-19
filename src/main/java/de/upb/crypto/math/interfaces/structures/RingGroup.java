@@ -5,6 +5,9 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.groups.basic.BasicGroup;
 import de.upb.crypto.math.structures.groups.basic.BasicGroupElement;
 
+/**
+ * Represents a group instantiated from either the additive or unit groups from a ring.
+ */
 public class RingGroup extends BasicGroup {
     protected RingGroup(GroupImpl impl) {
         super(impl);

@@ -13,7 +13,7 @@ public interface Field extends Ring {
      * If this is a finite field, returns a generator of the field's unit group.
      * Repeated calls may or may not return always the same element.
      *
-     * @throws UnsupportedOperationException if operation is not feasible / undefined
+     * @throws UnsupportedOperationException if operation is not feasible or undefined
      */
     FieldElement getPrimitiveElement() throws UnsupportedOperationException;
 

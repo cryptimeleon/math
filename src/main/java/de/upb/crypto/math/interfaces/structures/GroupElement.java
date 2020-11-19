@@ -170,7 +170,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * unless you're planning to do more exponentiations of {@code g} in the future.
      *
      * @param windowSize an indicator for how much memory you're willing to invest.
-     *                   Precomputation will take up space of roughly 2^(windowSize-1) group elements.
+     *                   Precomputation will take up space of roughly 2^(windowSize-1) group elements
      * @return the same object (for chaining calls)
      */
     GroupElement precomputePow(int windowSize);

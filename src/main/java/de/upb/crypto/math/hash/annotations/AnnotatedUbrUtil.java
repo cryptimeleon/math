@@ -45,7 +45,7 @@ public class AnnotatedUbrUtil {
      * Adds all annotated fields within the given instance object to the accumulator.
      *
      * @param accumulator {@code ByteAccumulator} to append to
-     * @param instance    Instance of class with annotated members
+     * @param instance    instance of class with annotated members
      * @return the given accumulator (for chaining)
      */
     public static ByteAccumulator autoAccumulate(ByteAccumulator accumulator, Object instance) {

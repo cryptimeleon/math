@@ -1,6 +1,7 @@
 package de.upb.crypto.math.interfaces.mappings.impl;
 
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.interfaces.structures.Structure;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 
@@ -8,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 public interface HashIntoGroupImpl extends StandaloneRepresentable {
     /**
-     * Hashes a byte array into the Structure.
+     * Hashes a byte array into the {@link Structure}.
      *
      * @param x a sequence of bytes to hash
      * @return an element
@@ -21,7 +22,7 @@ public interface HashIntoGroupImpl extends StandaloneRepresentable {
     }
 
     /**
-     * Hashes a String (UTF-8 encoded) into the Structure.
+     * Hashes a String (UTF-8 encoded) into the {@link Structure}.
      *
      * @param x a String
      * @return an element

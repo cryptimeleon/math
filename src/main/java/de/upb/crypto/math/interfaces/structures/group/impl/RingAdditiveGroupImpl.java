@@ -66,6 +66,7 @@ public class RingAdditiveGroupImpl extends RingGroupImpl {
 
     /**
      * A ring element interpreted as an element of the ring's additive group.
+     * <p>
      * Note that such an element is not equal (according to {@code equals()}) to its original ring element.
      * Use {@code projectToRing()} to interpret the element as a ring element again.
      */

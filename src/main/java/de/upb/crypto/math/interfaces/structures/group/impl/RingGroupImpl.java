@@ -12,7 +12,7 @@ public abstract class RingGroupImpl implements GroupImpl {
     protected final Ring ring;
 
     /**
-     * Construct a RingGroup.
+     * Construct a ring group from a given ring.
      *
      * @param ring the ring to wrap
      */

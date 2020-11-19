@@ -73,10 +73,10 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
     /**
      * Can be overwritten to implement a custom exponentiation algorithm for the group.
      *
-     * @param base The base of the exponentiation
-     * @param exponent The exponent of the exponentiation
-     * @param precomputation A set of precomputations that can be used to speed up the exponentiation
-     * @return The result of {@code base} base to the power of {@code exponent}
+     * @param base the base of the exponentiation
+     * @param exponent the exponent of the exponentiation
+     * @param precomputation a set of precomputations that can be used to speed up the exponentiation
+     * @return the result of {@code base} base to the power of {@code exponent}
      */
     default GroupElementImpl exp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
         throw new UnsupportedOperationException("Exponentiation is not implemented for group " + this);
@@ -95,8 +95,8 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
     /**
      * Can be overwritten to implement a custom multi-exponentiation algorithm for the group.
      *
-     * @param mexp Contains the multi-exponentiation terms
-     * @return Result of computing the multi-exponentiation
+     * @param mexp contains the multi-exponentiation terms
+     * @return result of computing the multi-exponentiation
      */
     default GroupElementImpl multiexp(Multiexponentiation mexp) {
         throw new UnsupportedOperationException("Multi-exponentiation is not implemented for group " + this);

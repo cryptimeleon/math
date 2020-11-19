@@ -31,9 +31,9 @@ public interface EllipticCurvePoint extends GroupElementImpl {
      * <p>
      * The contract is that {@code this.op(P).equals(this.add(P,this.computeLine(P)))}.
      *
-     * @param P The point to add
-     * @param line The line to use for the addition
-     * @return The resulting curve point
+     * @param P the point to add
+     * @param line the line to use for the addition
+     * @return the resulting curve point
      */
     public EllipticCurvePoint add(EllipticCurvePoint P, FieldElement[] line);
 
