@@ -16,9 +16,11 @@ import java.util.Map.Entry;
 /**
  * Allows converting between a Representation object and a JSON structure.
  * <p>
- * Note that the order of attributes in a JSON Object is meaningless. However, this converter guarantees a consistent order between calls,
+ * Note that the order of attributes in a JSON Object is meaningless. 
+ * However, this converter guarantees a consistent order between calls,
  * making the Representation -> String relation left-unique (i.e. a well-defined mapping).
- * (This allows this Converter to be used for, e.g,. HashRepresentationIntoStructure, and similar tasks that require a unique and consistent output)
+ * This allows this Converter to be used for, e.g,. HashRepresentationIntoStructure, 
+ * and similar tasks that require a unique and consistent output.
  */
 public class JSONConverter extends Converter<String> {
     protected static final String BIG_INTEGER_PREFIX = "INT:";

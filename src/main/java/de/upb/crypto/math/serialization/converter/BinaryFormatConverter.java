@@ -19,8 +19,9 @@ public class BinaryFormatConverter extends Converter<byte[]> {
     protected static final byte TYPE_NULL = 8;
 
     /**
-     * Storing well-known strings (see constructor).
-     * Essentially, str.equals(well_known_strings.get(well_known_string_indices.get(str)))
+     * Stores well-known strings (see {@link #BinaryFormatConverter(List, List)}).
+     * <p>
+     * Fulfills contract that {@code str.equals(well_known_strings.get(well_known_string_indices.get(str)))}.
      */
     protected HashMap<String, Integer> well_known_string_indices = new HashMap<>();
     protected ArrayList<String> well_known_strings = new ArrayList<>();
@@ -30,9 +31,12 @@ public class BinaryFormatConverter extends Converter<byte[]> {
     }
 
     /**
-     * Pass lists of well-known strings and classes. These strings and class names won't appear in the serialization result
-     * (making it more shorter by omitting Strings from the byte[] result of serialization).
-     * For serialization and deserialization, the lists passed here must be equal (in particular, the order of elements is important).
+     * Instantiates the converter with lists of strings and classes well-known by both serializer and deserializer.
+     * <p>
+     * These strings and class names won't appear in the serialization result
+     * (making it shorter by omitting Strings from the byte[] result of serialization).
+     * For serialization and deserialization, the lists passed here must be equal
+     * (in particular, the order of elements is important).
      */
     public BinaryFormatConverter(List<String> well_known_strings, List<Class> well_known_classes) {
         int i=0;

@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.Map.Entry;
 
+@Deprecated
 public class AnnotatedRepresentationUtil {
 
 

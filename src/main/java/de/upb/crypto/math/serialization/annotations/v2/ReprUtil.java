@@ -72,14 +72,17 @@ public class ReprUtil {
     protected Object instance;
 
     /**
-     * Create {@code ReprUtil} for a specific instance.
+     * Create {@code ReprUtil} for a specific target instance.
+     * <p>
+     * For deserialization, the target instance will be filled with field values from the deserialized representation.
+     * For serialization, the target instance will be used to create the representation.
      */
     public ReprUtil(Object instance) {
         this.instance = instance;
     }
 
     /**
-     * Register a {@link RepresentationRestorer} using the given name.
+     * Register a representation restorer using the given name.
      * <p>
      * Annotate the fields that should use this restorer with {@code @Represented(restorer = "name")}.
      *
@@ -101,9 +104,9 @@ public class ReprUtil {
 
     /**
      * Registers \(\mathbb{G}_1\), \(\mathbb{G}_2\) and \(\mathbb{G}_T\) from the given bilinear group
-     * as restorers with names {@code G1}, {@code G2} and {@code GT}, respectively.
+     * as restorers with names {@code "G1"}, {@code "G2"} and {@code "GT"}, respectively.
      *
-     * @param bilinearGroup The bilinear group to register restorers for
+     * @param bilinearGroup the bilinear group to register restorers for
      * @return this (for chaining)
      */
     public ReprUtil register(BilinearGroup bilinearGroup) {
@@ -113,9 +116,9 @@ public class ReprUtil {
 
     /**
      * Registers \(\mathbb{G}_1\), \(\mathbb{G}_2\) and \(\mathbb{G}_T\) from the given bilinear map
-     * as restorers with names {@code G1}, {@code G2} and {@code GT}, respectively.
+     * as restorers with names {@code "G1"}, {@code "G2"} and {@code "GT"}, respectively.
      *
-     * @param bilinearMap The bilinear map to register restorers for
+     * @param bilinearMap the bilinear map to register restorers for
      * @return this (for chaining)
      */
     public ReprUtil register(BilinearMap bilinearMap) {
@@ -217,38 +220,46 @@ public class ReprUtil {
     }
 
     /**
-     * Restores the instance from representation.
-     * For more control over the deserialization process (e.g., if there are dependencies),
-     * use new ReprUtil(this).register(...).deserialize(repr)
+     * Restores the instance from the given representation, storing the result in the given object.
+     * <p>
+     * For more control over the deserialization process, e.g. if using custom representation restorers,
+     * use {@code new ReprUtil(this).register(...).deserialize(repr)} instead.
      *
-     * @param instance an object of a class that has fields annotated with @Represented
-     * @param repr the representation created by ReprUtil::serialize
+     * @param instance the object whose attribute values to restore
+     * @param repr the representation from which to restore the object
      */
     public static void deserialize(Object instance, Representation repr) {
         new ReprUtil(instance).deserialize(repr);
     }
 
     /**
-     * Recreates the instance from representation.
-     * @param repr a Representation you got from serialize()
+     * Recreates the instance from the given representation.
+     *
+     * @param repr the representation to deserialize
      */
     public void deserialize(Representation repr) {
         forEachField(field -> restoreField(field, repr));
     }
 
     /**
-     * Handles a single field of instance.
-     * @param field what field of instance to handle
-     * @param topLevelRepr the representation for instance
-     * @return the value assigned to the field.
+     * Restores the value of the given field using the given representation.
+     * <p>
+     * Does not overwrite field values that are already set, i.e. not equal null.
+     *
+     * @param field determines the field of instance to restore
+     * @param topLevelRepr the representation to restore the field from
+     * @return the value assigned to the field
      */
     Object restoreField(Field field, Representation topLevelRepr) {
         try {
+            // Make sure we can access the field
             field.setAccessible(true);
             Object value = field.get(instance);
+            // If the field already has a value, do not overwrite it
             if (value != null) {
                 return value;
             }
+            // Retrieve the correct handler for the given field and restore the value from the representation entry
             value = getHandlerForField(field).deserializeFromRepresentation(topLevelRepr.obj().get(field.getName()), name -> getOrRecreateRestorer(name, topLevelRepr));
             field.set(instance, value);
             return value;
@@ -258,8 +269,18 @@ public class ReprUtil {
     }
 
     /**
-     * Gets restorer from registered restorers or - if it's not there - look for it within the fields instance's class
-     * (and restore it if annotated).
+     * Retrieves the restorer based on the given restorer name.
+     * <p>
+     * First tries to retrieve the restorer from the map of registered restorers.
+     * If it is not there, it will check the representation itself.
+     * <p>
+     * For example, a {@code Group} acts as the restorer for a {@code GroupElement}.
+     * It can either be register as a restorer - in which case it will be in the list of registered restorers -
+     * or stored in the instance itself (and annotated with {@code @Represented},
+     * in which case it will be contained in the representation itself.
+     *
+     * @param restorerString restorer string to retrieve restorer for
+     * @param topLevelRepr representation to get restorer from if not in the list of registered restorers
      */
     RepresentationRestorer getOrRecreateRestorer(String restorerString, Representation topLevelRepr) {
         //Parse restorerString of form "baseName::methodToCall::methodToCall::..."
@@ -283,6 +304,18 @@ public class ReprUtil {
         return callMethods(restoredBase, parsed);
     }
 
+    /**
+     * Retrieves a representation restorer only obtainable via sequentially calling methods on a given object.
+     * <p>
+     * For example, a restorer string such as {@code bilGroup::getG1} allows to specify the return value of
+     * {@code bilGroup.getG1()} (a {@code Group}) as a restorer.
+     * In that case, the {@code baseObject} would be the {@code BilinearGroup} instance, and the
+     * {@code parsedRestorerString} would be given by {@code ["getG1"]}.
+     *
+     * @param baseObject the object on which to execute the methods
+     * @param parsedRestorerString the list of methods to call in order of execution
+     * @return the retrieved representation restorer
+     */
     private static RepresentationRestorer callMethods(Object baseObject, String[] parsedRestorerString) {
         Object currentObject = baseObject;
         for (int i=1;i<parsedRestorerString.length;i++) {
@@ -302,7 +335,7 @@ public class ReprUtil {
     }
 
     /**
-     * Helper method. Checks whether field is annotated.
+     * Checks whether given field is annotated with {@code @Represented}.
      */
     private static boolean hasRepresentedTypeAnnotation(Field field) {
         Annotation[] annotations = field.getDeclaredAnnotations();
@@ -315,8 +348,7 @@ public class ReprUtil {
     }
 
     /**
-     * Helper method.
-     * If field is annotated with @Represented annotation, returns the annotation's "restorer" value.
+     * If field is annotated with {@code @Represented} annotation, returns the annotation's restorer string.
      */
     private static String getRestorerStringOfField(Field field) {
         Annotation[] annotations = field.getDeclaredAnnotations();
@@ -330,23 +362,30 @@ public class ReprUtil {
         return null;
     }
 
+    /**
+     * Retrieves the representation handler for the given field.
+     */
     protected static RepresentationHandler getHandlerForField(Field field) {
         return getHandler(field.getGenericType(), getRestorerStringOfField(field));
     }
 
     /**
-     * Derives the ReputationHandler for a certain Type (and restorerString).
+     * Derives the representation handler for a certain type and restorer string.
      * This is done statically, i.e. with static type information.
      */
     protected static RepresentationHandler getHandler(Type type, String restorerString) {
-        if (restorerString == null || restorerString.trim().length() == 0) //the distinction is basically made because each method recursively calls itself and we want consistent behavior depending on whether or not a restorer String was originally given (as opposed to a given String like "[] -> ", which eventually is broken down into an empty String but should be handled as a syntax error.)
+        if (restorerString == null || restorerString.trim().length() == 0)
+            // the distinction is basically made because each method recursively calls itself
+            // and we want consistent behavior depending on whether or not a restorer String was originally given
+            // (as opposed to a given String like "[] -> ", which eventually is broken down into an empty String
+            // but should be handled as a syntax error.)
             return getHandlerWithoutRestorerString(type);
         else
             return getHandlerWithRestorerString(type, restorerString);
     }
 
     /**
-     * Derives the ReputationHandler for a certain Type (and restorerString).
+     * Derives the representation handler for a certain type and non-empty restorer string.
      * This is done statically, i.e. with static type information.
      */
     protected static RepresentationHandler getHandlerWithRestorerString(Type type, String restorerString) {
@@ -359,32 +398,43 @@ public class ReprUtil {
         if (DependentRepresentationHandler.canHandle(type))
             return new DependentRepresentationHandler(trimmedString, type);
 
-        if (ListAndSetRepresentationHandler.canHandle(type) && trimmedString.startsWith("[") && trimmedString.endsWith("]")) {
+        if (ListAndSetRepresentationHandler.canHandle(type) && trimmedString.startsWith("[")
+                && trimmedString.endsWith("]")) {
             Type elementType = ListAndSetRepresentationHandler.getElementType(type);
-            return new ListAndSetRepresentationHandler(getHandlerWithRestorerString(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
+            return new ListAndSetRepresentationHandler(
+                    getHandlerWithRestorerString(elementType, trimmedString.substring(1, trimmedString.length()-1)),
+                    type
+            );
         }
 
-        if (ArrayRepresentationHandler.canHandle(type) && trimmedString.startsWith("[") && trimmedString.endsWith("]")) {
+        if (ArrayRepresentationHandler.canHandle(type) && trimmedString.startsWith("[")
+                && trimmedString.endsWith("]")) {
             Type elementType = ArrayRepresentationHandler.getTypeOfElements(type);
-            return new ArrayRepresentationHandler(getHandlerWithRestorerString(elementType, trimmedString.substring(1, trimmedString.length()-1)), type);
+            return new ArrayRepresentationHandler(
+                    getHandlerWithRestorerString(elementType, trimmedString.substring(1, trimmedString.length()-1)),
+                    type
+            );
         }
 
         int mapArrowIndex = findMapArrow(trimmedString);
         if (MapRepresentationHandler.canHandle(type) && mapArrowIndex != -1) {
             Type keyType = MapRepresentationHandler.getKeyType(type);
             Type valueType = MapRepresentationHandler.getValueType(type);
-            return new MapRepresentationHandler(getHandlerWithRestorerString(keyType, trimmedString.substring(0, mapArrowIndex)),
+            return new MapRepresentationHandler(
+                    getHandlerWithRestorerString(keyType, trimmedString.substring(0, mapArrowIndex)),
                     getHandlerWithRestorerString(valueType, trimmedString.substring(mapArrowIndex+2)),
-                    type);
+                    type
+            );
         }
 
-        throw new IllegalArgumentException("Don't know how to handle type "+type.getTypeName()+" using restorer String \""+restorerString+"\"");
+        throw new IllegalArgumentException("Don't know how to handle type " + type.getTypeName()
+                + " using restorer String \"" + restorerString + "\"");
     }
 
 
 
     /**
-     * Derives the ReputationHandler for a certain Type (for empty restorer string).
+     * Derives the representation handler for a certain type and empty restorer string.
      * This is done statically, i.e. with static type information.
      */
     protected static RepresentationHandler getHandlerWithoutRestorerString(Type type) {
@@ -417,13 +467,13 @@ public class ReprUtil {
             return new MapRepresentationHandler(getHandlerWithoutRestorerString(keyType), getHandlerWithoutRestorerString(valueType), type);
         }
 
-        throw new IllegalArgumentException("Don't know how to handle type "+type.getTypeName()+" using empty restorer String (you can add one within the @Represented annotation)");
+        throw new IllegalArgumentException("Don't know how to handle type " + type.getTypeName()
+                + " using empty restorer String (you can add one within the @Represented annotation)");
     }
 
     /**
-     * Helper method.
-     * Returns the index of the top-level "->" within the given String (the index of '-' char, to be precise).
-     * If none, returns -1.
+     * Returns the index of the top-level "->" within the given String (the index of the '-' char, to be precise).
+     * If none exist, returns -1.
      */
     private static int findMapArrow(String str) {
         int depth = 0; //number of "[" or "(" read minus number of "]" or ")" read.
