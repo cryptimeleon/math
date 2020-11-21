@@ -122,7 +122,7 @@ public class ExtensionFieldElement implements FieldElement, UniqueByteRepresenta
      * <p>
      * For an element x with coefficients in F_q, compute x^q.
      *
-     * @return The first conjugate of this element
+     * @return the first conjugate of this element
      */
     public ExtensionFieldElement conjugate() {
         if (this.getStructure().isBaseField()) {

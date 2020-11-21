@@ -4,9 +4,10 @@ import de.upb.crypto.math.random.SimpleRandomGenerator;
 
 /**
  * A static way to obtain random generators.
- * Usage: RandomSupplier.getRnd() or RandomSupplier.instance().get()
  * <p>
- * If your application should use some non-default source of randomness, you can set it statically via set().
+ * Use via {@code RandomSupplier.getRnd()} or {@code RandomSupplier.instance().get()}.
+ * <p>
+ * If your application should use some non-default source of randomness, you can set it statically via {@code set()}.
  */
 public class RandomGeneratorSupplier {
     private static RandomGeneratorSupplier instance = null;

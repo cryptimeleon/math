@@ -3,15 +3,15 @@ package de.upb.crypto.math.random.interfaces;
 import java.math.BigInteger;
 
 /**
- * Collection of utility functions for random operations
+ * Collection of utility functions for random operations.
  */
 public abstract class RandomUtil {
     /**
-     * Generate a random number from the set {0,...,l-1}
+     * Generate a random number from the set \(\{0,...,l-1\}\) using the given random generator.
      *
-     * @param rnd the randomness to be used
+     * @param rnd the random generator to use
      * @param l   the upper bound excluded
-     * @return a uniformly distributed number from the set {0,...,l-1}
+     * @return a random number from the set \(\{0,...,l-1\}\)
      */
     public static BigInteger getRandomElement(RandomGenerator rnd, BigInteger l) {
 
@@ -55,18 +55,20 @@ public abstract class RandomUtil {
     }
 
     /**
-     * Generate a random number from the set {0,...,l-1}
+     * Generate a uniformly distributed random number from the set \(\{0,...,l-1\}\).
      *
      * @param l the upper bound excluded
-     * @return a uniformly distributed number from the set {0,...,l-1}
+     * @return a uniformly distributed number from the set \(\{0,...,l-1\}\)
      */
     public static BigInteger getRandomElement(BigInteger l) {
         return getRandomElement(RandomGeneratorSupplier.getRnd(), l);
     }
 
     /**
-     * Generate a (uniformly) random n-bit prime number from the interval [2^(n-1), 2^n-1]
+     * Generate a random n-bit prime number from the interval \(\left[2^{n-1}, 2^n-1\right]\)
+     * using the given random generator.
      *
+     * @param rnd the random generator to use for generation
      * @param n desired number of bits for the prime number
      * @return a BigInteger that is probably prime
      */
@@ -82,7 +84,7 @@ public abstract class RandomUtil {
     }
 
     /**
-     * Generate a (uniformly) random n-bit prime number from the interval [2^(n-1), 2^n-1]
+     * Generate a uniformly distributed random n-bit prime number from the interval \(\left[2^{n-1}, 2^n-1\right]\).
      *
      * @param n desired number of bits for the prime number
      * @return a BigInteger that is probably prime

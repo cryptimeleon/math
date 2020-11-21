@@ -5,9 +5,10 @@ import de.upb.crypto.math.interfaces.structures.EllipticCurvePoint;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 
 /**
- * The set of points (x,y) such that
+ * An elliptic curve defined by the weierstrass equation y^2 + A1*x*y + A3*y = x^3 + A2*x^2 + A4*x + A6.
  * <p>
- * y^2+A1*x*y + A3*y = x^3 + A2*x^2 + A4*x + A6
+ * Contains the set of points (x,y) that fulfill the weierstrass equation.
+ * In short form, the equation reduces to y^2 = x^3 + A4*x + A6.
  */
 public interface WeierstrassCurve extends EllipticCurve {
 

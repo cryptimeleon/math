@@ -270,6 +270,8 @@ public class BarretoNaehrigProvider implements BilinearGroupProvider {
         if (!checkRequirements(securityParameter, requirements))
             throw new UnsupportedOperationException("The requirements are not fulfilled by this Bilinear Group!");
 
+        // TODO: Not accurate anymore, 256 bit group size only provides roughly 100 bits of security now
+        //  according to https://tools.ietf.org/html/draft-irtf-cfrg-pairing-friendly-curves-06#section-3.2
         init(securityParameter * 2);
 
         return result;

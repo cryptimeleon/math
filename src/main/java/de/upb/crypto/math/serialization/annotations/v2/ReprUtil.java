@@ -19,54 +19,74 @@ import java.util.stream.Stream;
 
 /**
  * Allows for easy Representation handling.
- *
+ * <p>
  * Typical usage example:
- * - Your class is StandaloneRepresentable, i.e. you need to give a constructor with Representation argument and a getRepresentation() method.
- * - In your class, annotate all fields that need to be part of the Representation with @Represented. (e.g., @Represented private Group group)
- * - If some objects need help being deserialized (e.g., GroupElements are deserialized by their group), define a restorer in the @Represented annotation,
- *   e.g., @Represented(restorer="group") private GroupElement x;
- *   The restorer can either be another field of your class (like group in the example above), or another handler, which you'd have to register using {@link ReprUtil#register(RepresentationRestorer, String)}.
- * - In the constructor(Representation repr), call: new ReprUtil(this).deserialize(repr);
- * - In getRepresentation(), call ReprUtil.serialize(this);
- *
- * You can also refer to a restorer as, for example, "bilGroup::getG1", where bilGroup is as above (another field of the class or something registered) and getG1 is a method that returns a RepresentationRestorer.
- *
- * - The framework can handle Lists, Sets, and Maps as well. For example, @Represented(restorer="[group]") handles a list or set of group elements
- *   and @Represented(restorer="String -> [group]") handles a map of Strings to lists of group elements.
- *   Check {@link Represented#restorer()} for details.
- * - Example with additional information: Suppose your object depends on public parameters (e.g., a publicly known bilinear group bilGroup, consisting of groups G1, G2, GT).
- *   You'd annotate GroupElement members
- *   with @Annotated(restorer="G1"), @Annotated(restorer="G2"), @Annotated(restorer="GT"), depending on which of the three groups each of them belongs to.
- *   Your constructor would take these public parameters pp and a Representation repr as input and then call new ReprUtil(this).register(bilGroup).deserialize(repr);
- *   getRepresentation() would still just call ReprUtil.serialize(this);
+ * <ol>
+ * <li> Your class is StandaloneRepresentable, i.e. you need to give a constructor with {@link Representation}
+ *      argument and a {@code getRepresentation()} method.
+ * <li> In your class, annotate all fields that need to be part of the representation with {@code @Represented}.
+ *      For example, {@code @Represented private Group group}.
+ * <li> If some objects need help being deserialized (e.g., {@code GroupElement} instances are deserialized
+ *      by their group), define a restorer in the {@code @Represented} annotation.
+ *      For example, {@code @Represented(restorer="group") private GroupElement x;}.
+ *      The restorer can either be another field of your class (like {@code group} in the example above),
+ *      or another handler, which you'd have to register using
+ *      {@link ReprUtil#register(RepresentationRestorer, String)}.
+ * <li> In the constructor with argument {@code }Representation repr},
+ *      call {@code new ReprUtil(this).deserialize(repr);}.
+ * <li> In {@code getRepresentation()}, call {@code ReprUtil.serialize(this);}
+ *</ol>
+ * You can also refer to a restorer as, for example, {@code "bilGroup::getG1"}, where {@code bilGroup} is as above
+ * (another field of the class or something registered) and {@code getG1} is a method that returns a
+ * {@code RepresentationRestorer}.
+ * <p>
+ * The framework can handle lists, sets, and maps as well.
+ * For example, {@code @Represented(restorer="[group]")} handles a list or set of group elements
+ * and {@code @Represented(restorer="String -> [group]")} handles a map of strings to lists of group elements.
+ * Check {@link Represented#restorer()} for details.
+ * <p>
+ * An example including a bilinear pairing:
+ * <p>
+ * Suppose your object depends on public parameters (e.g., a publicly known bilinear group bilGroup,
+ * consisting of groups G1, G2, GT).
+ * You'd annotate GroupElement members with {@code @Represented(restorer="G1")}, {@code @Represented(restorer="G2")},
+ * {@code @Represented(restorer="GT")}, depending on which of the three groups each of them belongs to.
+ * Your constructor would take these public parameters {@code pp} and a {@code Representation repr} as input
+ * and then call {@code new ReprUtil(this).register(bilGroup).deserialize(repr);}.
+ * {@code getRepresentation()} would still just call {@code ReprUtil.serialize(this);}.
+ * <p>
+ * For more information, consult the <a href="https://upbcuk.github.io/docs/representations.html">documentation</a>.
  */
 public class ReprUtil {
     static Pattern methodCallSeparator = Pattern.compile("::");
     /**
-     * RepresentationRestorer that can help during recreation of the instance.
+     * Maps representation restorer identifiers to the corresponding {@code RepresentationRestorer} instances.
+     * <p>
+     * Used to help with deserialization of fields that need a representation restorer to be deserialized.
      */
     protected HashMap<String, RepresentationRestorer> restorers = new HashMap<>();
 
     /**
-     * Object that's subject to represent or be recreated from Representation.
+     * Either stores the recreated object during deserialization, or the object to serialize.
      */
     protected Object instance;
 
     /**
-     * Create ReprUtil for a specific instance.
+     * Create {@code ReprUtil} for a specific instance.
      */
     public ReprUtil(Object instance) {
         this.instance = instance;
     }
 
     /**
-     * Register a restorer for a Representation (usually, interfaces with a "recreateFoo(Representation)" method should be
-     * valid arguments).
-     * Annotate the field that should use this with @Represented(restorer = "name")
+     * Register a {@link RepresentationRestorer} using the given name.
+     * <p>
+     * Annotate the fields that should use this restorer with {@code @Represented(restorer = "name")}.
      *
-     * @param restorer a class that knows how to restore values from Representation (e.g., a Group knows how to restore its GroupElements)
-     * @param name the name for this restorer (same as in the @Represented annotation)
-     * @return this. For chaining.
+     * @param restorer a class that knows how to restore values from Representation
+     *                 (e.g., a Group knows how to restore its GroupElements)
+     * @param name the name for this restorer (same as in the {@code @Represented} annotation)
+     * @return this (for chaining)
      */
     public ReprUtil register(RepresentationRestorer restorer, String name) {
         if (restorers.containsKey(name))
@@ -79,11 +99,25 @@ public class ReprUtil {
         return this;
     }
 
+    /**
+     * Registers \(\mathbb{G}_1\), \(\mathbb{G}_2\) and \(\mathbb{G}_T\) from the given bilinear group
+     * as restorers with names {@code G1}, {@code G2} and {@code GT}, respectively.
+     *
+     * @param bilinearGroup The bilinear group to register restorers for
+     * @return this (for chaining)
+     */
     public ReprUtil register(BilinearGroup bilinearGroup) {
         register(bilinearGroup.getBilinearMap());
         return this;
     }
 
+    /**
+     * Registers \(\mathbb{G}_1\), \(\mathbb{G}_2\) and \(\mathbb{G}_T\) from the given bilinear map
+     * as restorers with names {@code G1}, {@code G2} and {@code GT}, respectively.
+     *
+     * @param bilinearMap The bilinear map to register restorers for
+     * @return this (for chaining)
+     */
     public ReprUtil register(BilinearMap bilinearMap) {
         register(bilinearMap.getG1(), "G1");
         register(bilinearMap.getG2(), "G2");
@@ -92,20 +126,25 @@ public class ReprUtil {
     }
 
     /**
-     * Register a custom restorer function, which takes a Representation and recreates the object.
-     * Annotate the field that should use this with @Represented(restorer = "name")
-     * You should usually not need this (prefer register(RepresentationRestorer))
+     * Register a custom restorer function, which takes a {@code Representation} and recreates the object.
+     * <p>
+     * Annotate the field that should use this with {@code @Represented(restorer = "name")}.
+     * <p>
+     * You should usually not need this.
+     * Instead, use {@link #register(RepresentationRestorer, String)} to register a {@code RepresentationRestorer}.
      *
-     * @param restorer a function taking a Representation and restoring the corresponding object.
-     * @param name the name for this restorer function (same as in the @Represented annotation)
-     * @return this. For chaining.
+     * @param restorer a function that takes in a {@code Representation} and restores the corresponding object.
+     * @param name the name for this restorer function (same as in the {@code @Represented} annotation)
+     * @return this (for chaining)
      */
     public ReprUtil register(Function<? super Representation, ?> restorer, String name)  {
         return this.register(new CustomRepresentationRestorer(restorer), name);
     }
 
     /**
-     * Iterates over all fields of instance's class and its superclasses, making them accessible (readable, writable) for the fieldConsumer call.
+     * Runs the given {@link Consumer<Field>} on each field of the target instance's class and superclasses.
+     * <p>
+     * To enable this, each field is made accessible (readable, writeable) via {@code setAccessible}.
      */
     private void forEachField(Consumer<Field> fieldConsumer) {
         Class<?> clazz = instance.getClass();
@@ -127,7 +166,10 @@ public class ReprUtil {
     }
 
     /**
-     * Private helper method: given field name, outputs corresponding Field for instance.
+     * Retrieves corresponding field of the target instance's class given its name.
+     *
+     * @param name name of the field
+     * @return corresponding field
      */
     private Field getFieldByName(String name) {
         Class<?> clazz = instance.getClass();
@@ -147,8 +189,9 @@ public class ReprUtil {
     }
 
     /**
-     * Takes the instance and represents it as a Representation.
-     * @return a Representation
+     * Represents the target instance stored in this as a {@code Representation}.
+     *
+     * @return the representation
      */
     public Representation serialize() {
         ObjectRepresentation result = new ObjectRepresentation();
@@ -164,7 +207,8 @@ public class ReprUtil {
     }
 
     /**
-     * Takes the instance and represents it as a Representation.
+     * Represents the given instance as a {@code Representation}.
+     *
      * @param instance the object to serialize
      * @return a Representation
      */
