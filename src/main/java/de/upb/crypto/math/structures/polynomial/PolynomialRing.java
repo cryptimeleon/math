@@ -138,7 +138,7 @@ public class PolynomialRing implements Ring {
 
         /**
          * Creates a polynomial using a bit string as the coefficients in descending
-         * order, i.e. {@code new Polynomial(10)} returns \(0 + 1 \times X + 0 \times X^2 + 1 \times X^3\).
+         * order, i.e. {@code new Polynomial(10)} returns \(0 + 1 \cdot X + 0 \cdot X^2 + 1 \cdot X^3\).
          * <p>
          * This constructor should only be used if the underlying ring is \(\mathbb{Z}_2\).
          *
@@ -161,7 +161,7 @@ public class PolynomialRing implements Ring {
         /**
          * Creates a polynomial with the given coefficients.
          * <p>
-         * For example, {@code new Polynomial(1,2,3)} returns \(1 + 2 \times X + 3 \times X^2\).
+         * For example, {@code new Polynomial(1,2,3)} returns \(1 + 2 \cdot X + 3 \cdot X^2\).
          *
          * @param coefficients coefficients for the new polynomial, in order from smallest to largest exponent
          */
@@ -177,7 +177,7 @@ public class PolynomialRing implements Ring {
         /**
          * Creates a polynomial with the given coefficients.
          * <p>
-         * For example, {@code new Polynomial([1,2,3])} returns \(1 + 2 \times X + 3 \times X^2\).
+         * For example, {@code new Polynomial([1,2,3])} returns \(1 + 2 \cdot X + 3 \cdot X^2\).
          *
          * @param coefficients coefficients for the new polynomial, in order from smallest to largest exponents
          */
@@ -192,7 +192,7 @@ public class PolynomialRing implements Ring {
         }
 
         /**
-         * Creates the polynomial \(a \times X^i\).
+         * Creates the polynomial \(a \cdot X^i\).
          */
         public Polynomial(int i, RingElement a) {
             if (i < 0)
@@ -527,7 +527,7 @@ public class PolynomialRing implements Ring {
 
         /**
          * Initialize the  polynomial using a bit string as the coefficients in descending
-         * order, i.e. {@code new Polynomial(10)} returns \(0 + 1 \times X + 0 \times X^2 + 1 \times X^3\).
+         * order, i.e. {@code new Polynomial(10)} returns \(0 + 1 \cdot X + 0 \cdot X^2 + 1 \cdot X^3\).
          * <p>
          * This constructor should only be used if the underlying ring is \(\mathbb{Z}_2\).
          *
@@ -568,7 +568,7 @@ public class PolynomialRing implements Ring {
     /**
      * Shorthand to create a polynomial from given coefficients in order from lowest exponent to highest.
      * <p>
-     * For example, {@code getPoly(1,2,3)} returns \(1 + 2 \times X + 3 \times X^2\).
+     * For example, {@code getPoly(1,2,3)} returns \(1 + 2 \cdot X + 3 \cdot X^2\).
      *
      * @param coefficients the polynomial's coefficients in orderfrom lowest exponent to highest
      */
@@ -593,7 +593,7 @@ public class PolynomialRing implements Ring {
      * Note: This implementation is based on Apache's commons math library
      * (org.apache.commons.math3.analysis.polynomials.PolynomialFunctionLagrangeForm#computeCoefficients).
      *
-     * @param dataPoints         known points \((x_i, y_i)\) on the resulting polynomial P used for interpolation.
+     * @param dataPoints         known points \((x_i, y_i)\) on the resulting polynomial \(P\) used for interpolation.
      * @param degreeOfPolynomial the desired degree of the interpolated polynomial
      * @return interpolated polynomial \(P\) where \(P(x_i) = y_i\) for every given data point.
      */
@@ -677,8 +677,8 @@ public class PolynomialRing implements Ring {
      * Note: This implementation is based on Apache's commons math library
      * (org.apache.commons.math3.analysis.polynomials.PolynomialFunctionLagrangeForm#computeCoefficients).
      *
-     * @param dataPoints known points (x_i, y_i) on the resulting polynomial P used for interpolation.
-     * @return interpolated polynomial P where P(x_i) = y_i for every given data point.
+     * @param dataPoints known points \((x_i, y_i)\) on the resulting polynomial \(P\) used for interpolation.
+     * @return interpolated polynomial \(P\) where \(P(x_i) = y_i\) for every given data point.
      */
     public static Polynomial getPoly(Map<? extends RingElement, ? extends RingElement> dataPoints) {
         return getPoly(dataPoints, dataPoints.size() - 1);

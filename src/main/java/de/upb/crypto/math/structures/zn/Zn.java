@@ -11,10 +11,11 @@ import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The ring of integers modulo n
+ * The ring of integers modulo n.
  */
 public class Zn implements Ring {
     protected final ZnElement ONE;
@@ -23,13 +24,13 @@ public class Zn implements Ring {
     protected Boolean nIsPrime = null;
 
     /**
-     * Maximum value (over all elements elem) of elem.getInteger().toByteArray().length;
+     * Maximum value (over all elements elem) of {@code elem.getInteger().toByteArray().length;}.
      * The value is exactly the number of bytes needed to represent n.
      */
     protected final int maxByteLength;
 
     /**
-     * Constructs the ring
+     * Constructs the ring.
      *
      * @param n number of elements in the ring
      */
@@ -110,25 +111,26 @@ public class Zn implements Ring {
     }
 
     /**
-     * An equivalence class of integers with the same remainder when divided by n
+     * An equivalence class of integers with the same remainder when divided by n.
      */
     public class ZnElement implements RingElement, UniqueByteRepresentable {
         /**
-         * The unique element v in Z such that 0 <= v < n and v projects to the represented element in Zn
+         * The unique element \(v \in \mathbb{Z}\) such that \(0 \leq v < n\) and \(v\) projects
+         * to the represented element in \(\mathbb{Z}_n\).
          */
         protected final BigInteger v;
 
         /**
-         * Construct a new ZnElement initialized as [v] mod n (must reduce v before calling!)
+         * Construct a new {@code ZnElement} initialized as \([v] \pmod n\) (must reduce \(v\) before calling!)
          */
         protected ZnElement(BigInteger v) {
             this.v = v;
-            if (v.compareTo(n) > 0 || v.signum() < 0)
-                throw new RuntimeException("We have a problem.");
+            if (v.compareTo(n) >= 0 || v.signum() < 0)
+                throw new RuntimeException("The given integer is not in Zn");
         }
 
         /**
-         * Create the zero element
+         * Create the zero element.
          */
         protected ZnElement() {
             this.v = BigInteger.ZERO;
@@ -220,11 +222,15 @@ public class Zn implements Ring {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof ZnElement))
+            if (this == obj)
+                return true;
+            if (obj == null)
                 return false;
-
+            if (getClass() != obj.getClass())
+                return false;
             ZnElement e = (ZnElement) obj;
-            return this.getStructure().equals(e.getStructure()) && v.equals(e.v);
+            return Objects.equals(getStructure(), e.getStructure())
+                    && Objects.equals(v, e.v);
         }
 
         @Override
@@ -238,7 +244,7 @@ public class Zn implements Ring {
         }
 
         /**
-         * Returns the unique integer representative for this element in [0,n).
+         * Returns the unique integer representative for this element in \([0,n)\).
          */
         public BigInteger getInteger() {
             return v;
@@ -285,70 +291,72 @@ public class Zn implements Ring {
     }
 
     /**
-     * Create the Zn element "representant mod modulus" (convenience method)
+     * Create the Zn element "representative mod modulus" (convenience method)
      *
-     * @param representant the integer representant of the element
+     * @param representative the integer representative of the element
+     * @param modulus        the ring size
+     */
+    public static ZnElement valueOf(BigInteger representative, BigInteger modulus) {
+        return new Zn(modulus).valueOf(representative);
+    }
+
+    /**
+     * Create the Zn element "representative mod modulus"
+     *
+     * @param representative the integer representative of the element
      * @param modulus      the ring size
      */
-    public static ZnElement valueOf(BigInteger representant, BigInteger modulus) {
-        return new Zn(modulus).valueOf(representant);
+    public static ZnElement valueOf(long representative, BigInteger modulus) {
+        return valueOf(BigInteger.valueOf(representative), modulus);
     }
 
     /**
-     * Create the Zn element "representant mod modulus" (convenience method)
+     * Create the element "representative mod modulus"
      *
-     * @param representant the integer representant of the element
+     * @param representative the integer representative of the element
      * @param modulus      the ring size
      */
-    public static ZnElement valueOf(long representant, BigInteger modulus) {
-        return valueOf(BigInteger.valueOf(representant), modulus);
+    public static ZnElement valueOf(long representative, long modulus) {
+        return valueOf(representative, BigInteger.valueOf(modulus));
     }
 
     /**
-     * Create the Zn element "representant mod modulus" (convenience method)
+     * Creates the corresponding element mod n.
      *
-     * @param representant the integer representant of the element
-     * @param modulus      the ring size
+     * @param representative the integer representative of the element
      */
-    public static ZnElement valueOf(long representant, long modulus) {
-        return valueOf(representant, BigInteger.valueOf(modulus));
+    public ZnElement valueOf(long representative) {
+        return valueOf(BigInteger.valueOf(representative));
     }
 
     /**
-     * Creates the corresponding ZnElement
+     * Creates the corresponding element mod n.
      *
-     * @param representant
-     * @return
+     * @param representative the integer representative of the element
      */
-    public ZnElement valueOf(long representant) {
-        return valueOf(BigInteger.valueOf(representant));
+    public ZnElement valueOf(BigInteger representative) {
+        return createZnElement(representative);
     }
 
     /**
-     * Creates the corresponding ZnElement
+     * For all \(k < \floor((\text{n.bitLength()}-1)/8)\),
+     * this is an injective map \(\text{byte}^k \rightarrow \mathbb{Z}_n\).
+     * <p>
+     * Note that there may be collisions between {@code injectiveValueOf(bytes1)} and {@code injectiveValueOf(bytes2)}
+     * if {@code bytes1.length != bytes2.length}.
      *
-     * @param representant
-     * @return
-     */
-    public ZnElement valueOf(BigInteger representant) {
-        return createZnElement(representant);
-    }
-
-    /**
-     * For all k < floor((n.bitLength()-1)/8),
-     * this is an injective map byte^k -> Zn.
-     * Note that there may be collisions between injectiveValueOf(bytes1) and injectiveValueOf(bytes2)
-     * if bytes1.length != bytes2.length.
-     *
-     * @param bytes the bytes to map injectively into Zn.
-     * @return a value of Zn
-     * @throws IllegalArgumentException if the byte array is too long.
+     * @param bytes the bytes to map injectively into \(\mathbb{Z}_n\).
+     * @return the resulting \(\mathbb{Z}_n\) element
+     * @throws IllegalArgumentException if the byte array is too long
      */
     public ZnElement injectiveValueOf(byte[] bytes) throws IllegalArgumentException {
-        if (bytes.length > (n.bitLength() - 1) / 8) //any integer represented by a BITstring of length at most n.bitLength()-1 is is strictly smaller than n. That's what we can handle.
-            throw new IllegalArgumentException("Too many bytes to map injectively to Zn (allowed are byte arrays of length " + (n.bitLength() - 1) / 8 + ")");
-        //Normalize to make the most significant byte 0 (includes the sign bit).
-        //This ensures that the resulting BigInteger number is nonnegative.
+        // any integer represented by a BITstring of length at most n.bitLength()-1 is is strictly smaller than n.
+        // That's what we can handle.
+        if (bytes.length > (n.bitLength() - 1) / 8)
+            throw new IllegalArgumentException("Too many bytes to map injectively to Zn " +
+                    "(allowed are byte arrays of length " + (n.bitLength() - 1) / 8 + ")");
+        // Normalize to make the most significant byte 0 (includes the sign bit).
+        // This ensures that the resulting BigInteger number is nonnegative.
         byte[] normalized = new byte[bytes.length + 1];
         System.arraycopy(bytes, 0, normalized, 1, bytes.length);
 
@@ -364,15 +372,20 @@ public class Zn implements Ring {
     }
 
     /**
-     * Creates an element from a BigInteger (formally, the projection of v from Z to Zn). (Implementation detail: This factory method allows the subclass Zp to use its own kind of Elements while reusing the Zn implementation)
+     * Creates an element from a {@code BigInteger} (formally, the projection of \(v\) from \(\mathbb{Z}\)
+     * to \(\mathbb{Z}_n\)).
+     * <p>
+     * Implementation detail: This factory method allows the subclass {@link Zp} to use its own kind of elements
+     * while reusing the {@code Zn} implementation.
      */
     public ZnElement createZnElement(BigInteger v) {
         return createZnElementUnsafe(v.mod(n));
     }
 
     /**
-     * Instantiates an ZnElement without checking that the representant is within the proper range.
-     * @param vBetween0andN the representant of the element to instantiate. Must be between 0 (inclusive) and n (exclusive)
+     * Instantiates a {@code ZnElement} without checking that the given representative is within the proper range.
+     * @param vBetween0andN the representative of the element to instantiate.
+     *                      Must be between 0 (inclusive) and n (exclusive).
      */
     protected ZnElement createZnElementUnsafe(BigInteger vBetween0andN) {
         return new ZnElement(vBetween0andN);

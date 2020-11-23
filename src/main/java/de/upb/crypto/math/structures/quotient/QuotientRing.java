@@ -11,12 +11,13 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
- * Implements the QuotientRing R/I for some Ring R and principal ideal I
- * (i.e. the ring consisting of equivalence classes [a] = {a + r | r in I} for a in R)
+ * Implements the quotient ring \(R/I\) for some ring \(R\) and principal ideal \(I\)
+ * (i.e. the ring consisting of equivalence classes \([a] = \{a + r | r \in I\}\) for \(a \in R\))
  * <p>
- * The base ring must be a euclidean domain, i.e. it needs to implement division with remainder
+ * The base ring must be an euclidean domain, i.e. it needs to implement division with remainder.
  *
- * @param <RE> type of the QuotientRing's elements (i.e. equivalence class type, NOT type of their representatives!) (may be "RingElement" or "FieldElement")
+ * @param <RE> type of the quotient ring's elements (i.e. equivalence class type, NOT type of their representatives!)
+ *            (may be {@code RingElement} or {@code FieldElement})
  */
 public abstract class QuotientRing<RE extends RingElement> implements Ring {
     protected Ring base;
@@ -43,9 +44,11 @@ public abstract class QuotientRing<RE extends RingElement> implements Ring {
     /**
      * Subclasses implement this to define how to create elements for this ring
      * (i.e. how to create an equivalence class instance).
+     * <p>
      * You need to do something like:
+     * <pre>
      * return new MyQuotientRingElementSubclass(representative);
-     *
+     * </pre>
      * @param representative the representative of the equivalence class
      * @return an equivalence class
      */
@@ -123,7 +126,9 @@ public abstract class QuotientRing<RE extends RingElement> implements Ring {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null || !(obj instanceof RingElement))
+            if (this == obj)
+                return true;
+            if (getClass() != obj.getClass())
                 return false;
             if (!this.getStructure().equals(((RingElement) obj).getStructure())) //Structures equal?
                 return false;
@@ -143,11 +148,12 @@ public abstract class QuotientRing<RE extends RingElement> implements Ring {
     }
 
     @Override
-    @SuppressWarnings({"rawtypes"})
     public boolean equals(Object obj) {
-        if (!(obj instanceof QuotientRing) || obj == null)
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
             return false;
-        QuotientRing r = (QuotientRing) obj;
+        QuotientRing<?> r = (QuotientRing<?>) obj;
         return r.base.equals(this.base) && r.ideal.equals(this.ideal);
     }
 

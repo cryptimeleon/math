@@ -10,9 +10,10 @@ import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
- * A hash function that maps into Zn.
+ * A hash function that maps to {@link Zn}.
  */
 public class HashIntoZn implements HashIntoStructure {
 
@@ -20,7 +21,7 @@ public class HashIntoZn implements HashIntoStructure {
     protected HashFunction hashIntoZn;
 
     /**
-     * The hash target
+     * The hash target.
      */
     @Represented
     protected Zn structure;
@@ -46,7 +47,7 @@ public class HashIntoZn implements HashIntoStructure {
 
 
     /**
-     * Reconstructs the hash function from its representation
+     * Reconstructs the hash function from its representation.
      */
     public HashIntoZn(Representation repr) {
         new ReprUtil(this).deserialize(repr);
@@ -69,7 +70,7 @@ public class HashIntoZn implements HashIntoStructure {
     }
 
     /**
-     * Returns the ring Zn that this function hashes into
+     * Returns the ring Zn that this function hashes to.
      */
     public Zn getTargetStructure() {
         return structure;
@@ -95,18 +96,7 @@ public class HashIntoZn implements HashIntoStructure {
         if (getClass() != obj.getClass())
             return false;
         HashIntoZn other = (HashIntoZn) obj;
-        if (hashIntoZn == null) {
-            if (other.hashIntoZn != null)
-                return false;
-        } else if (!hashIntoZn.equals(other.hashIntoZn))
-            return false;
-        if (structure == null) {
-            if (other.structure != null)
-                return false;
-        } else if (!structure.equals(other.structure))
-            return false;
-        return true;
+        return Objects.equals(hashIntoZn, other.hashIntoZn)
+                && Objects.equals(structure, other.structure);
     }
-
-
 }

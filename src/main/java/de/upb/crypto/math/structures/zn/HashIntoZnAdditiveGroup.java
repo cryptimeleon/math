@@ -7,9 +7,10 @@ import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
- * Hashes into the additive subgroup of Zn.
+ * Hashes into the additive subgroup of {@link Zn}.
  *
  * @see HashIntoZn
  */
@@ -17,26 +18,26 @@ public class HashIntoZnAdditiveGroup implements HashIntoStructure {
     protected HashIntoZn znHash;
 
     /**
-     * target group
+     * Target group.
      */
     protected RingGroup structure;
 
     /**
-     * Corresponds to new HashIntoZn()
+     * Initializes the hash function with \(\mathbb{Z}_n\) using the given \(n\).
      */
     public HashIntoZnAdditiveGroup(BigInteger n) {
         this(new HashIntoZn(n));
     }
 
     /**
-     * Corresponds to new HashIntoZn(String)
+     * Initializes the hash function with \(\mathbb{Z}_n\) using the given \(\mathbb{Z}_n\).
      */
     public HashIntoZnAdditiveGroup(Zn ring) {
         this(new HashIntoZn(ring.n));
     }
 
     /**
-     * Recreate hash function from representation
+     * Recreate hash function from representation.
      */
     public HashIntoZnAdditiveGroup(Representation repr) {
         this(new HashIntoZn(repr));
@@ -60,13 +61,18 @@ public class HashIntoZnAdditiveGroup implements HashIntoStructure {
 
     @Override
     public int hashCode() {
-        return structure.hashCode();
+        return Objects.hash(znHash, structure);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof HashIntoZnAdditiveGroup &&
-                //structure.equals(((HashIntoZnAdditiveGroup) obj).structure) &&
-                znHash.equals(((HashIntoZnAdditiveGroup) obj).znHash);
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        HashIntoZnAdditiveGroup other = (HashIntoZnAdditiveGroup) obj;
+        return Objects.equals(znHash, other.znHash);
     }
 }

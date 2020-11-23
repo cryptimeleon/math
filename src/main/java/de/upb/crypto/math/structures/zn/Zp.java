@@ -11,15 +11,14 @@ import de.upb.crypto.math.structures.helpers.FiniteFieldTools;
 import java.math.BigInteger;
 
 /**
- * A special case for the ring Zn, where n is prime.
- * (Making the ring a field).
+ * A version of \(\mathbb{Z}_n\) where \(n\) is prime (making the ring a field).
  * <p>
- * This completely reuses the Zn implementation.
+ * This completely reuses the {@link Zn} implementation.
  */
 public class Zp extends Zn implements Field {
 
     /**
-     * Construct the field Zp.
+     * Construct the field \(\mathbb{Z}_p\).
      *
      * @param p a prime number (is checked probabilistically)
      * @throws IllegalArgumentException if p is not prime
@@ -145,7 +144,7 @@ public class Zp extends Zn implements Field {
         }
 
         /**
-         * Returns true if there is a y\in Zp such that y^2 = this
+         * Returns true if there is a \(y \in \mathbb{Z}_p\) such that \(y^2 = \text{this}\)
          */
         public boolean isSquare() {
             return FiniteFieldTools.isSquare(this);
@@ -154,7 +153,7 @@ public class Zp extends Zn implements Field {
         /**
          * Computes a square root of this element if it exists.
          *
-         * @return an element x with x^2 = this
+         * @return an element \(x\) with \(x^2 = \text{this}\)
          * @throws ArithmeticException if element is not a quadratic residue
          */
         public ZpElement sqrt() throws ArithmeticException {
@@ -238,45 +237,42 @@ public class Zp extends Zn implements Field {
     }
 
     /**
-     * Create the Zn element "representant mod modulus"
-     * (convenience method)
+     * Create the element "representative mod modulus"
      *
-     * @param representant the integer representant of the element
+     * @param representative the integer representative of the element
      * @param modulus      the ring size
      */
-    public static ZpElement valueOf(BigInteger representant, BigInteger modulus) {
-        return new Zp(modulus).new ZpElement(representant);
+    public static ZpElement valueOf(BigInteger representative, BigInteger modulus) {
+        return new Zp(modulus).new ZpElement(representative);
     }
 
     /**
-     * Create the Zn element "representant mod modulus"
-     * (convenience method)
+     * Create the element "representative mod modulus"
      *
-     * @param representant the integer representant of the element
+     * @param representative the integer representative of the element
      * @param modulus      the ring size
      */
-    public static ZpElement valueOf(long representant, BigInteger modulus) {
-        return valueOf(BigInteger.valueOf(representant), modulus);
+    public static ZpElement valueOf(long representative, BigInteger modulus) {
+        return valueOf(BigInteger.valueOf(representative), modulus);
     }
 
     /**
-     * Create the Zn element "representant mod modulus"
-     * (convenience method)
+     * Create the element "representative mod modulus"
      *
-     * @param representant the integer representant of the element
+     * @param representative the integer representative of the element
      * @param modulus      the ring size
      */
-    public static ZpElement valueOf(long representant, long modulus) {
-        return valueOf(representant, BigInteger.valueOf(modulus));
+    public static ZpElement valueOf(long representative, long modulus) {
+        return valueOf(representative, BigInteger.valueOf(modulus));
     }
 
     @Override
-    public ZpElement valueOf(long representant) {
-        return valueOf(BigInteger.valueOf(representant));
+    public ZpElement valueOf(long representative) {
+        return valueOf(BigInteger.valueOf(representative));
     }
 
     @Override
-    public ZpElement valueOf(BigInteger representant) {
-        return createZnElement(representant);
+    public ZpElement valueOf(BigInteger representative) {
+        return createZnElement(representative);
     }
 }

@@ -14,9 +14,10 @@ import de.upb.crypto.math.structures.zn.Zp.ZpElement;
 import java.math.BigInteger;
 
 /**
- * Class for storing polynomials that are over the galois field f2. Every polynomial will have an encapsulated BigInteger representation that is used for performing efficient multiplication and addition.
- *
- * @author .
+ * Class for storing polynomials that are over the galois field \(\mathbb{F}_2\).
+ * <p>
+ * Every polynomial has an encapsulated BigInteger representation
+ * that is used for performing efficient multiplication and addition.
  */
 public class F2FiniteFieldExtension extends FiniteFieldExtension {
     // efficiency reasons

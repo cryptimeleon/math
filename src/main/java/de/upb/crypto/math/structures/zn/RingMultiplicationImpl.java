@@ -10,9 +10,10 @@ import de.upb.crypto.math.serialization.Representation;
 import java.math.BigInteger;
 
 /**
- * The bilinear map G x G -> G, where G is the additive group of a ring.
+ * The bilinear map \(\mathbb{G} \times \mathbb{G} \rightarrow \mathbb{G}\),
+ * where \(\mathbb{G}\) is the additive group of a ring.
  * The mapping is simply the ring multiplication, which makes it a bilinear map.
- * If G is an integral domain (e.g., a field), this map is non-degenerate.
+ * If \(\mathbb{G}\) is an integral domain (e.g. a field), this map is non-degenerate.
  */
 public class RingMultiplicationImpl implements BilinearMapImpl {
     private final Ring ring;

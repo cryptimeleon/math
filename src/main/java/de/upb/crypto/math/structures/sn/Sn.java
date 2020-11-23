@@ -17,16 +17,14 @@ import java.util.function.Function;
 
 /**
  * The group Sn for a natural number n is the set of permutations
- * {1,...,n} -> {1,...,n} where the group operation is function composition.
+ * \(\pi : \{1,...,n\} \rightarrow \{1,...,n\}\) where the group operation is function composition.
  */
 public class Sn implements GroupImpl {
     protected int n;
     private SnElementImpl identity = null;
 
     /**
-     * Constructs Sn for n
-     *
-     * @param n
+     * Constructs Sn for n.
      */
     public Sn(int n) {
         this.n = n;
@@ -37,7 +35,7 @@ public class Sn implements GroupImpl {
     }
 
     /**
-     * Returns the integer n of this group, such that its permutation map from and onto {1,...,n}
+     * Returns the integer n of this group, such that its permutation map from and onto \(\{1,...,n\}\).
      */
     public int getN() {
         return n;
@@ -90,13 +88,13 @@ public class Sn implements GroupImpl {
     }
 
     /**
-     * Permutations on {1,...,n}
+     * A permutation on \(\{1,...,n\}\).
      */
     public class SnElementImpl implements GroupElementImpl, Function<Integer, Integer> {
         /**
-         * Contains the images of this permutation in order, i.e.
-         * images[i] = j <=> i maps to j
-         * (note that images[0] = 0, unused, as we map {1,...,n})
+         * Contains the images of this permutation in order,
+         * i.e. images[i] = j <=> i maps to j
+         * (note that images[0] = 0, unused, as we map \(\{1,...,n\}\)).
          */
         protected int[] images;
 
@@ -126,9 +124,7 @@ public class Sn implements GroupImpl {
         /**
          * Create from a list of images, which contains the images of this permutation in order, i.e.
          * images[i] = j <=> i maps to j
-         * (note that images[0] is ignored, as we map {1,...,n})
-         *
-         * @param images
+         * (note that images[0] is ignored, as we map \(\{1,...,n\}\)).
          */
         public SnElementImpl(int[] images) {
             this.images = Arrays.copyOf(images, n + 1);
@@ -136,7 +132,7 @@ public class Sn implements GroupImpl {
         }
 
         /**
-         * Debugging function, checking that this claimed permutation is indeed bijective
+         * Checks that this claimed permutation is indeed bijective.
          */
         public boolean checkValidElement() {
             try {
@@ -207,7 +203,7 @@ public class Sn implements GroupImpl {
         public String toString() {
             StringBuilder builder = new StringBuilder("[");
             for (int i = 1; i <= n; i++)
-                builder.append((i == 1 ? "" : " ") + images[i]);
+                builder.append(i == 1 ? "" : " ").append(images[i]);
             builder.append("]");
             return builder.toString();
         }
@@ -230,7 +226,11 @@ public class Sn implements GroupImpl {
     }
 
     /**
-     * Creates an SnElement, assumes that the supplied integer array is [not known]/[never changed] anywhere else
+     * Creates a permutation using a given array of images.
+     * <p>
+     * The resulting {@code SnElementImpl} depending on the passed images, may not actually be a correct permutation.
+     * Furthermore, since the set of images is passed by reference, and not cloned, it could potentially be mutated
+     * from the outside.
      */
     private SnElementImpl createElement(int[] images) {
         SnElementImpl result = new SnElementImpl();
@@ -239,8 +239,9 @@ public class Sn implements GroupImpl {
     }
 
     /**
-     * Create from String.
-     * Format: "[image1 image2 image3]"
+     * Create a permutation from a string of images, each of which is separated by an empty space.
+     * <p>
+     * Specifically, the format is {@code "[image1 image2 image3]"}.
      */
     public static SnElementImpl createElementFromString(String str) {
         str = str.substring(1, str.length() - 1);
