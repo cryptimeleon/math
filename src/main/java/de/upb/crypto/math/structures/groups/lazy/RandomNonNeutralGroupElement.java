@@ -2,6 +2,9 @@ package de.upb.crypto.math.structures.groups.lazy;
 
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 
+/**
+ * Represents the result of generating a non-neutral group element uniformly at random.
+ */
 public class RandomNonNeutralGroupElement extends LazyGroupElement {
     private GroupElementImpl value = null;
 

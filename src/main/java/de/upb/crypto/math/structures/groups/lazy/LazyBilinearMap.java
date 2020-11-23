@@ -8,6 +8,13 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * A {@link BilinearMapImpl} wrapper implementing deferred (lazy) evaluation.
+ * <p>
+ * Allows for additional optimizations using information about the operations being applied.
+ * <p>
+ * For more information, see the <a href="https://upbcuk.github.io/docs/lazy-eval.html">documentation</a>.
+ */
 public class LazyBilinearMap implements BilinearMap {
     protected BilinearMapImpl impl;
     protected LazyGroup g1, g2, gt;

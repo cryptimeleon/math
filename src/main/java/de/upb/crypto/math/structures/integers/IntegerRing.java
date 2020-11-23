@@ -9,7 +9,7 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 /**
- * The ring of integers. I don't think this needs any more introduction :)
+ * The ring of integers \(\mathbb{Z}\).
  */
 public class IntegerRing implements Ring {
 
@@ -72,8 +72,9 @@ public class IntegerRing implements Ring {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj != null && obj instanceof IntegerRing;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        return o != null && getClass() == o.getClass();
     }
 
     @Override

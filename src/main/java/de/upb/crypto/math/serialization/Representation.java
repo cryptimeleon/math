@@ -1,16 +1,19 @@
 package de.upb.crypto.math.serialization;
 
+import de.upb.crypto.math.serialization.converter.Converter;
+
 import java.io.Serializable;
 
 /**
- * Base class for the representation framework.
- * The general idea for serialization of objects here is to have a structured intermediate format "Representation",
- * so that you can convert between:
- * Actual Java object <-> Representation <-> Serialized format.
- * This conversion is done by a Converter class (the specific subclass depends on the chosen serialized format).
+ * Represents an object serialized via our representation framework.
  * <p>
- * A Representation is a structured tree of (other) Representations. This allows to universally represent structured
- * objects.
+ * The general idea for serialization of objects here is to have a structured intermediate format,
+ * so that you can convert between Java object <-> Representation <-> Serialized format.
+ * <p>
+ * This conversion is done by a {@link Converter} class (the specific subclass depends on the chosen serialized format).
+ * <p>
+ * A {@code Representation} is a structured tree of (other) representations.
+ * This allows one to universally represent structured objects.
  * Leaves are primitives such as BigInteger, Strings, or byte arrays.
  */
 public abstract class Representation implements Serializable {

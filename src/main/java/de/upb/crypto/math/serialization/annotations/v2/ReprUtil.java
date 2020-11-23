@@ -233,7 +233,8 @@ public class ReprUtil {
     }
 
     /**
-     * Recreates the instance from the given representation.
+     * Deserializes the given representation, storing the result in the instance given when
+     * initializing {@code ReprUtil}.
      *
      * @param repr the representation to deserialize
      */

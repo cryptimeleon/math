@@ -5,6 +5,9 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 
 import java.math.BigInteger;
 
+/**
+ * Contains miscellaneous methods for working with finite fields.
+ */
 public abstract class FiniteFieldTools {
 
     /**

@@ -10,6 +10,14 @@ import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A general vector class.
+ * <p>
+ * For specific instantiations of this class for group and ring elements,
+ * see {@link GroupElementVector} and {@link RingElementVector}.
+ *
+ * @param <X> the type of the vector elements
+ */
 @SuppressWarnings("unchecked")
 public class Vector<X> {
     protected List<? extends X> values;

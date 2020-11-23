@@ -14,6 +14,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * A vector of ring elements supporting element-wise ring operations with other ring element vectors.
+ */
 public class RingElementVector extends Vector<RingElement> implements Representable {
 
     public RingElementVector(RingElement... values) {

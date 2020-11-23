@@ -4,6 +4,9 @@ import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Represents a constant value.
+ */
 public class ConstLazyGroupElement extends LazyGroupElement {
     public ConstLazyGroupElement(LazyGroup group, GroupElementImpl concreteValue) {
         super(group, concreteValue);

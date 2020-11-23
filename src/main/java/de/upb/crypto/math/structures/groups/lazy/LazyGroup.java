@@ -22,8 +22,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
 /**
- * A group optimized for groups with somewhat expensive operations (and, particularly, exponentiations).
- * Assumes abelian cyclic group of known finite order.
+ * A {@link GroupImpl} wrapper implementing deferred (lazy) evaluation for abelian groups with known finite order.
+ * <p>
+ * Allows for additional optimizations using information about the operations being applied.
+ * Specifically, multi-exponentiation techniques can be applied to significantly speed up computations.
+ * <p>
+ * For more information, see the <a href="https://upbcuk.github.io/docs/lazy-eval.html">documentation</a>.
  */
 public class LazyGroup implements Group {
     static final ExecutorService executor = ForkJoinPool.commonPool();  //using the commonPool because it automatically terminates with the JVM.

@@ -8,6 +8,9 @@ import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import java.util.Objects;
 
+/**
+ * A basic {@link HashIntoGroupImpl} wrapper where operations are evaluated naively, i.e. operation by operation.
+ */
 public class BasicHashIntoStructure implements HashIntoStructure {
     @Represented
     protected HashIntoGroupImpl impl;

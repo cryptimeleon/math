@@ -14,6 +14,9 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Abstract class providing the base for different lazy group operation results.
+ */
 public abstract class LazyGroupElement implements GroupElement {
     protected LazyGroup group;
     private GroupElementImpl concreteValue = null;
@@ -183,7 +186,7 @@ public abstract class LazyGroupElement implements GroupElement {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof LazyGroupElement)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         LazyGroupElement that = (LazyGroupElement) o;
         if (!group.equals(that.group)) return false;
         return getConcreteValue().equals(that.getConcreteValue());

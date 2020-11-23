@@ -12,6 +12,9 @@ import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * A basic {@link GroupElementImpl} wrapper where operations are evaluated naively, i.e. operation by operation.
+ */
 public class BasicGroupElement implements GroupElement {
     protected BasicGroup group;
     protected GroupElementImpl impl;

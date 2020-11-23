@@ -3,6 +3,9 @@ package de.upb.crypto.math.structures.groups.lazy;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
 
+/**
+ * Represents the neutral group element in the lazy evaluation framework.
+ */
 public class NeutralLazyGroupElement extends LazyGroupElement {
     public NeutralLazyGroupElement(LazyGroup group) {
         super(group, group.impl.getNeutralElement());

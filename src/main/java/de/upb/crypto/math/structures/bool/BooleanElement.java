@@ -28,6 +28,9 @@ public class BooleanElement implements RingElement {
         return new BooleanStructure();
     }
 
+    /**
+     * Returns result of calling Boolean XOR on the two bits.
+     */
     @Override
     public RingElement add(Element e) {
         return ((BooleanElement) e).value != this.value ? TRUE : FALSE;
@@ -38,6 +41,9 @@ public class BooleanElement implements RingElement {
         return value ? FALSE : TRUE;
     }
 
+    /**
+     * Returns result of calling Boolean AND on the two bits.
+     */
     @Override
     public RingElement mul(Element e) {
         return ((BooleanElement) e).value && this.value ? TRUE : FALSE;

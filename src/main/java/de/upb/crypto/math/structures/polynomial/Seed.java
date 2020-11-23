@@ -4,6 +4,10 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * Represents a bit string that can be used to initialize a polynomial via
+ * {@link PolynomialRing.Polynomial#Polynomial(Seed)}.
+ */
 public class Seed {
 
     private byte[] internalSeed;
