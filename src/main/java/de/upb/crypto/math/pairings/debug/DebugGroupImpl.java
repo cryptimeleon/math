@@ -198,6 +198,11 @@ public class DebugGroupImpl implements GroupImpl {
         return new DebugGroupElementImpl(this, elem);
     }
 
+    @Override
+    public double estimateCostInvPerOp() {
+        return 1.6;
+    }
+
     protected void incrementNumOps() {
         ++numOps;
     }

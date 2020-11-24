@@ -33,4 +33,11 @@ public class MultiExpTerm {
     public SmallExponentPrecomputation getPrecomputation() {
         return precomputation;
     }
+
+    @Override
+    public String toString() {
+        return "MultiExpTerm: Base(" + base + ") Exponent(" + exponent + ") Precomputation(PosWindowSize: "
+                + precomputation.getCurrentlySupportedPositiveWindowSize() + " | NegWindowSize: "
+                + precomputation.getCurrentlySupportedNegativeWindowSize() + ")";
+    }
 }

@@ -14,15 +14,12 @@ import java.util.Optional;
  */
 public class Multiexponentiation {
     ArrayList<MultiExpTerm> terms = null;
-    int minPrecomputedWindowSize = Integer.MAX_VALUE;
     GroupElementImpl constantFactor = null;
 
     public void put(MultiExpTerm term) {
         if (terms == null)
             terms = new ArrayList<>();
-
         terms.add(term);
-        minPrecomputedWindowSize = Math.min(minPrecomputedWindowSize, term.precomputation == null ? 0 : term.precomputation.getCurrentSupportedWindowSize());
     }
 
     public void put(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
@@ -33,11 +30,87 @@ public class Multiexponentiation {
         constantFactor = constantFactor == null ? groupelem : constantFactor.op(groupelem);
     }
 
-    public void ensurePrecomputation(int windowSize) {
-        if (terms != null && windowSize > minPrecomputedWindowSize) {
-            terms.forEach(t -> t.getPrecomputation().compute(windowSize));
-            minPrecomputedWindowSize = windowSize;
+    /**
+     * Ensures that all terms support the given window size by performing the precomputations that are necessary
+     * to reach the desired window size for the interleaved sliding window algorithm.
+     * @param windowSize The window size to ensure support for
+     */
+    public void ensurePrecomputation(int windowSize, MultiExpAlgorithm multiExpAlgorithm) {
+        if (terms != null) {
+            for (MultiExpTerm term : terms) {
+                switch (multiExpAlgorithm) {
+                    case SLIDING:
+                        // if inversion is faster than op, we can potentially use existing precomputations of the
+                        // other type
+                        boolean invertExisting = term.getBase().getStructure().estimateCostInvPerOp() > 1;
+                        if (term.getExponent().signum() < 0) {
+                            term.getPrecomputation().computeNegativePowers(windowSize, invertExisting);
+                        } else {
+                            term.getPrecomputation().compute(windowSize, invertExisting);
+                        }
+                        break;
+                    case WNAF:
+                        if (term.getPrecomputation().getCurrentlySupportedWindowSize() < windowSize) {
+                            // if we already have negative powers, we can just finish computing those
+                            boolean precNegativePowers =
+                                    (term.getPrecomputation().getCurrentlySupportedNegativeWindowSize()
+                                    > term.getPrecomputation().getCurrentlySupportedPositiveWindowSize());
+                            if (precNegativePowers) {
+                                term.getPrecomputation().computeNegativePowers(windowSize, false);
+                            } else {
+                                term.getPrecomputation().compute(windowSize, false);
+                            }
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unsupported MultiExpAlgorithm " + multiExpAlgorithm);
+                }
+
+            }
         }
+    }
+
+    /**
+     * Computes the minimum window size currently offered by the precomputations of all terms as required for
+     * the given algorithm.
+     * This is the window size such that all term's bases have cached precomputations of this size.
+     * For the sliding algorithm, we only consider negative powers for negative exponents and positive powers
+     * for positive exponents. wNAF may use both interchangeably.
+     * @return The minimum window size supported by all terms.
+     */
+    public int computeMinPrecomputedWindowSize(MultiExpAlgorithm multiExpAlgorithm) {
+        if (terms == null) {
+            return 0;
+        }
+        int minPrecomputedWindowSize = Integer.MAX_VALUE;
+        for (MultiExpTerm term : terms) {
+            switch(multiExpAlgorithm) {
+                case SLIDING:
+                    if (term.getExponent().signum() >= 0) {
+                        minPrecomputedWindowSize = Math.min(
+                                minPrecomputedWindowSize,
+                                term.precomputation == null ?
+                                        0 : term.precomputation.getCurrentlySupportedPositiveWindowSize()
+                        );
+                    } else {
+                        minPrecomputedWindowSize = Math.min(
+                                minPrecomputedWindowSize,
+                                term.precomputation == null ?
+                                        0 : term.precomputation.getCurrentlySupportedNegativeWindowSize()
+                        );
+                    }
+                    break;
+                case WNAF:
+                    minPrecomputedWindowSize = Math.min(
+                            minPrecomputedWindowSize,
+                            term.precomputation == null ? 0 : term.precomputation.getCurrentlySupportedWindowSize()
+                    );
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported MultiExpAlgorithm " + multiExpAlgorithm);
+            }
+        }
+        return minPrecomputedWindowSize;
     }
 
     public List<MultiExpTerm> getTerms() {
@@ -48,15 +121,19 @@ public class Multiexponentiation {
         return terms == null ? 0 : terms.size();
     }
 
-    public int getMinPrecomputedWindowSize() {
-        return terms == null ? 0 : minPrecomputedWindowSize;
-    }
-
     public Optional<GroupElementImpl> getConstantFactor() {
         return Optional.ofNullable(constantFactor);
     }
 
     public boolean isEmpty() {
         return (terms == null || terms.size() == 0) && constantFactor == null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringRepr = new StringBuilder();
+        stringRepr.append("Multiexponentiation:");
+        terms.forEach(t -> stringRepr.append("\n").append(t.toString()));
+        return stringRepr.toString();
     }
 }

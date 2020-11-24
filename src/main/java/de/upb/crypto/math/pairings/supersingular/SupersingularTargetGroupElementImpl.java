@@ -12,5 +12,4 @@ public class SupersingularTargetGroupElementImpl extends PairingTargetGroupEleme
     public SupersingularTargetGroupElementImpl(PairingTargetGroupImpl g, ExtensionFieldElement fe) {
         super(g, fe);
     }
-
 }

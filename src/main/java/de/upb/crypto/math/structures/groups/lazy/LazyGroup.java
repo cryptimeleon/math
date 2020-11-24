@@ -7,18 +7,14 @@ import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
-import de.upb.crypto.math.structures.groups.exp.ExponentiationAlgorithms;
-import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
-import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
+import de.upb.crypto.math.structures.groups.exp.*;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 
 import java.math.BigInteger;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -43,6 +39,8 @@ public class LazyGroup implements Group {
     boolean isPrimeOrder;
     Zn zn;
     GroupElement generator;
+    MultiExpAlgorithm selectedMultiExpAlgorithm;
+    ExpAlgorithm selectedExpAlgorithm;
 
     public LazyGroup(GroupImpl impl) {
         this(impl, 4, 8);
@@ -63,6 +61,13 @@ public class LazyGroup implements Group {
         generator = wrap(impl.getGenerator());
         isPrimeOrder = size.isProbablePrime(100);
         zn = isPrimeOrder ? new Zp(size) : new Zn(size);
+        if (impl.estimateCostInvPerOp() >= ExponentiationAlgorithms.WNAF_INVERSION_COST_THRESHOLD) {
+            selectedMultiExpAlgorithm = MultiExpAlgorithm.WNAF;
+            selectedExpAlgorithm = ExpAlgorithm.WNAF;
+        } else {
+            selectedMultiExpAlgorithm = MultiExpAlgorithm.SLIDING;
+            selectedExpAlgorithm = ExpAlgorithm.SLIDING;
+        }
     }
 
     public LazyGroup(Representation repr) {
@@ -160,7 +165,26 @@ public class LazyGroup implements Group {
         if (impl.implementsOwnMultiExp())
             return impl.multiexp(multiexp);
         // use generic if group does not implement own algorithm
-        return ExponentiationAlgorithms.interleavingWnafMultiExp(multiexp, Math.max(exponentiationWindowSize, multiexp.getMinPrecomputedWindowSize()));
+        switch (selectedMultiExpAlgorithm) {
+            case SLIDING:
+                return ExponentiationAlgorithms.interleavingSlidingWindowMultiExp(
+                        multiexp,
+                        Math.max(
+                                exponentiationWindowSize,
+                                multiexp.computeMinPrecomputedWindowSize(MultiExpAlgorithm.SLIDING)
+                        )
+                );
+            case WNAF:
+                return ExponentiationAlgorithms.interleavingWnafMultiExp(
+                        multiexp,
+                        Math.max(
+                                exponentiationWindowSize,
+                                multiexp.computeMinPrecomputedWindowSize(MultiExpAlgorithm.WNAF)
+                        )
+                );
+            default:
+                throw new IllegalStateException("Unsupported MultiExpAlgorithm " + selectedMultiExpAlgorithm);
+        }
         //TODO some multiexponentiation algorithms may be able to handle different windows sizes for each base.
         // Generally, using the minimum for window size is "safe", but not necessarily clever performance-wise. Example: \prod h_i^x_i * (g^a)^b. The latter has no precomputation at all (even if g may have it), so ...
     }
@@ -169,7 +193,16 @@ public class LazyGroup implements Group {
         if (impl.implementsOwnExp())
             return impl.exp(base, exponent, precomputation);
         // use generic if group does not implement own algorithm
-        return ExponentiationAlgorithms.wnafExp(base, exponent, precomputation, exponentiationWindowSize);
+        switch (selectedExpAlgorithm) {
+            case SLIDING:
+                return ExponentiationAlgorithms.slidingWindowExp(
+                        base, exponent, precomputation, exponentiationWindowSize
+                );
+            case WNAF:
+                return ExponentiationAlgorithms.wnafExp(base, exponent, precomputation, exponentiationWindowSize);
+            default:
+                throw new IllegalStateException("Unsupported ExpAlgorithm " + selectedExpAlgorithm);
+        }
     }
 
     public int getExponentiationWindowSize() {
@@ -186,6 +219,22 @@ public class LazyGroup implements Group {
 
     public void setPrecomputationWindowSize(int precomputationWindowSize) {
         this.precomputationWindowSize = precomputationWindowSize;
+    }
+
+    public MultiExpAlgorithm getSelectedMultiExpAlgorithm() {
+        return selectedMultiExpAlgorithm;
+    }
+
+    public void setSelectedMultiExpAlgorithm(MultiExpAlgorithm selectedMultiExpAlgorithm) {
+        this.selectedMultiExpAlgorithm = selectedMultiExpAlgorithm;
+    }
+
+    public ExpAlgorithm getSelectedExpAlgorithm() {
+        return selectedExpAlgorithm;
+    }
+
+    public void setSelectedExpAlgorithm(ExpAlgorithm selectedExpAlgorithm) {
+        this.selectedExpAlgorithm = selectedExpAlgorithm;
     }
 
     public GroupImpl getImpl() {
