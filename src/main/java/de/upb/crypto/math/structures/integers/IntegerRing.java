@@ -94,14 +94,17 @@ public class IntegerRing implements Ring {
 
     /**
      * Decomposes a given number into digits with the given base.
-     * For base = 2, this does bit decomposition
+     * <p>
+     * For example, for base = 2, this does bit decomposition.
      *
-     * @return an array A containing values A[i] < base such that Sum_i(A[i]*base^i) = number.
+     * @return an array {@code A} containing values {@code A[i] < base} such that
+     *         \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
      */
     public static BigInteger[] decomposeIntoDigits(BigInteger number, BigInteger base) {
         int power = 0;
         BigInteger numberPowered = BigInteger.ONE;
-        while (numberPowered.compareTo(number) < 0) { //as soon as number is smaller than number^power, it can be decomposed into power digits.
+        // as soon as number is smaller than number^power, it can be decomposed into power digits.
+        while (numberPowered.compareTo(number) < 0) {
             numberPowered = numberPowered.multiply(number);
             power++;
         }
@@ -109,15 +112,17 @@ public class IntegerRing implements Ring {
     }
 
     /**
-     * Decomposes a given number into digits with the given base.
-     * For base = 2, this does bit decomposition
+     * Decomposes a given number into a given number of digits with the given base.
+     * <p>
+     * For example, for base = 2, this does bit decomposition.
      *
-     * @return an array A of length numDigits containing values A[i] < base such that Sum_i(A[i]*base^i) = number.
-     * @throws IllegalArgumentException if numDigits is not enough to represent number.
+     * @return an array {@code A} containing values {@code A[i] < base} such that
+     *         \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
+     * @throws IllegalArgumentException if {@code numDigits} is not enough to represent the given number
      */
     public static BigInteger[] decomposeIntoDigits(BigInteger number, BigInteger base, int numDigits) {
         if (base.signum() <= 0 || number.signum() < 0 || numDigits < 0)
-            throw new IllegalArgumentException("Parameters must be positive/nonnegative");
+            throw new IllegalArgumentException("Parameters must be positive/non-negative");
 
         BigInteger[] result = new BigInteger[numDigits];
         BigInteger remainder = number;
@@ -125,12 +130,13 @@ public class IntegerRing implements Ring {
         for (int j = numDigits - 1; j >= 0; j--) {
             BigInteger basePowJ = base.pow(j);
             BigInteger[] div = remainder.divideAndRemainder(basePowJ);
-            result[j] = div[0]; //current digit
-            remainder = div[1]; //remainder value (to be represented with the remaining digits)
+            result[j] = div[0]; // current digit
+            remainder = div[1]; // remainder value (to be represented with the remaining digits)
         }
 
         if (remainder.signum() != 0)
-            throw new IllegalArgumentException("Unable to represent "+number.toString()+" base "+base.toString()+" with "+numDigits+" digits");
+            throw new IllegalArgumentException("Unable to represent " + number.toString() + " base " + base.toString()
+                    + " with " + numDigits + " digits");
 
         return result;
     }

@@ -350,7 +350,7 @@ public class ExponentiationAlgorithms {
     /**
      * Retrieves the given number of least significant bits of {@code i}.
      * <p>
-     * Works for all n < 32.
+     * Works for all {@code n < 32}.
      *
      * @return lowest n bits of i
      */

@@ -40,15 +40,15 @@ public class BilinearGroupRequirement {
      * Standard constructor to set all requirements by hand.
      *
      * @param type                       the desired type of the resulting bilinear group
-     * @param hashIntoG1Needed           true enforces that the resulting bilinear group provides a mapping byte[] ->
-     *                                   G1. When set to false, it
-     *                                   may still be supported.
-     * @param hashIntoG2Needed           true enforces that the resulting bilinear group provides a mapping byte[] ->
-     *                                   G2. When set to false, it
-     *                                   may still be supported.
-     * @param hashIntoGTNeeded           true enforces that the resulting bilinear group provides a mapping byte[] ->
-     *                                   GT. When set to false, it
-     *                                   may still be supported.
+     * @param hashIntoG1Needed           true enforces that the resulting bilinear group provides a mapping from
+     *                                   {@code byte[]} to \(\mathbb{G}_1\). When set to false,
+     *                                   it may still be supported.
+     * @param hashIntoG2Needed           true enforces that the resulting bilinear group provides a mapping from
+     *                                   {@code byte[]} to \(\mathbb{G}_2\). When set to false,
+     *                                   it may still be supported.
+     * @param hashIntoGTNeeded           true enforces that the resulting bilinear group provides a mapping from
+     *                                   {@code byte[]} to \(\mathbb{G}_1\). When set to false,
+     *                                   it may still be supported.
      * @param numPrimeFactorsOfSize desired number of prime factors of the size of the resulting groups
      */
     public BilinearGroupRequirement(BilinearGroup.Type type, boolean hashIntoG1Needed, boolean hashIntoG2Needed,
@@ -61,18 +61,18 @@ public class BilinearGroupRequirement {
     }
 
     /**
-     * Constructor for prime order groups, and {@link #numPrimeFactorsOfSize} is set to 1.
+     * Constructor for prime order groups, i.e. the size factors into a single prime factor.
      *
      * @param type             the desired type of the resulting bilinear group
-     * @param hashIntoG1Needed true enforces that the resulting bilinear group provides a mapping byte[] -> G1. When
-     *                         set to false, it
-     *                         may still be supported.
-     * @param hashIntoG2Needed true enforces that the resulting bilinear group provides a mapping byte[] -> G2. When
-     *                         set to false, it
-     *                         may still be supported.
-     * @param hashIntoGTNeeded true enforces that the resulting bilinear group provides a mapping byte[] -> GT. When
-     *                         set to false, it
-     *                         may still be supported.
+     * @param hashIntoG1Needed           true enforces that the resulting bilinear group provides a mapping from
+     *                                   {@code byte[]} to \(\mathbb{G}_1\). When set to false,
+     *                                   it may still be supported.
+     * @param hashIntoG2Needed           true enforces that the resulting bilinear group provides a mapping from
+     *                                   {@code byte[]} to \(\mathbb{G}_2\). When set to false,
+     *                                   it may still be supported.
+     * @param hashIntoGTNeeded           true enforces that the resulting bilinear group provides a mapping from
+     *                                   {@code byte[]} to \(\mathbb{G}_1\). When set to false,
+     *                                   it may still be supported.
      */
     public BilinearGroupRequirement(BilinearGroup.Type type, boolean hashIntoG1Needed, boolean hashIntoG2Needed,
                                     boolean hashIntoGTNeeded) {
@@ -80,9 +80,7 @@ public class BilinearGroupRequirement {
     }
 
     /**
-     * Constructor for prime order groups without any requirements for hashing, i. e.
-     * {@link #numPrimeFactorsOfSize} is set to 1 and {@link #hashIntoG1Needed}, {@link #hashIntoG2Needed},
-     * {@link #hashIntoGTNeeded} is set to false.
+     * Constructor for prime order groups without any requirements for hashing.
      *
      * @param type the desired type of the resulting bilinear group
      */
@@ -91,8 +89,7 @@ public class BilinearGroupRequirement {
     }
 
     /**
-     * Constructor for composite order groups without any requirements for hashing, i. e. {@link #hashIntoG1Needed},
-     * {@link #hashIntoG2Needed}, {@link #hashIntoGTNeeded} is set to false by default.
+     * Constructor for composite order groups without any requirements for hashing.
      *
      * @param type the desired type of the resulting bilinear group
      * @param numPrimeFactorsOfSize number of prime factors of the resulting groups

@@ -13,13 +13,16 @@ import java.math.BigInteger;
 import java.util.function.BiFunction;
 
 /**
- * A map G1 x G2 -> GT (for groups G1, G2, GT) that is linear in both the first and the second component.
+ * A bilinear map \(e : \mathbb{G}_1 \times \mathbb{G}_2 \rightarrow \mathbb{G}_T\).
+ * <p>
+ * Bilinearity means that the map \(e\) is linear in both the first and second component.
+ * \(\mathbb{G}_1, \mathbb{G}_2\) and \(\mathbb{G}_T\) are groups.
  * <p>
  * Usually wrapped by a {@link BilinearMap} for actual use.
  */
 public interface BilinearMapImpl extends BiFunction<GroupElementImpl, GroupElementImpl, GroupElementImpl> {
     /**
-     * Computes {@code apply(g1,g2)^exponent}.
+     * Computes \(e(g1,g2)^exponent\).
      * <p>
      * Depending on the bilinear map and the involved groups, this may be more efficiently implemented than computing
      * it directly via {@code apply(g1,g2).pow(exponent)}.
@@ -33,7 +36,7 @@ public interface BilinearMapImpl extends BiFunction<GroupElementImpl, GroupEleme
     }
 
     /**
-     * Returns true if {@code e(g,h).equals(e(h,g))} for all {@code g}, {@code h}.
+     * Returns true if \(e(g,h) = e(h,g)\) for all \(g \in \mathbb{G}_1, h \in \mathbb{G}_2\).
      */
     boolean isSymmetric();
 }

@@ -17,6 +17,8 @@ import java.util.HashMap;
 
 /**
  * A key-value mapping used for passing around named algebraic values.
+ * <p>
+ * These values can be used to substitute variables with the same name in some {@link Expression}.
  */
 public class ValueBundle {
     protected HashMap<String, GroupElement> groupElems;

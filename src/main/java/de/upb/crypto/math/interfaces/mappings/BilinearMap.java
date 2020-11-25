@@ -14,7 +14,10 @@ import java.math.BigInteger;
 import java.util.function.BiFunction;
 
 /**
- * A map G1 x G2 -> GT (for groups G1, G2, GT) that is linear in both the first and the second component.
+ * A bilinear map \(e : \mathbb{G}_1 \times \mathbb{G}_2 \rightarrow \mathbb{G}_T\).
+ * <p>
+ * Bilinearity means that the map \(e\) is linear in both the first and second component.
+ * \(\mathbb{G}_1, \mathbb{G}_2\) and \(\mathbb{G}_T\) are groups.
  */
 public interface BilinearMap extends BiFunction<GroupElement, GroupElement, GroupElement> {
     Group getG1();

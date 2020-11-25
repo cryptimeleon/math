@@ -31,15 +31,17 @@ public @interface Represented {
      * you'd write {@code "[G1]"} (i.e. a list/set of elements each of which is restorable by restorer {@code "G1"}).
      * For a map, whose keys are handled by {@code "G1"} and whose values by {@code "G2"}, write {@code "G1 -> G2"}.
      * <p>
-     * These can be combined, e.g., "G1 -> [[G2]]" for a map whose keys are handled by {@code "G1"}
+     * These can be combined, e.g., {@code "G1 -> [[G2]]"} for a map whose keys are handled by {@code "G1"}
      * and whose values are lists of lists of elements handled by {@code "G2"}.
      * <p>
-     * You can use parentheses to ensure precedence, e.g., "(G1 -> G2) -> G3" is a map whose keys are maps from G1 to G2.
+     * You can use parentheses to ensure precedence, e.g., {@code "(G1 -> G2) -> G3"} is a map whose keys are maps
+     * from G1 to G2.
      * <p>
      * If the type is simple (i.e. {@link StandaloneRepresentable}, {@code BigInteger}, {@code Integer},
      * {@code String}, {@code Boolean}, or {@code byte[]}), this value is ignored.
-     * This is again true for nested expressions, e.g., "FOO -> G2" works for a Map from String to GroupElement,
-     * as the string "FOO" is simply ignored.
+     * This is again true for nested expressions, e.g., {@code "FOO -> G2"} works for a map from {@code String} to
+     * {@code GroupElement}, as the string {@code "FOO"} is simply ignored.
+     * <p>
      * Keep in mind that the unwrapped variants such as {@code int} or {@code boolean} are not supported.
      */
     String restorer() default "";

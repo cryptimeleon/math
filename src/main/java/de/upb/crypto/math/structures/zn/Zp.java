@@ -11,14 +11,14 @@ import de.upb.crypto.math.structures.helpers.FiniteFieldTools;
 import java.math.BigInteger;
 
 /**
- * A version of \(\mathbb{Z}_n\) where \(n\) is prime (making the ring a field).
+ * A version of {@link Zn} where n is prime (making the ring a field).
  * <p>
  * This completely reuses the {@link Zn} implementation.
  */
 public class Zp extends Zn implements Field {
 
     /**
-     * Construct the field \(\mathbb{Z}_p\).
+     * Construct the field {@code Zp} using a given prime {@code p}.
      *
      * @param p a prime number (is checked probabilistically)
      * @throws IllegalArgumentException if p is not prime

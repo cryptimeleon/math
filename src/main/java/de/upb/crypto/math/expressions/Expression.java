@@ -1,5 +1,7 @@
 package de.upb.crypto.math.expressions;
 
+import de.upb.crypto.math.expressions.group.GroupOpExpr;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +11,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * Expression
+ * An expression is a tree of expressions that can be evaluated if it contains no variables.
+ * If variables are contained in the expression, they have to be substituted with actual values first.
  */
 public interface Expression {
 
@@ -20,14 +23,38 @@ public interface Expression {
         return substitute(values::getSubstitution);
     }
 
+    /**
+     * Substitute a specific variable with the given expression.
+     *
+     * @param variable the variable to replace
+     * @param substitution the expression to substitute
+     * @return the expression after substitution
+     */
     default Expression substitute(String variable, Expression substitution) {
         return substitute((VariableExpression expr) -> expr.getName().equals(variable) ? substitution : null);
     }
 
+    /**
+     * Substitutes variables using the given function.
+     *
+     * @param substitutions a function mapping variable expressions to their replacement expressions
+     * @return the expression after substitution
+     */
     Expression substitute(Function<VariableExpression, ? extends Expression> substitutions);
 
+    /**
+     * Evaluates the expression.
+     *
+     * @return the result of evaluation
+     */
     Object evaluate();
 
+    /**
+     * Evaluates the expression after substituting contained variables.
+     *
+     * @param substitutions a function mapping variables to expressions that can be evaluated
+     * @return the result of evaluation
+     */
     Object evaluate(Function<VariableExpression, ? extends Expression> substitutions);
 
     /**
@@ -40,8 +67,10 @@ public interface Expression {
     }
 
     /**
-     * Returns true if and only if this expression depends on some variable (i.e. you wouldn't be able to compute a value
-     * without substituting the variable with a concrete value)
+     * Returns true if and only if this expression contains variables.
+     * <p>
+     * This means that you wouldn't be able to evaluate the expression without substituting the variable
+     * with another expression that can be evaluated.
      */
     default boolean containsVariables() {
         return !getVariables().isEmpty();
@@ -49,13 +78,14 @@ public interface Expression {
 
     /**
      * Calls the given visitor in a pre-order (this, treeWalk[left child], treeWalk[right child]) fashion.
+     * <p>
      * Usual implementation (for binary nodes) is:
-     *
+     * <pre>
      *     public void treeWalk(Consumer<Expression> visitor) {
      *         visitor.accept(this);
      *         forEachChild(Expression::treeWalk)
      *     }
-     *
+     * </pre>
      * By contract, implementing objects should at least regard dependent variables as child VariableExpressions.
      */
     default void treeWalk(Consumer<Expression> visitor) {
@@ -65,21 +95,25 @@ public interface Expression {
 
     /**
      * Calls action on every (direct) child of this expression.
-     * For example, for a GroupOpExpr, this would call action on the left- and right-hand-side and then return.
+     * For example, for a {@link GroupOpExpr}, this would call action on the left- and right-hand-side and then return.
      */
     void forEachChild(Consumer<Expression> action);
 
     /**
      * Calls the given accumulator in a pre-order (this, treeWalk[left child], treeWalk[right child]) fashion.
+     * <p>
      * One can view the implementation as follows:
+     * <pre>
      * v = initialValue
      * v = accumulator(v, expr)
-     * v = accumulator(v, [left subtree]) //recursive call
-     * v = accumulator(v, [right subtree]) //recursive call
+     * v = accumulator(v, [left subtree]) // recursive call
+     * v = accumulator(v, [right subtree]) // recursive call
      * return v
+     * </pre>
      */
     default <T> T accumulate(BiFunction<T, Expression, T> accumulator, T initialValue) {
-        ArrayList<T> value = new ArrayList<T>(1); //workaround for needing an (effectively) final variable in tree walk
+        // workaround for needing an (effectively) final variable in tree walk
+        ArrayList<T> value = new ArrayList<T>(1);
         value.add(initialValue);
         treeWalk(expr -> value.set(0, accumulator.apply(value.get(0), expr)));
         return value.get(0);

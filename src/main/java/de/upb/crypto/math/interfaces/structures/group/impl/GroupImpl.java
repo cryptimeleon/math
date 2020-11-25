@@ -1,10 +1,12 @@
 package de.upb.crypto.math.interfaces.structures.group.impl;
 
+import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
 import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
+import de.upb.crypto.math.structures.zn.Zp;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -19,6 +21,10 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
      */
     GroupElementImpl getNeutralElement();
 
+    /**
+     * Generates a uniformly random element of this group.
+     * @throws UnsupportedOperationException if the random generation cannot be done
+     */
     GroupElementImpl getUniformlyRandomElement() throws UnsupportedOperationException;
 
     default GroupElementImpl getUniformlyRandomNonNeutral() throws UnsupportedOperationException {
@@ -30,6 +36,9 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
         return result;
     }
 
+    /**
+     * Recreates a group element from its representation.
+     */
     GroupElementImpl getElement(Representation repr);
 
     /**
@@ -110,6 +119,19 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
         return getElement(repr);
     }
 
+    /**
+     * Returns the number of bytes returned by this structure's {@link Element#getUniqueByteRepresentation()},
+     * or an empty {@code Optional} if this structure's elements do not guarantee a fixed length.
+     * <p>
+     * For example, elements of {@link Zp} will always be represented by {@code ceil(ceil(log(p))/8)} bytes,
+     * hence {@code getUniqueByteLength()} would return {@code ceil(ceil(log(p))/8)}.
+     * <p>
+     * A polynomial ring would return an empty {@code Optional} since a polynomial's unique byte representation length
+     * depends on its degree.
+     *
+     * @return the guaranteed fixed length of {@code getUniqueByteRepresentation()},
+     *         or an empty {@code Optional}, if no guarantee
+     */
     Optional<Integer> getUniqueByteLength();
 }
 

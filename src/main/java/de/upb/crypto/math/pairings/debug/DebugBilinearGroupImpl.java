@@ -19,7 +19,8 @@ import static de.upb.crypto.math.factory.BilinearGroup.Type.*;
 
 /**
  * Creates bilinear groups based on the integer ring modulo n for some number n.
- * The bilinear map (Zn,+) x (Zn,+) -> (Zn,+) is the ring multiplication.
+ * The bilinear map \(e : (\mathbb{Z}_n,+) \times (\mathbb{Z}_n,+) \rightarrow (\mathbb{Z}_n,+) is given by
+ * the ring multiplication.
  * <p>
  * This is intentionally not a {@link BilinearGroupProvider}, because the returned group is not secure!
  */

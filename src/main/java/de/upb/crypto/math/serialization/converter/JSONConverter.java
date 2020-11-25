@@ -18,7 +18,7 @@ import java.util.Map.Entry;
  * <p>
  * Note that the order of attributes in a JSON Object is meaningless. 
  * However, this {@code Converter} guarantees a consistent order between calls,
- * making the {@code Representation} -> {@code String} relation left-unique (i.e. a well-defined mapping).
+ * making the {@code Representation -> String} relation left-unique (i.e. a well-defined mapping).
  * This allows this {@code Converter} to be used for, e.g,. {@code HashRepresentationIntoStructure},
  * and similar tasks that require a unique and consistent output.
  */

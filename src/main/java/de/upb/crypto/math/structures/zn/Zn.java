@@ -115,13 +115,13 @@ public class Zn implements Ring {
      */
     public class ZnElement implements RingElement, UniqueByteRepresentable {
         /**
-         * The unique element \(v \in \mathbb{Z}\) such that \(0 \leq v < n\) and \(v\) projects
-         * to the represented element in \(\mathbb{Z}_n\).
+         * The unique integer {@code v} such that {@code 0 <= v < n} and {@code v} projects
+         * to the represented element in {@code Zn}.
          */
         protected final BigInteger v;
 
         /**
-         * Construct a new {@code ZnElement} initialized as \([v] \pmod n\) (must reduce \(v\) before calling!)
+         * Construct a new {@code ZnElement} initialized as {@code [v] mod n} (must reduce {@code v} before calling!).
          */
         protected ZnElement(BigInteger v) {
             this.v = v;
@@ -339,14 +339,13 @@ public class Zn implements Ring {
     }
 
     /**
-     * For all \(k < \floor((\text{n.bitLength()}-1)/8)\),
-     * this is an injective map \(\text{byte}^k \rightarrow \mathbb{Z}_n\).
+     * For all {@code k < floor((n.bitLength()-1)/8)}, this is an injective map {@code byte^k -> Zn}.
      * <p>
      * Note that there may be collisions between {@code injectiveValueOf(bytes1)} and {@code injectiveValueOf(bytes2)}
      * if {@code bytes1.length != bytes2.length}.
      *
-     * @param bytes the bytes to map injectively into \(\mathbb{Z}_n\).
-     * @return the resulting \(\mathbb{Z}_n\) element
+     * @param bytes the bytes to map injectively into Zn.
+     * @return the resulting Zn element
      * @throws IllegalArgumentException if the byte array is too long
      */
     public ZnElement injectiveValueOf(byte[] bytes) throws IllegalArgumentException {

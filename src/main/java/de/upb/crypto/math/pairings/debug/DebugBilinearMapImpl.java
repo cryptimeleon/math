@@ -14,8 +14,8 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 /**
- * A bilinear map (Zn,+) x (Zn,+) -> (Zn,+),
- * namely (a,b) -> a*b (multiplication in Zn).
+ * A bilinear map \(e : (\mathbb{Z}_n,+) \times (\mathbb{Z}_n,+) \rightarrow (\mathbb{Z}_n,+),
+ * namely \((a,b) \mapsto a \cdot b \pmod n\), i.e. multiplication in \(\mathbb{Z}_n\).
  */
 public class DebugBilinearMapImpl implements BilinearMapImpl {
     protected DebugGroupImpl g1, g2, gt;
@@ -26,12 +26,15 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
     private long numPairings;
 
     /**
-     * Instantiates a debug bilinear map emulating pairing type "type"
+     * Instantiates a debug bilinear map emulating the given pairing type.
      *
      * @param type type of the pairing
-     * @param groupSize size of g1, g2, and gt (number of group elements)
+     * @param groupSize size of \(\mathbb{G}_1\), \(\mathbb{G}_2\), and \(\mathbb{G}_T\) (number of group elements)
+     * @param enableExpCounting whether to enable counting of exponentiations performed in each group
+     * @param enableMultiExpCounting whether to enable counting of multi-exponentiations performed in each group
      */
-    public DebugBilinearMapImpl(BilinearGroup.Type type, BigInteger groupSize, boolean enableExpCounting, boolean enableMultiExpCounting) {
+    public DebugBilinearMapImpl(BilinearGroup.Type type, BigInteger groupSize, boolean enableExpCounting,
+                                boolean enableMultiExpCounting) {
         this.size = groupSize;
         this.zn = new Zn(groupSize);
         this.pairingType = type;
@@ -51,12 +54,22 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
 
     @Override
     public GroupElementImpl apply(GroupElementImpl g1, GroupElementImpl g2) {
-        if (!(g1 instanceof DebugGroupElementImpl) || !((DebugGroupElementImpl) g1).group.equals(this.g1))
-            throw new IllegalArgumentException("first pairing argument is not in " + this.g1.name + ". It's in "
-                    + (!(g1 instanceof DebugGroupElementImpl) ? g1.getStructure() : g1 == null ? null : ((DebugGroupElementImpl) g1).group.name));
-        if (!(g2 instanceof DebugGroupElementImpl) || !((DebugGroupElementImpl) g2).group.equals(this.g2))
-            throw new IllegalArgumentException("first pairing argument is not in " + this.g2.name + ". It's in "
-                    + (!(g2 instanceof DebugGroupElementImpl) ? g2.getStructure() : g2 == null ? null : ((DebugGroupElementImpl) g2).group.name));
+        if (g1 == null) {
+            throw new IllegalArgumentException("First pairing argument is null");
+        } else if (!(g1 instanceof DebugGroupElementImpl)) {
+            throw new IllegalArgumentException("First pairing argument is not a DebugGroupElementImpl instance");
+        } else if (!((DebugGroupElementImpl) g1).group.equals(this.g1)) {
+            throw new IllegalArgumentException("First pairing argument is not in group " + this.g1.name + ". "
+                    + "It's in group " + ((DebugGroupElementImpl) g1).group.name);
+        }
+        if (g2 == null) {
+            throw new IllegalArgumentException("Second pairing argument is null");
+        } else if (!(g2 instanceof DebugGroupElementImpl)) {
+            throw new IllegalArgumentException("Second pairing argument is not a DebugGroupElementImpl instance");
+        } else if (!((DebugGroupElementImpl) g2).group.equals(this.g2)) {
+            throw new IllegalArgumentException("Second pairing argument is not in group " + this.g2.name + ". "
+                    + "It's in group " + ((DebugGroupElementImpl) g2).group.name);
+        }
 
         GroupElementImpl result = gt.wrap(((DebugGroupElementImpl) g1).elem.mul(((DebugGroupElementImpl) g2).elem));
         incrementNumPairings();

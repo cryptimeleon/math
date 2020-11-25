@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Represents an object serialized via our representation framework.
  * <p>
  * The general idea for serialization of objects here is to have a structured intermediate format,
- * so that you can convert between Java object <-> Representation <-> Serialized format.
+ * so that you can convert between {@code Java object <-> Representation <-> Serialized format}.
  * <p>
  * This conversion is done by a {@link Converter} class (the specific subclass depends on the chosen serialized format).
  * <p>

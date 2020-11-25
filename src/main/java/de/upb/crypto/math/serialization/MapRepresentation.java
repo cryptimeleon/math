@@ -9,7 +9,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 /**
- * Representation of a key -> value map, mapping Representations to Representations
+ * {@code Representation} of a {@code key -> value} map, mapping representations to representations.
  */
 public class MapRepresentation extends Representation implements Iterable<Entry<Representation, Representation>> {
     private static final long serialVersionUID = -4276829583005855044L;
@@ -24,7 +24,7 @@ public class MapRepresentation extends Representation implements Iterable<Entry<
     }
 
     /**
-     * Adds key -> value to the mapping.
+     * Adds {@code key -> value} to the mapping.
      * If key previously had another image, the old one is overwritten
      */
     public void put(Representation key, Representation value) {

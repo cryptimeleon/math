@@ -73,7 +73,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     /**
      * Calculates the result of applying the group operation k times.
      * Note that this is only well-defined if k is from Zn,
-     * such that {@code getStructure().size()) divides n.
+     * such that {@code getStructure().size()} divides n.
      */
     default GroupElement pow(ZnElement k) {
         return pow(k.asExponent());

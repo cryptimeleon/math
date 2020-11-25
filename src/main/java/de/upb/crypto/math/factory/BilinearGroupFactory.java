@@ -108,9 +108,11 @@ public class BilinearGroupFactory {
     }
 
     /**
-     * If set to true, a special bilinear group for non-secure pairings Zn x Zn -> Zn with support for
+     * If set to true, a special bilinear group for non-secure pairings
+     * \((\mathbb{Z}_n,+) \times (\mathbb{Z}_n,+) \rightarrow (\mathbb{Z}_n,+) with support for
      * counting group operations is returned.
-     * In this case, n = [largest prime >= 2^securityParameter]
+     * <p>
+     * In this case, \(n\) will be chosen as some prime number with bit size given by the security parameter.
      */
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
@@ -119,7 +121,8 @@ public class BilinearGroupFactory {
     /**
      * Creates a bilinear group according to the defined requirements and registered provider.
      * <p>
-     * See {@link #setRequirements} and {@link #registerProvider(List)}.
+     * See {@link #setRequirements} and {@link #registerProvider(List)} for information on how to configure the
+     * requirements and add new providers.
      */
     public BilinearGroup createBilinearGroup() {
         if (requirements == null) {

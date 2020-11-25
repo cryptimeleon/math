@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
- * Representation based of a simple String -> Representation map.
+ * {@code Representation} based of a simple {@code String -> Representation} map.
  */
 public class ObjectRepresentation extends Representation implements Iterable<Entry<String, Representation>> {
     private static final long serialVersionUID = -7955738062171729317L;

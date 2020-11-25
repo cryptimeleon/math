@@ -3,28 +3,28 @@ package de.upb.crypto.math.interfaces.structures;
 import java.math.BigInteger;
 
 /**
- * Immutable objects representing a Ring element
+ * Immutable objects representing a ring element.
  */
 public interface RingElement extends Element {
     @Override
     public Ring getStructure();
 
     /**
-     * Interprets this element as an element of this R's unit group
+     * Interprets this element as an element of this ring's unit group.
      */
     default GroupElement toUnitGroupElement() {
         return RingGroup.unitGroupOf(getStructure()).getElement(this);
     }
 
     /**
-     * Interprets this element as an element of this R's additive group
+     * Interprets this element as an element of this rings additive group.
      */
     default GroupElement toAdditiveGroupElement() {
         return RingGroup.additiveGroupOf(getStructure()).getElement(this);
     }
 
     /**
-     * Computes this + e
+     * Computes \(\text{this} + e\).
      *
      * @param e the addend
      * @return the result
@@ -32,14 +32,14 @@ public interface RingElement extends Element {
     RingElement add(Element e);
 
     /**
-     * Computes the additive inverse of this element
+     * Computes the additive inverse of this element.
      *
      * @return the result
      */
     RingElement neg();
 
     /**
-     * Computes this - e
+     * Computes \(\text{this} - e\).
      *
      * @param e the subtrahend
      * @return the result
@@ -49,7 +49,7 @@ public interface RingElement extends Element {
     }
 
     /**
-     * Computes this * e
+     * Computes \(\text{this} \cdot e\).
      *
      * @param e the factor
      * @return the result
@@ -57,7 +57,7 @@ public interface RingElement extends Element {
     RingElement mul(Element e);
 
     /**
-     * Computes this * k (equivalent to this + this + ... [k times])
+     * Computes \(\text{this} \cdot k\) (equivalent to \(\text{this} + \text{this} + \cdots\) k-times).
      *
      * @param k the factor
      * @return the result
@@ -79,8 +79,9 @@ public interface RingElement extends Element {
     }
 
     /**
-     * Calculates this^k.
-     * (Note that (anything)^0 = 1, particularly 0^0 = 1)
+     * Calculates \(\text{this}^k\).
+     * <p>
+     * Note that \(a^0 = 1\) for any \(a\) in the ring, particularly \(0^0 = 1\).
      */
     default RingElement pow(BigInteger k) { //default implementation: square&multiply algorithm
         if (k.signum() < 0)
@@ -99,7 +100,7 @@ public interface RingElement extends Element {
     }
 
     /**
-     * Computes the multiplicative inverse of this element
+     * Computes the multiplicative inverse of this element.
      *
      * @return the result
      * @throws UnsupportedOperationException if this is not a unit
@@ -107,7 +108,9 @@ public interface RingElement extends Element {
     RingElement inv() throws UnsupportedOperationException;
 
     /**
-     * Predicate to determine whether an element has a multiplicative inverse.
+     * Determines whether an element has a multiplicative inverse.
+     *
+     * @return true if the element has a multiplicative inverse, else false.
      */
     default boolean isUnit() {
         try {
@@ -119,7 +122,7 @@ public interface RingElement extends Element {
     }
 
     /**
-     * Computes this / e
+     * Computes \(\text{this} / e = \text{this} \cdot e^{-1}\).
      *
      * @param e the divisor
      * @return the result
@@ -130,32 +133,33 @@ public interface RingElement extends Element {
     }
 
     /**
-     * Returns true iff there exists an x in the ring such that
-     * this*x = e.
+     * Returns true iff there exists an \(x\) in the ring such that \(\text{this} \cdot x = e\).
      *
      * @throws UnsupportedOperationException if this cannot be decided (efficiently)
      */
     boolean divides(RingElement e) throws UnsupportedOperationException;
 
     /**
-     * Returns an array "result" such that
-     * this = result[0]*e + result[1]
-     * and
-     * result[1].getRank() < e.getRank() or result[1] = 0
+     * Divides this by e with remainder, returning both quotient and remainder.
+     * <p>
+     * Specifically, returns an array {@code result} such that the first entry contains the quotient
+     * and the second entry the remainder.
+     * Furthermore, {@code result[1].getRank() < e.getRank() or result[1] = 0}.
      * <p>
      * This definition implies that the remainder is zero if and only if e divides this element.
-     * ("Only if" is clear. "If" follows because e divides result[1] and hence result[1].getRank() >= e.getRank(), which contradicts result[1].getRank() < e.getRank())
      *
-     * @throws UnsupportedOperationException If the ring is not a euclidean domain
+     * @throws UnsupportedOperationException if the ring is not a euclidean domain
      * @throws IllegalArgumentException      if e is zero
      */
     RingElement[] divideWithRemainder(RingElement e) throws UnsupportedOperationException, IllegalArgumentException;
 
     /**
-     * Implements the euclidean function of a euclidean domain, i.e.
+     * Implements the euclidean function of a euclidean domain.
+     * <p>
+     * The euclidean function is a function from \(R \setminus \{0\}\) to \(\mathbb{N}_0\) such that
      * <ul>
-     * <li>{@code a.getRank()} >= 0 for any a
-     * <li>{@code a.mul(b).getRank()} >= {@code a.getRank()} for any a, b != 0
+     * <li>{@code a.getRank() >= 0} for any {@code a} in the ring
+     * <li>{@code a.mul(b).getRank() >= a.getRank()} for any {@code a, b != 0}
      * <li>the remainder rank after {@code divideWithRemainder} is less than the divisor's rank
      * </ul>
      * For example, for a polynomial ring this corresponds to the degree of the polynomial.
@@ -174,7 +178,7 @@ public interface RingElement extends Element {
     }
 
     /**
-     * Returns true iff this is the one of the ring.
+     * Returns true iff this is the one element of the ring.
      */
     default boolean isOne() {
         return this.equals(getStructure().getOneElement());
@@ -190,7 +194,7 @@ public interface RingElement extends Element {
      * For example, for a group of size n, {@code ZnElement} instances can usefully serve as exponents.
      *
      * @return a useful integer value such that the expression
-     *         {@code groupElement.pow(this).equals(groupElement.pow(this.asExponent())} makes sense.
+     *         {@code groupElement.pow(this).equals(groupElement.pow(this.asExponent())} makes sense
      * @throws UnsupportedOperationException if elements of the ring are not fit to be interpreted
      *                                       as exponents for a group
      */

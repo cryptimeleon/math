@@ -61,7 +61,7 @@ public interface RandomGenerator {
     }
 
     /**
-     * Generate a (uniformly) random prime number from the interval [2^(n-1), 2^n-1].
+     * Generate a (uniformly) random prime number from the interval \([2^(n-1), 2^n-1]\).
      *
      * @param n desired number of bits for the prime number
      * @return a {@code BigInteger} that is probably prime

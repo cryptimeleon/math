@@ -13,13 +13,14 @@ import java.util.ArrayList;
 
 public class DebugBilinearGroupProvider implements BilinearGroupProvider {
     /**
-     * Creates a new Debug group whose prime factors have bit size {@code securityParameter}.
+     * Creates a new bilinear debug group whose prime factors have bit size {@code securityParameter}.
      *
      * @param type              type of the pairing
      * @param securityParameter bit size of the prime factors
-     * @param numPrimeFactors   number of prime factors
+     * @param numPrimeFactors   number of prime factors making up the group size
      */
-    public DebugBilinearGroupImpl provideBilinearGroup(int securityParameter, BilinearGroup.Type type, int numPrimeFactors, boolean wantHash) {
+    public DebugBilinearGroupImpl provideBilinearGroup(int securityParameter, BilinearGroup.Type type,
+                                                       int numPrimeFactors, boolean wantHash) {
         if (securityParameter < 2)
             throw new IllegalArgumentException("Cannot create debug pairing of bit size " + securityParameter);
 
@@ -28,7 +29,8 @@ public class DebugBilinearGroupProvider implements BilinearGroupProvider {
         for (int i = 0; i < numPrimeFactors; i++)
             primeFactors.add(rnd.getRandomPrime(securityParameter));
 
-        return new DebugBilinearGroupImpl(type, primeFactors.stream().reduce(BigInteger.ONE, BigInteger::multiply), wantHash);
+        return new DebugBilinearGroupImpl(type, primeFactors.stream().reduce(BigInteger.ONE, BigInteger::multiply),
+                wantHash);
     }
 
     @Override
@@ -38,7 +40,9 @@ public class DebugBilinearGroupProvider implements BilinearGroupProvider {
 
     @Override
     public BilinearGroupImpl provideBilinearGroupImpl(int securityParameter, BilinearGroupRequirement requirements) {
-        return provideBilinearGroup(securityParameter, requirements.getType(), requirements.getNumPrimeFactorsOfSize(), requirements.isHashIntoG1Needed() || requirements.isHashIntoG2Needed() || requirements.isHashIntoGTNeeded());
+        return provideBilinearGroup(securityParameter, requirements.getType(), requirements.getNumPrimeFactorsOfSize(),
+                requirements.isHashIntoG1Needed() || requirements.isHashIntoG2Needed()
+                        || requirements.isHashIntoGTNeeded());
     }
 
     @Override

@@ -92,28 +92,28 @@ public class Sn implements GroupImpl {
      */
     public class SnElementImpl implements GroupElementImpl, Function<Integer, Integer> {
         /**
-         * Contains the images of this permutation in order,
-         * i.e. images[i] = j <=> i maps to j
-         * (note that images[0] = 0, unused, as we map \(\{1,...,n\}\)).
+         * Contains the images of this permutation in order.
+         * Specifically, {@code images[i] = j} is equivalent to i being mapped to j.
+         * Note that images[0] is unused as we map \(\{1,...,n\}\).
          */
         protected int[] images;
 
         /**
-         * Constructor for java's serialization
+         * Constructor for java's serialization.
          */
         private SnElementImpl() {
 
         }
 
         /**
-         * Recreate from representation
+         * Recreate from representation.
          */
         public SnElementImpl(Representation repr) {
             this(i -> repr.list().get(i).bigInt().get().intValue());
         }
 
         /**
-         * Create from a mapping
+         * Create from a mapping.
          */
         public SnElementImpl(Function<Integer, Integer> permutation) {
             images = new int[n + 1];
@@ -122,9 +122,9 @@ public class Sn implements GroupImpl {
         }
 
         /**
-         * Create from a list of images, which contains the images of this permutation in order, i.e.
-         * images[i] = j <=> i maps to j
-         * (note that images[0] is ignored, as we map \(\{1,...,n\}\)).
+         * Create from a list of images, which contains the images of this permutation in order.
+         * Specifically, {@code images[i] = j} is equivalent to i being mapped to j.
+         * Note that images[0] is unused as we map \(\{1,...,n\}\).
          */
         public SnElementImpl(int[] images) {
             this.images = Arrays.copyOf(images, n + 1);

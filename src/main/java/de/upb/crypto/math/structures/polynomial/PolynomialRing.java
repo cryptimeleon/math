@@ -101,8 +101,8 @@ public class PolynomialRing implements Ring {
         /**
          * Coefficients of this polynomial, i.e. \(\text{this} = \sum coefficients[i] * x^i\).
          * <p>
-         * All entries with index > degree may be null. (iterate from i=0 to degree). This
-         * array always contains at least one element.
+         * All entries with index {@code i > degree} may be null.
+         * This array always contains at least one element.
          */
         protected RingElement[] coefficients;
 
@@ -231,7 +231,9 @@ public class PolynomialRing implements Ring {
         }
 
         /**
-         * Makes sure that the coefficients array does not contain null values at indices <= degree
+         * Makes sure that the coefficients array does not contain null values at indices {@code i <= degree}.
+         *
+         * @throws IllegalArgumentException if any coefficient of the polynomial is null
          */
         protected void ensureArrayNonNull() {
             for (int i = 0; i <= degree; i++)

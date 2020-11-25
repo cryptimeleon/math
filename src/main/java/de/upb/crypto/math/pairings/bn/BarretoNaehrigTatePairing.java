@@ -14,7 +14,7 @@ import de.upb.crypto.math.serialization.Representation;
  */
 public class BarretoNaehrigTatePairing extends AbstractPairing {
     /**
-     * Construct Tate pairing {@code g1} x {@code g2} -> {@code gT}.
+     * Construct Tate pairing \(\mathbb{G}_1 \times \mathbb{G}_2 \rightarrow \mathbb{G}_T\).
      */
     public BarretoNaehrigTatePairing(BarretoNaehrigGroup1Impl g1, BarretoNaehrigGroup2Impl g2, BarretoNaehrigTargetGroupImpl gT) {
         super(g1, g2, gT);

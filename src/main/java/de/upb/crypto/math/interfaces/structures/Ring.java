@@ -145,8 +145,10 @@ public interface Ring extends Structure, RepresentationRestorer {
     }
 
     /**
-     * The characteristic of the ring,
-     * i.e. the number n such that there is a ring homomorphism Z/nZ -> Ring
+     * Returns the characteristic of the ring.
+     * <p>
+     * The characteristic of \(R\) is defined to be the number \(n\)
+     * such that there is a ring homomorphism \(\mathbb{Z}_n \rightarrow R\).
      *
      * @throws UnsupportedOperationException if unknown
      */
@@ -154,7 +156,7 @@ public interface Ring extends Structure, RepresentationRestorer {
 
     /**
      * Maps the integer i into the ring, such that this map is a
-     * homomorphism from the Z/getCharacteristic()*Z onto the ring.
+     * ring homomorphism \(\mathbb{Z}_{\text{getCharacteristic()}} \rightarrow R\).
      *
      * @param i the integer to map
      * @return an element of the ring

@@ -18,9 +18,11 @@ public interface BilinearGroup extends StandaloneRepresentable {
      * <p>
      * The types have the following properties:
      * <ul>
-     * <li>TYPE_1: G1 = G2
-     * <li>TYPE_2: G1 != G2 and there exists a computable isomorphism G2 -> G1
-     * <li>TYPE_3: G1 != G2 and we assume there is no efficiently computable isomorphism  G2 -> G1
+     * <li>TYPE_1: \(\mathbb{G}_1 = G\mathbb{G}_2\)
+     * <li>TYPE_2: \(\mathbb{G}_1 \ne \mathbb{G}_2\) and there exists a computable isomorphism
+     *             \(\mathbb{G}_2 \rightarrow  \mathbb{G}_1\)
+     * <li>TYPE_3: \(\mathbb{G}_1 \ne \mathbb{G}_2\) and we assume there is no efficiently computable isomorphism
+     *             \(\mathbb{G}_2 \rightarrow  \mathbb{G}_1\)
      * </ul>
      */
     enum Type {
