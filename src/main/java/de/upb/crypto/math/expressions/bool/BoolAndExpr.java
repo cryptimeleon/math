@@ -6,8 +6,11 @@ import de.upb.crypto.math.expressions.VariableExpression;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link BooleanExpression} representing the Boolean AND of two {@code BooleanExpression} instances.
+ */
 public class BoolAndExpr implements BooleanExpression {
-    protected BooleanExpression lhs, rhs;
+    private final BooleanExpression lhs, rhs;
 
     public BoolAndExpr(BooleanExpression lhs, BooleanExpression rhs) {
         this.lhs = lhs;
@@ -30,10 +33,16 @@ public class BoolAndExpr implements BooleanExpression {
         action.accept(rhs);
     }
 
+    /**
+     * Retrieves the Boolean expression on the left hand of this Boolean AND.
+     */
     public BooleanExpression getLhs() {
         return lhs;
     }
 
+    /**
+     * Retrieves the Boolean expression on the right hand of this Boolean AND.
+     */
     public BooleanExpression getRhs() {
         return rhs;
     }

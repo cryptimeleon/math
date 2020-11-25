@@ -6,8 +6,11 @@ import de.upb.crypto.math.expressions.VariableExpression;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link BooleanExpression} representing a constant Boolean value.
+ */
 public class BoolConstantExpr implements BooleanExpression {
-    private boolean value;
+    private final boolean value;
 
     public BoolConstantExpr(boolean value) {
         this.value = value;

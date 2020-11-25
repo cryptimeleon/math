@@ -6,13 +6,19 @@ import de.upb.crypto.math.expressions.VariableExpression;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link BooleanExpression} representing the Boolean NOT of a Boolean expression.
+ */
 public class BoolNotExpr implements BooleanExpression {
-    protected BooleanExpression child;
+    private final BooleanExpression child;
 
     public BoolNotExpr(BooleanExpression child) {
         this.child = child;
     }
 
+    /**
+     * Retrieves the Boolean expression to which this Boolean NOT is applied.
+     */
     public BooleanExpression getChild() {
         return child;
     }
