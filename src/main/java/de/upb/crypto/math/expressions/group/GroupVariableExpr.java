@@ -8,6 +8,9 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link GroupElementExpression} representing a variable which does not have a known value at time of creation.
+ */
 public class GroupVariableExpr extends GroupElementExpression implements VariableExpression {
     protected final String name;
 

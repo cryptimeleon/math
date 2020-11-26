@@ -11,6 +11,9 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link GroupElementExpression} representing a bilinear pairing applied to two group element expressions.
+ */
 public class PairingExpr extends GroupElementExpression {
     protected GroupElementExpression lhs, rhs;
     protected BilinearMap map;
@@ -22,14 +25,23 @@ public class PairingExpr extends GroupElementExpression {
         this.rhs = rhs;
     }
 
+    /**
+     * Returns the bilinear map that is used for this pairing expression.
+     */
     public BilinearMap getMap() {
         return map;
     }
 
+    /**
+     * Retrieves the left argument of the pairing.
+     */
     public GroupElementExpression getLhs() {
         return lhs;
     }
 
+    /**
+     * Retrieves the right argument of the pairing.
+     */
     public GroupElementExpression getRhs() {
         return rhs;
     }

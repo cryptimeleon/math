@@ -9,6 +9,9 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link GroupElementExpression} representing a a group element expression raised to some power.
+ */
 public class GroupPowExpr extends GroupElementExpression {
     protected GroupElementExpression base;
     protected ExponentExpr exponent;
@@ -40,10 +43,16 @@ public class GroupPowExpr extends GroupElementExpression {
         return base.substitute(substitutions).pow(exponent.substitute(substitutions));
     }
 
+    /**
+     * Retrieves the base expression of this exponentiation.
+     */
     public GroupElementExpression getBase() {
         return base;
     }
 
+    /**
+     * Retrieves the exponent expression of this exponentiation.
+     */
     public ExponentExpr getExponent() {
         return exponent;
     }
