@@ -16,16 +16,14 @@ import java.util.stream.Collectors;
  * Usage of this factory:
  * </p>
  * <ol>
- * <li>Create an object and set the desired security parameter using {@link #BilinearGroupFactory(int)}</li>
+ * <li>Create an object and set the desired security parameter using {@link #BilinearGroupFactory(int)}.
  * <li>
  * Set a configuration for the factory by setting {@link BilinearGroupRequirement} using {@link #setRequirements}.
- * </li>
  * <li>
  * Optionally: Register {@link BilinearGroupProvider} using {@link #registerProvider(List)}.
  * Default providers are {@link SupersingularProvider} for Type 1 groups and {@link BarretoNaehrigProvider} for Type
  * 3 groups.
- * </li>
- * <li>Create the bilinear group fulfilling the defined requirements using {@link #createBilinearGroup()}.</li>
+ * <li>Create the bilinear group fulfilling the defined requirements using {@link #createBilinearGroup()}.
  * </ol>
  */
 public class BilinearGroupFactory {
@@ -109,10 +107,9 @@ public class BilinearGroupFactory {
 
     /**
      * If set to true, a special bilinear group for non-secure pairings
-     * \((\mathbb{Z}_n,+) \times (\mathbb{Z}_n,+) \rightarrow (\mathbb{Z}_n,+) with support for
-     * counting group operations is returned.
+     * {@code (Zn,+) x (Zn,+) -> (Zn,+)} with support for counting group operations is returned.
      * <p>
-     * In this case, \(n\) will be chosen as some prime number with bit size given by the security parameter.
+     * In this case, n will be chosen as some prime number with bit size given by the security parameter.
      */
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;

@@ -21,8 +21,9 @@ import java.util.List;
  */
 public interface BilinearGroupProvider {
     /**
-     * Provides a bilinear group for the given {@code securityParameter}. Before the group is provided it should be
-     * checked whether the provider meets the {@code requirements} stated by the user.
+     * Provides a {@link BilinearGroup} for the given {@code securityParameter}.
+     * Before the group is provided it should be checked whether the provider meets the
+     * {@code requirements} stated by the user.
      *
      * @param securityParameter supposed security of discrete logarithm of the groups G1, G2, GT
      *                          of the bilinear group provided (in bits)
@@ -32,8 +33,9 @@ public interface BilinearGroupProvider {
     BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements);
 
     /**
-     * Provides a bilinear group for the given {@code securityParameter}. Before the group is provided it should be
-     * checked whether the provider meets the {@code requirements} stated by the user.
+     * Provides a {@link BilinearGroupImpl} for the given {@code securityParameter}.
+     * Before the group is provided it should be checked whether the provider meets the
+     * {@code requirements} stated by the user.
      *
      * Note that this returns a {@link BilinearGroupImpl}, which usually should not be used directly.
      * Instead, use {@link #provideBilinearGroup(int, BilinearGroupRequirement)} or wrap the result of
@@ -47,6 +49,8 @@ public interface BilinearGroupProvider {
     BilinearGroupImpl provideBilinearGroupImpl(int securityParameter, BilinearGroupRequirement requirements);
 
     /**
+     * Validates that the given requirements can be fulfilled by this provider.
+     *
      * @param requirements      requirements to be checked
      * @param securityParameter certain groups, like standard curves, can only provide a fixed security parameter.
      *                          Therefore, this should
