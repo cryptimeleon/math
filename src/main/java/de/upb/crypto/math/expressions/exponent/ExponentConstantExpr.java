@@ -8,8 +8,11 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An {@link ExponentExpr} representing a constant integer value.
+ */
 public class ExponentConstantExpr implements ExponentExpr {
-    protected BigInteger exponent;
+    private final BigInteger exponent;
 
     public ExponentConstantExpr(BigInteger exponent) {
         this.exponent = exponent;

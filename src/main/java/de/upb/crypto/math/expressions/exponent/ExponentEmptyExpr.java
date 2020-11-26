@@ -8,6 +8,12 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An {@link ExponentExpr} representing an empty value useful for instantiating a new expression.
+ * <p>
+ * Combination with other exponent expressions leads to this expression being replaced by an evaluatable expression.
+ * Cannot be evaluated on its own.
+ */
 public class ExponentEmptyExpr implements ExponentExpr {
     @Override
     public BigInteger evaluate() {

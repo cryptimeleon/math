@@ -8,13 +8,19 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An {@link ExponentExpr} representing the negation of an exponent expression.
+ */
 public class ExponentNegExpr implements ExponentExpr {
-    protected ExponentExpr child;
+    private final ExponentExpr child;
 
     public ExponentNegExpr(ExponentExpr child) {
         this.child = child;
     }
 
+    /**
+     * Retrieves the exponent expression being inverted.
+     */
     public ExponentExpr getChild() {
         return child;
     }

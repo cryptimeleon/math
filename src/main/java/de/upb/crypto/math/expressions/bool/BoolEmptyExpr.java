@@ -7,10 +7,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * A {@link BooleanExpression} representing an empty Boolean expression which cannot be evaluated on its own.
+ * A {@link BooleanExpression} representing an empty expression useful for instantiating a new Boolean expression.
  * <p>
  * This class is useful when first creating a new Boolean expression, i.e. as en empty scaffolding.
  * It will "disappear" once combined (via AND or OR) with other Boolean expressions.
+ * <p>
+ * Cannot be evaluated.
  */
 public class BoolEmptyExpr implements BooleanExpression {
 
