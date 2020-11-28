@@ -1,6 +1,7 @@
 package de.upb.crypto.math.factory;
 
 import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
+import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
 
 import java.util.List;
 
@@ -21,7 +22,8 @@ import java.util.List;
  */
 public interface BilinearGroupProvider {
     /**
-     * Provides a {@link BilinearGroup} for the given {@code securityParameter}.
+     * Provides a {@link BilinearGroup} for the given security parameter and requirements.
+     * <p>
      * Before the group is provided it should be checked whether the provider meets the
      * {@code requirements} stated by the user.
      *
@@ -33,13 +35,15 @@ public interface BilinearGroupProvider {
     BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements);
 
     /**
-     * Provides a {@link BilinearGroupImpl} for the given {@code securityParameter}.
+     * Provides a {@link BilinearGroupImpl} for the given security parameter and requirements.
+     * <p>
      * Before the group is provided it should be checked whether the provider meets the
      * {@code requirements} stated by the user.
-     *
+     * <p>
      * Note that this returns a {@link BilinearGroupImpl}, which usually should not be used directly.
      * Instead, use {@link #provideBilinearGroup(int, BilinearGroupRequirement)} or wrap the result of
-     * this method into a {@code BilinearGroup} yourself, such as {@link BasicBilinearGroup}.
+     * this method into a {@code BilinearGroup} yourself, such as {@link BasicBilinearGroup} or
+     * {@link LazyBilinearGroup}.
      *
      * @param securityParameter supposed security of discrete logarithm of the groups G1, G2, GT
      *                          of the bilinear group provided (in bits)

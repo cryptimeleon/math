@@ -48,6 +48,9 @@ public class BilinearGroupFactory {
         this.securityParameter = securityParameter;
     }
 
+    /**
+     * Configures a bilinear group with the given {@code requirements}.
+     */
     public void setRequirements(BilinearGroupRequirement requirements) {
         this.requirements = requirements;
     }
