@@ -5,6 +5,9 @@ import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+/**
+ * A simple random generator implementation using {@link SecureRandom} instantiated from a given seed.
+ */
 public class SimpleRandomGenerator implements RandomGenerator {
 
     BigInteger seed;

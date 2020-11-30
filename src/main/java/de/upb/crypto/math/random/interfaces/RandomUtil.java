@@ -3,7 +3,7 @@ package de.upb.crypto.math.random.interfaces;
 import java.math.BigInteger;
 
 /**
- * Collection of utility functions for random operations.
+ * Collection of utility functions for generating random numbers using some given {@code RandomGenerator}.
  */
 public abstract class RandomUtil {
     /**

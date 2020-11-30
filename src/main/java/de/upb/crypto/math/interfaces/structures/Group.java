@@ -116,14 +116,14 @@ public interface Group extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Returns a random integer between {@code 0} and {@code size()-1} using a cryptographically strong RNG.
+     * Returns a random integer between {@code 0} and {@code size()-1} (inclusive) using a cryptographically strong RNG.
      */
     default Zn.ZnElement getUniformlyRandomExponent() {
         return getZn().getUniformlyRandomElement();
     }
 
     /**
-     * Returns n random integers between {@code 0} and {@code size()-1} using a cryptographically strong RNG.
+     * Returns n random integers between {@code 0} and {@code size()-1} (inclusive) using a cryptographically strong RNG.
      */
     default RingElementVector getUniformlyRandomExponents(int n) {
         return RingElementVector.generate(this::getUniformlyRandomExponent, n);
@@ -144,14 +144,14 @@ public interface Group extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Returns a random integer between {@code 1} and {@code size()-1} using a cryptographically strong RNG.
+     * Returns a random integer between {@code 1} and {@code size()-1} (inclusive) using a cryptographically strong RNG.
      */
     default Zn.ZnElement getUniformlyRandomNonzeroExponent() {
         return getZn().getUniformlyRandomNonzeroElement();
     }
 
     /**
-     * Returns n random integers between {@code 1} and {@code size()-1} using a cryptographically strong RNG.
+     * Returns n random integers between {@code 1} and {@code size()-1} (inclusive) using a cryptographically strong RNG.
      */
     default RingElementVector getUniformlyRandomNonzeroExponents(int n) {
         return RingElementVector.generate(this::getUniformlyRandomNonzeroExponent, n);
