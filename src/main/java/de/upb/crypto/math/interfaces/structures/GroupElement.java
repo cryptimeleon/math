@@ -34,7 +34,7 @@ import java.math.BigInteger;
  * Without the {@code compute()} calls, the example still produces the same output,
  * but {@code c0} and {@code c1} will be computed sequentially.
  * <p>
- * Implementations must properly implement equals() and hashCode().
+ * Implementations must properly implement {@code equals()} and {@code hashCode()}.
  */
 public interface GroupElement extends Element, UniqueByteRepresentable {
     @Override
@@ -57,7 +57,10 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     GroupElement op(Element e) throws IllegalArgumentException;
 
     /**
-     * @return this element "squared" (if op is multiplication), or "doubled" (if op is addition).
+     * Computes {@code this.op(this)}.
+     * <p>
+     * Useful if this group allows squaring to be more efficiently implemented than general exponentiation as is the
+     * case for elliptic curves.
      */
     default GroupElement square() {
         return this.op(this);

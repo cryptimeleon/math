@@ -16,8 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A Ring (with 1).
- * Operations are defined on its elements.
+ * A algebraic ring with 1.
  */
 public interface Ring extends Structure, RepresentationRestorer {
     /**
@@ -85,7 +84,7 @@ public interface Ring extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Generates an invertible element from this ring uniformly at random (using cryptographically strong RNG).
+     * Generates an invertible element from this ring uniformly at random using a cryptographically strong RNG.
      * <p>
      * The default implementation generates random ring elements until it hits a unit.
      * Implementors should override if this is not feasible or if there is a better way!
@@ -106,7 +105,7 @@ public interface Ring extends Structure, RepresentationRestorer {
 
     /**
      * Generates n invertible elements from this ring uniformly and independently at random
-     * (using cryptographically strong RNG).
+     * using a cryptographically strong RNG.
      * <p>
      * The default implementation generates random ring elements until it hits a unit.
      * Implementors should override if this is not feasible or if there is a better way!
@@ -118,7 +117,7 @@ public interface Ring extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Generates a nonzero element from this ring uniformly at random (using cryptographically strong RNG).
+     * Generates a nonzero element from this ring uniformly at random using a cryptographically strong RNG.
      *
      * @throws UnsupportedOperationException if the ring does not support this method
      */
@@ -136,7 +135,7 @@ public interface Ring extends Structure, RepresentationRestorer {
 
     /**
      * Generates n nonzero elements from this ring uniformly and independently at random
-     * (using cryptographically strong RNG).
+     * using a cryptographically strong RNG.
      *
      * @throws UnsupportedOperationException if the ring does not support this method
      */
@@ -147,15 +146,15 @@ public interface Ring extends Structure, RepresentationRestorer {
     /**
      * Returns the characteristic of the ring.
      * <p>
-     * The characteristic of \(R\) is defined to be the number \(n\)
-     * such that there is a ring homomorphism \(\mathbb{Z}_n \rightarrow R\).
+     * The characteristic of a ring is defined to be the number {@code n}
+     * such that there is a ring homomorphism from {@code Zn} to the ring.
      *
      * @throws UnsupportedOperationException if unknown
      */
     BigInteger getCharacteristic() throws UnsupportedOperationException;
 
     /**
-     * Maps the integer i into the ring, such that this map is a
+     * Maps the integer i into this ring \(R\), such that this map is a
      * ring homomorphism \(\mathbb{Z}_{\text{getCharacteristic()}} \rightarrow R\).
      *
      * @param i the integer to map
@@ -164,8 +163,8 @@ public interface Ring extends Structure, RepresentationRestorer {
     RingElement getElement(BigInteger i);
 
     /**
-     * Maps the integer i into the ring, such that this map is a
-     * homomorphism from the integers onto the ring.
+     * Maps the integer i into this ring \(R\), such that this map is a
+     * ring homomorphism \(\mathbb{Z}_{\text{getCharacteristic()}} \rightarrow R\).
      *
      * @param i the integer to map
      * @return an element of the ring
@@ -178,7 +177,7 @@ public interface Ring extends Structure, RepresentationRestorer {
      * This function executes the extended euclidean algorithm for the elements
      * a and b.
      * <p>
-     * Specifically, it computes an array [x, y, gcd(a,b)] such that ax+by=gcd(a,b).
+     * Specifically, it computes an array \([x, y, gcd(a,b)]\) such that \(ax+by=gcd(a,b)\).
      * <p>
      * The gcd(a,b) is an element such that
      * <ul>

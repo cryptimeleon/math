@@ -9,7 +9,7 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 /**
- * Base interface for structures that contain elements.
+ * Base interface for algebraic structures that contain elements.
  * <p>
  * Implementations should override  {@code equals()} and {@code hashCode()}.
  * <p>
@@ -45,7 +45,7 @@ public interface Structure extends StandaloneRepresentable {
 
     /**
      * Returns an element of this structure that is drawn uniformly at random
-     * (using a cryptographically strong RNG).
+     * using a cryptographically strong RNG.
      *
      * @throws UnsupportedOperationException if the operation is not supported
      */
@@ -53,7 +53,7 @@ public interface Structure extends StandaloneRepresentable {
 
     /**
      * Returns n elements of this structure that are drawn uniformly and independently at random
-     * (using a cryptographically strong RNG).
+     * using a cryptographically strong RNG.
      *
      * @throws UnsupportedOperationException if the operation is not supported
      */

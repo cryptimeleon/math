@@ -2,6 +2,9 @@ package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 
+/**
+ * Base class for elliptic curve group implementations.
+ */
 public interface EllipticCurve extends GroupImpl {
 
     /**

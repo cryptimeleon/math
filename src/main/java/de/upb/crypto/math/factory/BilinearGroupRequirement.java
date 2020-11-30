@@ -128,7 +128,7 @@ public class BilinearGroupRequirement {
      * Retrieves the number of prime factors of the size of the bilinear group's order.
      * <p>
      * If set to 1, the resulting {@link BilinearGroup} will consist of (G1, G2, GT) of prime order. Else, if set to a
-     * value > 1, the group order is a composite number with {@code numPrimeFactorsOfSize} prime factors.
+     * value greater than 1, the group order is a composite number with {@code numPrimeFactorsOfSize} prime factors.
      */
     public int getNumPrimeFactorsOfSize() {
         return numPrimeFactorsOfSize;

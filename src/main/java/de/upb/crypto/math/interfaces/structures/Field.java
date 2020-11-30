@@ -5,13 +5,12 @@ import de.upb.crypto.math.serialization.Representation;
 import java.math.BigInteger;
 
 /**
- * A commutative Ring where every element except 0 has a multiplicative inverse.
- * Operations are defined on the elements.
+ * A commutative ring where every element except 0 has a multiplicative inverse.
  */
 public interface Field extends Ring {
     /**
      * If this is a finite field, returns a generator of the field's unit group.
-     * Repeated calls may or may not return always the same element.
+     * Repeated calls may or may not always return the same element.
      *
      * @throws UnsupportedOperationException if operation is not feasible or undefined
      */

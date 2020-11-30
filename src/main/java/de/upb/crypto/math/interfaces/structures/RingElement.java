@@ -74,6 +74,12 @@ public interface RingElement extends Element {
         return result;
     }
 
+    /**
+     * Computes \(\text{this} \cdot k\) (equivalent to \(\text{this} + \text{this} + \cdots\) k-times).
+     *
+     * @param k the factor
+     * @return the result
+     */
     default RingElement mul(long k) {
         return mul(BigInteger.valueOf(k));
     }
@@ -95,6 +101,11 @@ public interface RingElement extends Element {
         return result;
     }
 
+    /**
+     * Calculates \(\text{this}^k\).
+     * <p>
+     * Note that \(a^0 = 1\) for any \(a\) in the ring, particularly \(0^0 = 1\).
+     */
     default RingElement pow(long k) {
         return pow(BigInteger.valueOf(k));
     }
@@ -184,6 +195,11 @@ public interface RingElement extends Element {
         return this.equals(getStructure().getOneElement());
     }
 
+    /**
+     * Computes \(\text{this}^2\).
+     * <p>
+     * Useful if the ring allows squaring to be more efficiently implemented than general exponentiation.
+     */
     public default RingElement square() {
         return this.mul(this);
     }
