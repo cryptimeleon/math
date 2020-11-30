@@ -11,23 +11,29 @@ import java.nio.charset.StandardCharsets;
  */
 public interface HashIntoStructure extends StandaloneRepresentable {
     /**
-     * Hashes a byte array into the {@link Structure}.
+     * Hashes a byte array into the structure.
      *
      * @param x a sequence of bytes to hash
-     * @return an element
+     * @return the resulting structure element
      */
     Element hashIntoStructure(byte[] x);
 
 
+    /**
+     * Hashes a {@link UniqueByteRepresentable} in to the structure.
+     *
+     * @param ubr the {@code UniqueByteRepresentable} to hash
+     * @return the resulting structure element
+     */
     default Element hashIntoStructure(UniqueByteRepresentable ubr) {
         return hashIntoStructure(ubr.getUniqueByteRepresentation());
     }
 
     /**
-     * Hashes a {@code String} (UTF-8 encoded) into the {@link Structure}.
+     * Hashes a {@code String} (UTF-8 encoded) into the structure.
      *
      * @param x a {@code String}
-     * @return an element
+     * @return the resulting structure element
      */
     default Element hashIntoStructure(String x) {
         return hashIntoStructure(x.getBytes(StandardCharsets.UTF_8));

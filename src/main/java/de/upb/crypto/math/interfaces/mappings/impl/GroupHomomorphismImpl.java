@@ -6,7 +6,7 @@ import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import java.util.function.Function;
 
 /**
- * A homomorphism between structures.
+ * Interface for implementing a homomorphism between structures.
  */
 public interface GroupHomomorphismImpl extends Function<GroupElementImpl, GroupElementImpl>, StandaloneRepresentable {
 }

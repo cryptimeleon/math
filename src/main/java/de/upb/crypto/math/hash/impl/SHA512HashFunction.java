@@ -2,6 +2,9 @@ package de.upb.crypto.math.hash.impl;
 
 import de.upb.crypto.math.serialization.Representation;
 
+/**
+ * Implementation of the SHA-512 hash function.
+ */
 public class SHA512HashFunction extends AbstractSHAHashFunction {
 
     public SHA512HashFunction(Representation repr) {

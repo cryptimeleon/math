@@ -7,12 +7,15 @@ import de.upb.crypto.math.serialization.StandaloneRepresentable;
 
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Interface for implementing a hash function to some group.
+ */
 public interface HashIntoGroupImpl extends StandaloneRepresentable {
     /**
-     * Hashes a byte array into the {@link Structure}.
+     * Hashes a byte array into the configured group.
      *
      * @param x a sequence of bytes to hash
-     * @return an element
+     * @return a group element
      */
     GroupElementImpl hashIntoGroupImpl(byte[] x);
 
@@ -22,7 +25,7 @@ public interface HashIntoGroupImpl extends StandaloneRepresentable {
     }
 
     /**
-     * Hashes a String (UTF-8 encoded) into the {@link Structure}.
+     * Hashes a String (UTF-8 encoded) into the configured group.
      *
      * @param x a String
      * @return an element

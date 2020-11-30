@@ -15,8 +15,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Utility class that allows users to annotate object member variables with {@code @UniqueByteRepresented}
- * and then implement their {@code updateAccumulator()} method simply as
+ * Utility class that allows for almost fully automated byte accumulation of member variables annotated with
+ * {@code @UniqueByteRepresented}.
+ * <p>
+ * Specifically, the {@code updateAccumulator()} method only has to be implemented as
  * <pre>
  * return AnnotatedUbrUtil.autoAccumulate(accumulator, this);
  * </pre>
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
  */
 public class AnnotatedUbrUtil {
     /**
-     * The symbol used to represent null values in UBRs.
+     * The symbol used to represent null values in unique byte representations.
      */
     public static final byte nullSymbol = 127;
 
@@ -42,10 +44,10 @@ public class AnnotatedUbrUtil {
     private static final List<Class<? extends Annotation>> annotationClassList = Arrays.asList(UniqueByteRepresented.class);
 
     /**
-     * Adds all annotated fields within the given instance object to the accumulator.
+     * Adds all {@code @UniqueByteRepresented}-annotated fields within the given instance object to the accumulator.
      *
      * @param accumulator {@code ByteAccumulator} to append to
-     * @param instance    instance of class with annotated members
+     * @param instance    instance of class with annotated member variables
      * @return the given accumulator (for chaining)
      */
     public static ByteAccumulator autoAccumulate(ByteAccumulator accumulator, Object instance) {

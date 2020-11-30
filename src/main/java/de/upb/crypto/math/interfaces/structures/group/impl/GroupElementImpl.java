@@ -1,6 +1,7 @@
 package de.upb.crypto.math.interfaces.structures.group.impl;
 
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.Representable;
 
 import java.math.BigInteger;
@@ -8,9 +9,14 @@ import java.math.BigInteger;
 /**
  * Immutable objects representing elements of a group.
  * <p>
+ * Usually wrapped by a {@link GroupElement} to offer additional evaluation capabilities.
+ * <p>
  * Implementations must properly implement {@code equals()} and {@code hashCode()}.
  */
 public interface GroupElementImpl extends Representable, UniqueByteRepresentable {
+    /**
+     * Retrieves the group this element belongs to.
+     */
     GroupImpl getStructure();
 
     /**

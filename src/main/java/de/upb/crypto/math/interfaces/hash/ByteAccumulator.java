@@ -26,8 +26,7 @@ public abstract class ByteAccumulator {
     public abstract void append(byte[] bytes);
 
     /**
-     * Extracts f(x) from the accumulator, where
-     * x was input by append() calls.
+     * Extracts f(x) from the accumulator, where x was input by {@code append()} calls.
      *
      * @return f(x)
      */

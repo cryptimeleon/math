@@ -4,6 +4,9 @@ import de.upb.crypto.math.serialization.StandaloneRepresentable;
 
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Interface for hash functions.
+ */
 public interface HashFunction extends StandaloneRepresentable {
 
     /**

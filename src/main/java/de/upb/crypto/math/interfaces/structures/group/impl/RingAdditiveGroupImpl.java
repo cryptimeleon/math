@@ -9,10 +9,14 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 /**
- * Allows interpreting a ring as an additive group.
+ * Allows interpreting a ring as its additive group.
  */
 public class RingAdditiveGroupImpl extends RingGroupImpl {
 
+    /**
+     * Instantiates this ring additive group.
+     * @param ring the base ring to use
+     */
     public RingAdditiveGroupImpl(Ring ring) {
         super(ring);
     }

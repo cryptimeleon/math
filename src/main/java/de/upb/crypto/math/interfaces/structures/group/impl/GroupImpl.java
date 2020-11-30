@@ -1,6 +1,7 @@
 package de.upb.crypto.math.interfaces.structures.group.impl;
 
 import de.upb.crypto.math.interfaces.structures.Element;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
@@ -14,6 +15,8 @@ import java.util.Optional;
 
 /**
  * A Group. Operations are defined on its elements.
+ * <p>
+ * Usually wrapped by a {@link Group} to offer additional evaluation capabilities.
  */
 public interface GroupImpl extends StandaloneRepresentable, RepresentationRestorer {
     /**
@@ -27,6 +30,10 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
      */
     GroupElementImpl getUniformlyRandomElement() throws UnsupportedOperationException;
 
+    /**
+     * Generates a uniformly random non-neutral element of this group.
+     * @throws UnsupportedOperationException if the random generation cannot be done
+     */
     default GroupElementImpl getUniformlyRandomNonNeutral() throws UnsupportedOperationException {
         GroupElementImpl result;
         do {
@@ -70,8 +77,7 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
     boolean hasPrimeSize();
 
     /**
-     * Indicates whether this group implements its own custom exponentiation algorithm,
-     * i.e. overwrites {@link #exp}.
+     * Indicates whether this group implements its own custom exponentiation algorithm by overwriting {@link #exp}.
      *
      * @return true if the group overwrites {@link #exp}, else false
      */
@@ -92,8 +98,8 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
     }
 
     /**
-     * Indicates whether this group implements its own multi-exponentiation algorithm,
-     * i.e. overwrites {@link #multiexp(Multiexponentiation)}.
+     * Indicates whether this group implements its own multi-exponentiation algorithm
+     * by overwriting {@link #multiexp(Multiexponentiation)}.
      *
      * @return true if the group implements its own multi-exponentiation algorithm, else false
      */

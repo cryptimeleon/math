@@ -19,6 +19,9 @@ public class IdentityIsomorphism implements GroupHomomorphismImpl {
         this(); //don't need representation
     }
 
+    /**
+     * Applies the isomorphism.
+     */
     @Override
     public GroupElementImpl apply(GroupElementImpl t) {
         return t;
