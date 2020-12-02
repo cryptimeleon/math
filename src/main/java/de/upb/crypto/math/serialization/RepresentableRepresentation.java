@@ -5,7 +5,7 @@ import de.upb.crypto.math.serialization.converter.JSONConverter;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * A Representation that saves a {@code (getRepresentedTypeName(), getRepresentation())} tuple.
+ * Representation that saves a {@code (getRepresentedTypeName(), getRepresentation())} tuple.
  * <p>
  * This is useful for storing a {@link StandaloneRepresentable}, as it can later be restored by simply calling
  * {@code recreateRepresentable()}.

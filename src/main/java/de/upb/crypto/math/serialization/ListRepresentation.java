@@ -27,6 +27,10 @@ public class ListRepresentation extends Representation implements Iterable<Repre
         this.list.addAll(Arrays.asList(list));
     }
 
+    /**
+     * Returns the {@code i}-th entry in this list.
+     * @param i the index of the entry to retrieve
+     */
     public Representation get(int i) {
         return list.get(i);
     }

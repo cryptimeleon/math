@@ -1,5 +1,8 @@
 package de.upb.crypto.math.serialization;
 
+/**
+ * Representation of a {@code String}.
+ */
 public class StringRepresentation extends Representation {
     private static final long serialVersionUID = 4508386585732032537L;
     protected String s;

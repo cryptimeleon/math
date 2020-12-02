@@ -7,24 +7,27 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+/**
+ * A converter for serializing representations to a binary format in form of a {@code byte[]}.
+ */
 public class BinaryFormatConverter extends Converter<byte[]> {
-    protected static final byte TYPE_OBJ = 0;
-    protected static final byte TYPE_INT = 1;
-    protected static final byte TYPE_INT_INLINE = 2;
-    protected static final byte TYPE_STR = 3;
-    protected static final byte TYPE_BYTES = 4;
-    protected static final byte TYPE_REPR = 5;
-    protected static final byte TYPE_LIST = 6;
-    protected static final byte TYPE_MAP = 7;
-    protected static final byte TYPE_NULL = 8;
+    private static final byte TYPE_OBJ = 0;
+    private static final byte TYPE_INT = 1;
+    private static final byte TYPE_INT_INLINE = 2;
+    private static final byte TYPE_STR = 3;
+    private static final byte TYPE_BYTES = 4;
+    private static final byte TYPE_REPR = 5;
+    private static final byte TYPE_LIST = 6;
+    private static final byte TYPE_MAP = 7;
+    private static final byte TYPE_NULL = 8;
 
     /**
      * Stores well-known strings (see {@link #BinaryFormatConverter(List, List)}).
      * <p>
      * Fulfills contract that {@code str.equals(well_known_strings.get(well_known_string_indices.get(str)))}.
      */
-    protected HashMap<String, Integer> well_known_string_indices = new HashMap<>();
-    protected ArrayList<String> well_known_strings = new ArrayList<>();
+    private final HashMap<String, Integer> well_known_string_indices = new HashMap<>();
+    private final ArrayList<String> well_known_strings = new ArrayList<>();
 
     public BinaryFormatConverter() {
 
@@ -34,7 +37,7 @@ public class BinaryFormatConverter extends Converter<byte[]> {
      * Instantiates the converter with lists of strings and classes well-known by both serializer and deserializer.
      * <p>
      * These strings and class names won't appear in the serialization result
-     * (making it shorter by omitting Strings from the byte[] result of serialization).
+     * (making it shorter by omitting strings from the byte array result of serialization).
      * For serialization and deserialization, the lists passed here must be equal
      * (in particular, the order of elements is important).
      */
@@ -73,7 +76,7 @@ public class BinaryFormatConverter extends Converter<byte[]> {
         return result;
     }
 
-    protected ByteString internalSerialize(Representation repr, ByteString constants, HashMap<String, Integer> stringConstantPos) {
+    private ByteString internalSerialize(Representation repr, ByteString constants, HashMap<String, Integer> stringConstantPos) {
         ByteString structure = new ByteString();
 
         // Formats are denoted, for example "type(1) || ptr(4)", meaning that the first byte indicates a type, the next four bytes are a pointer.
@@ -195,7 +198,7 @@ public class BinaryFormatConverter extends Converter<byte[]> {
      * Interprets the given (structure-)data as a structure and recreates the corresponding Representation.
      * @return the Representation corresponding to the given Input
      */
-    protected Representation internalDeserialize(Input data) {
+    private Representation internalDeserialize(Input data) {
         //Whatever the concrete type, it begins with type(1)
         byte type = data.readByte(0);
 
@@ -274,12 +277,12 @@ public class BinaryFormatConverter extends Converter<byte[]> {
     /**
      * Input used during deserialization. Logically contains a part of the structure and the full constants data.
      */
-    protected class Input {
-        private byte[] data;
+    private class Input {
+        private final byte[] data;
         private final static int constantsOffset = 4;
-        private int constantsLen;
-        private int substructureOffset;
-        private int substructureLength;
+        private final int constantsLen;
+        private final int substructureOffset;
+        private final int substructureLength;
 
         public Input(byte[] data) {
             //Format of s: constantLen(4) || constants(len) || structure
@@ -329,7 +332,7 @@ public class BinaryFormatConverter extends Converter<byte[]> {
         }
     }
 
-    protected static class ByteString {
+    private static class ByteString {
         private int len = 0;
         ByteStringListEntry firstPart;
         ByteStringListEntry lastPart;

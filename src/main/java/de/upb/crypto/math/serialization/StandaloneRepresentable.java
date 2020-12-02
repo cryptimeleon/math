@@ -2,7 +2,7 @@ package de.upb.crypto.math.serialization;
 
 /**
  * Marker interface for classes that possess a constructor with exactly one {@code Representation} argument
- * that is able to reconstruct the object from its {@code Representation}.
+ * that is able to reconstruct the object from its {@code Representation} (so without any other help).
  * <p>
  * This means that for any class {@code C} that implements {@code StandaloneRepresentable} and
  * {@code C} instance {@code c}, it holds that {@code new C(c.getRepresentation()).equals(c)}.

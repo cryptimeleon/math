@@ -23,21 +23,21 @@ import java.util.Map.Entry;
  * and similar tasks that require a unique and consistent output.
  */
 public class JSONConverter extends Converter<String> {
-    protected static final String BIG_INTEGER_PREFIX = "INT:";
-    protected static final String BYTE_ARRAY_PREFIX = "BYTES:";
-    protected static final String STRING_PREFIX = "STRING:";
+    private static final String BIG_INTEGER_PREFIX = "INT:";
+    private static final String BYTE_ARRAY_PREFIX = "BYTES:";
+    private static final String STRING_PREFIX = "STRING:";
 
-    protected static final String OBJ_TYPE_KEY = "__type";
-    protected static final String MAP_OBJ_TYPE = "MAP";
-    protected static final String REPR_OBJ_TYPE = "REPR";
-    protected static final String OBJ_OBJ_TYPE = "OBJ";
+    private static final String OBJ_TYPE_KEY = "__type";
+    private static final String MAP_OBJ_TYPE = "MAP";
+    private static final String REPR_OBJ_TYPE = "REPR";
+    private static final String OBJ_OBJ_TYPE = "OBJ";
 
     @Override
     public String serialize(Representation r) { // Dispatch by type of Representation
         return JSONValue.toJSONString(internalSerialize(r));
     }
 
-    protected Object internalSerialize(Representation r) {
+    private Object internalSerialize(Representation r) {
         if (r == null)
             return null;
         if (r instanceof BigIntegerRepresentation)
@@ -129,7 +129,7 @@ public class JSONConverter extends Converter<String> {
         }
     }
 
-    protected Representation internalDeserialize(Object o) {
+    private Representation internalDeserialize(Object o) {
         if (o == null)
             return null;
         if (o instanceof JSONObject) {

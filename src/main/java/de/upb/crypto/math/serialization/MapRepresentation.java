@@ -9,7 +9,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 /**
- * {@code Representation} of a {@code key -> value} map, mapping representations to representations.
+ * Representation of a {@code key -> value} map, mapping representations to representations.
  */
 public class MapRepresentation extends Representation implements Iterable<Entry<Representation, Representation>> {
     private static final long serialVersionUID = -4276829583005855044L;

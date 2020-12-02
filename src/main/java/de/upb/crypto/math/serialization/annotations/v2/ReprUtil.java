@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
- * Allows for easy Representation handling.
+ * A class for almost automatic creation of and restoration from representations.
  * <p>
  * Typical usage example:
  * <ol>
@@ -64,12 +64,12 @@ public class ReprUtil {
      * <p>
      * Used to help with deserialization of fields that need a representation restorer to be deserialized.
      */
-    protected HashMap<String, RepresentationRestorer> restorers = new HashMap<>();
+    private final HashMap<String, RepresentationRestorer> restorers = new HashMap<>();
 
     /**
      * Either stores the recreated object during deserialization, or the object to serialize.
      */
-    protected Object instance;
+    private final Object instance;
 
     /**
      * Create {@code ReprUtil} for a specific target instance.
@@ -192,7 +192,7 @@ public class ReprUtil {
     }
 
     /**
-     * Represents the target instance stored in this as a {@code Representation}.
+     * Represents the the instance given when initializing this {@code ReprUtil} as a {@code Representation}.
      *
      * @return the representation
      */
@@ -234,7 +234,7 @@ public class ReprUtil {
 
     /**
      * Deserializes the given representation, storing the result in the instance given when
-     * initializing {@code ReprUtil}.
+     * initializing this {@code ReprUtil}.
      *
      * @param repr the representation to deserialize
      */
