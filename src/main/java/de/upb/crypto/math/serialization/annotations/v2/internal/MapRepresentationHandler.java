@@ -11,11 +11,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * A handler for serializing/deserializing {@link Map} instances.
+ */
 public class MapRepresentationHandler implements RepresentationHandler {
-    protected RepresentationHandler keyHandler, valueHandler;
-    protected Class mapType;
-    protected Type keyType;
-    protected Type valueType;
+    private final RepresentationHandler keyHandler, valueHandler;
+    private final Class mapType;
+    private final Type keyType;
+    private final Type valueType;
 
     public MapRepresentationHandler(RepresentationHandler keyHandler, RepresentationHandler valueHandler, Type mapType) {
         this.keyHandler = keyHandler;
@@ -25,6 +28,11 @@ public class MapRepresentationHandler implements RepresentationHandler {
         this.valueType = getValueType(mapType);
     }
 
+    /**
+     * Retrieves the key type of the given map type.
+     * @param mapType the map type
+     * @return the type of the keys found in maps of the given type
+     */
     public static Type getKeyType(Type mapType) {
         Type[] typeArguments = ((ParameterizedType) mapType).getActualTypeArguments();
         if (typeArguments.length != 2) {
@@ -33,6 +41,11 @@ public class MapRepresentationHandler implements RepresentationHandler {
         return typeArguments[0];
     }
 
+    /**
+     * Retrieves the value type of the given map type.
+     * @param mapType the map type
+     * @return the type of the values found in maps of the given type
+     */
     public static Type getValueType(Type mapType) {
         Type[] typeArguments = ((ParameterizedType) mapType).getActualTypeArguments();
         if (typeArguments.length != 2) {
@@ -41,6 +54,11 @@ public class MapRepresentationHandler implements RepresentationHandler {
         return typeArguments[1];
     }
 
+    /**
+     * Checks whether this handler can handle maps of the given type.
+     * @param mapType the type to check
+     * @return true if this handler can handle the given type, else false
+     */
     public static boolean canHandle(Type mapType) { //handles Map<anything>.
         if (!(mapType instanceof ParameterizedType))
             return false;

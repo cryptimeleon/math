@@ -8,18 +8,28 @@ import java.math.BigInteger;
 import java.util.function.Function;
 
 /**
- * Takes care of
- * 1) StandaloneRepresentable
- * 2) Some basic types (see static supportedTypes variable).
+ * Handles serialization/deserialization of the representation of {@link StandaloneRepresentable} implementers
+ * and some other simple types.
  */
 public class StandaloneRepresentationHandler implements RepresentationHandler {
-    private static Class[] supportedTypes = new Class[] {StandaloneRepresentable.class, BigInteger.class, Integer.class, String.class, Boolean.class, byte[].class, Enum.class}; //it may be temping to add int.class etc. here, but it doesn't work because the ReprUtil assumes that everything that's not null is already set (and int is auto-initialized with 0)
-    protected Class type;
+
+    // it may be temping to add int.class etc. here, but it doesn't work because the ReprUtil assumes that everything
+    // that's not null is already set (and int is auto-initialized with 0)
+    private static final Class[] supportedTypes = new Class[] {
+            StandaloneRepresentable.class, BigInteger.class, Integer.class, String.class, Boolean.class,
+            byte[].class, Enum.class
+    };
+    private final Class type;
 
     public StandaloneRepresentationHandler(Class type) {
         this.type = type;
     }
 
+    /**
+     * Checks whether this handler can handle objects of the given type.
+     * @param type the type to check
+     * @return true if this handler can handle the given type, else false
+     */
     public static boolean canHandle(Type type) {
         if (!(type instanceof Class))
             return false;

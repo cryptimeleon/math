@@ -6,21 +6,36 @@ import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
+/**
+ * A handler for serializing/deserializing arrays.
+ */
 public class ArrayRepresentationHandler implements RepresentationHandler {
-    protected RepresentationHandler elementHandler;
-    protected Class elementType;
+    private final RepresentationHandler elementHandler;
+    private final Class elementType;
 
     public ArrayRepresentationHandler(RepresentationHandler elementHandler, Type typeofArray) {
         this.elementHandler = elementHandler;
         this.elementType = getTypeOfElements(typeofArray);
     }
 
+    /**
+     * Retrieves the class of the elements of the given array type.
+     * @param typeOfArray the type of the array
+     * @return the class of the array's elements
+     */
     public static Class getTypeOfElements(Type typeOfArray) {
         return ((Class) typeOfArray).getComponentType();
     }
 
+    /**
+     * Checks whether this array handler can handle the given type, which is the case if it is an array type.
+     * @param type the type to check
+     * @return true if this handler can handle the given type, else false
+     */
     public static boolean canHandle(Type type) {
         if (!(type instanceof Class))
             return false;

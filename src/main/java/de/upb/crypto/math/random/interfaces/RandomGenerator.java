@@ -7,13 +7,13 @@ import java.math.BigInteger;
  */
 public interface RandomGenerator {
     /**
-     * Retrieve the next random bit.
+     * Retrieves the next random bit.
      * @return the next random bit
      */
     boolean nextBit();
 
     /**
-     * Generate a random number between \(0\) and \(2^{\text{length-1}}\) (inclusive).
+     * Generates a random number between \(0\) and \(2^{\text{length-1}}\) (inclusive).
      *
      * @deprecated Use {@link #getRandomElement(int)} instead.
      * @param length maximum length in bits of the chosen number
@@ -31,7 +31,7 @@ public interface RandomGenerator {
     void setSeed(BigInteger seed);
 
     /**
-     * Generate a random number between {@code 0} and {@code length-1} (inclusive).
+     * Generates a random number between {@code 0} and {@code l-1} (inclusive).
      *
      * @param l the upper bound (exclusive)
      * @return a uniformly distributed number between {@code 0} and {@code length-1}
@@ -41,7 +41,7 @@ public interface RandomGenerator {
     }
 
     /**
-     * Generate a random number between \(0\) and \(2^{\text{length-1}}\) (inclusive).
+     * Generates a random number between \(0\) and \(2^{\text{length-1}}\) (inclusive).
      *
      * @param length maximum length in bits of the chosen number
      * @return a uniformly distributed random number between \(0\) and \(2^{\text{length-1}}\) (inclusive)
@@ -51,14 +51,14 @@ public interface RandomGenerator {
     }
 
     /**
-     * Return random byte array of given length.
+     * Returns random byte array of given length.
      *
      * @param l length of resulting byte array
      */
     public byte[] getRandomByteArray(int l);
 
     /**
-     * Generate a random number between {@code 1} and {@code length-1}.
+     * Generates a random number between {@code 1} and {@code l-1} (inclusive).
      * <p>
      * Equivalent to {@code getRandomElement(l-1)+1}.
      */
@@ -67,7 +67,7 @@ public interface RandomGenerator {
     }
 
     /**
-     * Generate a random prime number from the interval \([2^{n-1}, 2^n-1]\).
+     * Generates a random prime number from the interval \([2^{n-1}, 2^n-1]\).
      *
      * @param n desired number of bits for the prime number
      * @return a {@code BigInteger} that is probably prime
