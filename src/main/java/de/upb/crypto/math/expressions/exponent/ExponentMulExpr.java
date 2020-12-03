@@ -12,7 +12,15 @@ import java.util.function.Function;
  * An {@link ExponentExpr} represening the multiplication of two exponent expressions.
  */
 public class ExponentMulExpr implements ExponentExpr {
-    private final ExponentExpr lhs, rhs;
+    /**
+     * The left hand side of this multiplication.
+     */
+    protected final ExponentExpr lhs;
+
+    /**
+     * The right hand side of this multiplication.
+     */
+    protected final ExponentExpr rhs;
 
     public ExponentMulExpr(ExponentExpr lhs, ExponentExpr rhs) {
         this.lhs = lhs;
@@ -20,14 +28,14 @@ public class ExponentMulExpr implements ExponentExpr {
     }
 
     /**
-     * Retrieves the left hand of this multiplication.
+     * Retrieves the left hand side of this multiplication.
      */
     public ExponentExpr getLhs() {
         return lhs;
     }
 
     /**
-     * Retrieves the right hand of this multiplication.
+     * Retrieves the right hand side of this multiplication.
      */
     public ExponentExpr getRhs() {
         return rhs;

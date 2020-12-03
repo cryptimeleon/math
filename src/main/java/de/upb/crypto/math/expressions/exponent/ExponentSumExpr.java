@@ -12,7 +12,15 @@ import java.util.function.Function;
  * An {@link ExponentExpr} representing the sum of two exponent expressions.
  */
 public class ExponentSumExpr implements ExponentExpr {
-    private final ExponentExpr lhs, rhs;
+    /**
+     * The left hand side of this sum.
+     */
+    protected final ExponentExpr lhs;
+
+    /**
+     * The right hand side of this sum.
+     */
+    protected final ExponentExpr rhs;
 
     public ExponentSumExpr(ExponentExpr lhs, ExponentExpr rhs) {
         this.lhs = lhs;
@@ -20,14 +28,14 @@ public class ExponentSumExpr implements ExponentExpr {
     }
 
     /**
-     * Retrieves the left hand of this sum.
+     * Retrieves the left hand side of this sum.
      */
     public ExponentExpr getLhs() {
         return lhs;
     }
 
     /**
-     * Retrieves the right hand of this sum.
+     * Retrieves the right hand side of this sum.
      */
     public ExponentExpr getRhs() {
         return rhs;

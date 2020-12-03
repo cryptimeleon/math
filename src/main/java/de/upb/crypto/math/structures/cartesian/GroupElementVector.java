@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
- * A vector of group elements supporting element-wise group operations with other group element vectors.
+ * A vector of group elements supporting various operations on its elements.
  */
 public class GroupElementVector extends Vector<GroupElement> implements Representable {
 

@@ -12,7 +12,15 @@ import java.util.function.Function;
  * A {@link BooleanExpression} representing the Boolean equality "=" of two {@link GroupElementExpression} instances.
  */
 public class GroupEqualityExpr implements BooleanExpression {
-    private final GroupElementExpression lhs, rhs;
+    /**
+     * The group element expression on the left hand side of this Boolean equality.
+     */
+    protected GroupElementExpression lhs;
+
+    /**
+     * The group element expression on the right hand side of this Boolean equality.
+     */
+    protected GroupElementExpression rhs;
 
     public GroupEqualityExpr(GroupElementExpression lhs, GroupElementExpression rhs) {
         this.lhs = lhs;
@@ -20,14 +28,14 @@ public class GroupEqualityExpr implements BooleanExpression {
     }
 
     /**
-     * Retrieves the group element expression on the left hand of this Boolean equality.
+     * Retrieves the group element expression on the left hand side of this Boolean equality.
      */
     public GroupElementExpression getLhs() {
         return lhs;
     }
 
     /**
-     * Retrieves the group element expression on the right hand of this Boolean equality.
+     * Retrieves the group element expression on the right hand side of this Boolean equality.
      */
     public GroupElementExpression getRhs() {
         return rhs;

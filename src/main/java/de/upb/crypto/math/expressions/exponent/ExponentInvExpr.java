@@ -12,6 +12,9 @@ import java.util.function.Function;
  * An {@link ExponentExpr} representing the multiplicative inversion of an exponent expression.
  */
 public class ExponentInvExpr implements ExponentExpr {
+    /**
+     * The exponent expression being inverted.
+     */
     protected final ExponentExpr child;
 
     public ExponentInvExpr(ExponentExpr child) {

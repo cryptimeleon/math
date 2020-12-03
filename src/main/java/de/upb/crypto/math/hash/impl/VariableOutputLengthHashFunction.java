@@ -21,9 +21,15 @@ import java.nio.ByteBuffer;
  */
 public class VariableOutputLengthHashFunction implements HashFunction, StandaloneRepresentable {
 
+    /**
+     * The base hash function to use.
+     */
     @Represented
     private HashFunction innerFunction;
 
+    /**
+     * The desired output length of this hash function in number of bytes.
+     */
     @Represented
     private Integer outputLength;
 

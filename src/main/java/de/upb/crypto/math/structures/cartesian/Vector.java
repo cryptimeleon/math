@@ -30,6 +30,12 @@ public class Vector<X> {
         this(values, false);
     }
 
+    /**
+     * Construct a new {@code Vector} using the given values which are assumed to be safe
+     * (promised to not be changed from the outside).
+     * @param values the values to construct the new {@code Vector} from
+     * @param isSafe whether the given value array is "safe" in the sense that it is promised to not be changed
+     */
     protected Vector(X[] values, boolean isSafe){
         this.values = isSafe ? Arrays.asList(values) : new ArrayList<>(Arrays.asList(values));
     }
@@ -38,6 +44,12 @@ public class Vector<X> {
         this.values = isSafe ? values : new ArrayList<>(values);
     }
 
+    /**
+     * Construct a new {@code Vector} made up of the given values.
+     * @param vals the values to use for constructing the new {@code Vector}
+     * @param <Y> the type of the elements
+     * @return a new {@code Vector} filled with the given elements
+     */
     public static <Y> Vector<Y> of(Y... vals) {
         return new Vector<>(vals);
     }

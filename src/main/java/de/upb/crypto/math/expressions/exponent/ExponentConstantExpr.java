@@ -12,7 +12,10 @@ import java.util.function.Function;
  * An {@link ExponentExpr} representing a constant integer value.
  */
 public class ExponentConstantExpr implements ExponentExpr {
-    private final BigInteger exponent;
+    /**
+     * The constant value of this {@code ExponentConstantExpr}.
+     */
+    protected final BigInteger exponent;
 
     public ExponentConstantExpr(BigInteger exponent) {
         this.exponent = exponent;

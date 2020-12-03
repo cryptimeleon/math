@@ -13,15 +13,44 @@ package de.upb.crypto.math.factory;
  */
 public class BilinearGroupRequirement {
 
-    private final BilinearGroup.Type type;
+    /**
+     * The type of the configured bilinear pairing.
+     * <p>
+     * For the possible values, {@see BilinearGroup.Type}.
+     */
+    protected BilinearGroup.Type type;
 
-    private boolean hashIntoG1Needed = false;
+    /**
+     * Determines whether the desired bilinear group is configured to support hashing from {@code byte[]} to G1.
+     * <p>
+     * If true, the resulting factory will be able to supply a hash function {@code byte[] -> G1}; otherwise, it
+     * may or may not supply such a function.
+     */
+    protected boolean hashIntoG1Needed = false;
 
-    private boolean hashIntoG2Needed = false;
+    /**
+     * Determines whether the desired bilinear group is configured to support hashing from {@code byte[]} to G2.
+     * <p>
+     * If true, the resulting factory will be able to supply a hash function {@code byte[] -> G2}; otherwise, it
+     * may or may not supply such a function.
+     */
+    protected boolean hashIntoG2Needed = false;
 
-    private boolean hashIntoGTNeeded = false;
+    /**
+     * Determines whether the desired bilinear group is configured to support hashing from {@code byte[]} to GT.
+     * <p>
+     * If true, the resulting factory will be able to supply a hash function {@code byte[] -> GT}; otherwise, it
+     * may or may not supply such a function.
+     */
+    protected boolean hashIntoGTNeeded = false;
 
-    private final int numPrimeFactorsOfSize;
+    /**
+     * Determines the number of prime factors of the size of the bilinear group's order.
+     * <p>
+     * If set to 1, the resulting {@link BilinearGroup} will consist of (G1, G2, GT) of prime order. Else, if set to a
+     * value greater than 1, the group order is a composite number with {@code numPrimeFactorsOfSize} prime factors.
+     */
+    protected int numPrimeFactorsOfSize;
 
     /**
      * Standard constructor to set all requirements by hand.
@@ -48,7 +77,7 @@ public class BilinearGroupRequirement {
     }
 
     /**
-     * Constructor for prime order groups, i.e. the size factors into a single prime factor.
+     * Constructor for prime order groups (the group size factors into a single prime factor).
      *
      * @param type             the desired type of the resulting bilinear group
      * @param hashIntoG1Needed           true enforces that the resulting bilinear group provides a mapping from

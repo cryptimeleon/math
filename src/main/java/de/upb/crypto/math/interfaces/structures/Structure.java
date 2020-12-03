@@ -19,7 +19,7 @@ import java.util.Optional;
  */
 public interface Structure extends StandaloneRepresentable {
     /**
-     * Size of the structure.
+     * Returns the number of elements in this structure (the size).
      *
      * @return the number of elements contained in this structure or null if infinite
      * @throws UnsupportedOperationException if the number of elements is unknown or too expensive to compute

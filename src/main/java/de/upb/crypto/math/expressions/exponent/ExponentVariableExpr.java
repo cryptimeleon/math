@@ -12,7 +12,12 @@ import java.util.function.Function;
  * An {@link ExponentExpr} representing a named variable.
  */
 public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
-    private final String name;
+
+    /**
+     * The name of this variable.
+     */
+    protected final String name;
+
     public ExponentVariableExpr(String name) {
         this.name = name;
     }

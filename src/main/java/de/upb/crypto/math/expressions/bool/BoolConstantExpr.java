@@ -10,7 +10,10 @@ import java.util.function.Function;
  * A {@link BooleanExpression} representing a constant Boolean value.
  */
 public class BoolConstantExpr implements BooleanExpression {
-    private final boolean value;
+    /**
+     * The constant Boolean value stored in this {@code BoolConstantExpr}.
+     */
+    protected final boolean value;
 
     public BoolConstantExpr(boolean value) {
         this.value = value;

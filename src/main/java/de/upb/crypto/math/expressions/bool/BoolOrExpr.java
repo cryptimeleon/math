@@ -10,7 +10,15 @@ import java.util.function.Function;
  * A {@link BooleanExpression} representing the Boolean OR of two {@code BooleanExpression} instances.
  */
 public class BoolOrExpr implements BooleanExpression {
-    private final BooleanExpression lhs, rhs;
+    /**
+     * The Boolean expression on the left hand side of this Boolean OR.
+     */
+    protected final BooleanExpression lhs;
+
+    /**
+     * The Boolean expression on the right hand side of this Boolean OR.
+     */
+    protected final BooleanExpression rhs;
 
     public BoolOrExpr(BooleanExpression lhs, BooleanExpression rhs) {
         this.lhs = lhs;
@@ -18,14 +26,14 @@ public class BoolOrExpr implements BooleanExpression {
     }
 
     /**
-     * Retrieves the Boolean expression on the left hand of this Boolean OR.
+     * Retrieves the Boolean expression on the left hand side of this Boolean OR.
      */
     public BooleanExpression getLhs() {
         return lhs;
     }
 
     /**
-     * Retrieves the Boolean expression on the right hand of this Boolean OR.
+     * Retrieves the Boolean expression on the right hand side of this Boolean OR.
      */
     public BooleanExpression getRhs() {
         return rhs;

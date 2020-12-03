@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException;
  * @author Denis Diemert
  */
 public class SHAHashAccumulator extends HashAccumulator {
-    private final MessageDigest digest;
+    protected final MessageDigest digest;
 
     public SHAHashAccumulator(final String algorithm) {
         try {

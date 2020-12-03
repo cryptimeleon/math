@@ -10,13 +10,11 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 /**
- * Implements a boolean ring structure where addition acts like XOR and multiplication like AND, i.e. \(\mathbb{Z}_2\).
+ * Implements a boolean ring structure where addition acts like XOR and multiplication like AND, so \(\mathbb{Z}_2\).
  */
 public class BooleanStructure implements Ring {
 
-    /**
-     * These constructors only exist to appease the standalone tests.
-     */
+    // These constructors only exist to appease the standalone tests.
     public BooleanStructure() { }
 
     public BooleanStructure(Representation repr) { new ReprUtil(this).deserialize(repr);}

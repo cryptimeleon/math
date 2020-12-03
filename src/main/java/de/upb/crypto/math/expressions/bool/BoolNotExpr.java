@@ -10,14 +10,17 @@ import java.util.function.Function;
  * A {@link BooleanExpression} representing the Boolean NOT of a Boolean expression.
  */
 public class BoolNotExpr implements BooleanExpression {
-    private final BooleanExpression child;
+    /**
+     * The Boolean expression to which this Boolean NOT is applied
+     */
+    protected final BooleanExpression child;
 
     public BoolNotExpr(BooleanExpression child) {
         this.child = child;
     }
 
     /**
-     * Retrieves the Boolean expression to which this Boolean NOT is applied.
+     * Returns the Boolean expression to which this Boolean NOT is applied.
      */
     public BooleanExpression getChild() {
         return child;

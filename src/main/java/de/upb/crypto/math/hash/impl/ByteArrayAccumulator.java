@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream;
  */
 public class ByteArrayAccumulator extends ByteAccumulator {
 
-    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    protected final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     @Override
     public void append(byte[] escapedBytes) {

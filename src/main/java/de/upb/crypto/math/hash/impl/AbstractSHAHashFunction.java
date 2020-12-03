@@ -12,7 +12,10 @@ import de.upb.crypto.math.serialization.StandaloneRepresentable;
  */
 abstract class AbstractSHAHashFunction implements HashFunction, StandaloneRepresentable {
 
-    private final String algorithm;
+    /**
+     * The hash algorithms used by this hash function.
+     */
+    protected final String algorithm;
 
     /**
      * Initializes this hash function with a specific SHA algorithm.

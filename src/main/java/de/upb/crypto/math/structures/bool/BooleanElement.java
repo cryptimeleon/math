@@ -9,10 +9,19 @@ import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
 
+/**
+ * Element of {@link BooleanStructure}.
+ */
 public class BooleanElement implements RingElement {
-    protected boolean value;
+    private final boolean value;
 
+    /**
+     * The {@code BooleanElement} corresponding to a {@code true} value.
+     */
     public static BooleanElement TRUE = new BooleanElement(true);
+    /**
+     * The {@code BooleanElement} corresponding to a {@code false} value.
+     */
     public static BooleanElement FALSE = new BooleanElement(false);
 
     public BooleanElement(boolean value) {
@@ -29,26 +38,36 @@ public class BooleanElement implements RingElement {
     }
 
     /**
-     * Returns result of calling Boolean XOR on the two bits.
+     * Returns result of calling Boolean XOR on this value and the argument.
      */
     @Override
     public RingElement add(Element e) {
         return ((BooleanElement) e).value != this.value ? TRUE : FALSE;
     }
 
+    /**
+     * Negates this Boolean value.
+     * @return {@code TRUE} if this value is {@code FALSE}, else {@code FALSE}
+     */
     @Override
     public RingElement neg() {
         return value ? FALSE : TRUE;
     }
 
     /**
-     * Returns result of calling Boolean AND on the two bits.
+     * Returns result of calling Boolean AND on this value and the argument.
      */
     @Override
     public RingElement mul(Element e) {
         return ((BooleanElement) e).value && this.value ? TRUE : FALSE;
     }
 
+    /**
+     * If this value is {@code TRUE}, returns {@code TRUE}; otherwise throws a {@code UnsupportedOperationException}.
+     * <p>
+     * {@code FALSE} is the zero element and therefore has no multiplicative inversion.
+     * @throws UnsupportedOperationException if this value is {@code FALSE}
+     */
     @Override
     public RingElement inv() throws UnsupportedOperationException {
         if (!value)
@@ -56,6 +75,9 @@ public class BooleanElement implements RingElement {
         return TRUE;
     }
 
+    /**
+     * Returns result of calling Boolean OR on this value and the argument.
+     */
     public BooleanElement or(Element e) {
         return ((BooleanElement) e).value || value ? TRUE : FALSE;
     }
@@ -67,7 +89,7 @@ public class BooleanElement implements RingElement {
 
     @Override
     public RingElement[] divideWithRemainder(RingElement e) throws UnsupportedOperationException, IllegalArgumentException {
-        return new RingElement[] {}; //TODO
+        throw new UnsupportedOperationException("Not implemented yet"); //TODO
     }
 
     @Override

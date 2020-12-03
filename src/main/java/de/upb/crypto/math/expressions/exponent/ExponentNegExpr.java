@@ -12,7 +12,10 @@ import java.util.function.Function;
  * An {@link ExponentExpr} representing the negation of an exponent expression.
  */
 public class ExponentNegExpr implements ExponentExpr {
-    private final ExponentExpr child;
+    /**
+     * The exponent expression being inverted.
+     */
+    protected final ExponentExpr child;
 
     public ExponentNegExpr(ExponentExpr child) {
         this.child = child;

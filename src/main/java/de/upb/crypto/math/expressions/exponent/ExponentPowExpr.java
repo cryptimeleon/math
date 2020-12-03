@@ -12,7 +12,15 @@ import java.util.function.Function;
  * An {@link ExponentExpr} representing an exponentiation with both base and exponent being exponent expressions.
  */
 public class ExponentPowExpr implements ExponentExpr {
-    private final ExponentExpr base, exponent;
+    /**
+     * The base expression of this exponentiation.
+     */
+    protected final ExponentExpr base;
+
+    /**
+     * The power expression of this exponentiation.
+     */
+    protected final ExponentExpr exponent;
 
     public ExponentPowExpr(ExponentExpr base, ExponentExpr exponent) {
         this.base = base;

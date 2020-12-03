@@ -37,11 +37,13 @@ public class AnnotatedUbrUtil {
     /**
      * The symbol used to represent null values in unique byte representations.
      */
-    public static final byte nullSymbol = 127;
+    protected static final byte nullSymbol = 127;
 
-    // list containing all annotations used to mark fields contained in representations
-    // Add new newly introduced represented annotation classes to this list
-    private static final List<Class<? extends Annotation>> annotationClassList = Arrays.asList(UniqueByteRepresented.class);
+    /**
+     * Contains all annotations used to mark fields that should be automatically accumulated by this class.
+     */
+    protected static final List<Class<? extends Annotation>> annotationClassList
+            = Arrays.asList(UniqueByteRepresented.class);
 
     /**
      * Adds all {@code @UniqueByteRepresented}-annotated fields within the given instance object to the accumulator.

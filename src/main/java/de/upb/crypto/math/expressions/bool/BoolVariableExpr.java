@@ -12,7 +12,10 @@ import java.util.function.Function;
  * A {@link BooleanExpression} representing a variable, a Boolean whose actual Boolean value is not currently known.
  */
 public class BoolVariableExpr implements VariableExpression, BooleanExpression {
-    private final String name;
+    /**
+     * The name of this variable.
+     */
+    protected final String name;
 
     public BoolVariableExpr(String name) {
         this.name = name;
