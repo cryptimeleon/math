@@ -5,15 +5,16 @@ import de.upb.crypto.math.serialization.converter.JSONConverter;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Representation that saves a {@code (getRepresentedTypeName(), getRepresentation())} tuple.
+ * Representation that saves a {@code (getRepresentedTypeName(), getRepresentation())} tuple, useful
+ * for storing {@link StandaloneRepresentable}s.
  * <p>
  * This is useful for storing a {@link StandaloneRepresentable}, as it can later be restored by simply calling
  * {@code recreateRepresentable()}.
  */
 public class RepresentableRepresentation extends Representation {
     private static final long serialVersionUID = 8718774055302751544L;
-    protected final String representedTypeName;
-    protected final Representation representation;
+    private final String representedTypeName;
+    private final Representation representation;
 
     public RepresentableRepresentation(Representable r) {
         representedTypeName = r.getClass().getName();
@@ -30,10 +31,20 @@ public class RepresentableRepresentation extends Representation {
         this.representation = representation;
     }
 
+    /**
+     * Returns the type name of the object stored in this representation.
+     * <p>
+     * Acts as a hint that can be used to find the correct constructor to reconstruct the object from
+     * the representation.
+     * @return the type name of the represented object
+     */
     public String getRepresentedTypeName() {
         return representedTypeName;
     }
 
+    /**
+     * Returns the stored representation.
+     */
     public Representation getRepresentation() {
         return representation;
     }

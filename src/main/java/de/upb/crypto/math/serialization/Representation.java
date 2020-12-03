@@ -14,55 +14,55 @@ import java.io.Serializable;
  * <p>
  * A {@code Representation} is a structured tree of (other) representations.
  * This allows one to universally represent structured objects.
- * Leaves are primitives such as BigInteger, Strings, or byte arrays.
+ * Leaves are (boxed) primitives such as {@code BigInteger}, {@code String}, or {@code byte[]}.
  */
 public abstract class Representation implements Serializable {
     private static final long serialVersionUID = -2800343381809567714L;
 
     /**
-     * Shorthand for typecast
+     * Typecasts this object to a {@link MapRepresentation}.
      */
     public MapRepresentation map() {
         return (MapRepresentation) this;
     }
 
     /**
-     * Shorthand for typecast
+     * Typecasts this object to a {@link BigIntegerRepresentation}.
      */
     public BigIntegerRepresentation bigInt() {
         return (BigIntegerRepresentation) this;
     }
 
     /**
-     * Shorthand for typecast
+     * Typecasts this object to a {@link ByteArrayRepresentation}.
      */
     public ByteArrayRepresentation bytes() {
         return (ByteArrayRepresentation) this;
     }
 
     /**
-     * Shorthand for typecast
+     * Typecasts this object to a {@link ListRepresentation}.
      */
     public ListRepresentation list() {
         return (ListRepresentation) this;
     }
 
     /**
-     * Shorthand for typecast
+     * Typecasts this object to a {@link ObjectRepresentation}.
      */
     public ObjectRepresentation obj() {
         return (ObjectRepresentation) this;
     }
 
     /**
-     * Shorthand for typecast
+     * Typecasts this object to a {@link RepresentableRepresentation}.
      */
     public RepresentableRepresentation repr() {
         return (RepresentableRepresentation) this;
     }
 
     /**
-     * Shorthand for typecast
+     * Typecasts this object to a {@link StringRepresentation}.
      */
     public StringRepresentation str() {
         return (StringRepresentation) this;

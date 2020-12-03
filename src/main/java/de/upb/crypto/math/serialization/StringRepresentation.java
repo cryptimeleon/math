@@ -15,6 +15,9 @@ public class StringRepresentation extends Representation {
         this.s = s;
     }
 
+    /**
+     * Returns the represented {@code String}.
+     */
     public String get() {
         return s;
     }
