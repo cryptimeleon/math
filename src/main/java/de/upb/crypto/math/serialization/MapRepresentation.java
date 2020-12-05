@@ -13,7 +13,10 @@ import java.util.stream.Stream;
  */
 public class MapRepresentation extends Representation implements Iterable<Entry<Representation, Representation>> {
     private static final long serialVersionUID = -4276829583005855044L;
-    private final HashMap<Representation, Representation> map = new HashMap<>();
+    /**
+     * The map represented by this representation.
+     */
+    protected final HashMap<Representation, Representation> map = new HashMap<>();
 
     public MapRepresentation() {
 

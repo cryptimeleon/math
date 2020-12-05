@@ -10,7 +10,10 @@ import java.util.stream.Stream;
  */
 public class ListRepresentation extends Representation implements Iterable<Representation> {
     private static final long serialVersionUID = -7782043563152429201L;
-    private final List<Representation> list = new ArrayList<>();
+    /**
+     * The list represented by this representation.
+     */
+    protected final List<Representation> list = new ArrayList<>();
 
     /**
      * Creates an empty list representation

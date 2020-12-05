@@ -13,7 +13,10 @@ import java.math.BigInteger;
  * Element of {@link BooleanStructure}.
  */
 public class BooleanElement implements RingElement {
-    private final boolean value;
+    /**
+     * The Boolean value represented by this {@code BooleanElement}.
+     */
+    protected boolean value;
 
     /**
      * The {@code BooleanElement} corresponding to a {@code true} value.

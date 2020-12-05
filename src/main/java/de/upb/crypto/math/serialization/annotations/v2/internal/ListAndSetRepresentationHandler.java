@@ -15,14 +15,26 @@ import java.util.function.Function;
  * A handler for serializing/deserializing {@link List} and {@link Set} instances.
  */
 public class ListAndSetRepresentationHandler implements RepresentationHandler {
-    private static final Class[] supportedFallbackClasses = new Class[] {ArrayList.class, HashSet.class};
-    private final RepresentationHandler elementHandler;
-    private final Class collectionType;
-    private final Type elementType;
+    private static final Class<?>[] supportedFallbackClasses = new Class[] {ArrayList.class, HashSet.class};
+
+    /**
+     * Handler for the list/set elements.
+     */
+    protected RepresentationHandler elementHandler;
+
+    /**
+     * Class of the list/set object.
+     */
+    protected Class<?> collectionType;
+
+    /**
+     * Type of the list/set elements.
+     */
+    protected Type elementType;
 
     public ListAndSetRepresentationHandler(RepresentationHandler elementHandler, Type collectionType) {
         this.elementHandler = elementHandler;
-        this.collectionType = (Class) ((ParameterizedType) collectionType).getRawType();
+        this.collectionType = (Class<?>) ((ParameterizedType) collectionType).getRawType();
         this.elementType = getElementType(collectionType);
     }
 
@@ -53,7 +65,7 @@ public class ListAndSetRepresentationHandler implements RepresentationHandler {
         if (!(rawType instanceof Class))
             return false;
 
-        if (!List.class.isAssignableFrom((Class) rawType) && !Set.class.isAssignableFrom((Class) rawType))
+        if (!List.class.isAssignableFrom((Class<?>) rawType) && !Set.class.isAssignableFrom((Class<?>) rawType))
             return false;
 
         try { //Check if generic type argument is okay
@@ -64,27 +76,35 @@ public class ListAndSetRepresentationHandler implements RepresentationHandler {
 
         //Check if the collection has a default constructor or is an interface.
         try {
-            ((Class) rawType).getConstructor();
+            ((Class<?>) rawType).getConstructor();
         } catch (NoSuchMethodException e) {
-            return ((Class) rawType).isInterface() && Arrays.stream(supportedFallbackClasses).anyMatch(fallback -> ((Class) rawType).isAssignableFrom(fallback));
+            // if the type is an interface, we try the defined fallback classes
+            return ((Class<?>) rawType).isInterface()
+                    && Arrays.stream(supportedFallbackClasses)
+                             .anyMatch(((Class<?>) rawType)::isAssignableFrom);
         }
 
         return true;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Object deserializeFromRepresentation(Representation repr, Function<String, RepresentationRestorer> getRegisteredRestorer) {
+    public Object deserializeFromRepresentation(Representation repr,
+                                                Function<String, RepresentationRestorer> getRegisteredRestorer) {
         Collection result = null;
 
         //Try to call default constructor to create collection.
         try {
             result = (Collection) collectionType.getConstructor().newInstance();
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) { //fall back to ArrayList (e.g., if the field type is just List<>)
-            for (Class fallback : supportedFallbackClasses) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            // if the type is an interface, we try the defined fallback classes
+            // for example, fall back to ArrayList if the type is List
+            for (Class<?> fallback : supportedFallbackClasses) {
                 try {
                     if (collectionType.isAssignableFrom(fallback))
                         result = (Collection) fallback.getConstructor().newInstance();
-                } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                } catch (InstantiationException | NoSuchMethodException | IllegalAccessException
+                        | InvocationTargetException ex) {
                     throw new RuntimeException("Cannot instantiate type "+collectionType.getName());
                 }
             }
@@ -104,8 +124,11 @@ public class ListAndSetRepresentationHandler implements RepresentationHandler {
         if (!(obj instanceof List || obj instanceof Set))
             throw new IllegalArgumentException("Cannot handle representation of "+obj.getClass().getName());
         ListRepresentation repr = new ListRepresentation();
-        for (Object inner : (Iterable) obj) //TODO sort elements in case of a Set type to avoid leaking something. Or is that done by the Converter? No, cannot.
+        for (Object inner : (Iterable<?>) obj) {
+            //TODO sort elements in case of a Set type to avoid leaking something.
+            // Or is that done by the Converter? No, cannot.
             repr.put(elementHandler.serializeToRepresentation(inner));
+        }
         return repr;
     }
 }

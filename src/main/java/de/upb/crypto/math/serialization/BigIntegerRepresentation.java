@@ -8,9 +8,12 @@ import java.util.Objects;
  */
 public class BigIntegerRepresentation extends Representation {
     private static final long serialVersionUID = 1243544762886909652L;
-    private BigInteger n;
+    /**
+     * The {@code BigInteger} represented by this representation.
+     */
+    protected BigInteger n;
 
-    public BigIntegerRepresentation() { //needed for Java serialization
+    public BigIntegerRepresentation() { // needed for Java serialization
 
     }
 

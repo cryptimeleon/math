@@ -13,15 +13,21 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class RepresentableRepresentation extends Representation {
     private static final long serialVersionUID = 8718774055302751544L;
-    private final String representedTypeName;
-    private final Representation representation;
+    /**
+     * The type name of the represented object.
+     */
+    protected final String representedTypeName;
+    /**
+     * The representation of the stored object.
+     */
+    protected final Representation representation;
 
     public RepresentableRepresentation(Representable r) {
         representedTypeName = r.getClass().getName();
         representation = r.getRepresentation();
     }
 
-    public RepresentableRepresentation(Enum enumValue) {
+    public RepresentableRepresentation(Enum<?> enumValue) {
         representedTypeName = enumValue.getDeclaringClass().getName();
         representation = new StringRepresentation(enumValue.name());
     }

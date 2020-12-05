@@ -11,8 +11,15 @@ import java.util.function.Function;
  * Handles representations that depend on some {@link RepresentationRestorer} in order to be recreated.
  */
 public class DependentRepresentationHandler implements RepresentationHandler {
-    private final String restorerString;
-    private final Type typeToRestore;
+    /**
+     * Restorer string indicating the {@code RepresentationRestorer} to use.
+     */
+    protected String restorerString;
+
+    /**
+     * What type the restored object should be.
+     */
+    protected Type typeToRestore;
 
     public DependentRepresentationHandler(String restorerString, Type typeToRestore) {
         this.restorerString = restorerString;
@@ -26,7 +33,7 @@ public class DependentRepresentationHandler implements RepresentationHandler {
      * @return true if this handler can handle the given type, else false
      */
     public static boolean canHandle(Type type) {
-        return type instanceof Class && Representable.class.isAssignableFrom((Class) type);
+        return type instanceof Class && Representable.class.isAssignableFrom((Class<?>) type);
     }
 
     @Override

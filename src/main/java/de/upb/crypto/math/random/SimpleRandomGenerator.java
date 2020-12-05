@@ -10,8 +10,15 @@ import java.security.SecureRandom;
  */
 public class SimpleRandomGenerator implements RandomGenerator {
 
-    BigInteger seed;
-    SecureRandom rng;
+    /**
+     * Seed for the randomness generator.
+     */
+    protected BigInteger seed;
+
+    /**
+     * Cryptographically secure randomness generator.
+     */
+    protected SecureRandom rng;
 
     public SimpleRandomGenerator() {
         rng = new SecureRandom();

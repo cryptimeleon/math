@@ -64,12 +64,12 @@ public class ReprUtil {
      * <p>
      * Used to help with deserialization of fields that need a representation restorer to be deserialized.
      */
-    private final HashMap<String, RepresentationRestorer> restorers = new HashMap<>();
+    protected HashMap<String, RepresentationRestorer> restorers = new HashMap<>();
 
     /**
      * Either stores the recreated object during deserialization, or the object to serialize.
      */
-    private final Object instance;
+    protected Object instance;
 
     /**
      * Create {@code ReprUtil} for a specific target instance.

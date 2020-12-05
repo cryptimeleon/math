@@ -9,7 +9,10 @@ import java.util.function.Function;
  * A class for custom {@code RepresentationRestorer}s implemented via a restorer function.
  */
 public class CustomRepresentationRestorer implements RepresentationRestorer {
-    private final Function<? super Representation, ?> restorer;
+    /**
+     * Maps a representation back to the corresponding object (restores the object).
+     */
+    protected final Function<? super Representation, ?> restorer;
 
     /**
      * Creates a restorer using the given restorer function.

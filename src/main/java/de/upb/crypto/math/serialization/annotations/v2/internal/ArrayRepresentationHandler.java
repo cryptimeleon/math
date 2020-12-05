@@ -14,8 +14,15 @@ import java.util.function.Function;
  * A handler for serializing/deserializing arrays.
  */
 public class ArrayRepresentationHandler implements RepresentationHandler {
-    private final RepresentationHandler elementHandler;
-    private final Class elementType;
+    /**
+     * Handler for the array elements.
+     */
+    protected RepresentationHandler elementHandler;
+
+    /**
+     * Type of the array elements.
+     */
+    protected Class<?> elementType;
 
     public ArrayRepresentationHandler(RepresentationHandler elementHandler, Type typeofArray) {
         this.elementHandler = elementHandler;
@@ -27,8 +34,8 @@ public class ArrayRepresentationHandler implements RepresentationHandler {
      * @param typeOfArray the type of the array
      * @return the class of the array's elements
      */
-    public static Class getTypeOfElements(Type typeOfArray) {
-        return ((Class) typeOfArray).getComponentType();
+    public static Class<?> getTypeOfElements(Type typeOfArray) {
+        return ((Class<?>) typeOfArray).getComponentType();
     }
 
     /**
@@ -40,11 +47,8 @@ public class ArrayRepresentationHandler implements RepresentationHandler {
         if (!(type instanceof Class))
             return false;
 
-        Class arrayType = (Class) type;
-        if (!arrayType.isArray())
-            return false;
-
-        return true;
+        Class<?> arrayType = (Class<?>) type;
+        return arrayType.isArray();
     }
 
     @Override

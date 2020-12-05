@@ -8,7 +8,10 @@ import java.util.Base64;
  */
 public class ByteArrayRepresentation extends Representation {
     private static final long serialVersionUID = 5386237030968264355L;
-    private byte[] data;
+    /**
+     * The byte array represented by this representation.
+     */
+    protected byte[] data;
 
     public ByteArrayRepresentation() { //needed for Java serialization
 
