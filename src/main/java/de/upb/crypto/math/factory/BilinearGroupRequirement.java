@@ -16,7 +16,7 @@ public class BilinearGroupRequirement {
     /**
      * The type of the configured bilinear pairing.
      * <p>
-     * For the possible values, {@see BilinearGroup.Type}.
+     * For the possible values, see {@link BilinearGroup.Type}.
      */
     protected BilinearGroup.Type type;
 
