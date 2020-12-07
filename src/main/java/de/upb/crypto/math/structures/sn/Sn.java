@@ -239,7 +239,7 @@ public class Sn implements GroupImpl {
     }
 
     /**
-     * Create a permutation from a string of images, each of which is separated by an empty space.
+     * Creates a permutation from a string of images, each of which is separated by an empty space.
      * <p>
      * Specifically, the format is {@code "[image1 image2 image3]"}.
      */

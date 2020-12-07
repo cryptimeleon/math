@@ -18,9 +18,24 @@ import java.util.Optional;
  * The ring of integers modulo n.
  */
 public class Zn implements Ring {
+    /**
+     * The neutral element of this ring's unit group (the one element).
+     */
     protected final ZnElement ONE;
+
+    /**
+     * The neutral element of this ring's additive group (the zero element).
+     */
     protected final ZnElement ZERO;
+
+    /**
+     * The modulus.
+     */
     protected final BigInteger n;
+
+    /**
+     * Whether the modulus {@code n} is prime.
+     */
     protected Boolean nIsPrime = null;
 
     /**
@@ -41,11 +56,12 @@ public class Zn implements Ring {
         this.n = n;
         this.ONE = createZnElement(BigInteger.ONE);
         this.ZERO = createZnElement(BigInteger.ZERO);
-        maxByteLength = n.toByteArray().length; //all elements' integers are smaller than n, hence their byte representation is not larger.
+        // All elements' integers are smaller than n; hence, their byte representation is not larger.
+        maxByteLength = n.toByteArray().length;
     }
 
     /**
-     * Constructs the ring from a Representation.
+     * Constructs the ring from a {@code Representation}.
      */
     public Zn(Representation repr) {
         this(((BigIntegerRepresentation) repr).get());
@@ -105,6 +121,9 @@ public class Zn implements Ring {
         return n.hashCode();
     }
 
+    /**
+     * Returns the length of the representation of the largest element in this ring in terms of number of bytes.
+     */
     public final int upperBoundForUniqueRepresentation() {
         // Every Element will be smaller than n, hence n should have the largest representation
         return this.n.toByteArray().length;

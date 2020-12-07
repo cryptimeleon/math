@@ -86,6 +86,8 @@ public class Zp extends Zn implements Field {
     }
 
     /**
+     * The elements of {@code Zp}.
+     *
      * @see ZnElement
      */
     public class ZpElement extends ZnElement implements FieldElement {

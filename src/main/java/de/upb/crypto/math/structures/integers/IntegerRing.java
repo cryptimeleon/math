@@ -112,7 +112,7 @@ public class IntegerRing implements Ring {
     }
 
     /**
-     * Decomposes a given number into a given number of digits with the given base.
+     * Decomposes a given number into the given number of digits with the given base.
      * <p>
      * For example, for base = 2, this does bit decomposition.
      *

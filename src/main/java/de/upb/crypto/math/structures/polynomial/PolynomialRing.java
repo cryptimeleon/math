@@ -17,6 +17,9 @@ import java.util.*;
  * A polynomial ring over a given base commutative {@link Ring}.
  */
 public class PolynomialRing implements Ring {
+    /**
+     * The ring over which the polynomials are defined.
+     */
     protected Ring baseRing;
 
     /**
@@ -63,6 +66,9 @@ public class PolynomialRing implements Ring {
         return new Polynomial(baseRing.getElement(i));
     }
 
+    /**
+     * Returns the base ring.
+     */
     public Ring getBaseRing() {
         return baseRing;
     }
@@ -97,6 +103,9 @@ public class PolynomialRing implements Ring {
         return 1 + baseRing.hashCode();
     }
 
+    /**
+     * An element of {@link PolynomialRing}.
+     */
     public class Polynomial implements RingElement {
         /**
          * Coefficients of this polynomial, i.e. \(\text{this} = \sum coefficients[i] * x^i\).
@@ -106,6 +115,9 @@ public class PolynomialRing implements Ring {
          */
         protected RingElement[] coefficients;
 
+        /**
+         * The degree of this polynomial.
+         */
         protected int degree;
 
         /**
@@ -589,7 +601,7 @@ public class PolynomialRing implements Ring {
 
 
     /**
-     * Shorthand to create polynomials using interpolation. One must provide at least d+1 data points to interpolate
+     * Creates a new polynomial using interpolation. One must provide at least d+1 data points to interpolate
      * a polynomial of degree d.
      * <p>
      * The interpolation implements Neville's Algorithm (see http://mathworld.wolfram.com/NevillesAlgorithm.html).
@@ -673,7 +685,7 @@ public class PolynomialRing implements Ring {
 
 
     /**
-     * Shorthand to create polynomials using interpolation. The resulting polynomial will have the largest possible
+     * Creates a new polynomial using interpolation. The resulting polynomial will have the largest possible
      * degree (number of supplied data points - 1).
      * <p>
      * The interpolation implements Neville's Algorithm (see http://mathworld.wolfram.com/NevillesAlgorithm.html).

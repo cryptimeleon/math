@@ -15,34 +15,40 @@ import java.util.Objects;
  * @see HashIntoZn
  */
 public class HashIntoZnAdditiveGroup implements HashIntoStructure {
+    /**
+     * The {@link HashIntoZn} underlying this hash.
+     */
     protected HashIntoZn znHash;
 
     /**
-     * Target group.
+     * The target additive group.
      */
     protected RingGroup structure;
 
     /**
-     * Initializes the hash function with \(\mathbb{Z}_n\) using the given \(n\).
+     * Initializes this hash to the {@code Zn} based on the given {@code n}.
      */
     public HashIntoZnAdditiveGroup(BigInteger n) {
         this(new HashIntoZn(n));
     }
 
     /**
-     * Initializes the hash function with \(\mathbb{Z}_n\) using the given \(\mathbb{Z}_n\).
+     * Initializes this hash to the additive subgroup of the given {@code Zn}.
      */
     public HashIntoZnAdditiveGroup(Zn ring) {
         this(new HashIntoZn(ring.n));
     }
 
     /**
-     * Recreate hash function from representation.
+     * Recreates hash function from representation.
      */
     public HashIntoZnAdditiveGroup(Representation repr) {
         this(new HashIntoZn(repr));
     }
 
+    /**
+     * Initializes this hash based on an existing {@code HashIntoZn}.
+     */
     public HashIntoZnAdditiveGroup(HashIntoZn hashIntoZn) {
         znHash = hashIntoZn;
         structure = znHash.getTargetStructure().asAdditiveGroup();

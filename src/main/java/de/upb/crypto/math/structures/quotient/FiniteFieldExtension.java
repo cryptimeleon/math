@@ -19,6 +19,9 @@ import java.util.Optional;
  * This can be used to build field towers.
  */
 public class FiniteFieldExtension extends QuotientRing<FieldElement> implements Field {
+    /**
+     * The degree of this extension (the degree of the irreducible polynomial underlying this field extension).
+     */
     protected int extensionDegree;
 
     /**
@@ -111,10 +114,16 @@ public class FiniteFieldExtension extends QuotientRing<FieldElement> implements 
         return (Field) ((PolynomialRing) getQuotientRingBase()).getBaseRing();
     }
 
+    /**
+     * Creates a new element of this field from the given polynomial.
+     */
     public FieldElement createElement(Polynomial p) {
         return new FiniteFieldElement(p);
     }
 
+    /**
+     * The elements of this field extension.
+     */
     public class FiniteFieldElement extends QuotientRingElement implements FieldElement {
 
         public FiniteFieldElement(Polynomial representative) {

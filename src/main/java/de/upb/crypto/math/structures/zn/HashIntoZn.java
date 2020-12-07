@@ -17,20 +17,26 @@ import java.util.Objects;
  */
 public class HashIntoZn implements HashIntoStructure {
 
+    /**
+     * The hash function.
+     */
     @Represented
     protected HashFunction hashIntoZn;
 
     /**
-     * The hash target.
+     * The hash target structure.
      */
     @Represented
     protected Zn structure;
 
     public HashIntoZn(HashFunction hashFunction, Zn zn) {
         if (zn.getCharacteristic().bitLength() - 1 < 8)
-            throw new IllegalArgumentException("HashIntoZn requires n to be at least 2^8, but given n is " + zn.getCharacteristic());
+            throw new IllegalArgumentException("HashIntoZn requires n to be at least 2^8, but given n is "
+                    + zn.getCharacteristic());
         this.structure = zn;
-        this.hashIntoZn = new VariableOutputLengthHashFunction(hashFunction, (zn.getCharacteristic().bitLength() - 1) / 8); //removing one bit to ensure injective mapping of hash values into Zn. It's _almost_ full domain hash then
+        // Removing one bit to ensure injective mapping of hash values into Zn. It's _almost_ full domain hash then
+        this.hashIntoZn = new VariableOutputLengthHashFunction(hashFunction,
+                (zn.getCharacteristic().bitLength() - 1) / 8);
     }
 
     public HashIntoZn(HashFunction hashFunction, BigInteger n) {

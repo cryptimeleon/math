@@ -4,7 +4,7 @@ import de.upb.crypto.math.interfaces.hash.HashFunction;
 import de.upb.crypto.math.serialization.Representation;
 
 /**
- * A hash fro byte arrays into {@link Zp}.
+ * A hash function that maps to {@link Zp}.
  * <p>
  * This is a copy of {@link HashIntoZn}, however, it returns {@code ZpElement}'s.
  */
@@ -31,7 +31,7 @@ public class HashIntoZp extends HashIntoZn {
     }
 
     /**
-     * Returns the ring Zp that this function hashes into.
+     * Returns the ring {@code Zp} that this function hashes into.
      */
     public Zp getTargetStructure() {
         return (Zp) structure;

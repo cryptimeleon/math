@@ -34,6 +34,9 @@ public class IntegerElement implements RingElement {
         return new BigIntegerRepresentation(v);
     }
 
+    /**
+     * Returns the {@code BigInteger} underlying this element.
+     */
     public BigInteger getBigInt() {
         return v;
     }

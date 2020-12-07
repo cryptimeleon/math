@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 /**
  * Implements the quotient ring \(R/I\) for some ring \(R\) and principal ideal \(I\)
- * (i.e. the ring consisting of equivalence classes \([a] = \{a + r | r \in I\}\) for \(a \in R\))
+ * (the ring consisting of equivalence classes \([a] = \{a + r \mid | r \in I\}\) for \(a \in R\))
  * <p>
  * The base ring must be an euclidean domain, i.e. it needs to implement division with remainder.
  *
@@ -20,9 +20,18 @@ import java.util.ArrayList;
  *            (may be {@code RingElement} or {@code FieldElement})
  */
 public abstract class QuotientRing<RE extends RingElement> implements Ring {
+    /**
+     * The base ring \(R\).
+     */
     protected Ring base;
+    /**
+     * The quotient ideal \(I\).
+     */
     protected Ideal ideal;
 
+    /**
+     * Returns the quotient ideal \(I\)
+     */
     public Ideal getIdeal() {
         return ideal;
     }
@@ -37,13 +46,16 @@ public abstract class QuotientRing<RE extends RingElement> implements Ring {
         ideal = (Ideal) repr.obj().get("ideal").repr().recreateRepresentable();
     }
 
+    /**
+     * Returns the base ring \(R\).
+     */
     public Ring getQuotientRingBase() {
         return base;
     }
 
     /**
      * Subclasses implement this to define how to create elements for this ring
-     * (i.e. how to create an equivalence class instance).
+     * (how to create an equivalence class instance).
      * <p>
      * You need to do something like:
      * <pre>
@@ -59,6 +71,9 @@ public abstract class QuotientRing<RE extends RingElement> implements Ring {
         return createElement(base.getElement(i));
     }
 
+    /**
+     * The elements of a quotient ring.
+     */
     public abstract class QuotientRingElement implements RingElement {
         protected RingElement representative;
 
@@ -69,7 +84,7 @@ public abstract class QuotientRing<RE extends RingElement> implements Ring {
 
         /**
          * "Reduces" the representative element to some sort of "canonical" representative of the same equivalence class
-         * (e.g., do modulo reduction in Z/nZ or in a polynomial ring).
+         * (for example, do modulo reduction in Z/nZ or in a polynomial ring).
          */
         protected abstract void reduce();
 
