@@ -186,7 +186,8 @@ public abstract class LazyGroupElement implements GroupElement {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        // this equals should work between lazy group elements with the same value, e.g. random element and constant
+        if (!(o instanceof LazyGroupElement)) return false;
         LazyGroupElement that = (LazyGroupElement) o;
         if (!group.equals(that.group)) return false;
         return getConcreteValue().equals(that.getConcreteValue());

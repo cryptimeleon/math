@@ -496,8 +496,13 @@ public class PolynomialRing implements Ring {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Polynomial obj = (Polynomial) o;
-            return Objects.equals(degree, obj.degree)
-                    && Arrays.equals(coefficients, obj.coefficients);
+            if (obj.degree != degree)
+                return false;
+            for (int i = 0; i <= degree; i++) {
+                if (!obj.coefficients[i].equals(coefficients[i]))
+                    return false;
+            }
+            return true;
         }
 
         @Override

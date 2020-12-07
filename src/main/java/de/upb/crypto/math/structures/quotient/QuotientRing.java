@@ -128,13 +128,14 @@ public abstract class QuotientRing<RE extends RingElement> implements Ring {
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
-            if (getClass() != obj.getClass())
+            // can break symmetry (reconsider this if implementing equals for F2FiniteFieldExtension)
+            if (!(obj instanceof RingElement))
                 return false;
-            if (!this.getStructure().equals(((RingElement) obj).getStructure())) //Structures equal?
+            if (!this.getStructure().equals(((RingElement) obj).getStructure()))
                 return false;
 
-            //Two elements a,b are equal iff they are in the same equivalence class,
-            //i.e. their representative's difference is a member of the ideal:
+            // Two elements a, b are equal iff they are in the same equivalence class,
+            // i.e. their representative's difference is a member of the ideal.
             return ideal.isMember(this.representative.sub(((QuotientRingElement) obj).representative));
         }
 

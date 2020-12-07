@@ -148,7 +148,8 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
     }
 
     /**
-     * Elements that are polynomials over GF(2^m). This class provides more efficient reductions and multiplications of polynomials than the standard approach.
+     * Elements that are polynomials over GF(2^m).
+     * This class provides more efficient reductions and multiplications of polynomials than the standard approach.
      * <p>
      * Every Element stores the coefficients as a BigInteger as an intermediate format.
      * <p>
@@ -205,7 +206,8 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
         }
 
         /**
-         * Shorthand and more efficient implementation for a multiplication with x^d which is realized as a d wise bit shift.
+         * Shorthand and more efficient implementation for a multiplication with x^d which is realized
+         * as a d wise bit shift.
          *
          * @param degree the degree of x
          */
