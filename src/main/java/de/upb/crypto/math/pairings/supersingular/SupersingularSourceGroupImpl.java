@@ -112,4 +112,9 @@ public class SupersingularSourceGroupImpl extends PairingSourceGroupImpl {
     public boolean isShortForm() {
         return true;
     }
+
+    @Override
+    public double estimateCostInvPerOp() {
+        return 6500;
+    }
 }

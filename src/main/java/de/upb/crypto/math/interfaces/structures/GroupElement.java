@@ -133,25 +133,23 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * That is, the usual usage pattern should be:
      * <pre>
      * //Setting up your encryption scheme (or whatever)
-     * GroupElement g = group.getUniformlyRandomElement().precomputPow();
+     * GroupElement g = group.getUniformlyRandomElement().precomputePow();
      * //Then (maybe even multiple) future calls of
      * GroupElement encrypt(GroupElement m) {
      *     return m.op(g.pow(sk)).compute();
      * }
      * </pre>
-     * Don't use
-     * <pre>
-     * g.precomputePow().pow(x).compute();
-     * </pre>
-     * unless you're planning to do more exponentiations of {@code g} in the future.
      *
-     * Uses a reasonable default for the memory consumed by this. Use {@code precomputePow(int)} to customize.
+     * Don't use {@code g.precomputePow().pow(x).compute();}
+     * unless you're planning to do more exponentiations of g in the future.
+     *
+     * Uses a reasonable default for the memory consumed by this.
+     * Use {@link GroupElement#precomputePow(int)} to customize.
      *
      * @return the same object (for chaining calls)
      */
     default GroupElement precomputePow() {
-        precomputePow(8);
-        return this;
+        return precomputePow(8);
     }
 
     /**
@@ -160,20 +158,18 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * That is, the usual usage pattern should be:
      * <pre>
      * //Setting up your encryption scheme (or whatever)
-     * GroupElement g = group.getUniformlyRandomElement().precomputPow();
+     * GroupElement g = group.getUniformlyRandomElement().precomputePow();
      * //Then (maybe even multiple) future calls of
      * GroupElement encrypt(GroupElement m) {
      *     return m.op(g.pow(sk)).compute();
      * }
      * </pre>
-     * Don't use
-     * <pre>
-     * g.precomputePow().pow(x).compute();
-     * </pre>
-     * unless you're planning to do more exponentiations of {@code g} in the future.
+     *
+     * Don't use {@code g.precomputePow().pow(x).compute();}
+     * unless you're planning to do more exponentiations of g in the future.
      *
      * @param windowSize an indicator for how much memory you're willing to invest.
-     *                   Precomputation will take up space of roughly 2^(windowSize-1) group elements
+     *                   Precomputation will take up space of roughly 2^(windowSize) group elements.
      * @return the same object (for chaining calls)
      */
     GroupElement precomputePow(int windowSize);

@@ -56,6 +56,11 @@ public class Sn implements GroupImpl {
     }
 
     @Override
+    public double estimateCostInvPerOp() {
+        return 1;
+    }
+
+    @Override
     public Representation getRepresentation() {
         return new BigIntegerRepresentation(BigInteger.valueOf(n));
     }

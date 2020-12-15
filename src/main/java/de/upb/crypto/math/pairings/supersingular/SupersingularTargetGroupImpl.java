@@ -31,4 +31,9 @@ public class SupersingularTargetGroupImpl extends PairingTargetGroupImpl {
     public boolean hasPrimeSize() {
         return true;
     }
+
+    @Override
+    public double estimateCostInvPerOp() {
+        return 275;
+    }
 }

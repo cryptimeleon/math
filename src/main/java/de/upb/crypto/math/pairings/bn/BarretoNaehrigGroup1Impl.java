@@ -41,4 +41,9 @@ public class BarretoNaehrigGroup1Impl extends BarretoNaehrigSourceGroupImpl {
     public BarretoNaehrigGroup1ElementImpl getElement(FieldElement x, FieldElement y) {
         return new BarretoNaehrigGroup1ElementImpl(this, x, y);
     }
+  
+    @Override
+    public double estimateCostInvPerOp() {
+        return 307;
+    }
 }

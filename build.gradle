@@ -39,7 +39,6 @@ dependencies {
     )
     testImplementation(
             'org.junit.jupiter:junit-jupiter-api:5.1.0',
-            'com.github.noconnor:junitperf:1.15.0'
     )
     testRuntimeOnly(
             'org.junit.jupiter:junit-jupiter-engine:5.1.0',

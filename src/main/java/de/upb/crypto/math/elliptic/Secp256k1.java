@@ -138,6 +138,11 @@ public class Secp256k1 implements WeierstrassCurve {
     }
 
     @Override
+    public double estimateCostInvPerOp() {
+        return 346;
+    }
+
+    @Override
     public Optional<Integer> getUniqueByteLength() {
         return Optional.empty();
     }

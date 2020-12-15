@@ -117,6 +117,13 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
         throw new UnsupportedOperationException("Multi-exponentiation is not implemented for group " + this);
     }
 
+    /**
+     * Estimates the number of inversions that can be done per group operation for the same cost.
+     * For example, {@code 2} would mean that an inversion costs half as much as a group operation, on average.
+     * @return Estimated number of inversions that can be done per group operation for the same cost
+     */
+    double estimateCostInvPerOp();
+
     @Override
     default GroupElementImpl recreateFromRepresentation(Type type, Representation repr) {
         if (!(type instanceof Class && GroupElementImpl.class.isAssignableFrom((Class) type)))
