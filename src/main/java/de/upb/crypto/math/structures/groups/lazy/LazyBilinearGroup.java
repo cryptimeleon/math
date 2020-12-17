@@ -1,7 +1,7 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupImpl;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
+import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
@@ -104,6 +104,16 @@ public class LazyBilinearGroup implements BilinearGroup {
         if (hashIntoGt == null)
             throw new UnsupportedOperationException("No hash available");
         return hashIntoGt;
+    }
+
+    @Override
+    public Integer getSecurityLevel() {
+        return impl.getSecurityLevel();
+    }
+
+    @Override
+    public Type getPairingType() {
+        return impl.getPairingType();
     }
 
     @Override

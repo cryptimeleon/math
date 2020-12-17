@@ -1,7 +1,6 @@
 package de.upb.crypto.math.structures.test;
 
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupFactory;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.structures.groups.exp.ExponentiationAlgorithms;

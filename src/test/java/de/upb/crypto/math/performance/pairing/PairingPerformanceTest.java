@@ -1,14 +1,14 @@
 package de.upb.crypto.math.performance.pairing;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupRequirement;
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
+import de.upb.crypto.math.pairings.generic.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
+import de.upb.crypto.math.pairings.type1.supersingular.SupersingularTateGroupImpl;
+import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
+import de.upb.crypto.math.structures.groups.lazy.LazyBilinearMap;
 import de.upb.crypto.math.structures.zn.Zn;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,17 +42,12 @@ public class PairingPerformanceTest {
         ArrayList<BilinearMap> pairings = new ArrayList<>();
 
         // Supersingular Tate Pairing
-        SupersingularProvider supersingularProvider = new SupersingularProvider();
-        pairings.add(supersingularProvider.provideBilinearGroup(80,
-                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1)).getBilinearMap());
+        pairings.add(new LazyBilinearGroup(new SupersingularTateGroupImpl(80)).getBilinearMap());
 
         // Barreto-Naehrig non-native
-        BarretoNaehrigProvider bnProvider = new BarretoNaehrigProvider();
-        pairings.add(bnProvider.provideBilinearGroup(128,
-                new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3)).getBilinearMap());
+        pairings.add(new LazyBilinearGroup(new BarretoNaehrigBilinearGroupImpl(128)).getBilinearMap());
         // Barreto-Naehrig non-native, SFC-256
-        pairings.add(
-                new LazyBilinearGroup(bnProvider.provideBilinearGroupFromSpec(BarretoNaehrigProvider.ParamSpecs.SFC256)).getBilinearMap());
+        pairings.add(new LazyBilinearGroup(new BarretoNaehrigBilinearGroupImpl("SFC-256")).getBilinearMap());
 
         return pairings;
     }

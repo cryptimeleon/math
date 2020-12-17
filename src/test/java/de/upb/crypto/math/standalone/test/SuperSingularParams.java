@@ -1,8 +1,7 @@
 package de.upb.crypto.math.standalone.test;
 
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupRequirement;
-import de.upb.crypto.math.pairings.supersingular.*;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
+import de.upb.crypto.math.pairings.type1.supersingular.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,8 +9,7 @@ import java.util.List;
 
 public class SuperSingularParams {
     public static Collection<StandaloneTestParams> get() {
-        SupersingularProvider fac = new SupersingularProvider();
-        SupersingularTateGroupImpl supsingGrp = fac.provideBilinearGroupImpl(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
+        SupersingularTateGroupImpl supsingGrp = new SupersingularTateGroupImpl(80);
         List<StandaloneTestParams> toReturn = new ArrayList<>();
 
         toReturn.add(new StandaloneTestParams(supsingGrp));

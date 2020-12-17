@@ -116,7 +116,6 @@ public class StandaloneTest {
         toReturn.addAll(RingGroupParams.get());
         toReturn.addAll(SHAHashParams.get());
         toReturn.addAll(SuperSingularParams.get());
-        toReturn.addAll(DebugBilinearGroup.get());
         toReturn.addAll(BasicAndLazyGroupParams.get());
         toReturn.add(ZnParams.get());
         toReturn.add(ZpParams.get());

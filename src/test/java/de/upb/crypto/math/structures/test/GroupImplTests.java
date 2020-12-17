@@ -1,15 +1,14 @@
 package de.upb.crypto.math.structures.test;
 
 import de.upb.crypto.math.elliptic.Secp256k1;
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupImpl;
-import de.upb.crypto.math.factory.BilinearGroupRequirement;
+import de.upb.crypto.math.pairings.counting.CountingGroupImpl;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
+import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.debug.DebugGroupImpl;
+import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
@@ -189,13 +188,13 @@ public class GroupImplTests {
         RingAdditiveGroupImpl ringAddGroupInt = new RingAdditiveGroupImpl(new IntegerRing());
 
         // Debug group
-        DebugGroupImpl debugGroupImpl = new DebugGroupImpl("Testgroup", BigInteger.valueOf(1000));
+        CountingGroupImpl countingGroupImpl = new CountingGroupImpl("Testgroup", BigInteger.valueOf(1000));
 
         // BarretoNaehrig
-        BilinearGroupImpl bnGroup = new BarretoNaehrigProvider().provideBilinearGroupImpl(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3));
+        BilinearGroupImpl bnGroup = new BarretoNaehrigBilinearGroupImpl(128);
         GroupImpl bnG1 = bnGroup.getG1(), bnG2 = bnGroup.getG2(), bnGT = bnGroup.getGT();
 
-        BilinearGroupImpl bnGroup2 = new BarretoNaehrigProvider().provideBilinearGroupImpl(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3));
+        BilinearGroupImpl bnGroup2 = new BarretoNaehrigBilinearGroupImpl(128);
         GroupImpl bnG12 = bnGroup2.getG1(), bnG22 = bnGroup2.getG2(), bnGT2 = bnGroup2.getGT();
 
         // Sn
@@ -205,7 +204,7 @@ public class GroupImplTests {
         TestParams params[][] = new TestParams[][]{
                 {new TestParams(ringUnitGroupImpl)}, {new TestParams(ringAddGroup)},
                 {new TestParams(ringAddGroupInt, () -> ringAddGroupInt.new RingAdditiveGroupElementImpl(new IntegerElement(RandomGeneratorSupplier.getRnd().getRandomElement(BigInteger.valueOf(100000)))))}, {new TestParams(sn)},
-                {new TestParams(debugGroupImpl)},
+                {new TestParams(countingGroupImpl)},
                 {new TestParams(bnG1)}, {new TestParams(bnG2)}, {new TestParams(bnGT)},
                 {new TestParams(bnG12)}, {new TestParams(bnG22)}, {new TestParams(bnGT2)},
                 {new TestParams(new Secp256k1())}

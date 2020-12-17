@@ -1,14 +1,12 @@
 package de.upb.crypto.math.pairings.test;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupFactory;
-import de.upb.crypto.math.factory.BilinearGroupRequirement;
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
+import de.upb.crypto.math.pairings.counting.CountingBilinearGroup;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
+import de.upb.crypto.math.pairings.generic.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.bn.BarretoNaehrigProvider;
-import de.upb.crypto.math.pairings.debug.DebugBilinearGroupImpl;
-import de.upb.crypto.math.pairings.supersingular.SupersingularProvider;
+import de.upb.crypto.math.pairings.type1.supersingular.SupersingularTateGroupImpl;
+import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
@@ -144,35 +142,26 @@ public class PairingTests {
 
     @Parameters(name = "Test: {0}") // add (name="Test: {0}") for jUnit 4.12+ to print Pairing's name to test
     public static Collection<BilinearMap[]> data() {
-        //Debug curve
-        BilinearGroup debugMap1 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_1, BigInteger.valueOf(19)));
-        BilinearGroup debugMap2 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_2, BigInteger.valueOf(19)));
-        BilinearGroup debugMap3 = new BasicBilinearGroup(new DebugBilinearGroupImpl(BilinearGroup.Type.TYPE_3, BigInteger.valueOf(19)));
-
         // Counting curves
-        BilinearGroupFactory fac = new BilinearGroupFactory(128);
-        fac.setDebugMode(true);
-        fac.setRequirements(BilinearGroup.Type.TYPE_1, true, true, true);
-        BilinearGroup countingGroup1 = fac.createBilinearGroup();
-        fac.setRequirements(BilinearGroup.Type.TYPE_2, true, true, true);
-        BilinearGroup countingGroup2 = fac.createBilinearGroup();
-        fac.setRequirements(BilinearGroup.Type.TYPE_3, true, true, true);
-        BilinearGroup countingGroup3 = fac.createBilinearGroup();
+        BilinearGroup countingGroup1 =
+                new CountingBilinearGroup(128, BilinearGroup.Type.TYPE_1);
+        BilinearGroup countingGroup2 =
+                new CountingBilinearGroup(128, BilinearGroup.Type.TYPE_2);
+        BilinearGroup countingGroup3 =
+                new CountingBilinearGroup(128, BilinearGroup.Type.TYPE_3);
 
         // Supersingular curve groups
-        SupersingularProvider supsingFac = new SupersingularProvider();
-        BilinearGroup supsingGroup = supsingFac.provideBilinearGroup(80, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_1, true, true, false));
+        BilinearGroup supsingGroup = new BasicBilinearGroup(new SupersingularTateGroupImpl(80));
 
         // BN curves
-        BarretoNaehrigProvider bnFac = new BarretoNaehrigProvider();
-        BilinearGroup bnGroup = bnFac.provideBilinearGroup(128, new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false));
+        BilinearGroup bnGroup = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl(128));
+        BilinearGroup bnGroup256 = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl("SFC-256"));
 
         // Collect parameters
-        BilinearMap params[][] = new BilinearMap[][] {
-                {debugMap1.getBilinearMap()}, {debugMap2.getBilinearMap()}, {debugMap3.getBilinearMap()},
+        BilinearMap[][] params = new BilinearMap[][] {
                 {countingGroup1.getBilinearMap()}, {countingGroup2.getBilinearMap()}, {countingGroup3.getBilinearMap()},
                 {supsingGroup.getBilinearMap()},
-                {bnGroup.getBilinearMap()}
+                {bnGroup.getBilinearMap()}, {bnGroup256.getBilinearMap()}
         };
         return Arrays.asList(params);
     }

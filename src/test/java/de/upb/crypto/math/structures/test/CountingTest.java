@@ -1,11 +1,9 @@
 package de.upb.crypto.math.structures.test;
 
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupRequirement;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.debug.count.CountingBilinearGroup;
-import de.upb.crypto.math.pairings.debug.count.CountingBilinearGroupProvider;
-import de.upb.crypto.math.pairings.debug.count.CountingGroup;
+import de.upb.crypto.math.pairings.counting.CountingBilinearGroup;
+import de.upb.crypto.math.pairings.counting.CountingGroup;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +17,7 @@ public class CountingTest {
 
     @Before
     public void setUp() {
-        bilGroup = (CountingBilinearGroup) new CountingBilinearGroupProvider().provideBilinearGroup(
+        bilGroup = (CountingBilinearGroup) new CountingBilinearGroupProvider().provide(
                 128,
                 new BilinearGroupRequirement(
                         BilinearGroup.Type.TYPE_2, true, true, true

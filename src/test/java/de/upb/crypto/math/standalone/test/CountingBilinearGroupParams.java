@@ -1,7 +1,7 @@
 package de.upb.crypto.math.standalone.test;
 
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.pairings.debug.count.CountingBilinearGroup;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
+import de.upb.crypto.math.pairings.counting.CountingBilinearGroup;
 
 import java.math.BigInteger;
 import java.util.Arrays;

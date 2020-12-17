@@ -3,7 +3,7 @@ package de.upb.crypto.math.expressions.group;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
+import de.upb.crypto.math.pairings.generic.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 

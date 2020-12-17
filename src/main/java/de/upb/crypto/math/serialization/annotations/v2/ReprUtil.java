@@ -1,7 +1,7 @@
 package de.upb.crypto.math.serialization.annotations.v2;
 
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
+import de.upb.crypto.math.pairings.generic.BilinearMap;
 import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.internal.*;
