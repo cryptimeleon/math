@@ -8,7 +8,6 @@ import java.util.List;
 
 public class BarretoNaehrigParams {
     public static Collection<StandaloneTestParams> get() {
-        // this is a barreto naehrig factory
         BarretoNaehrigBilinearGroupImpl bnGroup = new BarretoNaehrigBilinearGroupImpl(100);
 
         List<StandaloneTestParams> toReturn = new ArrayList<>();

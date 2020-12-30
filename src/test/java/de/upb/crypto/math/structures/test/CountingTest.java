@@ -17,12 +17,7 @@ public class CountingTest {
 
     @Before
     public void setUp() {
-        bilGroup = (CountingBilinearGroup) new CountingBilinearGroupProvider().provide(
-                128,
-                new BilinearGroupRequirement(
-                        BilinearGroup.Type.TYPE_2, true, true, true
-                )
-        );
+        bilGroup = new CountingBilinearGroup(128, BilinearGroup.Type.TYPE_2);
     }
 
     @Test

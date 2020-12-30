@@ -44,11 +44,12 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     private BarretoNaehrigGroup2Impl g2impl;
     @Represented
     private BarretoNaehrigTargetGroupImpl gtimpl;
-    private BarretoNaehrigTatePairing bilinearMapImpl;
     @Represented
     private BarretoNaehrigPointEncoding hashIntoG1impl;
     @Represented
     private BarretoNaehrigPointEncoding hashIntoG2impl;
+
+    private BarretoNaehrigTatePairing bilinearMapImpl;
 
     public BarretoNaehrigBilinearGroupImpl(int securityParameter) {
         if (securityParameter > securityLimits[securityLimits.length -1]) {
@@ -393,14 +394,15 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     /**
      * Initialize factory from given generators of BN groups G1 and G2.
      *
-     * @param P1 - Generator of G1
-     * @param P2 - Generator of G2
-     * @param gT - Target group
+     * @param P1 Generator of G1
+     * @param P2 Generator of G2
+     * @param gT Target group
      */
     private void init(BarretoNaehrigGroup1ElementImpl P1, BarretoNaehrigGroup2ElementImpl P2,
                                                  BarretoNaehrigTargetGroupImpl gT) {
         g1impl = (BarretoNaehrigGroup1Impl) P1.getStructure();
         g2impl = (BarretoNaehrigGroup2Impl) P2.getStructure();
+        gtimpl = gT;
 
         bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gT);
         hashIntoG1impl = new BarretoNaehrigPointEncoding(g1impl);

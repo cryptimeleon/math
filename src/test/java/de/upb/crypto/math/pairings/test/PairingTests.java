@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class PairingTests {
-    private BilinearMap pairing;
+    private final BilinearMap pairing;
 
     public PairingTests(BilinearMap pairing) {
         this.pairing = pairing;
@@ -40,7 +40,7 @@ public class PairingTests {
         GroupElement t1, t2, t3, t4;
 
         //Lagrange and basic group properties (duplicate from GroupTests)
-        assertTrue(p1.op(r1).op(r1.inv()).equals(p1));
+        assertEquals(p1.op(r1).op(r1.inv()), p1);
         assertTrue(p1.pow(pairing.getG1().size()).isNeutralElement());
         assertTrue(p2.pow(pairing.getG2().size()).isNeutralElement());
 
@@ -82,7 +82,7 @@ public class PairingTests {
         //e(x1*P1,x2*P2) = e(P1,P2)^{x1*x2}
         Zn zn = new Zn(pairing.getG1().size());
         Zn.ZnElement x1 = zn.getUniformlyRandomElement(), x2 = zn.getUniformlyRandomElement();
-        assertTrue(pairing.apply(p1.pow(x1), p2.pow(x2)).equals(pairing.apply(p1, p2).pow(x1.mul(x2))));
+        assertEquals(pairing.apply(p1.pow(x1), p2.pow(x2)), pairing.apply(p1, p2).pow(x1.mul(x2)));
     }
 
     @Test
@@ -99,7 +99,7 @@ public class PairingTests {
         }
         exp[0] = zp.getZeroElement();
 
-        //Compute result using expression TODO
+        //Compute result using expression
         GroupElementExpression expr = pairing.getGT().expr();
         for (int i = 0; i < g.length; i++) {
             expr = expr.op(pairing.expr(g[i], h[i]).pow(exp[i]));
@@ -154,7 +154,7 @@ public class PairingTests {
         BilinearGroup supsingGroup = new BasicBilinearGroup(new SupersingularTateGroupImpl(80));
 
         // BN curves
-        BilinearGroup bnGroup = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl(128));
+        BilinearGroup bnGroup = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl(100));
         BilinearGroup bnGroup256 = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl("SFC-256"));
 
         // Collect parameters

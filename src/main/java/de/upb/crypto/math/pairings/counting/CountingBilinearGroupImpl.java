@@ -21,7 +21,7 @@ import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.*;
  * Creates bilinear groups based on the integer ring modulo n for some number n.
  * The bilinear map (Zn,+) x (Zn,+) -> (Zn,+) is the ring multiplication.
  * <p>
- * This is intentionally not a {@link BilinearGroupProvider}, because the returned group is not secure!
+ * This is not a secure bilinear group as computing DLOGs is very easy.
  */
 public class CountingBilinearGroupImpl implements BilinearGroupImpl {
 
@@ -51,6 +51,7 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
             primeFactors.add(rnd.getRandomPrime(securityParameter));
 
         this.size = primeFactors.stream().reduce(BigInteger.ONE, BigInteger::multiply);
+        init();
     }
 
     public CountingBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors) {
@@ -68,6 +69,7 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
         this.enableExpCounting = enableExpCounting;
         this.enableMultiExpCounting = enableMultiExpCounting;
         this.size = size;
+        init();
     }
 
     protected void init() {
