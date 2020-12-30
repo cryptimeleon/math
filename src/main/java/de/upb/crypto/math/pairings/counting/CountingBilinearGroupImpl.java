@@ -10,6 +10,7 @@ import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
+import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -18,21 +19,48 @@ import java.util.Objects;
 import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.*;
 
 /**
- * Creates bilinear groups based on the integer ring modulo n for some number n.
- * The bilinear map (Zn,+) x (Zn,+) -> (Zn,+) is the ring multiplication.
+ * A {@link BilinearGroupImpl} implementing a fast, but insecure pairing over {@link Zn}.
+ * Allows for selecting between counting total group operations, or (multi-)exponentiations plus group operations
+ * outside of (multi-)exponentiations.
  * <p>
- * This is not a secure bilinear group as computing DLOGs is very easy.
+ * Usually, you should be using {@link CountingBilinearGroup} instead of this class as it provides pairing counting
+ * capabilities and allows for tracking both kinds of group operation data at once.
+ * 
+ * @see CountingBilinearGroup
+ * 
+ * @author Raphael Heitjohann
  */
 public class CountingBilinearGroupImpl implements BilinearGroupImpl {
 
+    /**
+     * The security level offered by this bilinear group in number of bits.
+     */
     @Represented
     protected Integer securityParameter;
+
+    /**
+     * The type of pairing this bilinear group should offer.
+     */
     @Represented
     protected BilinearGroup.Type pairingType;
+
+    /**
+     * The group order of this bilinear group.
+     */
     @Represented
     protected BigInteger size;
+
+    /**
+     * Whether to count exponentiations as a single unit. If set to true, group operations in those exponentiations
+     * will not be counted.
+     */
     @Represented
     protected Boolean enableExpCounting;
+
+    /**
+     * Whether to count multi-exponentiations as a single unit. If set to true, group operations in those
+     * multi-exponentiations will not be counted.
+     */
     @Represented
     protected Boolean enableMultiExpCounting;
 
@@ -144,11 +172,17 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
         return new HashIntoCountingGroupImpl(getGT());
     }
 
+    /**
+     * Returns the security level offered by this bilinear group in number of bits.
+     */
     @Override
     public Integer getSecurityLevel() {
         return securityParameter;
     }
 
+    /**
+     * Returns the type of pairing offered by this bilinear group.
+     */
     @Override
     public BilinearGroup.Type getPairingType() {
         return pairingType;

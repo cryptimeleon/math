@@ -11,6 +11,7 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
 import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
+import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -20,28 +21,53 @@ import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.TYPE_1;
 import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.TYPE_2;
 
 /**
- * {@link BilinearGroup} wrapping two {@link LazyBilinearGroup} which contain {@link CountingBilinearGroupImpl}
- * themselves. Allows for counting group operations and (multi-)exponentiations as well as pairings on the bilinear
- * group level. For this purpose all operations are executed in both groups, one counts total group operations
- * and one counts each (multi-)exponentiation as one unit.
+ * A {@link BilinearGroup} implementing a fast, but insecure pairing over {@link Zn}.
+ * Allows for counting group operations and (multi-)exponentiations as well as pairings on the bilinear
+ * group level.
+ * <p>
+ * The counting capability is implemented by wrapping two {@link LazyBilinearGroup}s which contain
+ * {@link CountingBilinearGroupImpl}s themselves. All operations are executed in both groups,
+ * one counts total group operations and one counts each (multi-)exponentiation as one unit.
+ * This allows tracking both kinds of data.
  *
  * @author Raphael Heitjohann
  */
 public class CountingBilinearGroup implements BilinearGroup {
 
+    /**
+     * The security level offered by this bilinear group in number of bits.
+     */
     @Represented
     protected Integer securityParameter;
+
+    /**
+     * The type of pairing this bilinear group should offer.
+     */
     @Represented
     protected BilinearGroup.Type pairingType;
 
+    /**
+     * The bilinear group responsible for counting total group operations.
+     */
     @Represented
     protected LazyBilinearGroup totalBilGroup;
 
+    /**
+     * The bilinear group responsible for counting (multi-)exponentiations and group operations outside of those.
+     */
     @Represented
     protected LazyBilinearGroup expMultiExpBilGroup;
 
     protected CountingBilinearMap bilMap;
-    
+
+    /**
+     * Initializes this bilinear group with the given security level, pairing type, and group order factoring
+     * into the given number of prime factors.
+     *
+     * @param securityParameter the security level in number of bits
+     * @param pairingType the type of pairing that should be offered by this bilinear group
+     * @param numPrimeFactors the number of prime factors the group order should have
+     */
     public CountingBilinearGroup(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors) {
         this.securityParameter = securityParameter;
         this.pairingType = pairingType;
@@ -61,8 +87,15 @@ public class CountingBilinearGroup implements BilinearGroup {
         init();
     }
 
-    public CountingBilinearGroup(int securityParameter, BilinearGroup.Type type) {
-        this(securityParameter, type, 1);
+    /**
+     *
+     * Initializes this bilinear group with the given security level, pairing type and prime group order.
+     *
+     * @param securityParameter the security level in number of bits
+     * @param pairingType the type of pairing that should be offered by this bilinear group
+     */
+    public CountingBilinearGroup(int securityParameter, BilinearGroup.Type pairingType) {
+        this(securityParameter, pairingType, 1);
     }
 
     public CountingBilinearGroup(Representation repr) {
@@ -70,7 +103,9 @@ public class CountingBilinearGroup implements BilinearGroup {
         init();
     }
 
-
+    /**
+     * Initializes the underlying bilinear map {@link #bilMap}.
+     */
     protected void init() {
         bilMap = new CountingBilinearMap(totalBilGroup.getBilinearMap(), expMultiExpBilGroup.getBilinearMap());
     }

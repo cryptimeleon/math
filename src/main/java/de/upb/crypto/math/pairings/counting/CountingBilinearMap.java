@@ -1,6 +1,5 @@
 package de.upb.crypto.math.pairings.counting;
 
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.pairings.generic.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -10,10 +9,25 @@ import de.upb.crypto.math.serialization.annotations.v2.Represented;
 import de.upb.crypto.math.structures.groups.lazy.LazyBilinearMap;
 import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
 import de.upb.crypto.math.structures.groups.lazy.LazyGroupElement;
+import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * A {@link BilinearMap} implementing a fast, but insecure pairing over {@link Zn}.
+ * Allows for counting group operations and (multi-)exponentiations as well as pairings on the bilinear
+ * group level.
+ * <p>
+ * The counting capability is implemented by wrapping two {@link LazyBilinearMap}s which contain
+ * {@link CountingBilinearGroupImpl}s themselves. All operations are executed in both groups,
+ * one counts total group operations and one counts each (multi-)exponentiation as one unit.
+ * This allows tracking both kinds of data.
+ *
+ * @see CountingBilinearGroup
+ * 
+ * @author Raphael Heitjohann
+ */
 public class CountingBilinearMap implements BilinearMap {
 
     @Represented
