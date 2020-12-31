@@ -8,6 +8,9 @@ import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import java.util.Objects;
 
+/**
+ * Implements an isomorphism between two {@link CountingGroupImpl}s.
+ */
 public class CountingIsomorphismImpl implements GroupHomomorphismImpl {
     @Represented
     private CountingGroupImpl src;

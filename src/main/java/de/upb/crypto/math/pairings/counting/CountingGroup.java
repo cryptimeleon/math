@@ -16,8 +16,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Group that supports counting group operations, inversions, squarings and exponentiations as well as number of terms
- * in each multi-exponentiation.
+ * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
+ * number of terms in each multi-exponentiation.
+ * <p>
+ * This counting capability is realized by using two {@link LazyGroup}s that each wrap a {@link CountingGroupImpl}.
+ * One counts total group operations and squarings, and the other counts (multi-)exponentiations as a single unit
+ * (not including group operations and squarings done inside (multi-)exponentiations).
  *
  * @author Raphael Heitjohann
  */
@@ -36,6 +40,13 @@ public class CountingGroup implements Group {
     @Represented
     LazyGroup groupExpMultiExp;
 
+    /**
+     * Initializes the counting group with a given name and size.
+     * Group operations only work between groups of the same name and size.
+     *
+     * @param name the name of the group
+     * @param n the desired size of the group
+     */
     public CountingGroup(String name, BigInteger n) {
         groupTotal = new LazyGroup(new CountingGroupImpl(name, n, false, false));
         groupExpMultiExp = new LazyGroup(new CountingGroupImpl(name, n, true, true));
@@ -47,7 +58,7 @@ public class CountingGroup implements Group {
 
     /**
      * This constructor allows instantiating the {@link CountingGroup} with specific {@link LazyGroup} instances.
-     * This can be, for example, be used to change the choice of (multi-)exponentiation algorithm by configuring
+     * This can, for example, be used to change the choice of (multi-)exponentiation algorithm by configuring
      * the {@link LazyGroup} instances to use a different (multi-)exponentiation algorithm.
      */
     public CountingGroup(LazyGroup groupTotal, LazyGroup groupExpMultiExp) {
@@ -132,6 +143,7 @@ public class CountingGroup implements Group {
 
     /**
      * Retrieves number of group ops including ones done in (multi-)exponentiation algorithms.
+     * Does not include squarings.
      */
     public long getNumOpsTotal() {
         return ((CountingGroupImpl) groupTotal.getImpl()).getNumOps();
@@ -153,6 +165,7 @@ public class CountingGroup implements Group {
 
     /**
      * Retrieves number of group ops not including ones done in (multi-)exponentiation algorithms.
+     * Does not include squarings.
      */
     public long getNumOpsNoExpMultiExp() {
         return((CountingGroupImpl) groupExpMultiExp.getImpl()).getNumOps();
@@ -189,8 +202,8 @@ public class CountingGroup implements Group {
     }
 
     /**
-     * Formats the counted data for printing.
-     * @return A string detailing the results of counting
+     * Formats the count data for printing.
+     * @return a string detailing the results of counting
      */
     public String formatCounterData() {
         return "------- Operation data for " + toString() + " -------\n"
@@ -205,7 +218,8 @@ public class CountingGroup implements Group {
                 + "----- Other data: -----\n"
                 + "    Number of exponentiations: " + getNumExps() + "\n"
                 + "    Number of terms in each multi-exponentiation: " + getMultiExpTermNumbers() + "\n"
-                + "    Number of retrieved representations (via getRepresentation()): " + getNumRetrievedRepresentations() + "\n";
+                + "    Number of retrieved representations (via getRepresentation()): "
+                + getNumRetrievedRepresentations() + "\n";
     }
 
     @Override

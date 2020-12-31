@@ -28,7 +28,7 @@ import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.TYPE_2;
  * The counting capability is implemented by wrapping two {@link LazyBilinearGroup}s which contain
  * {@link CountingBilinearGroupImpl}s themselves. All operations are executed in both groups,
  * one counts total group operations and one counts each (multi-)exponentiation as one unit.
- * This allows tracking both kinds of data.
+ * This allows for tracking both kinds of data.
  *
  * @author Raphael Heitjohann
  */
@@ -58,6 +58,9 @@ public class CountingBilinearGroup implements BilinearGroup {
     @Represented
     protected LazyBilinearGroup expMultiExpBilGroup;
 
+    /**
+     * The underlying bilinear map used for applying the pairing function and counting it.
+     */
     protected CountingBilinearMap bilMap;
 
     /**
@@ -188,7 +191,7 @@ public class CountingBilinearGroup implements BilinearGroup {
     }
 
     /**
-     * Retrieves number of pairings computed in this bilinear group.
+     * Returns the number of pairings computed in this bilinear group.
      */
     public long getNumPairings() {
         return bilMap.getNumPairings();
@@ -211,6 +214,9 @@ public class CountingBilinearGroup implements BilinearGroup {
         ((CountingGroup) getGT()).resetCounters();
     }
 
+    /**
+     * Returns a string with all count data formatted for printing.
+     */
     public String formatCounterData() {
         return bilMap.formatCounterData();
     }

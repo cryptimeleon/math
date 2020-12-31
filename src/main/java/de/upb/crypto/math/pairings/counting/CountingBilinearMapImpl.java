@@ -9,22 +9,51 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 /**
- * A bilinear map (Zn,+) x (Zn,+) -> (Zn,+),
- * namely (a,b) -> a*b (multiplication in Zn).
+ * A {@link BilinearMapImpl} implementing a fast, but insecure pairing over {@link Zn}.
+ * Allows for counting pairings.
+ * <p>
+ * The bilinear map works by mapping {@code (Zn,+) x (Zn,+)} to {@code (Zn,+)} via {@code (a,b) -> a*b}
+ * (multiplication in Zn).
+ * It is insecure since DLOG is trivial in Zn.
  */
 public class CountingBilinearMapImpl implements BilinearMapImpl {
+    /**
+     * The groups underlying the bilinear group.
+     */
     protected CountingGroupImpl g1, g2, gt;
+
+    /**
+     * Zn of order the bilinear group's size.
+     */
     protected Zn zn;
+
+    /**
+     * The order of the bilinear group.
+     */
     protected BigInteger size;
+
+    /**
+     * The type of pairing this bilinear map offers.
+     */
     protected BilinearGroup.Type pairingType;
 
+    /**
+     * The counted number of pairings.
+     */
     protected long numPairings;
 
     /**
-     * Instantiates a debug bilinear map emulating pairing type "type"
+     * Instantiates this bilinear map with the given pairing type, group size, and counting configuration.
      *
-     * @param type type of the pairing (type 1: G1 = G2; type 2: G1 != G2 and there is a nondegenerate homomorphism G2 -> G1; type 3: G1 != G2 and there are no efficiently computable injective homomorphisms between G1 and G2
+     * @param type type of the pairing
      * @param groupSize size of g1, g2, and gt (number of group elements)
+     * @param enableExpCounting if {@code true}, exponentiations in G1, G2 and GT are counted as a single unit
+     *                          and group operations within exponentiations are not counted; otherwise the former is
+     *                          not done and group operations within exponentiations are added to the total count
+     * @param enableMultiExpCounting if {@code true}, number of terms in each multi-exponentiation is tracked and
+     *                               group operations within multi-exponentiations are not counted; otherwise
+     *                               the former is not done and group operations within multi-exponentiations
+     *                               are added to the total count
      */
     public CountingBilinearMapImpl(BilinearGroup.Type type, BigInteger groupSize, boolean enableExpCounting,
                                    boolean enableMultiExpCounting) {
@@ -97,6 +126,9 @@ public class CountingBilinearMapImpl implements BilinearMapImpl {
         numPairings = 0;
     }
 
+    /**
+     * Increments the pairing counter.
+     */
     protected void incrementNumPairings() {
         ++numPairings;
     }

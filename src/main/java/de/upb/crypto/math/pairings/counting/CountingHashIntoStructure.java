@@ -9,6 +9,9 @@ import de.upb.crypto.math.structures.groups.lazy.LazyHashIntoStructure;
 
 import java.util.Objects;
 
+/**
+ * Allows hashing a byte array to {@link CountingGroup}.
+ */
 public class CountingHashIntoStructure implements HashIntoStructure {
 
     @Represented

@@ -7,6 +7,9 @@ import de.upb.crypto.math.structures.zn.HashIntoZn;
 
 import java.util.Objects;
 
+/**
+ * Allows hashing a byte array to a {@link CountingGroupImpl} via {@link HashIntoZn}.
+ */
 public class HashIntoCountingGroupImpl implements HashIntoGroupImpl {
     protected CountingGroupImpl group;
     protected HashIntoZn hash;

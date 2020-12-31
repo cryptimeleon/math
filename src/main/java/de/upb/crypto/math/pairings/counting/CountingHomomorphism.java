@@ -9,6 +9,9 @@ import de.upb.crypto.math.structures.groups.lazy.LazyGroupHomomorphism;
 
 import java.util.Objects;
 
+/**
+ * A homomorphism between two {@link CountingGroup}s.
+ */
 public class CountingHomomorphism implements GroupHomomorphism {
 
     @Represented

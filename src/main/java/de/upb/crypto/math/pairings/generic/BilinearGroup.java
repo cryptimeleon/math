@@ -34,9 +34,9 @@ public interface BilinearGroup extends StandaloneRepresentable {
     BilinearMap getBilinearMap();
 
     GroupHomomorphism getHomomorphismG2toG1() throws UnsupportedOperationException;
-
+    
     HashIntoStructure getHashIntoG1() throws UnsupportedOperationException;
-
+    
     HashIntoStructure getHashIntoG2() throws UnsupportedOperationException;
 
     HashIntoStructure getHashIntoGT() throws UnsupportedOperationException;

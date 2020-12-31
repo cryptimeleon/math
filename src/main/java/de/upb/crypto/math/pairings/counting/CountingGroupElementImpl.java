@@ -11,12 +11,30 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 /**
+ * An element of {@link CountingGroupImpl} able to count group operations, inversions and squarings
+ * it is involved with.
+ * The actual group operations are realized via a Zn element.
+ *
+ * @see CountingGroupElement
  * @see CountingGroupImpl
  */
 public class CountingGroupElementImpl implements GroupElementImpl {
+    /**
+     * The underlying Zn element that realizes the actual group operations.
+     */
     protected Zn.ZnElement elem;
+
+    /**
+     * The group this element belongs to.
+     */
     protected CountingGroupImpl group;
 
+    /**
+     * Initializes this element as belonging to the given group and using the given Zn element for its group operations.
+     *
+     * @param group The group this element belongs to.
+     * @param elem The Zn element through which the group operations are done.
+     */
     public CountingGroupElementImpl(CountingGroupImpl group, Zn.ZnElement elem) {
         this.elem = elem;
         this.group = group;

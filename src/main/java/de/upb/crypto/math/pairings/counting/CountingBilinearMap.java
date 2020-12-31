@@ -19,10 +19,14 @@ import java.util.Objects;
  * Allows for counting group operations and (multi-)exponentiations as well as pairings on the bilinear
  * group level.
  * <p>
+ * The bilinear map works by mapping {@code (Zn,+) x (Zn,+)} to {@code (Zn,+)} via {@code (a,b) -> a*b}
+ * (multiplication in Zn).
+ * It is insecure since DLOG is trivial in Zn.
+ * <p>
  * The counting capability is implemented by wrapping two {@link LazyBilinearMap}s which contain
  * {@link CountingBilinearGroupImpl}s themselves. All operations are executed in both groups,
  * one counts total group operations and one counts each (multi-)exponentiation as one unit.
- * This allows tracking both kinds of data.
+ * This allows for tracking both kinds of data.
  *
  * @see CountingBilinearGroup
  * 

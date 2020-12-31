@@ -64,6 +64,9 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
     @Represented
     protected Boolean enableMultiExpCounting;
 
+    /**
+     * The underlying bilinear map used for applying the pairing function and counting it.
+     */
     CountingBilinearMapImpl bilinearMapImpl;
 
     public CountingBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors,

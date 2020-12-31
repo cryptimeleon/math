@@ -12,14 +12,40 @@ import de.upb.crypto.math.structures.groups.lazy.LazyGroupElement;
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * An element of {@link CountingGroup}.
+ * <p>
+ * As {@code CountingGroup} itself consists of two nested groups, {@code CountingGroupElement} also essentially
+ * wraps two group elements, one for each nested group. Group operations are done for both.
+ * 
+ * @see CountingGroup
+ *
+ * @author Raphael Heitjohann
+ */
 public class CountingGroupElement implements GroupElement {
 
+    /**
+     * The group this element belongs to.
+     */
     protected CountingGroup group;
 
+    /**
+     * This element as a member of the group responsible for counting total group operations.
+     */
     protected LazyGroupElement elemTotal;
 
+    /**
+     * This element as a member of the group responsible for counting (multi-)exponentiations.
+     */
     protected LazyGroupElement elemExpMultiExp;
 
+    /**
+     * Initializes this group element as belonging to the given group and wrapping the two given group elements.
+     *
+     * @param group the group this element should belong to
+     * @param elemTotal the version of this group element belonging to the group counting total group operations
+     * @param elemExpMultiExp the version of this group element belonging to the group counting (multi)-exponentiations
+     */
     public CountingGroupElement(CountingGroup group, LazyGroupElement elemTotal, LazyGroupElement elemExpMultiExp) {
         this.group = group;
         this.elemTotal = elemTotal;
@@ -100,6 +126,11 @@ public class CountingGroupElement implements GroupElement {
         );
     }
 
+    /**
+     * Since asynchronous computation makes count data unreliable, this method works like {@link #computeSync()}.
+     * <p>
+     * @inheritDoc
+     */
     @Override
     public GroupElement compute() {
         // counting requires synchronization so we always do computeSync
