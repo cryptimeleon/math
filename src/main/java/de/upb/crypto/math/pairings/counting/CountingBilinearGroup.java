@@ -1,10 +1,10 @@
 package de.upb.crypto.math.pairings.counting;
 
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
-import de.upb.crypto.math.pairings.generic.BilinearMap;
 import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
 import de.upb.crypto.math.interfaces.structures.Group;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
+import de.upb.crypto.math.pairings.generic.BilinearMap;
 import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.Representation;

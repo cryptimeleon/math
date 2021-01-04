@@ -3,8 +3,14 @@ package de.upb.crypto.math.serialization;
 import java.util.Arrays;
 import java.util.Base64;
 
+/**
+ * Representation of a {@code byte[]}.
+ */
 public class ByteArrayRepresentation extends Representation {
     private static final long serialVersionUID = 5386237030968264355L;
+    /**
+     * The byte array represented by this representation.
+     */
     protected byte[] data;
 
     public ByteArrayRepresentation() { //needed for Java serialization
@@ -15,6 +21,9 @@ public class ByteArrayRepresentation extends Representation {
         this.data = Arrays.copyOf(data, data.length);
     }
 
+    /**
+     * Retrieves the stored {@code byte[]}.
+     */
     public byte[] get() {
         return data;
     }
@@ -41,8 +50,6 @@ public class ByteArrayRepresentation extends Representation {
         if (getClass() != obj.getClass())
             return false;
         ByteArrayRepresentation other = (ByteArrayRepresentation) obj;
-        if (!Arrays.equals(data, other.data))
-            return false;
-        return true;
+        return Arrays.equals(data, other.data);
     }
 }

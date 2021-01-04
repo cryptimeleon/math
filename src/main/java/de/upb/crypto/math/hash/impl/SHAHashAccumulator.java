@@ -1,19 +1,18 @@
 package de.upb.crypto.math.hash.impl;
 
-import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.hash.HashFunction;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * A {@link ByteAccumulator} that is used to implement the {@link HashFunction}s
+ * A {@link HashAccumulator} that is used to implement the {@link HashFunction}s
  * {@link SHA256HashFunction} and {@link SHA512HashFunction}.
  *
  * @author Denis Diemert
  */
 public class SHAHashAccumulator extends HashAccumulator {
-    private final MessageDigest digest;
+    protected final MessageDigest digest;
 
     public SHAHashAccumulator(final String algorithm) {
         try {

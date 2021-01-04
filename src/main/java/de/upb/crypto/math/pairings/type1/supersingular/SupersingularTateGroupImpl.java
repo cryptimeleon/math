@@ -1,12 +1,12 @@
 package de.upb.crypto.math.pairings.type1.supersingular;
 
+import de.upb.crypto.math.interfaces.mappings.IdentityIsomorphism;
+import de.upb.crypto.math.interfaces.mappings.impl.HashIntoGroupImpl;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
-import de.upb.crypto.math.interfaces.mappings.IdentityIsomorphism;
 import de.upb.crypto.math.pairings.generic.BilinearMapImpl;
-import de.upb.crypto.math.interfaces.mappings.impl.HashIntoGroupImpl;
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;

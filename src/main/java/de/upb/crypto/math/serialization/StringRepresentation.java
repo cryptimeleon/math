@@ -1,10 +1,16 @@
 package de.upb.crypto.math.serialization;
 
+/**
+ * Representation of a {@code String}.
+ */
 public class StringRepresentation extends Representation {
     private static final long serialVersionUID = 4508386585732032537L;
+    /**
+     * The {@code String} represented by this representation.
+     */
     protected String s;
 
-    private StringRepresentation() { //needed for Java serialization
+    private StringRepresentation() { // needed for Java serialization
 
     }
 
@@ -12,6 +18,9 @@ public class StringRepresentation extends Representation {
         this.s = s;
     }
 
+    /**
+     * Returns the represented {@code String}.
+     */
     public String get() {
         return s;
     }
@@ -27,7 +36,7 @@ public class StringRepresentation extends Representation {
     }
 
     @Override
-    public boolean equals(Object obj) { //Eclipse generated
+    public boolean equals(Object obj) {
         if (this == obj)
             return true;
         if (obj == null)

@@ -1,7 +1,8 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
-
+/**
+ * Represents the result of inverting a group element.
+ */
 public class InvLazyGroupElement extends LazyGroupElement {
     protected LazyGroupElement base;
 

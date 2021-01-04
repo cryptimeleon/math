@@ -6,6 +6,9 @@ import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
 
 import java.util.List;
 
+/**
+ * Represents the result of a group operation.
+ */
 public class OpLazyGroupElement extends LazyGroupElement {
     LazyGroupElement lhs, rhs;
     GroupElementImpl accumulatedConstant = null;

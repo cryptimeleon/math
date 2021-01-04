@@ -5,10 +5,13 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 
 import java.math.BigInteger;
 
+/**
+ * Contains miscellaneous methods for working with finite fields.
+ */
 public abstract class FiniteFieldTools {
 
     /**
-     * Returns true iff there is a y in the same field such that y^2 = x
+     * Returns true iff there is an \(y\) in the same field such that \(y^2 = x\).
      */
     public static boolean isSquare(FieldElement x) {
         if (x.isZero())
@@ -27,6 +30,9 @@ public abstract class FiniteFieldTools {
          */
     }
 
+    /**
+     * Computes the square root of the given element.
+     */
     public static FieldElement sqrt(FieldElement element) {
         if (!isSquare(element)) {
             throw new ArithmeticException(element + "is not a square");

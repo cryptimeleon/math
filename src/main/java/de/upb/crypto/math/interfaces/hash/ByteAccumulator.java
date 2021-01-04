@@ -1,18 +1,21 @@
 package de.upb.crypto.math.interfaces.hash;
 
+import de.upb.crypto.math.hash.impl.ByteArrayAccumulator;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A ByteAccumulator takes a (large) byte-string x as input and outputs a byte array representing f(x) for some function
- * f. The function f depends on the concrete instantiation of this class. It can be, for example, the identity function
- * (ByteArrayAccumulator).
+ * A {@code ByteAccumulator} takes a (large) byte-string x as input and outputs a byte array
+ * representing f(x) for some function f.
+ * The function f depends on the concrete instantiation of this class. It can be, for example, the identity function
+ * {@link ByteArrayAccumulator}.
  * <p>
- * The input x can be given to the ByteAccumulator in substrings, so if x = x_1 || x_2 (|| denotes concatentation), then
- * after calling append(x_1) and append(x_2), extractBytes() will output f(x) = f(x_1 || x_2).
+ * The input x can be given to the ByteAccumulator in substrings, so if x = x_1 || x_2 (|| denotes concatenation), then
+ * after calling {@code append(x_1)} and {@code append(x_2)}, {@code extractBytes()} will output f(x) = f(x_1 || x_2).
  * <p>
- * Usually, this class will be used in the context of the UniqueByteRepresentable interface. For this, it contains some
- * helper methods to make it easier to insert certain x into this.
+ * Usually, this class will be used in the context of the {@link UniqueByteRepresentable} interface.
+ * To that end, it contains some helper methods to make it easier to insert certain x into this.
  */
 public abstract class ByteAccumulator {
     public static byte SEPARATOR = (byte) '\\';
@@ -23,8 +26,7 @@ public abstract class ByteAccumulator {
     public abstract void append(byte[] bytes);
 
     /**
-     * Extracts f(x) from the accumulator, where
-     * x was input by append() calls.
+     * Extracts f(x) from the accumulator, where x was input by {@code append()} calls.
      *
      * @return f(x)
      */
@@ -70,7 +72,7 @@ public abstract class ByteAccumulator {
     }
 
     /**
-     * Escapes the separator symbol, appends the escaped bytes, then appends a separator symbol
+     * Escapes the separator symbol, appends the escaped bytes, then appends a separator symbol.
      */
     public void escapeAndSeparate(byte[] bytes) {
         escapeAndAppend(bytes);
@@ -78,14 +80,14 @@ public abstract class ByteAccumulator {
     }
 
     /**
-     * Escapes the separator symbol in the given string, appends the escaped bytes, then appends a separator symbol
+     * Escapes the separator symbol in the given string, appends the escaped bytes, then appends a separator symbol.
      */
     public void escapeAndSeparate(String str) {
         escapeAndSeparate(str.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
-     * Escapes the separator symbol, appends the escaped bytes, then appends a separator symbol
+     * Escapes the separator symbol, appends the escaped bytes, then appends a separator symbol.
      */
     public void escapeAndSeparate(UniqueByteRepresentable ubr) {
         escapeAndAppend(ubr);
@@ -118,21 +120,21 @@ public abstract class ByteAccumulator {
     }
 
     /**
-     * Updates the ByteAccumulator with bytes from a UniqueByteRepresentable.
+     * Updates the {@code ByteAccumulator} with bytes from a {@code UniqueByteRepresentable}.
      */
     public void append(UniqueByteRepresentable ubr) {
         append(ubr.getUniqueByteRepresentation());
     }
 
     /**
-     * Appends a single byte to the accumulator
+     * Appends a single byte to the accumulator.
      */
     public void append(byte singleByte) {
         append(new byte[]{singleByte});
     }
 
     /**
-     * Appends the given integer as four bytes to the accumulator
+     * Appends the given integer as four bytes to the accumulator.
      */
     public void append(int integer) {
         append(ByteBuffer.allocate(4).putInt(integer).array());

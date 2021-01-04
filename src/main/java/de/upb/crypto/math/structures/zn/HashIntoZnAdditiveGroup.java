@@ -2,46 +2,51 @@ package de.upb.crypto.math.structures.zn;
 
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
 import de.upb.crypto.math.interfaces.structures.RingGroup;
-import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
-import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl.RingAdditiveGroupElementImpl;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
- * Hashes into the additive subgroup of Zn.
+ * Hashes into the additive subgroup of {@link Zn}.
  *
  * @see HashIntoZn
  */
 public class HashIntoZnAdditiveGroup implements HashIntoStructure {
+    /**
+     * The {@link HashIntoZn} underlying this hash.
+     */
     protected HashIntoZn znHash;
 
     /**
-     * target group
+     * The target additive group.
      */
     protected RingGroup structure;
 
     /**
-     * Corresponds to new HashIntoZn()
+     * Initializes this hash to the {@code Zn} based on the given {@code n}.
      */
     public HashIntoZnAdditiveGroup(BigInteger n) {
         this(new HashIntoZn(n));
     }
 
     /**
-     * Corresponds to new HashIntoZn(String)
+     * Initializes this hash to the additive subgroup of the given {@code Zn}.
      */
     public HashIntoZnAdditiveGroup(Zn ring) {
         this(new HashIntoZn(ring.n));
     }
 
     /**
-     * Recreate hash function from representation
+     * Recreates hash function from representation.
      */
     public HashIntoZnAdditiveGroup(Representation repr) {
         this(new HashIntoZn(repr));
     }
 
+    /**
+     * Initializes this hash based on an existing {@code HashIntoZn}.
+     */
     public HashIntoZnAdditiveGroup(HashIntoZn hashIntoZn) {
         znHash = hashIntoZn;
         structure = znHash.getTargetStructure().asAdditiveGroup();
@@ -60,13 +65,18 @@ public class HashIntoZnAdditiveGroup implements HashIntoStructure {
 
     @Override
     public int hashCode() {
-        return structure.hashCode();
+        return Objects.hash(znHash, structure);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof HashIntoZnAdditiveGroup &&
-                //structure.equals(((HashIntoZnAdditiveGroup) obj).structure) &&
-                znHash.equals(((HashIntoZnAdditiveGroup) obj).znHash);
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        HashIntoZnAdditiveGroup other = (HashIntoZnAdditiveGroup) obj;
+        return Objects.equals(znHash, other.znHash);
     }
 }

@@ -1,6 +1,6 @@
 package de.upb.crypto.math.standalone.test;
 
-import de.upb.crypto.math.pairings.type3.bn.*;
+import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;

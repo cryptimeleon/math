@@ -1,7 +1,10 @@
 package de.upb.crypto.math.pairings.type1.supersingular;
 
 import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.pairings.generic.*;
+import de.upb.crypto.math.pairings.generic.AbstractPairing;
+import de.upb.crypto.math.pairings.generic.ExtensionField;
+import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
+import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.serialization.Representation;
 
 public class SupersingularTatePairing extends AbstractPairing {

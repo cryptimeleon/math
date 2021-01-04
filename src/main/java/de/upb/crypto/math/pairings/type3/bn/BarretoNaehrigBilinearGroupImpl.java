@@ -1,13 +1,13 @@
 package de.upb.crypto.math.pairings.type3.bn;
 
-import de.upb.crypto.math.interfaces.structures.FieldElement;
-import de.upb.crypto.math.pairings.generic.*;
 import de.upb.crypto.math.hash.impl.SHA256HashFunction;
 import de.upb.crypto.math.hash.impl.SHA512HashFunction;
 import de.upb.crypto.math.interfaces.hash.HashFunction;
 import de.upb.crypto.math.interfaces.mappings.impl.GroupHomomorphismImpl;
 import de.upb.crypto.math.interfaces.mappings.impl.HashIntoGroupImpl;
+import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
+import de.upb.crypto.math.pairings.generic.*;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
@@ -19,13 +19,16 @@ import java.util.Objects;
 /**
  * This class provides a minimal representation to reconstruct public parameters of pairings based schemes.
  * <p>
- * For BN curves, G1, G2, and GT are defined based on:
- * - a finite field F_p defined by a prime p
- * - a quadratic extension F2=F_p(alpha) defined by a QNR alpha and the irreducible binomial x^2-alpha
- * - a sextic extension F12=F_2(beta) defined by the irreducible binomial x^6-beta.
- * - an element b in F_p with prime order G1=E:y^2=x^3+b
- * - an element b'=b/alpha in F2 with G2 a subgroup of size n in E':y^2=x^3+b'
- *
+ * For BN curves, \(\mathbb{G}_1\), \(\mathbb{G}_2\), and \(\mathbb{G}_T\) are defined based on:
+ * <ul>
+ * <li> a finite field \(\mathbb{F}_p\) defined by a prime \(p\)
+ * <li> a quadratic extension \(\mathbb{F}_2=\mathbb{F}_p(\alpha)\) defined by a quadratic non residue \(\alpha\)
+ *      and the irreducible binomial \(x^2-\alpha\)
+ * <li> a sextic extension \(\mathbb{F}_{12}=\mathbb{F}_2(\beta)\) defined by the irreducible binomial \(x^6-\beta\)
+ * <li> an element \(b\) in \(\mathbb{F}_p\) with prime order in \(\mathbb{G}_1=E:y^2=x^3+b\)
+ * <li> an element \(b'=b/\alpha\) in \(\mathbb{F}_2\)
+ *      with \(\mathbb{G}_2\) a subgroup of size \(n\) in \(E':y^2=x^3+b'\)
+ * </ul>
  * @author Peter Guenther (peter.guenther@wincor-nixdorf.com)
  */
 public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
@@ -392,11 +395,11 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     }
 
     /**
-     * Initialize factory from given generators of BN groups G1 and G2.
+     * Initialize this bilinear group from given generators of BN groups G1 and G2.
      *
-     * @param P1 Generator of G1
-     * @param P2 Generator of G2
-     * @param gT Target group
+     * @param P1 generator of G1
+     * @param P2 generator of G2
+     * @param gT target group
      */
     private void init(BarretoNaehrigGroup1ElementImpl P1, BarretoNaehrigGroup2ElementImpl P2,
                                                  BarretoNaehrigTargetGroupImpl gT) {
@@ -410,9 +413,9 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     }
 
     /**
-     * Characteristic p of BN curves are parameterized as follows:
+     * Characteristic \(p\) of BN curves is parameterized as follows:
      * <p>
-     * p = p(u) = 36u^4 + 36u^3 + 24u^2 + 6u + 1
+     * \(p = p(u) = 36u^4 + 36u^3 + 24u^2 + 6u + 1\)
      */
     private static BigInteger p(BigInteger u) {
         return BigInteger.valueOf(36).multiply((u.pow(4).add(u.pow(3))))
@@ -421,18 +424,18 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     }
 
     /**
-     * Trace of frobenius of BN curves are parameterized as follows:
+     * Trace of Frobenius of BN curves is parameterized as follows:
      * <p>
-     * t = 6u^2 + 1
+     * \(t = 6u^2 + 1\)
      */
     private static BigInteger t(BigInteger u) {
         return BigInteger.valueOf(6).multiply(u.pow(2)).add(BigInteger.ONE);
     }
 
     /**
-     * Group order r of BN curves are parameterized as follows:
+     * Group order \(r\) of BN curves is parameterized as follows:
      * <p>
-     * r = r(u) = 36u^4 + 36u^3 + 18u^2 + 6u + 1 = p - t
+     * \(r = r(u) = 36u^4 + 36u^3 + 18u^2 + 6u + 1 = p - t\)
      */
     private static BigInteger groupOrder(BigInteger q, BigInteger t) {
         return q.add(BigInteger.ONE).subtract(t);

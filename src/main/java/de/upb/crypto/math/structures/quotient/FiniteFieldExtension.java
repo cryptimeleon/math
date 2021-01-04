@@ -13,19 +13,22 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 /**
- * The extension of a finite field F represented by
- * F[X]/(f) for some irreducible polynomial f in F[X].
+ * The extension of a finite field \(\mathbb{F}\) represented by
+ * \(\mathbb{F}[X]/(f)\) for some irreducible polynomial \(f \in \mathbb{F}[X]\).
  * <p>
- * This can be used to build towers of fields
+ * This can be used to build field towers.
  */
 public class FiniteFieldExtension extends QuotientRing<FieldElement> implements Field {
+    /**
+     * The degree of this extension (the degree of the irreducible polynomial underlying this field extension).
+     */
     protected int extensionDegree;
 
     /**
-     * Creates a finite field extension over baseField using irreduciblePoly as a modulus.
+     * Creates a finite field extension over the given base field using the given irreducible polynomial as modulus.
      *
-     * @param baseField       a field F
-     * @param irreduciblePoly a polynomial with coefficients in F
+     * @param baseField       a field \(\mathbb{F}\)
+     * @param irreduciblePoly an irreducible polynomial with coefficients in \(\mathbb{F}\)
      */
     public FiniteFieldExtension(Field baseField, Polynomial irreduciblePoly) {
         super(new PolynomialRing(baseField), new PrincipalIdeal(irreduciblePoly));
@@ -35,9 +38,9 @@ public class FiniteFieldExtension extends QuotientRing<FieldElement> implements 
     }
 
     /**
-     * Creates a finite field extension from the base field of an irreducible polynomial f, i.e. F[X]/(f) if f is in F[X].
+     * Creates a finite field extension from the base field of an irreducible polynomial f.
      *
-     * @param irreduciblePoly
+     * @param irreduciblePoly an irreducible polynomial with coefficients in \(\mathbb{F}\)
      */
     public FiniteFieldExtension(Polynomial irreduciblePoly) {
         this((Field) irreduciblePoly.getStructure().getBaseRing(), irreduciblePoly);
@@ -92,8 +95,8 @@ public class FiniteFieldExtension extends QuotientRing<FieldElement> implements 
     /**
      * Maps elements from the base field to this extension field.
      * <p>
-     * Let this be a an extension K of F and e be an element in F.
-     * Then we map e to K by representing e as a constant (polynomial) in the base ring of K.
+     * Let this be an extension \(K\) of \(\mathbb{F}\) and \(e\) be an element in \(\mathbb{F}\).
+     * Then we map \(e\) to \(K\) by representing \(e\) as a constant (polynomial) in the base ring of \(K\).
      *
      * @param e the element of the base field to be mapped to this field
      * @return e as an element in this field
@@ -105,16 +108,22 @@ public class FiniteFieldExtension extends QuotientRing<FieldElement> implements 
     /**
      * Get the base field of this extension field.
      *
-     * @return base field.
+     * @return the base field
      */
     public Field getBaseField() {
         return (Field) ((PolynomialRing) getQuotientRingBase()).getBaseRing();
     }
 
+    /**
+     * Creates a new element of this field from the given polynomial.
+     */
     public FieldElement createElement(Polynomial p) {
         return new FiniteFieldElement(p);
     }
 
+    /**
+     * The elements of this field extension.
+     */
     public class FiniteFieldElement extends QuotientRingElement implements FieldElement {
 
         public FiniteFieldElement(Polynomial representative) {

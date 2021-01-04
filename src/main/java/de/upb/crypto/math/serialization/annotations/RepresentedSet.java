@@ -6,10 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A set of homogenic elements that are all restoreable in the same way (e.g. elements of the same group)
+ * A set of homogenous elements that are all restorable in the same way (e.g. elements of the same group)
  *
  * @author Lukas Eilers
+ * @deprecated Superseded by the v2 framework
  */
+@Deprecated
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.FIELD)
 public @interface RepresentedSet {

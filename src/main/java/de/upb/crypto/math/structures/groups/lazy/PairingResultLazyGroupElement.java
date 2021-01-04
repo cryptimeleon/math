@@ -1,10 +1,10 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 
-import java.math.BigInteger;
-
+/**
+ * Represents the result of a pairing evaluation.
+ */
 public class PairingResultLazyGroupElement extends LazyGroupElement {
     protected LazyGroupElement lhs, rhs;
     protected LazyBilinearMap bilMap;

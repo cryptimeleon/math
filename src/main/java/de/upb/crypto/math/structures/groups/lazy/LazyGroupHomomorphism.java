@@ -6,11 +6,16 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
-import de.upb.crypto.math.structures.groups.basic.BasicGroup;
-import de.upb.crypto.math.structures.groups.basic.BasicGroupElement;
 
 import java.util.Objects;
 
+/**
+ * A {@link GroupHomomorphismImpl} wrapper implementing deferred (lazy) evaluation.
+ * <p>
+ * Allows for additional optimizations using information about the operations being applied.
+ * <p>
+ * For more information, see the <a href="https://upbcuk.github.io/docs/lazy-eval.html">documentation</a>.
+ */
 public class LazyGroupHomomorphism implements GroupHomomorphism {
     @Represented
     protected LazyGroup targetGroup;

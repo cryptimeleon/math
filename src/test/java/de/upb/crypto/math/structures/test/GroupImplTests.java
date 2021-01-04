@@ -1,13 +1,12 @@
 package de.upb.crypto.math.structures.test;
 
 import de.upb.crypto.math.elliptic.Secp256k1;
-import de.upb.crypto.math.pairings.counting.CountingGroupImpl;
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
-import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
+import de.upb.crypto.math.pairings.counting.CountingGroupImpl;
+import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
 import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;

@@ -10,7 +10,10 @@ import java.util.stream.Stream;
  */
 public class ListRepresentation extends Representation implements Iterable<Representation> {
     private static final long serialVersionUID = -7782043563152429201L;
-    protected List<Representation> list = new ArrayList<>();
+    /**
+     * The list represented by this representation.
+     */
+    protected final List<Representation> list = new ArrayList<>();
 
     /**
      * Creates an empty list representation
@@ -27,35 +30,62 @@ public class ListRepresentation extends Representation implements Iterable<Repre
         this.list.addAll(Arrays.asList(list));
     }
 
+    /**
+     * Retrieves the {@code i}-th entry in this list.
+     * @param i the index of the entry to retrieve
+     */
     public Representation get(int i) {
         return list.get(i);
     }
 
+    /**
+     * Retrieves the size of the represented list.
+     */
     public int size() {
         return list.size();
     }
 
+    /**
+     * Adds a representation to the list (same as {@link #add(Representation)}).
+     * @param value the representation to add
+     */
     public void put(Representation value) {
         list.add(value);
     }
 
+    /**
+     * Adds a representation to the list (same as {@link #put(Representation)}).
+     * @param value the representation to add
+     */
     public void add(Representation value) {
         put(value);
     }
 
+    /**
+     * Retrieves an immutable view of the list.
+     */
     public List<Representation> getList() {
         return Collections.unmodifiableList(list);
     }
 
+    /**
+     * Retrieves an array version of the list.
+     */
     public Representation[] getArray() {
         return list.toArray(new Representation[list.size()]);
     }
 
+    /**
+     * Constructs an {@link Iterator} over the list.
+     */
     @Override
     public Iterator<Representation> iterator() {
         return list.iterator();
     }
 
+    /**
+     * Constructs a {@link Stream} over the list.
+     */
     public Stream<Representation> stream() {
         return list.stream();
     }

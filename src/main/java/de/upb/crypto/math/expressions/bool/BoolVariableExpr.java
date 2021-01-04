@@ -3,12 +3,17 @@ package de.upb.crypto.math.expressions.bool;
 import de.upb.crypto.math.expressions.EvaluationException;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.VariableExpression;
-import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link BooleanExpression} representing a variable, a Boolean whose actual Boolean value is not currently known.
+ */
 public class BoolVariableExpr implements VariableExpression, BooleanExpression {
+    /**
+     * The name of this variable.
+     */
     protected final String name;
 
     public BoolVariableExpr(String name) {

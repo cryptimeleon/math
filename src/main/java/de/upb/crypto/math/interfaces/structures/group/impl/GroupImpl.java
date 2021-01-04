@@ -1,10 +1,13 @@
 package de.upb.crypto.math.interfaces.structures.group.impl;
 
+import de.upb.crypto.math.interfaces.structures.Element;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
 import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
+import de.upb.crypto.math.structures.zn.Zp;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -12,15 +15,25 @@ import java.util.Optional;
 
 /**
  * A Group. Operations are defined on its elements.
+ * <p>
+ * Usually wrapped by a {@link Group} to offer additional evaluation capabilities.
  */
 public interface GroupImpl extends StandaloneRepresentable, RepresentationRestorer {
     /**
-     * Returns the neutral element for this group
+     * Returns the neutral element of this group.
      */
     GroupElementImpl getNeutralElement();
 
+    /**
+     * Generates a uniformly random element of this group.
+     * @throws UnsupportedOperationException if the random generation cannot be done
+     */
     GroupElementImpl getUniformlyRandomElement() throws UnsupportedOperationException;
 
+    /**
+     * Generates a uniformly random non-neutral element of this group.
+     * @throws UnsupportedOperationException if the random generation cannot be done
+     */
     default GroupElementImpl getUniformlyRandomNonNeutral() throws UnsupportedOperationException {
         GroupElementImpl result;
         do {
@@ -30,13 +43,18 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
         return result;
     }
 
+    /**
+     * Recreates a group element from its representation.
+     */
     GroupElementImpl getElement(Representation repr);
 
     /**
      * Returns any generator of this group if the group is cyclic and it's feasible to compute a generator.
-     * Repeated calls may or may not always supply the same generator again (i.e. the output is not guaranteed to be random)!
+     * <p>
+     * Repeated calls may or may not always supply the same generator again
+     * (i.e. the output is not guaranteed to be random)!
      *
-     * @throws UnsupportedOperationException if group is not cyclic or it's hard to compute a generator
+     * @throws UnsupportedOperationException if group is not cyclic or it's too hard to compute a generator
      */
     GroupElementImpl getGenerator() throws UnsupportedOperationException;
 
@@ -46,10 +64,10 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
     boolean isCommutative();
 
     /**
-     * Size of the group
+     * Retrieves number of elements in the group if possible.
      *
      * @return size of this group (number of group elements in it) or null if infinite
-     * @throws UnsupportedOperationException if the number of elements is unknown / too expensive to compute
+     * @throws UnsupportedOperationException if the number of elements is unknown or is too expensive to compute
      */
     BigInteger size() throws UnsupportedOperationException;
 
@@ -58,26 +76,42 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
      */
     boolean hasPrimeSize();
 
+    /**
+     * Indicates whether this group implements its own custom exponentiation algorithm by overwriting {@link #exp}.
+     *
+     * @return true if the group overwrites {@link #exp}, else false
+     */
     default boolean implementsOwnExp() {
         return false;
     }
 
+    /**
+     * Can be overwritten to implement a custom exponentiation algorithm for the group.
+     *
+     * @param base the base of the exponentiation
+     * @param exponent the exponent of the exponentiation
+     * @param precomputation a set of precomputations that can be used to speed up the exponentiation
+     * @return the result of {@code base} base to the power of {@code exponent}
+     */
     default GroupElementImpl exp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
         throw new UnsupportedOperationException("Exponentiation is not implemented for group " + this);
     }
 
     /**
-     * Indicates whether this group implements its own multi-exponentiation algorithm.
-     * @return {@code true} if the group implements its own multi-exponentiation algorithm {@code false} otherwise
+     * Indicates whether this group implements its own multi-exponentiation algorithm
+     * by overwriting {@link #multiexp(Multiexponentiation)}.
+     *
+     * @return true if the group implements its own multi-exponentiation algorithm, else false
      */
     default boolean implementsOwnMultiExp() {
         return false;
     }
 
     /**
-     * Allows the group to implement its own multi-exponentiation algorithm.
-     * @param mexp  Contains the multi-exponentiation terms
-     * @return Result of computing the multi-exponentiation
+     * Can be overwritten to implement a custom multi-exponentiation algorithm for the group.
+     *
+     * @param mexp contains the multi-exponentiation terms
+     * @return result of computing the multi-exponentiation
      */
     default GroupElementImpl multiexp(Multiexponentiation mexp) {
         throw new UnsupportedOperationException("Multi-exponentiation is not implemented for group " + this);
@@ -98,6 +132,19 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
         return getElement(repr);
     }
 
+    /**
+     * Returns the number of bytes returned by this structure's {@link Element#getUniqueByteRepresentation()},
+     * or an empty {@code Optional} if this structure's elements do not guarantee a fixed length.
+     * <p>
+     * For example, elements of {@link Zp} will always be represented by {@code ceil(ceil(log(p))/8)} bytes,
+     * hence {@code getUniqueByteLength()} would return {@code ceil(ceil(log(p))/8)}.
+     * <p>
+     * A polynomial ring would return an empty {@code Optional} since a polynomial's unique byte representation length
+     * depends on its degree.
+     *
+     * @return the guaranteed fixed length of {@code getUniqueByteRepresentation()},
+     *         or an empty {@code Optional}, if no guarantee
+     */
     Optional<Integer> getUniqueByteLength();
 }
 

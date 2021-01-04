@@ -8,18 +8,35 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An {@link ExponentExpr} representing an exponentiation with both base and exponent being exponent expressions.
+ */
 public class ExponentPowExpr implements ExponentExpr {
-    protected ExponentExpr base, exponent;
+    /**
+     * The base expression of this exponentiation.
+     */
+    protected final ExponentExpr base;
+
+    /**
+     * The power expression of this exponentiation.
+     */
+    protected final ExponentExpr exponent;
 
     public ExponentPowExpr(ExponentExpr base, ExponentExpr exponent) {
         this.base = base;
         this.exponent = exponent;
     }
 
+    /**
+     * Retrieves the base exponent expression of this exponentiation.
+     */
     public ExponentExpr getBase() {
         return base;
     }
 
+    /**
+     * Retrieves the power exponent expression of this exponentiation.
+     */
     public ExponentExpr getExponent() {
         return exponent;
     }

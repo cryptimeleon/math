@@ -1,7 +1,6 @@
 package de.upb.crypto.math.standalone.test;
 
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
-import de.upb.crypto.math.pairings.type1.supersingular.*;
+import de.upb.crypto.math.pairings.type1.supersingular.SupersingularTateGroupImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,12 +1,10 @@
 package de.upb.crypto.math.standalone.test;
 
-import de.upb.crypto.math.pairings.counting.CountingBilinearGroupImpl;
-import de.upb.crypto.math.pairings.counting.CountingIsomorphismImpl;
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.pairings.counting.CountingBilinearGroup;
+import de.upb.crypto.math.pairings.counting.CountingBilinearGroupImpl;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 

@@ -10,9 +10,10 @@ import de.upb.crypto.math.serialization.BigIntegerRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
- * An Integer (as an Element of IntegerRing)
+ * An Integer (as an Element of {@link IntegerRing}).
  */
 public class IntegerElement implements RingElement {
     private static IntegerRing ring = new IntegerRing();
@@ -33,6 +34,9 @@ public class IntegerElement implements RingElement {
         return new BigIntegerRepresentation(v);
     }
 
+    /**
+     * Returns the {@code BigInteger} underlying this element.
+     */
     public BigInteger getBigInt() {
         return v;
     }
@@ -89,8 +93,11 @@ public class IntegerElement implements RingElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof IntegerElement && v.equals(((IntegerElement) obj).v);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IntegerElement other = (IntegerElement) o;
+        return Objects.equals(v, other.v);
     }
 
     @Override

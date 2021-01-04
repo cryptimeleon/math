@@ -8,18 +8,35 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An {@link ExponentExpr} represening the multiplication of two exponent expressions.
+ */
 public class ExponentMulExpr implements ExponentExpr {
-    protected ExponentExpr lhs, rhs;
+    /**
+     * The left hand side of this multiplication.
+     */
+    protected final ExponentExpr lhs;
+
+    /**
+     * The right hand side of this multiplication.
+     */
+    protected final ExponentExpr rhs;
 
     public ExponentMulExpr(ExponentExpr lhs, ExponentExpr rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
     }
 
+    /**
+     * Retrieves the left hand side of this multiplication.
+     */
     public ExponentExpr getLhs() {
         return lhs;
     }
 
+    /**
+     * Retrieves the right hand side of this multiplication.
+     */
     public ExponentExpr getRhs() {
         return rhs;
     }

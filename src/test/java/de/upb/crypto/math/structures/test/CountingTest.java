@@ -1,15 +1,16 @@
 package de.upb.crypto.math.structures.test;
 
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.counting.CountingBilinearGroup;
 import de.upb.crypto.math.pairings.counting.CountingGroup;
+import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CountingTest {
 

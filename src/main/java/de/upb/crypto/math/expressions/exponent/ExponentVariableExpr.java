@@ -1,15 +1,24 @@
 package de.upb.crypto.math.expressions.exponent;
 
-import de.upb.crypto.math.expressions.*;
-import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.EvaluationException;
+import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An {@link ExponentExpr} representing a named variable.
+ */
 public class ExponentVariableExpr implements ExponentExpr, VariableExpression {
+
+    /**
+     * The name of this variable.
+     */
     protected final String name;
+
     public ExponentVariableExpr(String name) {
         this.name = name;
     }

@@ -1,8 +1,8 @@
 package de.upb.crypto.math.pairings.counting;
 
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.pairings.generic.BilinearMapImpl;
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;

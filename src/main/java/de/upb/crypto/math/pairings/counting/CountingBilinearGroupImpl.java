@@ -1,10 +1,10 @@
 package de.upb.crypto.math.pairings.counting;
 
+import de.upb.crypto.math.interfaces.mappings.impl.GroupHomomorphismImpl;
+import de.upb.crypto.math.interfaces.mappings.impl.HashIntoGroupImpl;
 import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
 import de.upb.crypto.math.pairings.generic.BilinearMapImpl;
-import de.upb.crypto.math.interfaces.mappings.impl.GroupHomomorphismImpl;
-import de.upb.crypto.math.interfaces.mappings.impl.HashIntoGroupImpl;
 import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.Representation;
@@ -16,7 +16,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.*;
+import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.TYPE_1;
+import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.TYPE_2;
 
 /**
  * A {@link BilinearGroupImpl} implementing a fast, but insecure pairing over {@link Zn}.

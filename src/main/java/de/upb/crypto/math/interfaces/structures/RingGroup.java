@@ -1,10 +1,16 @@
 package de.upb.crypto.math.interfaces.structures;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.*;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.groups.basic.BasicGroup;
 import de.upb.crypto.math.structures.groups.basic.BasicGroupElement;
 
+/**
+ * Represents a group instantiated from either the additive or unit groups from a ring.
+ */
 public class RingGroup extends BasicGroup {
     protected RingGroup(GroupImpl impl) {
         super(impl);
@@ -14,10 +20,20 @@ public class RingGroup extends BasicGroup {
         super(repr);
     }
 
+    /**
+     * Instantiates a {@code RingGroup} representing the additive group of the given ring.
+     * @param ring the base ring
+     * @return the additive group
+     */
     public static RingGroup additiveGroupOf(Ring ring) {
         return new RingGroup(new RingAdditiveGroupImpl(ring));
     }
 
+    /**
+     * Instantiates a {@code RingGroup} representing the unit group of the given ring.
+     * @param ring the base ring
+     * @return the unit group
+     */
     public static RingGroup unitGroupOf(Ring ring) {
         return new RingGroup(new RingUnitGroupImpl(ring));
     }
@@ -28,6 +44,11 @@ public class RingGroup extends BasicGroup {
         }
     }
 
+    /**
+     * Constructs a {@code RingGroupElement} from the given {@code RingElement} for use in {@code RingGroup}s.
+     * @param elem the ring element to convert
+     * @return the corresponding {@code RingGroupElement}
+     */
     public RingGroupElement getElement(RingElement elem) {
         return new RingGroupElement(elem);
     }

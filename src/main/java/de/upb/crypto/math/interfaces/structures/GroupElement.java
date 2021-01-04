@@ -3,7 +3,6 @@ package de.upb.crypto.math.interfaces.structures;
 import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.structures.cartesian.GroupElementVector;
-import de.upb.crypto.math.structures.cartesian.RingElementVector;
 import de.upb.crypto.math.structures.cartesian.Vector;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
@@ -11,43 +10,44 @@ import java.math.BigInteger;
 
 /**
  * Immutable objects representing elements of a group.
- *
- * Potentially calls here may return immediately and not block.
- * For example, g.op(h) may immediately return an object representing the
- * result of the group operation applied to g and h. This object is usable as such.
+ * <p>
+ * Potential calls here may return immediately and not block.
+ * For example, {@code g.op(h)} may immediately return an object representing the
+ * result of the group operation applied to {@code g} and {@code h}. This object is usable as such.
  * Internally, however, the actual computation of the group operation may be deferred
  * until the value is really needed.
- * This has performance advantages, for example, we can use multiexponentation
- * algorithms for computations of values like g.pow(x).op(h.pow(y)).
- *
- * You can (but don't have to) call compute() on a group element.
- * This will start computing its actual value asynchronously in the background.
- * Example (ElGamal encryption):
- * c0 = g.pow(r).compute(); //will return immediately, but compute g^r in the background.
- * c1 = h.pow(r).op(m).compute(); //will also start computing (in parallel)
- *
- * c0.getRepresentation(); //will block until the value of c0 is ready.
- * c1.getRepresentation();  //will block until the value of c1 is ready.
- *
- * Without the compute() calls, the example still produces the same output,
- * but c0 and c1 will be computed sequentially.
- *
+ * This has performance advantages, for example, we can use multi-exponentiation
+ * algorithms for computations of values like {@code g.pow(x).op(h.pow(y))}.
  * <p>
- * Implementations must properly implement equals() and hashCode()
+ * You can (but don't have to) call {@code compute()} on a group element.
+ * This will start computing its actual value asynchronously in the background.
+ * <p>
+ * Example (ElGamal encryption):
+ * <pre>
+ * c0 = g.pow(r).compute(); // will return immediately, but compute g^r in the background.
+ * c1 = h.pow(r).op(m).compute(); // will also start computing (in parallel)
+ *
+ * c0.getRepresentation(); // will block until the value of c0 is ready.
+ * c1.getRepresentation(); // will block until the value of c1 is ready.
+ * </pre>
+ * Without the {@code compute()} calls, the example still produces the same output,
+ * but {@code c0} and {@code c1} will be computed sequentially.
+ * <p>
+ * Implementations must properly implement {@code equals()} and {@code hashCode()}.
  */
 public interface GroupElement extends Element, UniqueByteRepresentable {
     @Override
     Group getStructure();
 
     /**
-     * Calculates the inverse of this group element
+     * Calculates the inverse of this group element.
      *
-     * @return an element x such that x.op(this).equals(getStructure().getNeutralElement())
+     * @return an element {@code x} such that {@code x.op(this).equals(getStructure().getNeutralElement())}
      */
     GroupElement inv();
 
     /**
-     * Calculates the result of e op this.
+     * Calculates the result of {@code this.op(e)}.
      *
      * @param e right hand side of the operation
      * @return the element resulting from the group operation
@@ -56,7 +56,10 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     GroupElement op(Element e) throws IllegalArgumentException;
 
     /**
-     * @return this element "squared" (if op is an multiplication), or "doubled" (if op is addition)
+     * Computes {@code this.op(this)}.
+     * <p>
+     * Useful if this group allows squaring to be more efficiently implemented than general exponentiation as is the
+     * case for elliptic curves.
      */
     default GroupElement square() {
         return this.op(this);
@@ -65,13 +68,14 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     /**
      * Calculates the result of applying the group operation k times.
      * i.e. it computes k*this (additive group) or this^k (multiplicative group).
-     * For negative exponents k, computes this.inv().pow(-k).
+     * For negative exponents k, computes {@code this.inv().pow(-k)}.
      */
     GroupElement pow(BigInteger exponent);
 
     /**
      * Calculates the result of applying the group operation k times.
-     * Note that this is only well-defined if k is from Zn, such that getStructure().size() divides n.
+     * Note that this is only well-defined if k is from Zn,
+     * such that {@code getStructure().size()} divides n.
      */
     default GroupElement pow(ZnElement k) {
         return pow(k.asExponent());
@@ -88,19 +92,20 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     /**
      * Calculates the result of applying the group operation k times.
      * i.e. it computes k*this (additive group) or this^k (multiplicative group).
-     * For negative exponents k, computes this.inv().pow(-k).
+     * For negative exponents k, computes {@code this.inv().pow(-k)}.
      * <p>
      * The caller should be aware that usually, exponents for large groups will not usually
-     * fit into a long value (use pow(BigInteger) or pow(ZnElement) if your exponent is large).
+     * fit into a long value (use {@code pow(BigInteger)} or {@code pow(ZnElement)}
+     * if your exponent is large).
      */
     default GroupElement pow(long k) {
         return pow(BigInteger.valueOf(k));
     }
 
     /**
-     * Computes vector (g^exponents[0], g^exponents[1], ...)
+     * Computes vector {@code (g.pow(exponents[0]), g.pow(exponents[1]), ...)}.
      * @param exponents the exponents to use (BigInteger, Long, or ZnElements)
-     * @return (g^exponents[0], g^exponents[1], ...)
+     * @return {@code (g.pow(exponents[0]), g.pow(exponents[1]), ...)}
      */
     default GroupElementVector pow(Vector<? extends RingElement> exponents) {
         return GroupElementVector.generate(i -> this, exponents.length()).pow(exponents);
@@ -114,17 +119,17 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     }
 
     /**
-     * Returns a {@link de.upb.crypto.math.expressions.group.GroupElementExpression} containing exactly this group element.
+     * Returns a {@link de.upb.crypto.math.expressions.group.GroupElementExpression}
+     * containing exactly this group element.
      */
     default GroupElementConstantExpr expr() {
         return new GroupElementConstantExpr(this);
     }
 
     /**
-     * Advises the GroupElement to prepare it for later pow() calls.
+     * Advises the {@code GroupElement} to prepare it for later {@code pow()} calls.
      * This will take some time and should only be done ahead of time.
      * That is, the usual usage pattern should be:
-     *
      * <pre>
      * //Setting up your encryption scheme (or whatever)
      * GroupElement g = group.getUniformlyRandomElement().precomputePow();
@@ -133,6 +138,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      *     return m.op(g.pow(sk)).compute();
      * }
      * </pre>
+     *
      * Don't use {@code g.precomputePow().pow(x).compute();}
      * unless you're planning to do more exponentiations of g in the future.
      *
@@ -146,10 +152,9 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     }
 
     /**
-     * Advises the GroupElement to prepare it for later pow() calls.
+     * Advises the {@code GroupElement} to prepare it for later {@code pow()} calls.
      * This will take some time and should only be done ahead of time.
      * That is, the usual usage pattern should be:
-     *
      * <pre>
      * //Setting up your encryption scheme (or whatever)
      * GroupElement g = group.getUniformlyRandomElement().precomputePow();
@@ -169,8 +174,9 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     GroupElement precomputePow(int windowSize);
 
     /**
-     * Hint that the concrete value of this GroupElement will be accessed soon (e.g., via getRepresentation() or equals()).
-     * Will start computing stuff in the background.
+     * Hint that the concrete value of this GroupElement will be accessed soon
+     * (e.g., via {@code getRepresentation()} or {@code equals()}). Will start computing stuff in the background.
+     *
      * @return the same object (for chaining calls)
      */
     GroupElement compute();
@@ -178,7 +184,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
     /**
      * Will compute stuff synchronously (this call blocks) so that the next call
      * requiring the concrete value of this group element can immediately retrieve it.
-     * For designers of cryptographic schemes, were should be no reason to call this. Instead, use compute(),
+     * For designers of cryptographic schemes, were should be no reason to call this. Instead, use {@code compute()}
      * which does the same, but asynchronously (i.e. concurrently).
      *
      * @return the same object (for chaining calls)

@@ -1,7 +1,7 @@
 package de.upb.crypto.math.performance.group;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
 import org.junit.runner.RunWith;

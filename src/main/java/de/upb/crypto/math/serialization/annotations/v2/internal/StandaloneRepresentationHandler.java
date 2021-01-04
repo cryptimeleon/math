@@ -8,40 +8,56 @@ import java.math.BigInteger;
 import java.util.function.Function;
 
 /**
- * Takes care of
- * 1) StandaloneRepresentable
- * 2) Some basic types (see static supportedTypes variable).
+ * Handles serialization/deserialization of the representation of {@link StandaloneRepresentable} implementers
+ * and some other simple types.
  */
 public class StandaloneRepresentationHandler implements RepresentationHandler {
-    private static Class[] supportedTypes = new Class[] {StandaloneRepresentable.class, BigInteger.class, Integer.class, String.class, Boolean.class, byte[].class, Enum.class}; //it may be temping to add int.class etc. here, but it doesn't work because the ReprUtil assumes that everything that's not null is already set (and int is auto-initialized with 0)
-    protected Class type;
 
-    public StandaloneRepresentationHandler(Class type) {
+    // it may be temping to add int.class etc. here, but it doesn't work because the ReprUtil assumes that everything
+    // that's not null is already set (and int is auto-initialized with 0)
+    private static final Class<?>[] supportedTypes = new Class[] {
+            StandaloneRepresentable.class, BigInteger.class, Integer.class, String.class, Boolean.class,
+            byte[].class, Enum.class
+    };
+    /**
+     * Type of the represented object.
+     */
+    protected Class<?> type;
+
+    public StandaloneRepresentationHandler(Class<?> type) {
         this.type = type;
     }
 
+    /**
+     * Checks whether this handler can handle objects of the given type.
+     * @param type the type to check
+     * @return true if this handler can handle the given type, else false
+     */
     public static boolean canHandle(Type type) {
         if (!(type instanceof Class))
             return false;
-        Class clazz = ((Class) type);
-        for (Class supported : supportedTypes)
+        Class<?> clazz = ((Class<?>) type);
+        for (Class<?> supported : supportedTypes)
             if (supported.isAssignableFrom(clazz))
                 return true;
         return false;
     }
 
     @Override
-    public Object deserializeFromRepresentation(Representation repr, Function<String, RepresentationRestorer> getRegisteredRestorer) {
+    public Object deserializeFromRepresentation(Representation repr,
+                                                Function<String, RepresentationRestorer> getRegisteredRestorer) {
         if (repr == null) {
             return null;
         }
 
         try {
-            if (repr instanceof RepresentableRepresentation && type.isAssignableFrom(Class.forName(repr.repr().getRepresentedTypeName()) )) {
+            if (repr instanceof RepresentableRepresentation
+                    && type.isAssignableFrom(Class.forName(repr.repr().getRepresentedTypeName()) )) {
                 return repr.repr().recreateRepresentable();
             }
         } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("Don't know how to recreate " + repr.repr().getRepresentedTypeName() + " - Class not found.", e);
+            throw new IllegalArgumentException("Don't know how to recreate " + repr.repr().getRepresentedTypeName()
+                    + " - Class not found.", e);
         }
 
         if (type.isAssignableFrom(BigInteger.class) && repr instanceof BigIntegerRepresentation) {
@@ -64,7 +80,8 @@ public class StandaloneRepresentationHandler implements RepresentationHandler {
             return repr.bytes().get();
         }
 
-        throw new IllegalArgumentException("Don't know how to recreate " + type.getName() + " from a "+repr.getClass().getName());
+        throw new IllegalArgumentException("Don't know how to recreate " + type.getName() + " from a "
+                + repr.getClass().getName());
     }
 
     @Override
@@ -74,7 +91,7 @@ public class StandaloneRepresentationHandler implements RepresentationHandler {
         }
 
         if (value instanceof Enum) {
-            Enum enumValue = (Enum) value;
+            Enum<?> enumValue = (Enum<?>) value;
             return new RepresentableRepresentation(enumValue);
         }
 
@@ -113,8 +130,8 @@ public class StandaloneRepresentationHandler implements RepresentationHandler {
             return new ByteArrayRepresentation(bytes);
         }
 
-        throw new IllegalArgumentException("Object of type "+value.getClass().getName()+" is not StandaloneRepresentable" +
-                "(you may have to add an explicit 'handler' argument to the @Represented annotation)");
+        throw new IllegalArgumentException("Do not know how to handle object of type " + value.getClass().getName()
+                + ". You may have to add an explicit 'restorer' argument to the @Represented annotation");
     }
 
 }

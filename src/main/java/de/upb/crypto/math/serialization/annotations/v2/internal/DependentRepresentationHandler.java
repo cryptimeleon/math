@@ -8,10 +8,17 @@ import java.lang.reflect.Type;
 import java.util.function.Function;
 
 /**
- * Handles representations that depend on some RepresentationRestorer in order to be recreated.
+ * Handles representations that depend on some {@link RepresentationRestorer} in order to be recreated.
  */
 public class DependentRepresentationHandler implements RepresentationHandler {
+    /**
+     * Restorer string indicating the {@code RepresentationRestorer} to use.
+     */
     protected String restorerString;
+
+    /**
+     * What type the restored object should be.
+     */
     protected Type typeToRestore;
 
     public DependentRepresentationHandler(String restorerString, Type typeToRestore) {
@@ -19,8 +26,14 @@ public class DependentRepresentationHandler implements RepresentationHandler {
         this.typeToRestore = typeToRestore;
     }
 
+    /**
+     * Checks whether this handler can handle the given type, which is the case if it implements
+     * {@link Representable}.
+     * @param type the type to check
+     * @return true if this handler can handle the given type, else false
+     */
     public static boolean canHandle(Type type) {
-        return type instanceof Class && Representable.class.isAssignableFrom((Class) type);
+        return type instanceof Class && Representable.class.isAssignableFrom((Class<?>) type);
     }
 
     @Override

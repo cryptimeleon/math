@@ -7,10 +7,12 @@ import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
-import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link GroupElementExpression} representing the inversion of another group element expression.
+ */
 public class GroupInvExpr extends GroupElementExpression {
     protected GroupElementExpression base;
 
@@ -19,6 +21,9 @@ public class GroupInvExpr extends GroupElementExpression {
         this.base = base;
     }
 
+    /**
+     * Retrieves the group element expression being inverted.
+     */
     public GroupElementExpression getBase() {
         return base;
     }

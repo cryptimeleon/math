@@ -3,8 +3,8 @@ package de.upb.crypto.math.pairings.type3.bn;
 import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.pairings.generic.ExtensionField;
 import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
-import de.upb.crypto.math.pairings.generic.PairingSourceGroupImpl;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
+import de.upb.crypto.math.pairings.generic.PairingSourceGroupImpl;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.serialization.Representation;
 
@@ -50,10 +50,10 @@ public abstract class BarretoNaehrigSourceGroupImpl extends PairingSourceGroupIm
     /**
      * Maps a given y coordinate to a point in this subgroup.
      * <p>
-     * Different from mapToPoint, this function includes cofactor multiplication.
+     * As opposed to {@link #mapToPoint(FieldElement, int)}, this function includes cofactor multiplication.
      *
-     * @param y   - y-coordinate of point
-     * @param sel - selection of x-coordinate
+     * @param y   y coordinate of point
+     * @param sel selection of x coordinate
      */
     public PairingSourceGroupElement mapToSubgroup(FieldElement y, int sel) {
         /* this is required to be sure to map to the unique subgroup of size size() */
@@ -65,29 +65,43 @@ public abstract class BarretoNaehrigSourceGroupImpl extends PairingSourceGroupIm
     }
 
     /**
-     * Point decompression by mapping y coordinate of point (x,y) back to curve.
+     * Decompresses a point by mapping y coordinate of point (x,y) back to curve.
      * <p>
-     * This function takes the y-coordinate of a point and maps it to a point on this curve. It solves the Weierstrass equation for a matching x-coordinate. For a given field F, for each element y in F, there exist either 0 or 3 solutions over F, ie,
-     * x coordinates in F. If y is not a y-coordinate of a point on this curve (no matching x exists over the field of definition) an IllegalArgumentException is thrown. If 3 solutions exists, the returned solution is selected with the parameter sel
-     * mod 3.
-     * <p>
-     * It is important to note that this function does not map the result to the subgroup represented by this class. A cofactor multiplication is still required. We do not include cofactor multiplication into this function to assert the following
-     * contract: mapToPoint(P.getY(),0).equals(P).
+     * This function takes the y-coordinate of a point and maps it to a point on this curve.
+     * It solves the Weierstrass equation for a matching x-coordinate.
+     * For a given field F, for each element y in F, there exist either 0 or 3 solutions over F,
+     * i.e. x-coordinates in F.
+     * <ul>
+     * <li>If y is not a y-coordinate of a point on this curve (no matching x exists over the field of definition),
+     * an {@code IllegalArgumentException} is thrown.
+     * <li>If 3 solutions exists, the returned solution is selected with the parameter {@code sel} mod 3.
+     * </ul>
+     * It is important to note that this function does not map the result to the subgroup represented by this class.
+     * A cofactor multiplication is still required.
+     * We do not include cofactor multiplication into this function to assert the following
+     * contract:
+     * <pre>
+     *     mapToPoint(P.getY(),0).equals(P);
+     * </pre>
      *
-     * @param y   - y-coordinate of point
-     * @param sel - select x-coordinate
-     * @return Point (x,y) on curve or IllegalArgumentExceptions
+     * @param y y-coordinate of point
+     * @param sel selector for x-coordinate
+     * @return point (x,y) on curve
+     * @throws IllegalArgumentException if the y-coordinate does not correspond to any curve point
      */
     public PairingSourceGroupElement mapToPoint(FieldElement y, int sel) {
         return this.getElement(decompressX(y, sel), y);
     }
 
     /**
-     * cf. Javadoc of mapToPoint()
+     * Retrieves the x-coordinate from the compressed point and its corresponding y-coordinate.
+     * <p>
+     * For more information on how this is done, consult the documentation for {@link #mapToPoint(FieldElement, int)}.
      *
-     * @param y   y-coordinate of a point
-     * @param sel selector on x coordinate
-     * @return x coordinate corresponding to y and sel.
+     * @param y   y-coordinate of point
+     * @param sel selector for x-coordinate
+     * @return x-coordinate of the decompressed point
+     * @throws IllegalArgumentException if the y-coordinate does not correspond to any curve point
      */
     public FieldElement decompressX(FieldElement y, int sel) {
         /*
@@ -112,7 +126,8 @@ public abstract class BarretoNaehrigSourceGroupImpl extends PairingSourceGroupIm
                 e = getFieldOfDefinition().size().add(BigInteger.valueOf(2));
                 break;
             default:
-                throw new UnsupportedOperationException("The function mapToPoint " + "is only implemented for fields with order mod 9 in {4,7}");
+                throw new UnsupportedOperationException("The function mapToPoint is only implemented for fields " +
+                        "with order mod 9 in {4,7}");
         }
 
         e = e.divide(BigInteger.valueOf(9));

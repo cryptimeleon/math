@@ -1,6 +1,8 @@
 package de.upb.crypto.math.expressions.group;
 
-import de.upb.crypto.math.expressions.*;
+import de.upb.crypto.math.expressions.EvaluationException;
+import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
@@ -8,6 +10,9 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link GroupElementExpression} representing a variable which does not have a known value at time of creation.
+ */
 public class GroupVariableExpr extends GroupElementExpression implements VariableExpression {
     protected final String name;
 

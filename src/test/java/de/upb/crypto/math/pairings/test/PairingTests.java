@@ -1,10 +1,10 @@
 package de.upb.crypto.math.pairings.test;
 
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.counting.CountingBilinearGroup;
 import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.pairings.generic.BilinearMap;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.pairings.type1.supersingular.SupersingularTateGroupImpl;
 import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;

@@ -1,13 +1,15 @@
 package de.upb.crypto.math.structures.groups.basic;
 
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
-import de.upb.crypto.math.pairings.generic.BilinearMap;
-import de.upb.crypto.math.pairings.generic.BilinearMapImpl;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.pairings.generic.BilinearMap;
+import de.upb.crypto.math.pairings.generic.BilinearMapImpl;
 
 import java.math.BigInteger;
 
+/**
+ * A basic {@link BilinearMapImpl} wrapper where operations are evaluated naively, i.e. operation by operation.
+ */
 public class BasicBilinearMap implements BilinearMap {
     protected BasicGroup g1, g2, gt;
     protected BilinearMapImpl impl;

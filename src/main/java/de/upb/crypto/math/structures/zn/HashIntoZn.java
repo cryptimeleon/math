@@ -4,32 +4,38 @@ import de.upb.crypto.math.hash.impl.SHA256HashFunction;
 import de.upb.crypto.math.hash.impl.VariableOutputLengthHashFunction;
 import de.upb.crypto.math.interfaces.hash.HashFunction;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
-import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
- * A hash function that maps into Zn.
+ * A hash function that maps to {@link Zn}.
  */
 public class HashIntoZn implements HashIntoStructure {
 
+    /**
+     * The hash function.
+     */
     @Represented
     protected HashFunction hashIntoZn;
 
     /**
-     * The hash target
+     * The hash target structure.
      */
     @Represented
     protected Zn structure;
 
     public HashIntoZn(HashFunction hashFunction, Zn zn) {
         if (zn.getCharacteristic().bitLength() - 1 < 8)
-            throw new IllegalArgumentException("HashIntoZn requires n to be at least 2^8, but given n is " + zn.getCharacteristic());
+            throw new IllegalArgumentException("HashIntoZn requires n to be at least 2^8, but given n is "
+                    + zn.getCharacteristic());
         this.structure = zn;
-        this.hashIntoZn = new VariableOutputLengthHashFunction(hashFunction, (zn.getCharacteristic().bitLength() - 1) / 8); //removing one bit to ensure injective mapping of hash values into Zn. It's _almost_ full domain hash then
+        // Removing one bit to ensure injective mapping of hash values into Zn. It's _almost_ full domain hash then
+        this.hashIntoZn = new VariableOutputLengthHashFunction(hashFunction,
+                (zn.getCharacteristic().bitLength() - 1) / 8);
     }
 
     public HashIntoZn(HashFunction hashFunction, BigInteger n) {
@@ -46,7 +52,7 @@ public class HashIntoZn implements HashIntoStructure {
 
 
     /**
-     * Reconstructs the hash function from its representation
+     * Reconstructs the hash function from its representation.
      */
     public HashIntoZn(Representation repr) {
         new ReprUtil(this).deserialize(repr);
@@ -69,7 +75,7 @@ public class HashIntoZn implements HashIntoStructure {
     }
 
     /**
-     * Returns the ring Zn that this function hashes into
+     * Returns the ring Zn that this function hashes to.
      */
     public Zn getTargetStructure() {
         return structure;
@@ -95,18 +101,7 @@ public class HashIntoZn implements HashIntoStructure {
         if (getClass() != obj.getClass())
             return false;
         HashIntoZn other = (HashIntoZn) obj;
-        if (hashIntoZn == null) {
-            if (other.hashIntoZn != null)
-                return false;
-        } else if (!hashIntoZn.equals(other.hashIntoZn))
-            return false;
-        if (structure == null) {
-            if (other.structure != null)
-                return false;
-        } else if (!structure.equals(other.structure))
-            return false;
-        return true;
+        return Objects.equals(hashIntoZn, other.hashIntoZn)
+                && Objects.equals(structure, other.structure);
     }
-
-
 }

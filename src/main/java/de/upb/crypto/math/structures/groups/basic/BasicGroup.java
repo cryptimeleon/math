@@ -14,9 +14,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * A group where operations are naively (operation by operation) computed using the underlying GroupImpl.
- *
- * This serves well for groups with very efficient operations.
+ * A basic {@link GroupImpl} wrapper where operations are evaluated naively, i.e. operation by operation.
+ * <p>
+ * Useful for groups with very efficient operations.
  */
 public class BasicGroup implements Group {
     protected GroupImpl impl;
