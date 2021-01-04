@@ -11,6 +11,13 @@ import de.upb.crypto.math.structures.groups.basic.BasicGroupElement;
 
 import java.util.Objects;
 
+/**
+ * A {@link GroupHomomorphismImpl} wrapper implementing deferred (lazy) evaluation.
+ * <p>
+ * Allows for additional optimizations using information about the operations being applied.
+ * <p>
+ * For more information, see the <a href="https://upbcuk.github.io/docs/lazy-eval.html">documentation</a>.
+ */
 public class LazyGroupHomomorphism implements GroupHomomorphism {
     @Represented
     protected LazyGroup targetGroup;

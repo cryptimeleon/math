@@ -8,8 +8,19 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link BooleanExpression} representing the Boolean equality "=" of two {@link ExponentExpr} instances.
+ */
 public class ExponentEqualityExpr implements BooleanExpression {
-    protected ExponentExpr lhs, rhs;
+    /**
+     * The exponent expression on the left hand side of this Boolean equality.
+     */
+    protected final ExponentExpr lhs;
+
+    /**
+     * The exponent expression on the right hand side of this Boolean equality.
+     */
+    protected final ExponentExpr rhs;
 
     public ExponentEqualityExpr(ExponentExpr lhs, ExponentExpr rhs) {
         this.lhs = lhs;
@@ -30,5 +41,19 @@ public class ExponentEqualityExpr implements BooleanExpression {
     public void forEachChild(Consumer<Expression> action) {
         action.accept(lhs);
         action.accept(rhs);
+    }
+
+    /**
+     * Retrieves the exponent expression on the left hand side of this Boolean equality.
+     */
+    public ExponentExpr getLhs() {
+        return lhs;
+    }
+
+    /**
+     * Retrieves the exponent expression on the right hand side of this Boolean equality.
+     */
+    public ExponentExpr getRhs() {
+        return rhs;
     }
 }

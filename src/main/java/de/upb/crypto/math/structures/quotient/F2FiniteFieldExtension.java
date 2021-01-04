@@ -14,22 +14,42 @@ import de.upb.crypto.math.structures.zn.Zp.ZpElement;
 import java.math.BigInteger;
 
 /**
- * Class for storing polynomials that are over the galois field f2. Every polynomial will have an encapsulated BigInteger representation that is used for performing efficient multiplication and addition.
- *
- * @author .
+ * Class for storing polynomials defined over the galois field \(\mathbb{F}_2\).
+ * <p>
+ * Every polynomial has an encapsulated {@link BigInteger} representation
+ * that is used for performing efficient multiplication and addition.
  */
 public class F2FiniteFieldExtension extends FiniteFieldExtension {
-    // efficiency reasons
-    private BigInteger efficientIrreducible;
-    // the irreducible poly
-    private Polynomial irreducible;
 
+    /**
+     * Encodes the irreducible polynomial underlying this field extension as a {@code BigInteger}
+     * for efficiency reasons.
+     */
+    protected BigInteger efficientIrreducible;
+
+    /**
+     * The irreducible polynomial over \(\mathbb{Z}_2\) underlying this field extension.
+     */
+    protected Polynomial irreducible;
+
+    /**
+     * The base ring of the polynomial ring, \(\mathbb{Z}_2\) in this case.
+     */
     protected static final Zp baseRing = new Zp(BigInteger.valueOf(2));
 
+    /**
+     * The polynomial ring over which the irreducible polynomial underlying this field extension is defined.
+     */
     protected static final PolynomialRing polyRing = new PolynomialRing(baseRing);
 
+    /**
+     * The neutral element of the unit group of this field, also known as the one element.
+     */
     protected F2FiniteFieldElement ONE;
 
+    /**
+     * The neutral element of the additive subgroup of this field,  also known as the zero element.
+     */
     protected F2FiniteFieldElement ZERO;
 
     public F2FiniteFieldExtension(Representation repr) {
@@ -51,19 +71,13 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
         ZERO = new F2FiniteFieldElement(polyRing.new Polynomial(baseRing.createZnElement(BigInteger.ZERO)));
     }
 
-    protected BigInteger getEfficientIrreducible() {
-        return efficientIrreducible;
-    }
-
-    protected Polynomial getIrreducible() {
-        return irreducible;
-    }
-
     /**
-     * Can be used to get the intermediate BigInteger representation from an existing polynomial
+     * Encodes the given polynomial as a {@code BigInteger} by converting the coefficients to bits.
+     * 
+     * @see #getPolynomial(BigInteger) 
      *
-     * @param p the polynomial with coefficients in Zp2
-     * @return the BigInteger that has the coefficients interpreted as a byte array
+     * @param p the polynomial with coefficients in \(\mathbb{Z}_2\)
+     * @return the {@code BigInteger} created from interpreting the polynomials coefficients as a bit string
      */
     public static BigInteger getEfficientPolynomial(Polynomial p) {
 
@@ -83,6 +97,14 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
         return new BigInteger(bitString, 2);
     }
 
+    /**
+     * Converts the {@code BigInteger} polynomial encoding back to a {@code Polynomial}.
+     *
+     * @see #getEfficientPolynomial(Polynomial)
+     * 
+     * @param efficientPolynomial the {@code BigInteger} to convert
+     * @return the corresponding {@code Polynomial}
+     */
     public static Polynomial getPolynomial(BigInteger efficientPolynomial) {
         RingElement[] coefficients = new RingElement[efficientPolynomial.bitLength()];
         for (int i = 0; i < efficientPolynomial.bitLength(); i++) {
@@ -147,11 +169,12 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
     }
 
     /**
-     * Elements that are polynomials over GF(2^m). This class provides more efficient reductions and multiplications of polynomials than the standard approach.
+     * Elements that are polynomials over \(GF(2^m)\).
+     * This class provides more efficient reductions and multiplications of polynomials than the standard approach.
      * <p>
-     * Every Element stores the coefficients as a BigInteger as an intermediate format.
+     * Every Element stores the coefficients as a {@code BigInteger} as an intermediate format.
      * <p>
-     * [1] Julio Lopez and Ricardo Dahab: High-Speed Software Multiplication in F_{2^m}
+     * [1] Julio Lopez and Ricardo Dahab: High-Speed Software Multiplication in \(\mathbb{F}_{2^m}\)
      *
      * @author Mirko Jürgens
      */
@@ -204,7 +227,8 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
         }
 
         /**
-         * Shorthand and more efficient implementation for a multiplication with x^d which is realized as a d wise bit shift.
+         * Implements a more efficient implementation for a multiplication with \(x^d\) which is realized
+         * as a d wise bit shift.
          *
          * @param degree the degree of x
          */
@@ -212,7 +236,6 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
             BigInteger result = efficientPolynomial.shiftLeft(degree);
             F2FiniteFieldElement resultElement = new F2FiniteFieldElement(getPolynomial(result));
             return resultElement;
-
         }
 
         @Override
@@ -257,6 +280,9 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
             return new F2FiniteFieldElement(new BigInteger(c));
         }
 
+        /**
+         * Implements more efficient multiplication with a prime {@code e}.
+         */
         public F2FiniteFieldElement mulPrime(Element e) {
             F2FiniteFieldElement bElement = null;
             if (e instanceof F2FiniteFieldElement) {
@@ -302,7 +328,7 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
         }
 
         /**
-         * Implementation of the modular reduction proposed in Algorithm 2 of [1]
+         * Implementation of the modular reduction proposed in Algorithm 2 of [1].
          */
         protected void reducePrime() {
             efficientPolynomial = getEfficientPolynomial(this.getRepresentative());

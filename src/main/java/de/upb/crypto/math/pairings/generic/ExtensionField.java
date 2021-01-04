@@ -29,9 +29,6 @@ public class ExtensionField implements Field {
 
     /**
      * Create extension defined by polynomial x^extensionDegree+constant
-     *
-     * @param constant
-     * @param extensionDegree
      */
     private void init(FieldElement constant, int extensionDegree) {
         this.constant = constant;
@@ -47,9 +44,6 @@ public class ExtensionField implements Field {
 
     /**
      * Create extension defined by polynomial x^extensionDegree+constant
-     *
-     * @param constant
-     * @param extensionDegree
      */
     public ExtensionField(FieldElement constant, int extensionDegree) {
         init(constant, extensionDegree);
@@ -118,8 +112,6 @@ public class ExtensionField implements Field {
 
     /**
      * Set auxiliary primitive cube root in this field.
-     *
-     * @param cubeRoot
      */
     protected void setCubeRoot(FieldElement cubeRoot) {
         this.cubeRoot = cubeRoot;
@@ -227,8 +219,8 @@ public class ExtensionField implements Field {
      * <p>
      * Hence, this mapping is injective on the integers smaller than this.size().
      *
-     * @param b - an integer
-     * @return
+     * @param b the integer to map to a field element
+     * @return field element corresponding to the given integer
      */
     public ExtensionFieldElement createElement(BigInteger b) {
         /* split byte array into coefficients, starting with constant coefficient

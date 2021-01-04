@@ -24,10 +24,11 @@ public class ExponentiationAlgorithms {
      * computing power products for more than ~10 basis very expensive. Cached power products
      * can also not necessarily be reused in other multi-exponentiation as they only work
      * for that specific set of bases.
-     * @param multiExpContext Multi-exponentiation to evaluate.
-     * @param windowSize Window size for power products.
-     * @param enableCaching Whether to cache power products.
-     * @return Result of multi-exponentiation.
+     *
+     * @param multiExpContext multi-exponentiation to evaluate
+     * @param windowSize window size for power products
+     * @param enableCaching whether to cache power products
+     * @return result of multi-exponentiation
      */
     /*public static GroupElement simultaneousSlidingWindowMulExp(MultiExpContext multiExpContext,
                                                                int windowSize, boolean enableCaching) {
@@ -96,12 +97,16 @@ public class ExponentiationAlgorithms {
     }*/
 
     /**
-     * Compute power products for bases with window size. A power product is a term of the form
-     * e.g. (for 3 bases) T_{i,j,k} = b_1^i * b_2^j * b_3^k. This function computes all
-     * power products for the given window size. Used by simultaneous multi-exponentiation alg.
-     * @param bases List of bases to compute power products for.
-     * @param windowSize Limit on powers to compute.
-     * @return List of power products.
+     * Computes power products for bases with window size.
+     * <p>
+     * A power product is a term of the form (for 3 bases) \(T_{i,j,k} = b_1^i * b_2^j * b_3^k\).
+     * This function computes all power products for the given window size.
+     * <p>
+     * Used by simultaneous multi-exponentiation alg.
+     *
+     * @param bases list of bases to compute power products for.
+     * @param windowSize limit on powers to compute.
+     * @return list of power products.
      */
     /*private static List<GroupElement> computePowerProducts(List<GroupElement> bases, int windowSize) {
         int numPrecomputedPowers = 1 << (windowSize * bases.size());
@@ -134,6 +139,7 @@ public class ExponentiationAlgorithms {
 
     /**
      * Evaluates a multi-exponentiation using the interleaved sliding window algorithm.
+     * <p>
      * Powers are computed per basis, instead of for all basis together like for the simultaneous
      * approach. This means that cached powers can be reused in other multi-exponentiations, and,
      * for a large amount of bases, the precomputation is a lot cheaper than in the simultaneous
@@ -151,9 +157,11 @@ public class ExponentiationAlgorithms {
         // we are assuming that every base has same underlying group
         GroupElementImpl result = terms.get(0).getBase().getStructure().getNeutralElement();
         int longestExponentBitLength = terms.stream().mapToInt(t -> t.getExponent().bitLength()).max().getAsInt();
-        int[] windowPos = new int[numTerms]; //position of the (sliding) window for each base. -1 signifies next window position must be computed.
+        // position of the (sliding) window for each base. -1 signifies next window position must be computed.
+        int[] windowPos = new int[numTerms];
         Arrays.fill(windowPos, -1);
-        int[] windowVal = new int[numTerms]; //the exponent of the current window.
+        // the exponent of the current window.
+        int[] windowVal = new int[numTerms];
 
         for (int j = longestExponentBitLength - 1; j >= 0; j--) {
             // j is left edge of window
@@ -197,8 +205,9 @@ public class ExponentiationAlgorithms {
     }
 
     /**
-     * Evaluates a multi-exponentiation using an interleaved WNAF-bases algorithm. Useful in groups
-     * where inversion is as cheap or cheaper than the group operation itself, such as elliptic
+     * Evaluates a multi-exponentiation using an interleaved WNAF-bases algorithm.
+     * <p>
+     * Useful in groups where inversion is as cheap or cheaper than the group operation itself, such as elliptic
      * curves.
      */
     public static GroupElementImpl interleavingWnafMultiExp(Multiexponentiation multiexp, int windowSize) {
@@ -252,9 +261,11 @@ public class ExponentiationAlgorithms {
 
     /**
      * Tests if the bit at position {@code index} equals {@code 1}, i.e. is set.
-     * Compared to {@link BigInteger#testBit(int)} also supports a negative index (then always returns {@code false}).
-     * @param n The number to test the bit of.
-     * @param index The index of the bit to test.
+     * <p>
+     * Compared to {@link BigInteger#testBit(int)}, this also supports a negative index
+     * (then always returns {@code false}).
+     * @param n the number to test the bit of.
+     * @param index the index of the bit to test.
      * @return {@code true} if the bit at position {@code index} is set, {@code false} if not.
      */
     private static boolean testBit(BigInteger n, int index) {
@@ -265,8 +276,9 @@ public class ExponentiationAlgorithms {
     }
 
     /**
-     * Calculates the result of applying the group operation k times.
+     * Calculates the result of applying the group operation k times,
      * i.e. it computes k*this (additive group) or this^k (multiplicative group).
+     * <p>
      * For negative exponents k, computes this.inv().pow(-k).
      */
     public static GroupElementImpl binSquareMultiplyExp(GroupElementImpl base, BigInteger k) { //default implementation: square&multiply algorithm
@@ -367,7 +379,11 @@ public class ExponentiationAlgorithms {
     }
 
     /**
-     * @return Lowest n bits of i. Works for all n < 32.
+     * Retrieves the given number of least significant bits of {@code i}.
+     * <p>
+     * Works for all {@code n < 32}.
+     *
+     * @return lowest n bits of i
      */
     public static int getNLeastSignificantBits(long i, int numberOfLowBits) {
         return (int) (i & ((1 << numberOfLowBits) - 1));
@@ -406,9 +422,9 @@ public class ExponentiationAlgorithms {
 
     /**
      * Prepares WNAF representation (see master thesis by Swante Scholz) of exponent.
-     * @param exponent The exponent to compute WNAF representation for.
-     * @param windowSize The window size to use. This determines width of the WNAF representation.
-     * @return Array of exponent digits in WNAF form.
+     * @param exponent the exponent to compute WNAF representation for.
+     * @param windowSize the window size to use. This determines width of the WNAF representation.
+     * @return array of exponent digits in WNAF form.
      */
     public static int[] precomputeExponentDigitsForWnaf(BigInteger exponent, int windowSize) {
         if (windowSize > 30)

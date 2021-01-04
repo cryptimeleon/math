@@ -4,17 +4,20 @@ import de.upb.crypto.math.serialization.StandaloneRepresentable;
 
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Interface for hash functions.
+ */
 public interface HashFunction extends StandaloneRepresentable {
 
     /**
-     * Returns the output-length of the HashFunction in bytes.
+     * Returns the output-length of the {@code HashFunction} in bytes.
      *
      * @return the output-length in bytes
      */
     public int getOutputLength();
 
     /**
-     * Hashes an UniqueByteRepresentable using the hash function.
+     * Hashes a {@code UniqueByteRepresentable} using the hash function.
      *
      * @param ubr the UBR to hash
      * @return the hash
@@ -24,7 +27,7 @@ public interface HashFunction extends StandaloneRepresentable {
     }
 
     /**
-     * Hashes bytes using the hash function.
+     * Hashes a byte array using the hash function.
      *
      * @param bytes the bytes to hash
      * @return the hash
@@ -32,7 +35,7 @@ public interface HashFunction extends StandaloneRepresentable {
     byte[] hash(byte[] bytes);
 
     /**
-     * Hashes a String using the hash function
+     * Hashes a {@code String} using the hash function.
      *
      * @param string the string to hash
      * @return the hash

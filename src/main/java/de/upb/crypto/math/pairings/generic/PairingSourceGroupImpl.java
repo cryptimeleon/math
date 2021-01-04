@@ -57,7 +57,8 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
      * Instantiates the group
      *
      * @param size     the desired size of the group
-     * @param cofactor the number c such that size * c = number of points on the WeierstrassCurve over fieldOfDefinition
+     * @param cofactor the number c such that size * c = number of points on the WeierstrassCurve over
+     *                 fieldOfDefinition
      */
     private void create(BigInteger size, BigInteger cofactor, FieldElement a1, FieldElement a2, FieldElement a3, FieldElement a4, FieldElement a6) {
         this.size = size;

@@ -15,33 +15,41 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Utility class that allows users to annotate object member variables with @UniqueByteRepresented and then implement
- * their updateAccumulator() method simply as "return AnnotatedUbrUtil.autoAccumulate(accumulator, this)".
+ * Utility class that allows for almost fully automated byte accumulation of member variables annotated with
+ * {@code @UniqueByteRepresented}.
  * <p>
+ * Specifically, the {@code updateAccumulator()} method only has to be implemented as
+ * <pre>
+ * return AnnotatedUbrUtil.autoAccumulate(accumulator, this);
+ * </pre>
  * This will append the annotated object members (including those of superclasses) to the accumulator.
- * It is guaranteed that for objects i1 and i2, if !i1.x.equals(i2.x) (for some annotated object member x),
- * then the data appended by AnnotatedUbrUtil.autoAccumulate(acc, i1) is different from AnnotatedUbrUtil.autoAccumulate(acc, i1).
- * (This of course depends on correct implementation of the UniqueByteRepresentable interface of used classes. Furthermore,
- * the contract of UniqueByteRepresentable applies, i.e. ).
  * <p>
- * The utility can handle arbitrarily nested lists, sets, arrays, etc. For a complete list of types it can handle, refer to
- * the method accumulateObject().
+ * It is guaranteed that for objects {@code i1} and {@code i2}, if {@code !i1.x.equals(i2.x)}
+ * (for some annotated object member {@code x}), then the data appended by
+ * {@code AnnotatedUbrUtil.autoAccumulate(acc, i1)} is different from {@code AnnotatedUbrUtil.autoAccumulate(acc, i1)}.
+ * This depends on correct implementation of the {@link UniqueByteRepresentable} interface of used classes.
+ * Furthermore, the contract of {@code UniqueByteRepresentable} applies.
+ * <p>
+ * The utility can handle arbitrarily nested lists, sets, arrays, etc.
+ * For a complete list of types it can handle, refer to {@link #accumulateObject(ByteAccumulator, Object)}.
  */
 public class AnnotatedUbrUtil {
     /**
-     * The symbol used to represent null values in UBRs.
+     * The symbol used to represent null values in unique byte representations.
      */
-    public static final byte nullSymbol = 127;
-
-    // list containing all annotations used to mark fields contained in representations
-    // Add new newly introduced represented annotation classes to this list
-    private static final List<Class<? extends Annotation>> annotationClassList = Arrays.asList(UniqueByteRepresented.class);
+    protected static final byte nullSymbol = 127;
 
     /**
-     * Adds all annotated fields within the given instance object to the accumulator.
+     * Contains all annotations used to mark fields that should be automatically accumulated by this class.
+     */
+    protected static final List<Class<? extends Annotation>> annotationClassList
+            = Arrays.asList(UniqueByteRepresented.class);
+
+    /**
+     * Adds all {@code @UniqueByteRepresented}-annotated fields within the given instance object to the accumulator.
      *
-     * @param accumulator ByteAccumulator to append to
-     * @param instance    instance of class with annotated members
+     * @param accumulator {@code ByteAccumulator} to append to
+     * @param instance    instance of class with annotated member variables
      * @return the given accumulator (for chaining)
      */
     public static ByteAccumulator autoAccumulate(ByteAccumulator accumulator, Object instance) {

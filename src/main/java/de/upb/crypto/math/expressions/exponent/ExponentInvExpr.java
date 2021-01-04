@@ -8,13 +8,22 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An {@link ExponentExpr} representing the multiplicative inversion of an exponent expression.
+ */
 public class ExponentInvExpr implements ExponentExpr {
+    /**
+     * The exponent expression being inverted.
+     */
     protected final ExponentExpr child;
 
     public ExponentInvExpr(ExponentExpr child) {
         this.child = child;
     }
 
+    /**
+     * Retrieves the exponent expression being inverted.
+     */
     public ExponentExpr getChild() {
         return child;
     }

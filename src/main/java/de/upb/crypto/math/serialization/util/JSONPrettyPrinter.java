@@ -4,15 +4,25 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.converter.JSONConverter;
 
 /**
- * Class that allows to pretty-print JSON strings / Representations
+ * Class that allows to pretty-print JSON strings / Representations.
  */
 public abstract class JSONPrettyPrinter {
     private static final JSONConverter converter = new JSONConverter();
 
+    /**
+     * Creates a nicely formatted string from the given representation.
+     * @param repr the representation to pretty-print
+     * @return a formatted string for printing
+     */
     public static String prettyPrint(Representation repr) {
         return prettyPrintJson(converter.serialize(repr));
     }
 
+    /**
+     * Creates a nicely formatted string from the given JSON string.
+     * @param json the json to pretty-print
+     * @return a formatted string for printing
+     */
     public static String prettyPrintJson(String json) {
         int indent = 0;
         boolean inString = false;

@@ -8,18 +8,35 @@ import de.upb.crypto.math.interfaces.structures.Group;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link BooleanExpression} representing the Boolean equality "=" of two {@link GroupElementExpression} instances.
+ */
 public class GroupEqualityExpr implements BooleanExpression {
-    protected GroupElementExpression lhs, rhs;
+    /**
+     * The group element expression on the left hand side of this Boolean equality.
+     */
+    protected GroupElementExpression lhs;
+
+    /**
+     * The group element expression on the right hand side of this Boolean equality.
+     */
+    protected GroupElementExpression rhs;
 
     public GroupEqualityExpr(GroupElementExpression lhs, GroupElementExpression rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
     }
 
+    /**
+     * Retrieves the group element expression on the left hand side of this Boolean equality.
+     */
     public GroupElementExpression getLhs() {
         return lhs;
     }
 
+    /**
+     * Retrieves the group element expression on the right hand side of this Boolean equality.
+     */
     public GroupElementExpression getRhs() {
         return rhs;
     }

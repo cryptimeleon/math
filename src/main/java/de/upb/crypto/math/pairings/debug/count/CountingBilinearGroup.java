@@ -10,13 +10,18 @@ import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;
 import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
+import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.Objects;
 
 /**
- * {@link BilinearGroup} wrapping two {@link LazyBilinearGroup} which contain {@link DebugBilinearGroupImpl}
- * themselves. Allows for counting group operations and (multi-)exponentiations as well as pairings on the bilinear
+ * A {@link BilinearGroup} implementing a fast and insecure pairing over {@link Zn} with support for counting group
+ * operations for each pairing group plus pairings.
+ * <p>
+ * Specifically, it implements a {@link BilinearGroup} wrapping two {@link LazyBilinearGroup} instances
+ * which contain {@link DebugBilinearGroupImpl} instances themselves.
+ * This allows for counting group operations and (multi-)exponentiations as well as pairings on the bilinear
  * group level. For this purpose all operations are executed in both groups, one counts total group operations
  * and one counts each (multi-)exponentiation as one unit.
  *

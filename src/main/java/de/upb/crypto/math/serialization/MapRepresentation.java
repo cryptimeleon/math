@@ -9,11 +9,14 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 /**
- * Representation of a key -> value map, mapping Representations to Representations
+ * Representation of a {@code key -> value} map, mapping representations to representations.
  */
 public class MapRepresentation extends Representation implements Iterable<Entry<Representation, Representation>> {
     private static final long serialVersionUID = -4276829583005855044L;
-    private HashMap<Representation, Representation> map = new HashMap<>();
+    /**
+     * The map represented by this representation.
+     */
+    protected final HashMap<Representation, Representation> map = new HashMap<>();
 
     public MapRepresentation() {
 
@@ -24,7 +27,7 @@ public class MapRepresentation extends Representation implements Iterable<Entry<
     }
 
     /**
-     * Adds key -> value to the mapping.
+     * Adds {@code key -> value} to the mapping.
      * If key previously had another image, the old one is overwritten
      */
     public void put(Representation key, Representation value) {
@@ -32,27 +35,40 @@ public class MapRepresentation extends Representation implements Iterable<Entry<
     }
 
     /**
-     * Returns the map backing this representation
-     * (the returned map is not modifiable)
+     * Returns an immutable view of this map.
      */
     public Map<Representation, Representation> getMap() {
         return Collections.unmodifiableMap(map);
     }
 
+    /**
+     * Returns a stream with the map's entry set as its source.
+     */
     public Stream<Entry<Representation, Representation>> stream() {
         return map.entrySet().stream();
     }
 
+    /**
+     * Returns an iterator over this map's entry set.
+     */
     @Override
     public Iterator<Entry<Representation, Representation>> iterator() {
         return map.entrySet().iterator();
     }
 
+    /**
+     * Applies the given consumer function to each key-value pair in this map.
+     * @param consumer the consumer function to apply
+     */
     public void forEach(BiConsumer<Representation, Representation> consumer) {
         for (Entry<Representation, Representation> e : getMap().entrySet())
             consumer.accept(e.getKey(), e.getValue());
     }
 
+    /**
+     * Applies the given consumer function to each key-value pair in a random order.
+     * @param consumer the consumer function to apply
+     */
     public void forEachRandomlyOrdered(BiConsumer<Representation, Representation> consumer) {
         ArrayList<Representation> keys = new ArrayList<>(map.keySet());
         Collections.shuffle(keys);
@@ -61,6 +77,9 @@ public class MapRepresentation extends Representation implements Iterable<Entry<
             consumer.accept(key, map.get(key));
     }
 
+    /**
+     * Returns the number of elements in this map.
+     */
     public int size() {
         return map.size();
     }

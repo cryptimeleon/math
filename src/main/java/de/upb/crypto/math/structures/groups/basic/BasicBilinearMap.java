@@ -8,6 +8,9 @@ import de.upb.crypto.math.serialization.StandaloneRepresentable;
 
 import java.math.BigInteger;
 
+/**
+ * A basic {@link BilinearMapImpl} wrapper where operations are evaluated naively, i.e. operation by operation.
+ */
 public class BasicBilinearMap implements BilinearMap {
     protected BasicGroup g1, g2, gt;
     protected BilinearMapImpl impl;

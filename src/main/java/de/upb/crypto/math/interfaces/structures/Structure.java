@@ -3,28 +3,34 @@ package de.upb.crypto.math.interfaces.structures;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import de.upb.crypto.math.structures.cartesian.Vector;
+import de.upb.crypto.math.structures.zn.Zp;
 
 import java.math.BigInteger;
 import java.util.Optional;
 
 /**
- * Base interface for Structures that contain Elements
+ * Base interface for algebraic structures that contain elements.
  * <p>
- * Implementations should override equals() and hashCode()
- * Structures implement StandaloneRepresentable, i.e. they must supply a constructor with a single Representation argument
- * (and hence, their Representation must contain all the information necessary to recreate the structure)
+ * Implementations should override  {@code equals()} and {@code hashCode()}.
+ * <p>
+ * Structures implement {@link StandaloneRepresentable},
+ * i.e. they must supply a constructor with a single {@link Representation} argument.
+ * Hence, their Representation must contain all the information necessary to recreate the structure.
  */
 public interface Structure extends StandaloneRepresentable {
     /**
-     * Size of the structure
+     * Returns the number of elements in this structure (the size).
      *
      * @return the number of elements contained in this structure or null if infinite
-     * @throws UnsupportedOperationException if the number of elements is unknown / too expensive to compute
+     * @throws UnsupportedOperationException if the number of elements is unknown or too expensive to compute
      */
     BigInteger size() throws UnsupportedOperationException;
 
     /**
-     * Returns true if the size of this structure is known and prime.
+     * Checks if the structure has prime size.
+     *
+     * @return true if the structure has prime size, else false.
+     * @throws UnsupportedOperationException if the primality of the size cannot be determined
      */
     default boolean hasPrimeSize() {
         try {
@@ -38,34 +44,41 @@ public interface Structure extends StandaloneRepresentable {
     }
 
     /**
-     * Returns an element of this structure that is drawn uniformly at random (using a cryptographically strong RNG)
+     * Returns an element of this structure that is drawn uniformly at random
+     * using a cryptographically strong RNG.
      *
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if the operation is not supported
      */
     Element getUniformlyRandomElement() throws UnsupportedOperationException;
 
     /**
-     * Returns n elements of this structure that are drawn uniformly and independently at random (using a cryptographically strong RNG)
+     * Returns n elements of this structure that are drawn uniformly and independently at random
+     * using a cryptographically strong RNG.
      *
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if the operation is not supported
      */
     Vector<? extends Element> getUniformlyRandomElements(int n) throws UnsupportedOperationException;
 
     /**
-     * Creates an Element of this Structure from its representation.
+     * Creates an element of this structure from its representation.
      *
-     * @param repr the Representation returned by Element.getRepresentation()
-     * @return the unique Element encoded by 'repr'
+     * @param repr the {@code Representation} returned by {@link Element#getRepresentation()}
+     * @return the decoded element corresponding to the representation
      */
     Element getElement(Representation repr);
 
     /**
-     * Returns the number of bytes returned by this Structure's {@link Element}s' {@link Element#getUniqueByteRepresentation()},
-     * or an empty Optional if this structure's elements do not guarantee a fixed length.
-     * For example, elements of Zp will always be represented by ceil(ceil(log(p))/8) bytes, hence getUniqueByteLength() would return ceil(ceil(log(p))/8).
-     * A polynomial ring would return null since a polynomial's unique byte representation length depends on its degree.
+     * Returns the number of bytes returned by this structure's {@link Element#getUniqueByteRepresentation()},
+     * or an empty {@code Optional} if this structure's elements do not guarantee a fixed length.
+     * <p>
+     * For example, elements of {@link Zp} will always be represented by {@code ceil(ceil(log(p))/8)} bytes,
+     * hence {@code getUniqueByteLength()} would return {@code ceil(ceil(log(p))/8)}.
+     * <p>
+     * A polynomial ring would return an empty {@code Optional} since a polynomial's unique byte representation length
+     * depends on its degree.
      *
-     * @return the guaranteed fixed length of element.getUniqueByteRepresentation().size(), or an empty Optional, if no guarantee.
+     * @return the guaranteed fixed length of {@code getUniqueByteRepresentation()},
+     *         or an empty {@code Optional}, if no guarantee
      */
     Optional<Integer> getUniqueByteLength();
 }

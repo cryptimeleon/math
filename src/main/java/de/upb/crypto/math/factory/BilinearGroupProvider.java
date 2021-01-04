@@ -1,5 +1,8 @@
 package de.upb.crypto.math.factory;
 
+import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
+import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
+
 import java.util.List;
 
 /**
@@ -19,28 +22,39 @@ import java.util.List;
  */
 public interface BilinearGroupProvider {
     /**
-     * Provides a bilinear group for the given {@code securityParameter}. Before the group is provided it should be
-     * checked whether the provider meets the {@code requirements} stated by the user.
+     * Provides a {@link BilinearGroup} for the given security parameter and requirements.
+     * <p>
+     * Before the group is provided it should be checked whether the provider meets the
+     * {@code requirements} stated by the user.
      *
-     * @param securityParameter Supposed security of discrete logarithm of the groups G1, G2, GT of the bilinear group provided (in bits).
-     * @param requirements      Requirements the provided bilinear group need to fulfill.
-     * @return A concrete instance of a {@link BilinearGroup} meeting the given parameters
+     * @param securityParameter supposed security of discrete logarithm of the groups G1, G2, GT
+     *                          of the bilinear group provided (in bits)
+     * @param requirements      requirements the provided bilinear group needs to fulfill
+     * @return a concrete instance of a {@link BilinearGroup} meeting the given parameters
      */
     BilinearGroup provideBilinearGroup(int securityParameter, BilinearGroupRequirement requirements);
 
     /**
-     * Provides a bilinear group for the given {@code securityParameter}. Before the group is provided it should be
-     * checked whether the provider meets the {@code requirements} stated by the user.
+     * Provides a {@link BilinearGroupImpl} for the given security parameter and requirements.
+     * <p>
+     * Before the group is provided it should be checked whether the provider meets the
+     * {@code requirements} stated by the user.
+     * <p>
+     * Note that this returns a {@link BilinearGroupImpl}, which usually should not be used directly.
+     * Instead, use {@link #provideBilinearGroup(int, BilinearGroupRequirement)} or wrap the result of
+     * this method into a {@code BilinearGroup} yourself, such as {@link BasicBilinearGroup} or
+     * {@link LazyBilinearGroup}.
      *
-     * Note that this returns a BilinearGroupImpl, which usually should not be used directly (call provideBilinearGroup instead or wrap this result in, for example, a BasicBilinearGroup)
-     *
-     * @param securityParameter Supposed security of discrete logarithm of the groups G1, G2, GT of the bilinear group provided (in bits).
-     * @param requirements      Requirements the provided bilinear group need to fulfill.
-     * @return A concrete instance of a {@link BilinearGroupImpl} meeting the given parameters
+     * @param securityParameter supposed security of discrete logarithm of the groups G1, G2, GT
+     *                          of the bilinear group provided (in bits)
+     * @param requirements      requirements the provided bilinear group need to fulfill
+     * @return a concrete instance of a {@link BilinearGroupImpl} meeting the given parameters
      */
     BilinearGroupImpl provideBilinearGroupImpl(int securityParameter, BilinearGroupRequirement requirements);
 
     /**
+     * Validates that the given requirements can be fulfilled by this provider.
+     *
      * @param requirements      requirements to be checked
      * @param securityParameter certain groups, like standard curves, can only provide a fixed security parameter.
      *                          Therefore, this should
@@ -48,7 +62,7 @@ public interface BilinearGroupProvider {
      *                          parameters, the parameter
      *                          can be ignored in the implementation.
      * @return true iff the bilinear group provided by {@link #provideBilinearGroup(int, BilinearGroupRequirement)}
-     * meets the requirements defined by {@code requirements}
+     *         meets the requirements defined by {@code requirements}.
      */
     boolean checkRequirements(int securityParameter, BilinearGroupRequirement requirements);
 }

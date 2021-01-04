@@ -14,11 +14,13 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 /**
- * Allows converting between a Representation object and a JSON structure.
+ * Allows converting between a {@code Representation} object and a JSON structure.
  * <p>
- * Note that the order of attributes in a JSON Object is meaningless. However, this converter guarantees a consistent order between calls,
- * making the Representation -> String relation left-unique (i.e. a well-defined mapping).
- * (This allows this Converter to be used for, e.g,. HashRepresentationIntoStructure, and similar tasks that require a unique and consistent output)
+ * Note that the order of attributes in a JSON Object is meaningless. 
+ * However, this {@code Converter} guarantees a consistent order between calls,
+ * making the {@code Representation -> String} relation left-unique (i.e. a well-defined mapping).
+ * This allows this {@code Converter} to be used for, e.g,. {@code HashRepresentationIntoStructure},
+ * and similar tasks that require a unique and consistent output.
  */
 public class JSONConverter extends Converter<String> {
     protected static final String BIG_INTEGER_PREFIX = "INT:";
@@ -35,6 +37,11 @@ public class JSONConverter extends Converter<String> {
         return JSONValue.toJSONString(internalSerialize(r));
     }
 
+    /**
+     * Serializes the given representation to an {@code Object} that can be easily converted to JSON.
+     * @param r the representation to serialize
+     * @return the corresponding object
+     */
     protected Object internalSerialize(Representation r) {
         if (r == null)
             return null;
@@ -127,6 +134,11 @@ public class JSONConverter extends Converter<String> {
         }
     }
 
+    /**
+     * Deserializes the given object (constructed via conversion from JSON) to its representation.
+     * @param o the object to deserialize to representation
+     * @return the corresponding representation
+     */
     protected Representation internalDeserialize(Object o) {
         if (o == null)
             return null;

@@ -9,8 +9,11 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link GroupElementExpression} representing the group operation applied to two group element expressions.
+ */
 public class GroupOpExpr extends GroupElementExpression {
-    protected GroupElementExpression lhs, rhs;
+    private final GroupElementExpression lhs, rhs;
 
     public GroupOpExpr(GroupElementExpression lhs, GroupElementExpression rhs) {
         super(lhs.getGroup() != null ? lhs.getGroup() : rhs.getGroup());
@@ -49,10 +52,16 @@ public class GroupOpExpr extends GroupElementExpression {
         );
     }
 
+    /**
+     * Retrieves the left hand side of this group operation expression.
+     */
     public GroupElementExpression getLhs() {
         return lhs;
     }
 
+    /**
+     * Retrieves the right hand side of this group operation expression.
+     */
     public GroupElementExpression getRhs() {
         return rhs;
     }

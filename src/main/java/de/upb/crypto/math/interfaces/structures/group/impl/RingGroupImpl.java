@@ -6,13 +6,13 @@ import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 
 /**
- * Common base class for ring subgroups (additive/unit groups)
+ * Common base class for ring subgroups (additive/unit groups).
  */
 public abstract class RingGroupImpl implements GroupImpl {
     protected final Ring ring;
 
     /**
-     * Construct a RingGroup
+     * Construct a ring group from a given ring.
      *
      * @param ring the ring to wrap
      */
@@ -39,10 +39,19 @@ public abstract class RingGroupImpl implements GroupImpl {
         return new RepresentableRepresentation(ring);
     }
 
+    /**
+     * Retrieves the base ring.
+     */
     public Ring getRing() {
         return ring;
     }
 
+
+    /**
+     * Creates an element of this group from the given ring element.
+     * @param ringElement the ring element to convert
+     * @return the given ring element as an element of this group
+     */
     public abstract RingGroupElementImpl getElement(RingElement ringElement);
 
     /**
@@ -67,9 +76,9 @@ public abstract class RingGroupImpl implements GroupImpl {
         }
 
         /**
-         * Projects the element of this group back to its ring
+         * Projects the element of this group back to its ring.
          *
-         * @return the same element, interpreted as a ring element
+         * @return the same element interpreted as a ring element
          */
         public RingElement projectToRing() {
             return element;

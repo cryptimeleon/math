@@ -3,15 +3,15 @@ package de.upb.crypto.math.random.interfaces;
 import java.math.BigInteger;
 
 /**
- * Collection of utility functions for random operations
+ * Collection of utility functions for generating random numbers using some given {@code RandomGenerator}.
  */
 public abstract class RandomUtil {
     /**
-     * Generate a random number from the set {0,...,l-1}
+     * Generate a random number between 0 and {@code l-1} (inclusive) using the given random generator.
      *
-     * @param rnd the randomness to be used
+     * @param rnd the random generator to use
      * @param l   the upper bound excluded
-     * @return a uniformly distributed number from the set {0,...,l-1}
+     * @return a random number between 0 and {@code l-1} (inclusive)
      */
     public static BigInteger getRandomElement(RandomGenerator rnd, BigInteger l) {
 
@@ -55,20 +55,22 @@ public abstract class RandomUtil {
     }
 
     /**
-     * Generate a random number from the set {0,...,l-1}
+     * Generate a uniformly distributed random number between 0 and {@code l-1} (inclusive)
      *
      * @param l the upper bound excluded
-     * @return a uniformly distributed number from the set {0,...,l-1}
+     * @return a uniformly distributed number between 0 and {@code l-1} (inclusive)
      */
     public static BigInteger getRandomElement(BigInteger l) {
         return getRandomElement(RandomGeneratorSupplier.getRnd(), l);
     }
 
     /**
-     * Generate a (uniformly) random n-bit prime number from the interval [2^(n-1), 2^n-1]
+     * Generate a random n-bit prime number from the interval \(\left[2^{n-1}, 2^n-1\right]\)
+     * using the given random generator.
      *
-     * @param n desired number of bits for the prime number
-     * @return a BigInteger that is probably prime
+     * @param rnd the random generator to use for generation
+     * @param n the desired number of bits for the prime number
+     * @return a {@code BigInteger} that is probably prime
      */
     public static BigInteger getRandomPrime(RandomGenerator rnd, int n) {
         BigInteger lowerBound = BigInteger.ONE.shiftLeft(n - 1); // constant 2^(n-1)
@@ -82,10 +84,10 @@ public abstract class RandomUtil {
     }
 
     /**
-     * Generate a (uniformly) random n-bit prime number from the interval [2^(n-1), 2^n-1]
+     * Generate a uniformly distributed random n-bit prime number from the interval \(\left[2^{n-1}, 2^n-1\right]\).
      *
-     * @param n desired number of bits for the prime number
-     * @return a BigInteger that is probably prime
+     * @param n the desired number of bits for the prime number
+     * @return a {@code BigInteger} that is probably prime
      */
     public static BigInteger getRandomPrime(int n) {
         return getRandomPrime(RandomGeneratorSupplier.getRnd(), n);

@@ -14,7 +14,7 @@ import de.upb.crypto.math.serialization.Representation;
  */
 public class BarretoNaehrigTatePairing extends AbstractPairing {
     /**
-     * Construct Tate pairing {@code g1} x {@code g2} -> {@code gT}.
+     * Construct Tate pairing \(\mathbb{G}_1 \times \mathbb{G}_2 \rightarrow \mathbb{G}_T\).
      */
     public BarretoNaehrigTatePairing(BarretoNaehrigGroup1Impl g1, BarretoNaehrigGroup2Impl g2, BarretoNaehrigTargetGroupImpl gT) {
         super(g1, g2, gT);
@@ -30,6 +30,12 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
         super(r);
     }
 
+    /**
+     * TODO (rh): Write javadoc for this. I had some notes somewhere about how exactly this works
+     *  and especially the line parameterization format.
+     *
+     * @param line parameterization of the line
+     */
     @Override
     protected ExtensionFieldElement evaluateLine(FieldElement[] line, PairingSourceGroupElement P, PairingSourceGroupElement Q) {
         ExtensionField targetField = (ExtensionField) gT.getFieldOfDefinition();

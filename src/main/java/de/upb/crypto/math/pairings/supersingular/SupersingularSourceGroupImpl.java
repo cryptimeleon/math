@@ -44,16 +44,17 @@ public class SupersingularSourceGroupImpl extends PairingSourceGroupImpl {
 
 
     /**
-     * A one to one mapping F_q -> E(F_q)\{O}
+     * A one to one mapping \(\mathbb{F}_q \rightarrow E(\mathbb{F}_q) \setminus \{O\}\).
      * <p>
-     * A value z is mapped to the point (z,y) for appropriate y if z(z^2+A) is a QR
-     * and to (-z,-y) otherwise.
-     * Note that -1 is a QNR for type A pairings.
-     * Hence z(z^2+A) is a QR iff -z(z^2+A)=(-z)((-z)^2+A) is a QNR.
+     * A value \(z\) is mapped to the point \((z,y)\) for appropriate \(y\) if \(z(z^2+A)\) is a quadratic residue
+     * and to \((-z,-y)\) otherwise.
+     * Note that -1 is a quadratic non-residue for type 1 pairings.
+     * Hence \(z(z^2+A)\) is a quadratic residue iff \(-z(z^2+A)=(-z)((-z)^2+A)\) is a quadratic non-residue.
      * <p>
-     * This mapping is bijective because if z(z^2+A) is a QNR -z is mapped to (y,-z).
+     * This mapping is bijective because if \(z(z^2+A)\) is a quadratic non-residue, then \(-z\) is mapped to
+     * \((y,-z)\).
      *
-     * @param z an element from this group's base field (getFieldOfDefinition())
+     * @param z an element from this group's base field (corresponding to {@code getFieldOfDefinition()})
      */
     protected SupersingularSourceGroupElementImpl mapToPoint(ExtensionFieldElement z) {
         ExtensionFieldElement x, y;

@@ -12,6 +12,9 @@ import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import java.util.Objects;
 
+/**
+ * A basic {@link BilinearGroupImpl} wrapper where operations are evaluated naively, i.e. operation by operation.
+ */
 public class BasicBilinearGroup implements BilinearGroup {
     @Represented
     protected BilinearGroupImpl impl;

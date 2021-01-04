@@ -2,6 +2,9 @@ package de.upb.crypto.math.hash.impl;
 
 import de.upb.crypto.math.serialization.Representation;
 
+/**
+ * Implementation of the SHA-256 hash function.
+ */
 public class SHA256HashFunction extends AbstractSHAHashFunction {
 
     public SHA256HashFunction(Representation repr) {

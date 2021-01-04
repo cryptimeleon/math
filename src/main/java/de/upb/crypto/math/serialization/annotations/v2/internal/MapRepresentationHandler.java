@@ -11,20 +11,48 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * A handler for serializing/deserializing {@link Map} instances.
+ */
 public class MapRepresentationHandler implements RepresentationHandler {
-    protected RepresentationHandler keyHandler, valueHandler;
-    protected Class mapType;
+    /**
+     * Handler for the map's keys.
+     */
+    protected RepresentationHandler keyHandler;
+
+    /**
+     * Handler for the map's values.
+     */
+    protected RepresentationHandler valueHandler;
+
+    /**
+     * Class of the map.
+     */
+    protected Class<?> mapType;
+
+    /**
+     * Type of the map's keys.
+     */
     protected Type keyType;
+
+    /**
+     * Type of the map#s values.
+     */
     protected Type valueType;
 
     public MapRepresentationHandler(RepresentationHandler keyHandler, RepresentationHandler valueHandler, Type mapType) {
         this.keyHandler = keyHandler;
         this.valueHandler = valueHandler;
-        this.mapType = (Class) ((ParameterizedType) mapType).getRawType();
+        this.mapType = (Class<?>) ((ParameterizedType) mapType).getRawType();
         this.keyType = getKeyType(mapType);
         this.valueType = getValueType(mapType);
     }
 
+    /**
+     * Retrieves the key type of the given map type.
+     * @param mapType the map type
+     * @return the type of the keys found in maps of the given type
+     */
     public static Type getKeyType(Type mapType) {
         Type[] typeArguments = ((ParameterizedType) mapType).getActualTypeArguments();
         if (typeArguments.length != 2) {
@@ -33,6 +61,11 @@ public class MapRepresentationHandler implements RepresentationHandler {
         return typeArguments[0];
     }
 
+    /**
+     * Retrieves the value type of the given map type.
+     * @param mapType the map type
+     * @return the type of the values found in maps of the given type
+     */
     public static Type getValueType(Type mapType) {
         Type[] typeArguments = ((ParameterizedType) mapType).getActualTypeArguments();
         if (typeArguments.length != 2) {
@@ -41,6 +74,11 @@ public class MapRepresentationHandler implements RepresentationHandler {
         return typeArguments[1];
     }
 
+    /**
+     * Checks whether this handler can handle maps of the given type.
+     * @param mapType the type to check
+     * @return true if this handler can handle the given type, else false
+     */
     public static boolean canHandle(Type mapType) { //handles Map<anything>.
         if (!(mapType instanceof ParameterizedType))
             return false;
@@ -50,7 +88,7 @@ public class MapRepresentationHandler implements RepresentationHandler {
         if (!(rawType instanceof Class))
             return false;
 
-        if (!Map.class.isAssignableFrom((Class) rawType))
+        if (!Map.class.isAssignableFrom((Class<?>) rawType))
             return false;
 
         try { //Check if generic type argument is okay
@@ -60,31 +98,35 @@ public class MapRepresentationHandler implements RepresentationHandler {
             return false;
         }
 
-        //Check if the collection has a default constructor or is an interface.
+        // Check if the collection has a default constructor or is an interface.
         try {
-            ((Class) rawType).getConstructor();
+            ((Class<?>) rawType).getConstructor();
         } catch (NoSuchMethodException e) {
-            return ((Class) rawType).isInterface() && ((Class) rawType).isAssignableFrom(LinkedHashMap.class);
+            // if the type is an interface (e.g. Map<>) and so has no constructor, fall back to LinkedHashMap
+            return ((Class<?>) rawType).isInterface() && ((Class<?>) rawType).isAssignableFrom(LinkedHashMap.class);
         }
 
         return true;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object deserializeFromRepresentation(Representation repr, Function<String, RepresentationRestorer> getRegisteredRestorer) {
         Map result = null;
 
-        //Try to call default constructor to create collection.
+        // Try to call default constructor to create collection.
         try {
             result = (Map) mapType.getConstructor().newInstance();
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) { //fall back to LinkedHashMap (e.g., if the field type is just Map<>)
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+                | InvocationTargetException e) {
+            // if the type has no constructor, fall back to LinkedHashMap
             if (mapType.isAssignableFrom(LinkedHashMap.class))
-                result = new LinkedHashMap();
+                result = new LinkedHashMap<>();
         }
         if (result == null)
             throw new RuntimeException("Cannot instantiate type "+ mapType.getName());
 
-        //Restore elements
+        // Restore elements
         for (Map.Entry<Representation, Representation> entry : repr.map())
             result.put(keyHandler.deserializeFromRepresentation(entry.getKey(), getRegisteredRestorer),
                     valueHandler.deserializeFromRepresentation(entry.getValue(), getRegisteredRestorer));
@@ -97,7 +139,12 @@ public class MapRepresentationHandler implements RepresentationHandler {
         if (!(obj instanceof Map))
             throw new IllegalArgumentException("Cannot handle representation of "+obj.getClass().getName());
         MapRepresentation repr = new MapRepresentation();
-        ((Map) obj).forEach((k, v) -> repr.put(keyHandler.serializeToRepresentation(k), valueHandler.serializeToRepresentation(v)));
+        ((Map<?,?>) obj).forEach(
+                (k, v) -> repr.put(
+                        keyHandler.serializeToRepresentation(k),
+                        valueHandler.serializeToRepresentation(v)
+                )
+        );
         return repr;
     }
 }

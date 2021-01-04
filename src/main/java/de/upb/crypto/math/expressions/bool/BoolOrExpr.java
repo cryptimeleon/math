@@ -6,18 +6,35 @@ import de.upb.crypto.math.expressions.VariableExpression;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link BooleanExpression} representing the Boolean OR of two {@code BooleanExpression} instances.
+ */
 public class BoolOrExpr implements BooleanExpression {
-    BooleanExpression lhs, rhs;
+    /**
+     * The Boolean expression on the left hand side of this Boolean OR.
+     */
+    protected final BooleanExpression lhs;
+
+    /**
+     * The Boolean expression on the right hand side of this Boolean OR.
+     */
+    protected final BooleanExpression rhs;
 
     public BoolOrExpr(BooleanExpression lhs, BooleanExpression rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
     }
 
+    /**
+     * Retrieves the Boolean expression on the left hand side of this Boolean OR.
+     */
     public BooleanExpression getLhs() {
         return lhs;
     }
 
+    /**
+     * Retrieves the Boolean expression on the right hand side of this Boolean OR.
+     */
     public BooleanExpression getRhs() {
         return rhs;
     }

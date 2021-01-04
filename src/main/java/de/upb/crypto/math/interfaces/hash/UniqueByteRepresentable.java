@@ -5,10 +5,14 @@ import de.upb.crypto.math.hash.impl.ByteArrayAccumulator;
 import de.upb.crypto.math.serialization.Representable;
 
 /**
- * Interface for all objects that have unique and consistant representations as byte arrays.
+ * Interface for all objects that have a unique and consistent representation as byte arrays.
+ * <p>
  * Such objects can, for example, be used as input to a {@link HashFunction}.
- * Unlike in the {@link Representable} interface, all UniqueByteRepresentables are guaranteed to output the same UniqueByteRepresentation if the object is the same.
- * If two objects are not the same, but are of the same type, their unique byte representation must differ (the mapping is injective).
+ * <p>
+ * Unlike in the {@link Representable} interface, all {@code UniqueByteRepresentable} instances are guaranteed to
+ * be mapped to the same byte representation if the object is the same.
+ * If two objects are not the same, but are of the same type, their unique byte representation must differ,
+ * i.e. the mapping is injective.
  * (For the sake of sanity and performance, "of the same type" here means also that they are part of the same context,
  * e.g., based on the same group / use the same public parameters)
  *
@@ -17,7 +21,9 @@ import de.upb.crypto.math.serialization.Representable;
 public interface UniqueByteRepresentable {
     /**
      * Updates the ByteAccumulator with the unique byte representation of this object.
-     * The input to the accumulators update function is an injective (with respect to a given domain) byte encoding of this object.
+     * <p>
+     * The input to the accumulators update function is an injective (with respect to a given domain) byte encoding of
+     * this object.
      * <p>
      * For many use-cases, the {@link AnnotatedUbrUtil} can be used to quickly implement this method.
      *
@@ -26,9 +32,12 @@ public interface UniqueByteRepresentable {
     ByteAccumulator updateAccumulator(ByteAccumulator accumulator);
 
     /**
-     * An injective mapping of the domain of this object to byte[].
-     * Shorthand for updateAccumulator(new ByteArrayAccumulator()).extractBytes().
-     * (Implementors of the UniqueByteRepresentable interface should override updateAccumulator(ByteAccumulatr) instead)
+     * An injective mapping of the domain of this object to a {@code byte[]}.
+     * <p>
+     * Shorthand for {@code updateAccumulator(new ByteArrayAccumulator()).extractBytes()}.
+     * <p>
+     * Implementors of the {@code UniqueByteRepresentable} interface should override
+     * {@code updateAccumulator(ByteAccumulator)} instead.
      */
     default byte[] getUniqueByteRepresentation() {
         return updateAccumulator(new ByteArrayAccumulator()).extractBytes();

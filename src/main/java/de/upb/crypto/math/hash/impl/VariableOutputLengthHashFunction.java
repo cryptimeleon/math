@@ -16,41 +16,44 @@ import java.nio.ByteBuffer;
  * <p>
  * If the inner hash function is modeled as a random oracle, the resulting hash function
  * is also a random oracle.
- * If the inner hash function is collision resistant and the desired outputLength is larger than
+ * If the inner hash function is collision resistant and the desired output length is larger than
  * the inner hash function's output length, then the resulting hash function is also collision resistant.
  */
 public class VariableOutputLengthHashFunction implements HashFunction, StandaloneRepresentable {
 
     /**
-     * The base hash function to use
+     * The base hash function to use.
      */
     @Represented
     private HashFunction innerFunction;
 
     /**
-     * Desired output length of this hash function in bytes
+     * The desired output length of this hash function in number of bytes.
      */
     @Represented
     private Integer outputLength;
 
     /**
-     * Instantiates a HashFunction with SHA256 as the base algorithm.
+     * Initializes this instance using the {@link SHA256HashFunction} and the desired output length.
      *
-     * @param outputLength desired output length of this hash function in byte
-     */
+     * @param outputLength the desired output length of this hash function in number of bytes
+     * */
     public VariableOutputLengthHashFunction(int outputLength) {
         this(new SHA256HashFunction(), outputLength);
     }
 
+    /**
+     * Retrieves the base hash function to use.
+     */
     public HashFunction getInnerHashFunction() {
         return innerFunction;
     }
 
     /**
-     * Instantiates a HashFunction with with a supplied base algorithm.
+     * Initializes this instance using a specific base hash function and output length.
      *
-     * @param hashFunction a base hash function
-     * @param outputLength       desired output length of this hash function in byte
+     * @param hashFunction the base hash function
+     * @param outputLength thedesired output length of this hash function in number of bytes
      */
     public VariableOutputLengthHashFunction(HashFunction hashFunction, int outputLength) {
         innerFunction = hashFunction;
@@ -74,9 +77,14 @@ public class VariableOutputLengthHashFunction implements HashFunction, Standalon
     @Override
     public byte[] hash(byte[] x) {
         // Construction: Use y = innerFunction(0||x) as a starting value. Note that the length of y is constant.
-        // The hash value of x is innerFunction(1 || y) || innerFunction(2 || y) || ... (the resulting byte sequence is truncated to fit the desired byte number)
-        // This preserves random-oracle (this uses the trick that for a random oracle h, x -> (0 || x) is a random oracle and x -> (1 || x) is a random oracle, etc.
-        // This also preserves collision resistance (if not too much is truncated): given a collision (x,x'), either innerFunction(0||x) = innerFunction(0||x') or innerFunction(1 || innerFunction(0||x)) = innerFunction(1 || innerFunction(0||x')). We have found a collision in both cases.
+        // The hash value of x is innerFunction(1 || y) || innerFunction(2 || y) || ...
+        //  (the resulting byte sequence is truncated to fit the desired byte number)
+        // This preserves random-oracle (this uses the trick that for a random oracle h,
+        //  x -> (0 || x) is a random oracle and x -> (1 || x) is a random oracle, etc.)
+        // This also preserves collision resistance (if not too much is truncated):
+        //  given a collision (x,x'), either innerFunction(0||x) = innerFunction(0||x')
+        //  or innerFunction(1 || innerFunction(0||x)) = innerFunction(1 || innerFunction(0||x')).
+        //  We have found a collision in both cases.
 
         byte[] result = new byte[outputLength];
         int bytesFilled = 0;
@@ -92,7 +100,7 @@ public class VariableOutputLengthHashFunction implements HashFunction, Standalon
     }
 
     /**
-     * Given c and value, computes c || value
+     * Given {@code c} and byte array {@code value}, prepends {@code c} to {@code value}.
      */
     private byte[] prependInt(int c, byte[] value) {
         byte[] result = new byte[Integer.BYTES + value.length];
@@ -103,6 +111,9 @@ public class VariableOutputLengthHashFunction implements HashFunction, Standalon
         return result;
     }
 
+    /**
+     * Retrieves the desired output length of this hash function in number of bytes.
+     */
     @Override
     public int getOutputLength() {
         return outputLength;

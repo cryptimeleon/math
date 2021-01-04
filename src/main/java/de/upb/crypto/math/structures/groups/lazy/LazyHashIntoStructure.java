@@ -8,6 +8,13 @@ import de.upb.crypto.math.serialization.annotations.v2.Represented;
 
 import java.util.Objects;
 
+/**
+ * A {@link HashIntoGroupImpl} wrapper implementing deferred (lazy) evaluation.
+ * <p>
+ * Allows for additional optimizations using information about the operations being applied.
+ * <p>
+ * For more information, see the <a href="https://upbcuk.github.io/docs/lazy-eval.html">documentation</a>.
+ */
 public class LazyHashIntoStructure implements HashIntoStructure {
     @Represented
     protected HashIntoGroupImpl impl;

@@ -8,18 +8,35 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An {@link ExponentExpr} representing the sum of two exponent expressions.
+ */
 public class ExponentSumExpr implements ExponentExpr {
-    protected final ExponentExpr lhs, rhs;
+    /**
+     * The left hand side of this sum.
+     */
+    protected final ExponentExpr lhs;
+
+    /**
+     * The right hand side of this sum.
+     */
+    protected final ExponentExpr rhs;
 
     public ExponentSumExpr(ExponentExpr lhs, ExponentExpr rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
     }
 
+    /**
+     * Retrieves the left hand side of this sum.
+     */
     public ExponentExpr getLhs() {
         return lhs;
     }
 
+    /**
+     * Retrieves the right hand side of this sum.
+     */
     public ExponentExpr getRhs() {
         return rhs;
     }

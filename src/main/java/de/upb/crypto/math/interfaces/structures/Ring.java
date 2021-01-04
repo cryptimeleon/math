@@ -16,19 +16,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A Ring (with 1).
- * Operations are defined on its elements.
+ * A algebraic ring with 1.
  */
 public interface Ring extends Structure, RepresentationRestorer {
     /**
-     * Returns an object representing the additive group of this ring
+     * Returns an object representing the additive group of this ring.
      */
     default RingGroup asAdditiveGroup() {
         return RingGroup.additiveGroupOf(this);
     }
 
     /**
-     * Returns an object representing the (multiplicative) unit group of this ring
+     * Returns an object representing the (multiplicative) unit group of this ring.
      */
     default RingGroup asUnitGroup() {
         return RingGroup.unitGroupOf(this);
@@ -38,17 +37,17 @@ public interface Ring extends Structure, RepresentationRestorer {
      * Returns the number of units in this ring.
      *
      * @return size of the unit group or null if infinite
-     * @throws UnsupportedOperationException if size is unknown / computationally expensive to compute
+     * @throws UnsupportedOperationException if size is unknown or is computationally too expensive to compute
      */
     BigInteger sizeUnitGroup() throws UnsupportedOperationException;
 
     /**
-     * Returns the additive neutral element of this ring
+     * Returns the additive neutral element of this ring.
      */
     RingElement getZeroElement();
 
     /**
-     * Returns the multiplicative neutral element of this ring
+     * Returns the multiplicative neutral element of this ring.
      */
     RingElement getOneElement();
 
@@ -56,8 +55,11 @@ public interface Ring extends Structure, RepresentationRestorer {
     RingElement getElement(Representation repr);
 
     /**
-     * Recreates a RingElementVector containing group elements from this Ring
-     * @param repr a representation of a RingElementVector (obtained via RingElementVector::getRepresentation).
+     * Recreates a {@link RingElementVector} containing ring elements from this {@code Ring} from a
+     * {@code Representation} of that vector.
+     *
+     * @param repr a representation of a {@code RingElementVector}
+     *             (obtained via {@link RingElementVector#getRepresentation()}).
      */
     default RingElementVector getVector(Representation repr) {
         return RingElementVector.fromStream(repr.list().stream().map(this::getElement));
@@ -82,12 +84,12 @@ public interface Ring extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Generates an invertible element from this ring uniformly at random (using cryptographically strong RNG).
+     * Generates an invertible element from this ring uniformly at random using a cryptographically strong RNG.
      * <p>
      * The default implementation generates random ring elements until it hits a unit.
      * Implementors should override if this is not feasible or if there is a better way!
      *
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if the ring does not support this method
      */
     default RingElement getUniformlyRandomUnit() throws UnsupportedOperationException {
         try {
@@ -102,21 +104,22 @@ public interface Ring extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Generates n invertible elements from this ring uniformly and independently at random (using cryptographically strong RNG).
+     * Generates n invertible elements from this ring uniformly and independently at random
+     * using a cryptographically strong RNG.
      * <p>
      * The default implementation generates random ring elements until it hits a unit.
      * Implementors should override if this is not feasible or if there is a better way!
      *
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if the ring does not support this method
      */
     default RingElementVector getUniformlyRandomUnits(int n) throws UnsupportedOperationException {
         return RingElementVector.generate(this::getUniformlyRandomUnit, n);
     }
 
     /**
-     * Generates a nonzero element from this ring uniformly at random (using cryptographically strong RNG).
+     * Generates a nonzero element from this ring uniformly at random using a cryptographically strong RNG.
      *
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if the ring does not support this method
      */
     default RingElement getUniformlyRandomNonzeroElement() {
         try {
@@ -131,25 +134,28 @@ public interface Ring extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Generates n nonzero elements from this ring uniformly and independently at random (using cryptographically strong RNG).
+     * Generates n nonzero elements from this ring uniformly and independently at random
+     * using a cryptographically strong RNG.
      *
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException if the ring does not support this method
      */
     default RingElementVector getUniformlyRandomNonzeroElements(int n) {
         return RingElementVector.generate(this::getUniformlyRandomNonzeroElement, n);
     }
 
     /**
-     * The characteristic of the ring,
-     * i.e. the number n such that there is a ring homomorphism Z/nZ -> Ring
+     * Returns the characteristic of the ring.
+     * <p>
+     * The characteristic of a ring is defined to be the number {@code n}
+     * such that there is a ring homomorphism from {@code Zn} to the ring.
      *
      * @throws UnsupportedOperationException if unknown
      */
     BigInteger getCharacteristic() throws UnsupportedOperationException;
 
     /**
-     * Maps the integer i into the ring, such that this map is a
-     * homomorphism from the Z/getCharacteristic()*Z onto the Ring.
+     * Maps the integer i into this ring \(R\), such that this map is a
+     * ring homomorphism \(\mathbb{Z}_{\text{getCharacteristic()}} \rightarrow R\).
      *
      * @param i the integer to map
      * @return an element of the ring
@@ -157,8 +163,8 @@ public interface Ring extends Structure, RepresentationRestorer {
     RingElement getElement(BigInteger i);
 
     /**
-     * Maps the integer i into the ring, such that this map is a
-     * homomorphism from the integers onto the Ring.
+     * Maps the integer i into this ring \(R\), such that this map is a
+     * ring homomorphism \(\mathbb{Z}_{\text{getCharacteristic()}} \rightarrow R\).
      *
      * @param i the integer to map
      * @return an element of the ring
@@ -169,12 +175,19 @@ public interface Ring extends Structure, RepresentationRestorer {
 
     /**
      * This function executes the extended euclidean algorithm for the elements
-     * a and b. In other words, it computes an array [x, y, gcd(a,b)]
-     * such that ax+by=gcd(a,b).
-     * The gcd(a,b) is an element such that: c divides a and c divides b => c divides gcd(a,b).
+     * a and b.
+     * <p>
+     * Specifically, it computes an array \([x, y, gcd(a,b)]\) such that \(ax+by=gcd(a,b)\).
+     * <p>
+     * The gcd(a,b) is an element such that
+     * <ul>
+     *     <li>c divides a
+     *     <li>c divides b implies that c divides gcd(a,b).
+     * </ul>
      * (the result is not unique - they may vary by a unit factor)
      * <p>
-     * This algorithm only works on euclidean domains (i.e. RingElements must implement divideWithRemainder())
+     * This algorithm only works on euclidean domains, i.e. the {@code RingElement} in this ring must
+     * implement {@code divideWithRemainder}.
      *
      * @param a First argument to the extended euclidean algorithm.
      * @param b Second argument to the extended euclidean algorithm.
@@ -208,14 +221,20 @@ public interface Ring extends Structure, RepresentationRestorer {
 
     /**
      * This function executes the extended euclidean algorithm of the passed elements.
-     * In other words, it computes an array [x[0], x[1], ..., x[n-1], gcd(elements)]
+     * <p>
+     * Specifically, it computes an array [x[0], x[1], ..., x[n-1], gcd(elements)]
      * such that gcd(elements)=elements[0]*x[0]+elements[1]*x[1]+...+elements[n-1]*x[n-1].
-     * The gcd(elements) is an element such that: c divides all elements => c divides gcd(elements).
+     * <p>
+     * The gcd(elements) is an element such that
+     * <ul>
+     *     <li> c divides all elements implies that c divides gcd(elements).
+     * </ul>
      * (the result is not unique - they may vary by a unit factor)
      * <p>
-     * This algorithm only works on euclidean domains (i.e. RingElements must implement divideWithRemainder())
+     * This algorithm only works on euclidean domains i.e. the {@code RingElement} in this ring must
+     * implement {@code divideWithRemainder}.
      *
-     * @param elements List of elements to apply the extended euclidean algorithm to.
+     * @param elements List of elements to apply the extended euclidean algorithm to
      * @return an array with coefficients and the gcd: [x[0], x[1], ..., x[n-1], gcd(elements)]
      */
     public default ArrayList<RingElement> extendedEuclideanAlgorithm(List<RingElement> elements) {
@@ -246,7 +265,7 @@ public interface Ring extends Structure, RepresentationRestorer {
     }
 
     /**
-     * Returns true if this ring is known to be commutative
+     * Returns true if this ring is known to be commutative.
      */
     boolean isCommutative();
 }

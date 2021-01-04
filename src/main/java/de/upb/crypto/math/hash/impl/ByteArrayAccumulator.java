@@ -5,12 +5,11 @@ import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import java.io.ByteArrayOutputStream;
 
 /**
- * A ByteAccumulator that outputs the exact bytes that were
- * input to it. (i.e. f(x) = x)
+ * A {@link ByteAccumulator} that outputs the exact bytes that were input to it, so f(x) = x.
  */
 public class ByteArrayAccumulator extends ByteAccumulator {
 
-    private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    protected final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     @Override
     public void append(byte[] escapedBytes) {

@@ -14,6 +14,9 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Abstract class providing the base for different lazy group operation results.
+ */
 public abstract class LazyGroupElement implements GroupElement {
     protected LazyGroup group;
     private GroupElementImpl concreteValue = null;
@@ -189,6 +192,7 @@ public abstract class LazyGroupElement implements GroupElement {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+        // this equals should work between lazy group elements with the same value, e.g. random element and constant
         if (!(o instanceof LazyGroupElement)) return false;
         LazyGroupElement that = (LazyGroupElement) o;
         if (!group.equals(that.group)) return false;

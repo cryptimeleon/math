@@ -11,7 +11,13 @@ import java.math.BigInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A {@link GroupElementExpression} representing a constant group element.
+ */
 public class GroupElementConstantExpr extends GroupElementExpression {
+    /**
+     * The constant value represented by this expression.
+     */
     protected final GroupElement value;
 
     public GroupElementConstantExpr(@Nonnull GroupElement value) {

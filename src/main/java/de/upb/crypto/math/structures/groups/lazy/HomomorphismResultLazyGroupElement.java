@@ -1,7 +1,8 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
-
+/**
+ * Represents the result of applying a group homomorphism to some group element.
+ */
 public class HomomorphismResultLazyGroupElement extends LazyGroupElement {
     protected LazyGroupElement preimage;
     protected LazyGroupHomomorphism homomorphism;

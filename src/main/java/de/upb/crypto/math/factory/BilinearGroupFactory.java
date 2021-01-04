@@ -10,27 +10,25 @@ import java.util.stream.Collectors;
 
 /**
  * Factory for {@link BilinearGroup}s that allows setting certain configuration parameters
- * ({@link BilinearGroupRequirement}). It then picks a bilinear group fitting this configuration.
+ *  via {@link BilinearGroupRequirement}. It then picks a bilinear group fitting this configuration.
  *
  * <p>
  * Usage of this factory:
  * </p>
  * <ol>
- * <li>Create an object and set the desired security parameter using {@link #BilinearGroupFactory(int)}</li>
+ * <li>Create an object and set the desired security parameter using {@link #BilinearGroupFactory(int)}.
  * <li>
  * Set a configuration for the factory by setting {@link BilinearGroupRequirement} using {@link #setRequirements}.
- * </li>
  * <li>
  * Optionally: Register {@link BilinearGroupProvider} using {@link #registerProvider(List)}.
  * Default providers are {@link SupersingularProvider} for Type 1 groups and {@link BarretoNaehrigProvider} for Type
  * 3 groups.
- * </li>
- * <li>Create the bilinear group fulfilling the defined requirements by {@link #createBilinearGroup()}.</li>
+ * <li>Create the bilinear group fulfilling the defined requirements using {@link #createBilinearGroup()}.
  * </ol>
  */
 public class BilinearGroupFactory {
     /**
-     * Security parameter
+     * Security parameter.
      */
     protected int securityParameter;
     private BilinearGroupRequirement requirements;
@@ -39,9 +37,9 @@ public class BilinearGroupFactory {
     private boolean debugMode;
 
     /**
-     * Constructs a factory
+     * Constructs a factory.
      *
-     * @param securityParameter The security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
+     * @param securityParameter the security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
      *                          G2, GT roughly in
      *                          terms of equivalent-security symmetric encryption key length (cf. http://www
      *                          .keylength.com/)
@@ -50,6 +48,9 @@ public class BilinearGroupFactory {
         this.securityParameter = securityParameter;
     }
 
+    /**
+     * Configures a bilinear group with the given {@code requirements}.
+     */
     public void setRequirements(BilinearGroupRequirement requirements) {
         this.requirements = requirements;
     }
@@ -87,23 +88,31 @@ public class BilinearGroupFactory {
         this.setRequirements(new BilinearGroupRequirement(type, hashIntoG1Needed, hashIntoG2Needed, hashIntoGTNeeded));
     }
 
+    /**
+     * Adds external providers to the list of used providers.
+     *
+     * @param bilinearGroupProvider the external providers in form of a {@code List}.
+     */
     public void registerProvider(List<? extends BilinearGroupProvider> bilinearGroupProvider) {
         this.registeredProvider = bilinearGroupProvider;
     }
 
     /**
-     * @param securityParameter The security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
-     *                          G2, GT roughly in
-     *                          terms of equivalent-security symmetric encryption key length (cf. http://www
-     *                          .keylength.com/)
+     * Configures the security parameter requirement for the group.
+     *
+     * @param securityParameter the security parameter of the resulting groups, i.e., the complexity of DLOG in G1,
+     *                          G2, GT roughly in terms of equivalent-security symmetric encryption key length
+     *                          (cf. http://www.keylength.com/)
      */
     public void setSecurityParameter(int securityParameter) {
         this.securityParameter = securityParameter;
     }
 
     /**
-     * If set to true, a special bilinear group for non-secure pairings Zn x Zn -> Zn is returned. In this case, n =
-     * [largest prime >= 2^securityParameter]
+     * If set to true, a special bilinear group for non-secure pairings
+     * {@code (Zn,+) x (Zn,+) -> (Zn,+)} with support for counting group operations is returned.
+     * <p>
+     * In this case, n will be chosen as some prime number with bit size given by the security parameter.
      */
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
@@ -112,7 +121,8 @@ public class BilinearGroupFactory {
     /**
      * Creates a bilinear group according to the defined requirements and registered provider.
      * <p>
-     * see {@link #setRequirements} and {@link #registerProvider(List)}
+     * See {@link #setRequirements} and {@link #registerProvider(List)} for information on how to configure the
+     * requirements and add new providers.
      */
     public BilinearGroup createBilinearGroup() {
         if (requirements == null) {

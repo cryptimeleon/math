@@ -1,7 +1,8 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
-
+/**
+ * Represents the result of hashing a byte array to some structure.
+ */
 public class HashResultLazyGroupElement extends LazyGroupElement {
     protected byte[] preimage;
     protected LazyHashIntoStructure hash;

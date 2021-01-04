@@ -14,8 +14,9 @@ import java.util.Optional;
 
 /**
  * A multiplicative subgroup of an ExtensionField.
+ * <p>
  * When initialized with (finite) ExtensionField f and prime number "size",
- * it represents the unique subgroup of f* of size "size".
+ * it represents the unique subgroup of the unit group of f of size "size".
  */
 public abstract class PairingTargetGroupImpl implements GroupImpl, Representable {
 
