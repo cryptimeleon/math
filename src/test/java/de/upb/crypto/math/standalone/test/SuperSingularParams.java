@@ -1,5 +1,6 @@
 package de.upb.crypto.math.standalone.test;
 
+import de.upb.crypto.math.pairings.type1.supersingular.SupersingularBilinearGroup;
 import de.upb.crypto.math.pairings.type1.supersingular.SupersingularTateGroupImpl;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class SuperSingularParams {
         toReturn.add(new StandaloneTestParams(supsingGrp.getG1()));
         toReturn.add(new StandaloneTestParams(supsingGrp.getGT()));
         toReturn.add(new StandaloneTestParams(supsingGrp.getHashIntoG1()));
+        toReturn.add(new StandaloneTestParams(new SupersingularBilinearGroup(80)));
 
         return toReturn;
     }

@@ -1,5 +1,6 @@
 package de.upb.crypto.math.standalone.test;
 
+import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroup;
 import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class BarretoNaehrigParams {
         toReturn.add(new StandaloneTestParams(bnGroup.getHashIntoG1()));
         toReturn.add(new StandaloneTestParams(bnGroup));
         toReturn.add(new StandaloneTestParams(bnGroup.getGT()));
+        toReturn.add(new StandaloneTestParams(new BarretoNaehrigBilinearGroup(100)));
         return toReturn;
     }
 }
