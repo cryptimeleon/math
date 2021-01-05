@@ -245,7 +245,9 @@ public class Zn implements Ring {
                 return true;
             if (obj == null)
                 return false;
-            if (getClass() != obj.getClass())
+            // (RH): written using instanceof to make ZnElement and ZpElement equals compatible
+            // if we were to overwrite equals in Zp this would need to be reconsidered
+            if (!(obj instanceof ZnElement))
                 return false;
             ZnElement e = (ZnElement) obj;
             return Objects.equals(getStructure(), e.getStructure())
