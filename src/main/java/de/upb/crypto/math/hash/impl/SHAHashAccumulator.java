@@ -1,6 +1,5 @@
 package de.upb.crypto.math.hash.impl;
 
-import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.hash.HashFunction;
 
 import java.security.MessageDigest;

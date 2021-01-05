@@ -1,8 +1,7 @@
 package de.upb.crypto.math.standalone.test;
 
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupRequirement;
-import de.upb.crypto.math.pairings.bn.*;
+import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroup;
+import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,10 +9,7 @@ import java.util.List;
 
 public class BarretoNaehrigParams {
     public static Collection<StandaloneTestParams> get() {
-        // this is a barreto naehrig factory
-        BarretoNaehrigProvider fac = new BarretoNaehrigProvider();
-        BilinearGroupRequirement req = new BilinearGroupRequirement(BilinearGroup.Type.TYPE_3, true, true, false);
-        BarretoNaehrigBilinearGroupImpl bnGroup = fac.provideBilinearGroupImpl(256, req);
+        BarretoNaehrigBilinearGroupImpl bnGroup = new BarretoNaehrigBilinearGroupImpl(100);
 
         List<StandaloneTestParams> toReturn = new ArrayList<>();
         toReturn.add(new StandaloneTestParams(bnGroup.getG1()));
@@ -21,6 +17,7 @@ public class BarretoNaehrigParams {
         toReturn.add(new StandaloneTestParams(bnGroup.getHashIntoG1()));
         toReturn.add(new StandaloneTestParams(bnGroup));
         toReturn.add(new StandaloneTestParams(bnGroup.getGT()));
+        toReturn.add(new StandaloneTestParams(new BarretoNaehrigBilinearGroup(100)));
         return toReturn;
     }
 }

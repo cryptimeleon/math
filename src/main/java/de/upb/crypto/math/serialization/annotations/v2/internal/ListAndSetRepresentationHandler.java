@@ -1,7 +1,6 @@
 package de.upb.crypto.math.serialization.annotations.v2.internal;
 
 import de.upb.crypto.math.serialization.ListRepresentation;
-import de.upb.crypto.math.serialization.Representable;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
 

@@ -4,7 +4,6 @@ import de.upb.crypto.math.hash.impl.SHA256HashFunction;
 import de.upb.crypto.math.hash.impl.VariableOutputLengthHashFunction;
 import de.upb.crypto.math.interfaces.hash.HashFunction;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
-import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.v2.Represented;

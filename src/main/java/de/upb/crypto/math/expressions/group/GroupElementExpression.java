@@ -12,7 +12,6 @@ import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**

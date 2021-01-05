@@ -1,9 +1,9 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
-import de.upb.crypto.math.interfaces.mappings.impl.BilinearMapImpl;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.pairings.generic.BilinearMap;
+import de.upb.crypto.math.pairings.generic.BilinearMapImpl;
 
 import java.math.BigInteger;
 import java.util.Objects;

@@ -2,7 +2,6 @@ package de.upb.crypto.math.serialization;
 
 import de.upb.crypto.math.serialization.converter.JSONConverter;
 
-import java.security.SecureRandom;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;

@@ -3,7 +3,6 @@ package de.upb.crypto.math.interfaces.structures;
 import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.structures.cartesian.GroupElementVector;
-import de.upb.crypto.math.structures.cartesian.RingElementVector;
 import de.upb.crypto.math.structures.cartesian.Vector;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 

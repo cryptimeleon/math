@@ -5,7 +5,10 @@ import de.upb.crypto.math.serialization.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * A converter for serializing representations to a binary format in form of a {@code byte[]}.

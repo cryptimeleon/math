@@ -1,10 +1,10 @@
 package de.upb.crypto.math.structures.zn;
 
-import de.upb.crypto.math.interfaces.mappings.impl.BilinearMapImpl;
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.interfaces.structures.Ring;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
 import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl.RingAdditiveGroupElementImpl;
+import de.upb.crypto.math.pairings.generic.BilinearMapImpl;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;

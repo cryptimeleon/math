@@ -1,6 +1,9 @@
 package de.upb.crypto.math.interfaces.structures;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.*;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingGroupImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.groups.basic.BasicGroup;
 import de.upb.crypto.math.structures.groups.basic.BasicGroupElement;

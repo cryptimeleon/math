@@ -6,11 +6,9 @@ import de.upb.crypto.math.interfaces.structures.FieldElement;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.pairings.generic.WeierstrassCurve;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
-import de.upb.crypto.math.serialization.ObjectRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StringRepresentation;
 import de.upb.crypto.math.structures.ec.AffineEllipticCurvePoint;
-import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 
 import java.math.BigInteger;

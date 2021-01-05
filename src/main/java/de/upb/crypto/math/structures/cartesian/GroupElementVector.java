@@ -1,8 +1,8 @@
 package de.upb.crypto.math.structures.cartesian;
 
-import de.upb.crypto.math.interfaces.mappings.BilinearMap;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingElement;
+import de.upb.crypto.math.pairings.generic.BilinearMap;
 import de.upb.crypto.math.serialization.ListRepresentation;
 import de.upb.crypto.math.serialization.Representable;
 import de.upb.crypto.math.serialization.Representation;

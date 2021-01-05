@@ -1,18 +1,15 @@
 package de.upb.crypto.math.structures.test;
 
-import de.upb.crypto.math.factory.BilinearGroup;
-import de.upb.crypto.math.factory.BilinearGroupFactory;
-import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
+import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
+import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
+import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.structures.groups.exp.ExponentiationAlgorithms;
 import de.upb.crypto.math.structures.groups.exp.MultiExpTerm;
 import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
 import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
-import de.upb.crypto.math.structures.groups.lazy.LazyGroupElement;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -22,11 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ExpTests {
 
     @Test
-    public void testMultiExpAlgs() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        BilinearGroupFactory fac = new BilinearGroupFactory(60);
-        fac.setRequirements(BilinearGroup.Type.TYPE_3);
-
-        BilinearGroup bilGroup = fac.createBilinearGroup();
+    public void testMultiExpAlgs() {
+        BilinearGroupImpl bilGroup = new BarretoNaehrigBilinearGroupImpl(60);
         for (int i = 0; i < 10; ++i) {
             Multiexponentiation multiexponentiation = genMultiExp(bilGroup.getG1(), 10);
             System.out.println(multiexponentiation);
@@ -40,17 +34,14 @@ public class ExpTests {
         }
     }
 
-    private static Multiexponentiation genMultiExp(Group group, int numTerms) throws NoSuchMethodException,
-            InvocationTargetException, IllegalAccessException {
+    private static Multiexponentiation genMultiExp(GroupImpl group, int numTerms) {
         SecureRandom secRand = new SecureRandom();
         Random rand = new Random(secRand.nextLong());
         Multiexponentiation multiexponentiation = new Multiexponentiation();
-        Method getValue = LazyGroupElement.class.getDeclaredMethod("getConcreteValue");
-        getValue.setAccessible(true);
         for (int i = 0; i < numTerms; ++i) {
             multiexponentiation.put(
                     new MultiExpTerm(
-                            (GroupElementImpl) getValue.invoke(group.getUniformlyRandomNonNeutral()),
+                            group.getUniformlyRandomNonNeutral(),
                             BigInteger.valueOf(rand.nextInt())
                     )
             );
@@ -67,18 +58,13 @@ public class ExpTests {
     }
 
     @Test
-    public void testExpAlgs() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        BilinearGroupFactory fac = new BilinearGroupFactory(60);
-        fac.setRequirements(BilinearGroup.Type.TYPE_3);
-
-        BilinearGroup bilGroup = fac.createBilinearGroup();
-        Method getValue = LazyGroupElement.class.getDeclaredMethod("getConcreteValue");
-        getValue.setAccessible(true);
+    public void testExpAlgs() {
+        BilinearGroupImpl bilGroup = new BarretoNaehrigBilinearGroupImpl(60);
 
         SecureRandom secRand = new SecureRandom();
         Random rand = new Random(secRand.nextLong());
         for (int i = 0; i < 10; ++i) {
-            GroupElementImpl elem = (GroupElementImpl) getValue.invoke(bilGroup.getG1().getUniformlyRandomNonNeutral());
+            GroupElementImpl elem = bilGroup.getG1().getUniformlyRandomNonNeutral();
             BigInteger exponent = BigInteger.valueOf(rand.nextInt());
             System.out.println("Chosen element: " + elem);
             System.out.println("Chosen exponent: " + exponent);

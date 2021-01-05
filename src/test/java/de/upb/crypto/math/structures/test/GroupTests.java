@@ -2,24 +2,18 @@ package de.upb.crypto.math.structures.test;
 
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.debug.DebugGroupImpl;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
+import de.upb.crypto.math.pairings.counting.CountingGroupImpl;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.groups.basic.BasicGroup;
 import de.upb.crypto.math.structures.groups.lazy.LazyGroup;
-import de.upb.crypto.math.structures.integers.IntegerElement;
-import de.upb.crypto.math.structures.integers.IntegerRing;
-import de.upb.crypto.math.structures.sn.Sn;
 import de.upb.crypto.math.structures.zn.Zn;
-import de.upb.crypto.math.structures.zn.Zp;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -220,9 +214,11 @@ public class GroupTests {
     @Parameters(name = "Test: {0}")
     public static Collection<TestParams[]> data() {
         // Some setup
-        DebugGroupImpl debugGroupImpl = new DebugGroupImpl("testGroupImpl", BigInteger.probablePrime(128, new Random()));
-        BasicGroup basicGroup = new BasicGroup(debugGroupImpl);
-        LazyGroup lazyGroup = new LazyGroup(debugGroupImpl);
+        CountingGroupImpl countingGroupImpl = new CountingGroupImpl(
+                "testGroupImpl", BigInteger.probablePrime(128, new Random())
+        );
+        BasicGroup basicGroup = new BasicGroup(countingGroupImpl);
+        LazyGroup lazyGroup = new LazyGroup(countingGroupImpl);
 
         // Collect parameters
         TestParams[][] params = new TestParams[][]{

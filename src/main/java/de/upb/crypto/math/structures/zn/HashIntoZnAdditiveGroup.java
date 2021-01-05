@@ -2,8 +2,6 @@ package de.upb.crypto.math.structures.zn;
 
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
 import de.upb.crypto.math.interfaces.structures.RingGroup;
-import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
-import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl.RingAdditiveGroupElementImpl;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;

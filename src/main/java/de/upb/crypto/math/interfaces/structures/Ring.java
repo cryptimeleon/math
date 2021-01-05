@@ -1,12 +1,8 @@
 package de.upb.crypto.math.interfaces.structures;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.RingAdditiveGroupImpl;
-import de.upb.crypto.math.interfaces.structures.group.impl.RingUnitGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
-import de.upb.crypto.math.structures.cartesian.GroupElementVector;
 import de.upb.crypto.math.structures.cartesian.RingElementVector;
-import de.upb.crypto.math.structures.cartesian.Vector;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;

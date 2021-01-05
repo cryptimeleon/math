@@ -1,7 +1,6 @@
 package de.upb.crypto.math.interfaces.mappings.impl;
 
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
-import de.upb.crypto.math.interfaces.structures.Structure;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 
