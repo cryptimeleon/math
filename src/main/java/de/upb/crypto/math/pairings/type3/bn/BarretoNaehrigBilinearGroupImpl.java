@@ -17,7 +17,7 @@ import java.util.Objects;
 
 
 /**
- * This class provides a minimal representation to reconstruct public parameters of pairings based schemes.
+ * The implementation of our Barreto-Naehrig bilinear group.
  * <p>
  * For BN curves, \(\mathbb{G}_1\), \(\mathbb{G}_2\), and \(\mathbb{G}_T\) are defined based on:
  * <ul>

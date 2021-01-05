@@ -5,6 +5,9 @@ import de.upb.crypto.math.pairings.generic.PairingTargetGroupElementImpl;
 
 import java.math.BigInteger;
 
+/**
+ * Element of target group GT.
+ */
 public class BarretoNaehrigTargetGroupElementImpl extends PairingTargetGroupElementImpl {
     public BarretoNaehrigTargetGroupElementImpl(BarretoNaehrigTargetGroupImpl g, ExtensionFieldElement fe) {
         super(g, fe);

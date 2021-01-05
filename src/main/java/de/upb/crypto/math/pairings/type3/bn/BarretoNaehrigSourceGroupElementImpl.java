@@ -5,6 +5,9 @@ import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 
 import java.math.BigInteger;
 
+/**
+ * Abstract class for elements of both G1 and G2.
+ */
 public abstract class BarretoNaehrigSourceGroupElementImpl extends PairingSourceGroupElement {
 
     public BarretoNaehrigSourceGroupElementImpl(BarretoNaehrigSourceGroupImpl curve, FieldElement x, FieldElement y) {

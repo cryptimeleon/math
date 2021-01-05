@@ -18,6 +18,9 @@ import de.upb.crypto.math.structures.helpers.FiniteFieldTools;
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * The implementation of our supersingular bilinear group.
+ */
 public class SupersingularTateGroupImpl implements BilinearGroupImpl {
 
     @Represented

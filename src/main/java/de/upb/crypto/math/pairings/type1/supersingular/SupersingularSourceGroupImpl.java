@@ -11,18 +11,21 @@ import de.upb.crypto.math.structures.zn.Zn;
 import java.math.BigInteger;
 
 /**
- * A type 1 pairing group:
- * Let E = {(x,y) over F_q | y^2 = x^3 - 3*x} (q prime and q = 3 mod 4).
+ * The source group (G1 and G2) of the supersingular pairing.
+ * <p>
+ * Defined as follows:
+ * Let \(E := {(x,y) \in \mathbb{F}_q \times \mathbb{F}_q | y^2 = x^3 - 3x}\) (\(q\) prime and \(q = 3 \mod 4\)).
  * Then this class represents E[getSize()], i.e. the subgroup of size getSize().
  */
 public class SupersingularSourceGroupImpl extends PairingSourceGroupImpl {
 
     /**
-     * Instantiates the group
+     * Instantiates the group.
      *
      * @param size              the desired size of the group
-     * @param cofactor          the number c such that size * c = number of points on the WeierstrassCurve over fieldOfDefinition
-     * @param fieldOfDefinition the field where x,y from the Weierstrass equation come from
+     * @param cofactor          the number c such that size * c = number of points on the Weierstrass curve
+     *                          over {@code fieldOfDefinition}
+     * @param fieldOfDefinition the field where x, y from the Weierstrass equation come from
      */
     public SupersingularSourceGroupImpl(BigInteger size, BigInteger cofactor, ExtensionField fieldOfDefinition) {
         super(size, cofactor, fieldOfDefinition.getElement(-3), fieldOfDefinition.getZeroElement());

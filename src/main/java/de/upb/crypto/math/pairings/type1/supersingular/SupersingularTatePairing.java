@@ -7,6 +7,9 @@ import de.upb.crypto.math.pairings.generic.ExtensionFieldElement;
 import de.upb.crypto.math.pairings.generic.PairingSourceGroupElement;
 import de.upb.crypto.math.serialization.Representation;
 
+/**
+ * Tate-pairing implementation for the supersingular bilinear group.
+ */
 public class SupersingularTatePairing extends AbstractPairing {
 
     //SupersingularTypeADistortionMap distortionMap;

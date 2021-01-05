@@ -7,6 +7,9 @@ import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
 
+/**
+ * G2 in the Barreto-Naehrig bilinear group.
+ */
 public class BarretoNaehrigGroup2Impl extends BarretoNaehrigSourceGroupImpl {
 
     /**
