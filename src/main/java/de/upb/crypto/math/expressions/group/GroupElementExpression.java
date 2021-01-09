@@ -158,19 +158,6 @@ public interface GroupElementExpression extends Expression {
     default GroupOpExpr flatten() {
         return flatten(new ExponentConstantExpr(BigInteger.ONE));
     }
-    /**
-     * Retrieves the order of the group element's group if possible.
-     *
-     * @return the order as a {@link BigInteger} if possible, else null
-     */
-    protected BigInteger getGroupOrderIfKnown() {
-        try {
-            return getGroup().size();
-        } catch (UnsupportedOperationException unknownSizeException) {
-            return null;
-        }
-    }
-
 
     /**
      * Linearizes the expression this^exponent.

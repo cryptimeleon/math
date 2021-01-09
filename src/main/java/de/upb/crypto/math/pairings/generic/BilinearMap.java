@@ -112,7 +112,7 @@ public interface BilinearMap extends BiFunction<GroupElement, GroupElement, Grou
      * @param g2elem the right hand side G2 group element expression argument for the pairing function
      * @return a {@code PairingExpr}
      */
-    default PairingExpr expr(GroupElementExpression g1elem, GroupElementExpression g2elem) {
+    default PairingExpr applyExpr(GroupElementExpression g1elem, GroupElementExpression g2elem) {
         return new PairingExpr(this, g1elem, g2elem);
     }
 
@@ -122,8 +122,16 @@ public interface BilinearMap extends BiFunction<GroupElement, GroupElement, Grou
      * @param g2elem the right hand side G2 element argument for the pairing function
      * @return a {@code PairingExpr}
      */
-    default PairingExpr expr(GroupElement g1elem, GroupElement g2elem) {
-        return expr(g1elem.expr(), g2elem.expr());
+    default PairingExpr applyExpr(GroupElement g1elem, GroupElement g2elem) {
+        return applyExpr(g1elem.expr(), g2elem.expr());
+    }
+
+    default PairingExpr applyExpr(GroupElement g1elem, GroupElementExpression g2elem) {
+        return applyExpr(g1elem.expr(), g2elem);
+    }
+
+    default PairingExpr applyExpr(GroupElementExpression g1elem, GroupElement g2elem) {
+        return applyExpr(g1elem, g2elem.expr());
     }
 
     /**

@@ -2,6 +2,7 @@ package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.EvaluationException;
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
