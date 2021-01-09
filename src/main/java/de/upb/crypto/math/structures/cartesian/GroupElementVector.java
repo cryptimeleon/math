@@ -151,4 +151,9 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
         forEach(GroupElement::precomputePow);
         return this;
     }
+
+    public GroupElementVector precomputePow(int windowSize) {
+        forEach(g -> g.precomputePow(windowSize));
+        return this;
+    }
 }

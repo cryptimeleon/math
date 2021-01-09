@@ -20,36 +20,32 @@ import java.util.HashMap;
  * <p>
  * These values can be used to substitute variables with the same name in some {@link Expression}.
  */
-public class ValueBundle {
+public class ValueBundle implements Substitution{
     /**
      * Maps variable names to substitute {@code GroupElement}'s.
      */
-    protected HashMap<String, GroupElement> groupElems;
+    protected HashMap<VariableExpression, GroupElement> groupElems;
 
     /**
      * Maps variable names to substitute {@code BigInteger}'s.
      */
-    protected HashMap<String, BigInteger> ints;
+    protected HashMap<VariableExpression, BigInteger> ints;
 
     /**
      * Maps variable names to substitute {@code RingElement}'s.
      */
-    protected HashMap<String, RingElement> ringElems;
+    protected HashMap<VariableExpression, RingElement> ringElems;
 
     /**
      * Maps variable names to substitute {@code Boolean}'s.
      */
-    protected HashMap<String, Boolean> bools;
-    //protected HashMap<String, ValueList> lists = new HashMap<>(); //Not yet implemented
+    protected HashMap<VariableExpression, Boolean> bools;
+    //protected HashMap<VariableExpression, ValueList> lists = new HashMap<>(); //Not yet implemented
 
     /**
      * Initializes an empty {@code ValueBundle}.
      */
     public ValueBundle() {
-        groupElems = new HashMap<>();
-        ints = new HashMap<>();
-        ringElems = new HashMap<>();
-        bools = new HashMap<>();
     }
 
     /**
@@ -74,76 +70,36 @@ public class ValueBundle {
         return new ValueBundle(this);
     }
 
-    /**
-     * Retrieves the {@code GroupElement} identified by the given key.
-     *
-     * @param key the key {@code String} identifying the desired group element
-     * @return the corresponding group element
-     */
-    public GroupElement getGroupElement(String key) {
+    public GroupElement getGroupElement(VariableExpression key) {
         return groupElems.get(key);
     }
 
-    /**
-     * Retrieves the {@code RingElement} identified by the given key.
-     *
-     * @param key the key {@code String} identifying the desired ring element
-     * @return the corresponding ring element
-     */
-    public RingElement getRingElement(String key) {
+    public RingElement getRingElement(VariableExpression key) {
         return ringElems.get(key);
     }
 
-    /**
-     * Retrieves the {@link Zn.ZnElement} identified by the given key.
-     *
-     * @param key the key {@code String} identifying the desired Zn element
-     * @return the corresponding Zn element
-     */
-    public Zn.ZnElement getZnElement(String key) {
+    public Zn.ZnElement getZnElement(VariableExpression key) {
         return (Zn.ZnElement) ringElems.get(key);
     }
 
-    /**
-     * Retrieves the {@link Zp.ZpElement} identified by the given key.
-     *
-     * @param key the key {@code String} identifying the desired Zp element
-     * @return the corresponding Zp element
-     */
-    public Zp.ZpElement getZpElement(String key) {
+    public Zp.ZpElement getZpElement(VariableExpression key) {
         return (Zp.ZpElement) ringElems.get(key);
     }
 
-    /**
-     * Retrieves the {@code Boolean} identified by the given key.
-     *
-     * @param key the key {@code String} identifying the desired {@code Boolean}
-     * @return the corresponding {@code Boolean}
-     */
-    public Boolean getBoolean(String key) { return bools.get(key); }
+    public Boolean getBoolean(VariableExpression key) { return bools.get(key); }
 
-    /**
-     * Retrieves the {@link BigInteger} identified by the given key.
-     * <p>
-     * If the desired integer cannot be found, the method looks for an integer-like ring element
-     * with the given key instead.
-     *
-     * @param key the key {@code String} identifying the desired {@code BigInteger}
-     * @return the corresponding {@code BigInteger}
-     */
-    public BigInteger getInteger(String key) {
+    public BigInteger getInteger(VariableExpression key) {
         if (ints.containsKey(key))
             return ints.get(key);
 
         //Fallback: if no integer is in this, try if there's an integer-like RingElement we can return
         RingElement alternative = ringElems.get(key);
-        if (alternative instanceof Zn.ZnElement)
-            return ((Zn.ZnElement) alternative).getInteger();
-        if (alternative instanceof IntegerElement)
-            return ((IntegerElement) alternative).getBigInt();
-        return null;
+        try {
+            return alternative.asInteger();
+        } catch (UnsupportedOperationException e) {
+            return null;
+        }
     }
-
     /**
      * Adds a {@code GroupElement} with the given key to this value bundle.
      * <p>
@@ -152,13 +108,12 @@ public class ValueBundle {
      * @param key the key to identify the group element with
      * @param value the group element to add
      */
-    public void put(String key, GroupElement value) {
+    public void put(VariableExpression key, GroupElement value) {
         groupElems.put(key, value);
         ints.remove(key); //enforce unique keys between the types
         ringElems.remove(key);
         bools.remove(key);
     }
-
     /**
      * Adds a {@code RingElement} with the given key to this value bundle.
      * <p>
@@ -167,7 +122,7 @@ public class ValueBundle {
      * @param key the key to identify the ring element with
      * @param value the ring element to add
      */
-    public void put(String key, RingElement value) {
+    public void put(VariableExpression key, RingElement value) {
         ringElems.put(key, value);
         ints.remove(key); //enforce unique keys between the types
         groupElems.remove(key);
@@ -182,22 +137,14 @@ public class ValueBundle {
      * @param key the key to identify the {@code BigInteger} with
      * @param value the {@code BigInteger} to add
      */
-    public void put(String key, BigInteger value) {
+    public void put(VariableExpression key, BigInteger value) {
         ints.put(key, value);
         groupElems.remove(key); //enforce unique keys between the types
         ringElems.remove(key);
         bools.remove(key);
     }
 
-    /**
-     * Adds a boolean with the given key to this value bundle.
-     * <p>
-     * If the key is used already by another element (no matter the type), that element gets removed.
-     *
-     * @param key the key to identify the boolean with
-     * @param value the boolean to add
-     */
-    public void put(String key, boolean value) {
+    public void put(VariableExpression key, boolean value) {
         bools.put(key, value);
         groupElems.remove(key); //enforce unique keys between the types
         ringElems.remove(key);
@@ -214,19 +161,20 @@ public class ValueBundle {
      * @param variable the {@code VariableExpression} to substitute
      * @return the substituted {@code Expression} if substitution was successful, else null
      */
+    @Override
     public Expression getSubstitution(VariableExpression variable) {
         if (variable instanceof GroupVariableExpr) {
-            GroupElement result = getGroupElement(variable.getName());
+            GroupElement result = getGroupElement(variable);
             return result == null ? null : new GroupElementConstantExpr(result);
         }
 
         if (variable instanceof ExponentVariableExpr) {
-            BigInteger result = getInteger(variable.getName());
+            BigInteger result = getInteger(variable);
             return result == null ? null : new ExponentConstantExpr(result);
         }
 
         if (variable instanceof BoolVariableExpr) {
-            Boolean result = getBoolean(variable.getName());
+            Boolean result = getBoolean(variable);
             return result == null ? null : new BoolConstantExpr(result);
         }
 

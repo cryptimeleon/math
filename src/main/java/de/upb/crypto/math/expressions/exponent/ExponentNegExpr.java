@@ -1,12 +1,11 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * An {@link ExponentExpr} representing the negation of an exponent expression.
@@ -44,8 +43,14 @@ public class ExponentNegExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public ExponentExpr substitute(Substitution substitutions) {
         return child.substitute(substitutions).negate();
+    }
+
+    @Override
+    public ExponentSumExpr linearize() throws IllegalArgumentException {
+        ExponentSumExpr childLinearized = child.linearize();
+        return new ExponentSumExpr(childLinearized.getLhs().negate(), childLinearized.getRhs().negate());
     }
 
 }

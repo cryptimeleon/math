@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
@@ -31,7 +32,7 @@ public class ExponentEmptyExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public ExponentExpr substitute(Substitution substitutions) {
         return this;
     }
 
@@ -43,6 +44,11 @@ public class ExponentEmptyExpr implements ExponentExpr {
     @Override
     public ExponentExpr mul(ExponentExpr other) {
         return this;
+    }
+
+    @Override
+    public ExponentSumExpr linearize() throws IllegalArgumentException {
+        return new ExponentSumExpr(this, this);
     }
 
     @Override

@@ -145,7 +145,7 @@ public class PolynomialRing implements Ring {
         }
 
         public RingElement[] getCoefficients() {
-            return coefficients;
+            return Arrays.copyOf(coefficients, coefficients.length);
         }
 
         /**
@@ -492,6 +492,13 @@ public class PolynomialRing implements Ring {
             remainder = dividend;
 
             return new Polynomial[]{quotient, remainder};
+        }
+
+        @Override
+        public BigInteger asInteger() throws UnsupportedOperationException {
+            if (getDegree() > 0)
+                throw new UnsupportedOperationException("Not an integer: "+this);
+            return coefficients[0].asInteger();
         }
 
         @Override

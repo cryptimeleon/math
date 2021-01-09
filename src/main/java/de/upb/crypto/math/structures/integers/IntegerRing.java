@@ -72,9 +72,8 @@ public class IntegerRing implements Ring {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        return o != null && getClass() == o.getClass();
+    public boolean equals(Object obj) {
+        return obj instanceof IntegerRing;
     }
 
     @Override

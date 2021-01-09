@@ -1,13 +1,15 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.bool.BooleanExpression;
 import de.upb.crypto.math.expressions.bool.ExponentEqualityExpr;
+import de.upb.crypto.math.expressions.group.GroupOpExpr;
+import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.function.Function;
 
 /**
  * An {@link Expression} that evaluates to an integer.
@@ -24,7 +26,7 @@ public interface ExponentExpr extends Expression {
     Zn.ZnElement evaluate(Zn zn);
 
     @Override
-    default BigInteger evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+    default BigInteger evaluate(Substitution substitutions) {
         return substitute(substitutions).evaluate();
     }
 
@@ -35,7 +37,7 @@ public interface ExponentExpr extends Expression {
      * @param substitutions a function mapping variables to expressions that can be evaluated
      * @return the result of evaluating this expression as a {@link Zn.ZnElement}
      */
-    default Zn.ZnElement evaluate(Zn zn, Function<VariableExpression, ? extends Expression> substitutions) {
+    default Zn.ZnElement evaluate(Zn zn, Substitution substitutions) {
         return substitute(substitutions).evaluate(zn);
     }
 
@@ -45,12 +47,12 @@ public interface ExponentExpr extends Expression {
     }
 
     @Override
-    ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions);
+    default ExponentExpr substitute(VariableExpression variable, Expression substitution) {
+        return (ExponentExpr) Expression.super.substitute(variable, substitution);
+    }
 
     @Override
-    default ExponentExpr substitute(ValueBundle values) {
-        return (ExponentExpr) Expression.super.substitute(values);
-    }
+    ExponentExpr substitute(Substitution substitutions);
 
     /**
      * Negates this expression.
@@ -77,13 +79,17 @@ public interface ExponentExpr extends Expression {
         return new ExponentSumExpr(this, other);
     }
 
+    default ExponentExpr add(Zn.ZnElement other) {
+        return add(other.asExponentExpression());
+    }
+
     /**
      * Adds an {@link ExponentVariableExpr} with the given variable name to this expression.
      * @param other the name of the variable to add
      * @return the result of adding the two expressions.
      */
     default ExponentExpr add(String other) {
-        return add(new ExponentVariableExpr(other));
+        return add(new BasicNamedExponentVariableExpr(other));
     }
 
     /**
@@ -96,6 +102,10 @@ public interface ExponentExpr extends Expression {
         return add(other.negate());
     }
 
+    default ExponentExpr sub(Zn.ZnElement other) {
+        return sub(other.asExponentExpression());
+    }
+
     /**
      * Subtracts a {@link ExponentVariableExpr} with the given variable name from this expression.
      * Realized by adding the negation.
@@ -103,7 +113,7 @@ public interface ExponentExpr extends Expression {
      * @return the result of subtraction
      */
     default ExponentExpr sub(String other) {
-        return sub(new ExponentVariableExpr(other));
+        return sub(new BasicNamedExponentVariableExpr(other));
     }
 
     /**
@@ -124,6 +134,8 @@ public interface ExponentExpr extends Expression {
         return mul(new ExponentConstantExpr(other));
     }
 
+    default ExponentExpr mul(RingElement other) { return mul(other.asInteger()); }
+
     /**
      * Multiplies this expression with the given constant.
      * @param other the factor
@@ -139,7 +151,7 @@ public interface ExponentExpr extends Expression {
      * @return the result of multiplication
      */
     default ExponentExpr mul(String other) {
-        return mul(new ExponentVariableExpr(other));
+        return mul(new BasicNamedExponentVariableExpr(other));
     }
 
     /**
@@ -169,13 +181,17 @@ public interface ExponentExpr extends Expression {
         return pow(new ExponentConstantExpr(exponent));
     }
 
+    default ExponentExpr pow(RingElement exponent) {
+        return pow(exponent.asInteger());
+    }
+
     /**
      * Raises this expression to the power variable with the given name.
      * @param exponent the name of the power variable
      * @return the result of the exponentiation
      */
     default ExponentExpr pow(String exponent) {
-        return pow(new ExponentVariableExpr(exponent));
+        return pow(new BasicNamedExponentVariableExpr(exponent));
     }
 
     /**
@@ -198,4 +214,17 @@ public interface ExponentExpr extends Expression {
     default ExponentEqualityExpr isEqualTo(BigInteger other) {
         return new ExponentEqualityExpr(this, new ExponentConstantExpr(other));
     }
+
+
+    /**
+     * Returns an equivalent expression of the form y + f(variables), where y is constant (no variables), and the expression f is linear, which means that
+     * f(variables) + f(variables2) = f(variables + variables2)
+     *
+     * The exact result is a ExponentSumExpr
+     * where the left-hand-side y has !y.containsVariables(),
+     * the right-hand-side is linear
+     *
+     * @throws IllegalArgumentException if it's not possible to form the desired output (e.g., the input is something like g^(x_1 * x_2) for variables x_1, x_2).
+     */
+    ExponentSumExpr linearize() throws IllegalArgumentException;
 }

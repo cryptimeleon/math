@@ -1,13 +1,17 @@
 package de.upb.crypto.math.expressions;
 
-import de.upb.crypto.math.expressions.group.GroupOpExpr;
+import de.upb.crypto.math.expressions.bool.BasicNamedBoolVariableExpr;
+import de.upb.crypto.math.expressions.bool.BooleanExpression;
+import de.upb.crypto.math.expressions.exponent.BasicNamedExponentVariableExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentExpr;
+import de.upb.crypto.math.expressions.group.BasicNamedGroupVariableExpr;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -16,13 +20,16 @@ import java.util.function.Predicate;
  */
 public interface Expression {
 
-    /**
-     * Returns an Expression where (some) variables have been substituted with the values given in the ValueBundle.
-     */
-    default Expression substitute(ValueBundle values) {
-        return substitute(values::getSubstitution);
-    }
+    default Expression substitute(String variable, Expression substitution) {
+        if (substitution instanceof GroupElementExpression)
+            return substitute(new BasicNamedGroupVariableExpr(variable), substitution);
+        if (substitution instanceof ExponentExpr)
+            return substitute(new BasicNamedExponentVariableExpr(variable), substitution);
+        if (substitution instanceof BooleanExpression)
+            return substitute(new BasicNamedBoolVariableExpr(variable), substitution);
 
+        throw new IllegalArgumentException("Don't know how to handle "+substitution.getClass());
+    }
     /**
      * Substitute a specific variable with the given expression.
      *
@@ -30,8 +37,8 @@ public interface Expression {
      * @param substitution the expression to substitute
      * @return the expression after substitution
      */
-    default Expression substitute(String variable, Expression substitution) {
-        return substitute((VariableExpression expr) -> expr.getName().equals(variable) ? substitution : null);
+    default Expression substitute(VariableExpression variable, Expression substitution) {
+        return substitute(expr -> variable.equals(expr) ? substitution : null);
     }
 
     /**
@@ -40,7 +47,7 @@ public interface Expression {
      * @param substitutions a function mapping variable expressions to their replacement expressions
      * @return the expression after substitution
      */
-    Expression substitute(Function<VariableExpression, ? extends Expression> substitutions);
+    Expression substitute(Substitution substitutions);
 
     /**
      * Evaluates the expression.
@@ -55,7 +62,7 @@ public interface Expression {
      * @param substitutions a function mapping variables to expressions that can be evaluated
      * @return the result of evaluation
      */
-    Object evaluate(Function<VariableExpression, ? extends Expression> substitutions);
+    Object evaluate(Substitution substitutions);
 
     /**
      * Returns the set of variables the value of this expression depends on.

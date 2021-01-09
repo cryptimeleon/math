@@ -296,7 +296,7 @@ public class Zn implements Ring {
         }
 
         @Override
-        public BigInteger asExponent() throws UnsupportedOperationException {
+        public BigInteger asInteger() throws UnsupportedOperationException {
             return v;
         }
     }
