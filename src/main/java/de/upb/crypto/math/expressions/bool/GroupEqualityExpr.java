@@ -1,12 +1,11 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.structures.Group;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class GroupEqualityExpr implements BooleanExpression {
     protected GroupElementExpression lhs, rhs;
@@ -29,12 +28,12 @@ public class GroupEqualityExpr implements BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public BooleanExpression substitute(Substitution substitutions) {
         return lhs.substitute(substitutions).isEqualTo(rhs.substitute(substitutions));
     }
 
     @Override
-    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+    public Boolean evaluate(Substitution substitutions) {
         return lhs.evaluate(substitutions).equals(rhs.evaluate(substitutions));
     }
 

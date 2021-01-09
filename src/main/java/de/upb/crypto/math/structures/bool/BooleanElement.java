@@ -94,4 +94,9 @@ public class BooleanElement implements RingElement {
     public Representation getRepresentation() {
         return new ByteArrayRepresentation(new byte[] {(byte) (value ? 1 : 0)});
     }
+
+    @Override
+    public BigInteger asInteger() throws UnsupportedOperationException {
+        return value ? BigInteger.ONE : BigInteger.ZERO;
+    }
 }

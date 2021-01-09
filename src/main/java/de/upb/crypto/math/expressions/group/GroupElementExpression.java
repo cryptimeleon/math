@@ -1,138 +1,124 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.bool.GroupEqualityExpr;
+import de.upb.crypto.math.expressions.exponent.BasicNamedExponentVariableExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
-import de.upb.crypto.math.expressions.exponent.ExponentVariableExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * {@link Expression} that evaluates to a {@link GroupElement}.
  */
-public abstract class GroupElementExpression implements Expression {
-    /**
-     * This expression evaluates to an element of this group.
-     */
-    protected final Group group;
+public interface GroupElementExpression extends Expression {
 
-    public GroupElementExpression() {this(null);}
-
-    public GroupElementExpression(Group group) {
-        this.group = group;
-    }
-
-    public GroupElement evaluate() {
+    default GroupElement evaluate() {
         return evaluate(x -> null);
     }
 
     @Override
-    public abstract GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions);
+    GroupElement evaluate(Substitution substitutions);
 
     @Override
-    public abstract GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions);
+    GroupElementExpression substitute(Substitution substitutions);
 
     @Override
-    public GroupElementExpression substitute(ValueBundle values) {
-        return (GroupElementExpression) Expression.super.substitute(values);
-    }
-
-    @Override
-    public GroupElementExpression substitute(String variable, Expression substitution) {
+    default GroupElementExpression substitute(String variable, Expression substitution) {
         return (GroupElementExpression) Expression.super.substitute(variable, substitution);
     }
 
-    public GroupElementExpression op(GroupElementExpression rhs) {
+    @Override
+    default GroupElementExpression substitute(VariableExpression variable, Expression substitution) {
+        return (GroupElementExpression) Expression.super.substitute(variable, substitution);
+    }
+
+    default GroupElementExpression op(GroupElementExpression rhs) {
         return new GroupOpExpr(this, rhs);
     }
-    public GroupElementExpression op(GroupElement rhs) {
+    default GroupElementExpression op(GroupElement rhs) {
         return new GroupOpExpr(this, new GroupElementConstantExpr(rhs));
     }
-    public GroupElementExpression op(String rhs) {
-        return new GroupOpExpr(this, new GroupVariableExpr(rhs));
+    default GroupElementExpression op(String rhs) {
+        return new GroupOpExpr(this, new BasicNamedGroupVariableExpr(rhs));
     }
 
-    public GroupElementExpression pow(ExponentExpr exponent) {
+    default GroupElementExpression pow(ExponentExpr exponent) {
         return new GroupPowExpr(this, exponent);
     }
-    public GroupElementExpression pow(BigInteger exponent) {
+    default GroupElementExpression pow(BigInteger exponent) {
         return pow(new ExponentConstantExpr(exponent));
     }
-    public GroupElementExpression pow(Zn.ZnElement exponent) {
+    default GroupElementExpression pow(Zn.ZnElement exponent) {
         return pow(new ExponentConstantExpr(exponent.getInteger()));
     }
-    public GroupElementExpression pow(String exponent) {
-        return pow(new ExponentVariableExpr(exponent));
+    default GroupElementExpression pow(String exponent) {
+        return pow(new BasicNamedExponentVariableExpr(exponent));
     }
 
-    public GroupElementExpression opPow(GroupElementExpression rhs, ExponentExpr exponentOfRhs) {
+    default GroupElementExpression opPow(GroupElementExpression rhs, ExponentExpr exponentOfRhs) {
         return op(rhs.pow(exponentOfRhs));
     }
 
-    public GroupElementExpression opPow(GroupElementExpression rhs, BigInteger exponentOfRhs) {
+    default GroupElementExpression opPow(GroupElementExpression rhs, BigInteger exponentOfRhs) {
         return op(rhs.pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
-    public GroupElementExpression opPow(GroupElementExpression rhs, Zn.ZnElement exponentOfRhs) {
+    default GroupElementExpression opPow(GroupElementExpression rhs, Zn.ZnElement exponentOfRhs) {
         return op(rhs.pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
-    public GroupElementExpression opPow(GroupElementExpression rhs, String exponentOfRhs) {
-        return op(rhs.pow(new ExponentVariableExpr(exponentOfRhs)));
+    default GroupElementExpression opPow(GroupElementExpression rhs, String exponentOfRhs) {
+        return op(rhs.pow(new BasicNamedExponentVariableExpr(exponentOfRhs)));
     }
 
-    public GroupElementExpression opPow(GroupElement rhs, ExponentExpr exponentOfRhs) {
+    default GroupElementExpression opPow(GroupElement rhs, ExponentExpr exponentOfRhs) {
         return op(rhs.expr().pow(exponentOfRhs));
     }
 
-    public GroupElementExpression opPow(GroupElement rhs, BigInteger exponentOfRhs) {
+    default GroupElementExpression opPow(GroupElement rhs, BigInteger exponentOfRhs) {
         return op(rhs.expr().pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
-    public GroupElementExpression opPow(GroupElement rhs, Zn.ZnElement exponentOfRhs) {
+    default GroupElementExpression opPow(GroupElement rhs, Zn.ZnElement exponentOfRhs) {
         return op(rhs.expr().pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
-    public GroupElementExpression opPow(GroupElement rhs, String exponentOfRhs) {
-        return op(rhs.expr().pow(new ExponentVariableExpr(exponentOfRhs)));
+    default GroupElementExpression opPow(GroupElement rhs, String exponentOfRhs) {
+        return op(rhs.expr().pow(new BasicNamedExponentVariableExpr(exponentOfRhs)));
     }
 
-    public GroupElementExpression inv() {
+    default GroupElementExpression inv() {
         return new GroupInvExpr(this);
     }
 
-    public GroupEqualityExpr isEqualTo(GroupElementExpression other) {
+    default GroupEqualityExpr isEqualTo(GroupElementExpression other) {
         return new GroupEqualityExpr(this, other);
     }
 
-    public GroupEqualityExpr isEqualTo(GroupElement other) {
+    default GroupEqualityExpr isEqualTo(GroupElement other) {
         return new GroupEqualityExpr(this, other.expr());
     }
 
-    public GroupEqualityExpr isEqualTo(String other) {
-        return isEqualTo(new GroupVariableExpr(other));
+    default GroupEqualityExpr isEqualTo(String other) {
+        return isEqualTo(new BasicNamedGroupVariableExpr(other));
     }
 
     /**
      * Returns the group s.t. this expression evaluates to an element of this group, or null if group is unknown
      * (e.g., if expression consists only of variables)
      */
-    public Group getGroup() {
-        return group;
-    }
+    Group getGroup();
 
-    public GroupElementExpression precompute() {
-        GroupOpExpr linearized = linearize();
-        linearized.getLhs().evaluate().computeSync();
-        linearized.treeWalk(expr -> {
+    default GroupElementExpression precompute() {
+        GroupOpExpr flattened = flatten();
+        flattened.getLhs().evaluate().computeSync();
+        flattened.treeWalk(expr -> {
             if (expr instanceof GroupPowExpr) {
                 GroupElementExpression base = ((GroupPowExpr) expr).getBase();
                 if (base instanceof GroupElementConstantExpr)
@@ -140,30 +126,34 @@ public abstract class GroupElementExpression implements Expression {
             }
         });
 
-        return linearized;
+        return flattened;
     }
 
     /**
-     * Returns an equivalent expression of the form y * \prod g_i^x_i, where y doesn't contain any variables, but for every i, g_i or x_i do.
+     * Returns an equivalent expression of the form y * f(groupVariables, exponentVariables), where y is constant (no variables), and the expression f is linear, which means that
+     * f(groupVariables, exponentVariables) * f(groupVariables2, exponentVariables2) = f(groupVariables * groupVariables2, exponentVariables + exponentVariables2)
+     *
      * The exact result is a GroupOpExpr
-     * where the left-hand-side is a GroupElementConstantExpr y,
-     * the right-hand-side is a tree whose inner nodes are GroupOpExpr or PairingExpr
-     * and leaf nodes are GroupPowExpr (whose base is a GroupConstantExpr, a GroupVariableExpr, or a PairingExpr whose arguments are again linearized).
+     * where the left-hand-side y has !y.containsVariables(),
+     * the right-hand-side is linear
+     *
+     * @throws IllegalArgumentException if it's not possible to form the desired output (e.g., the input is something like g^(x_1 * x_2) for variables x_1, x_2).
      */
-    public GroupOpExpr linearize() {
-        return linearize(new ExponentConstantExpr(BigInteger.ONE));
+    GroupOpExpr linearize() throws IllegalArgumentException;
+
+    /**
+     * Returns an equivalent expression of the form y * prod(g_i^x_i), where y doesn't contain any variables.
+     *
+     * The exact result is a GroupOpExpr
+     * where the left-hand-side is a GroupElementConstantExpr y and the right-hand-side is an expression tree
+     * where each inner nodes is a GroupOpExpr or a PairingExpr whose children are flattened.
+     */
+    default GroupOpExpr flatten() {
+        return flatten(new ExponentConstantExpr(BigInteger.ONE));
     }
 
     /**
-     * Linearizes the expression this^exponent. The result must be of form y[no variable] * \prod g_i^x_i [variables]
+     * Linearizes the expression this^exponent.
      */
-    protected abstract GroupOpExpr linearize(ExponentExpr exponent);
-
-    protected BigInteger getGroupOrderIfKnown() {
-        try {
-            return getGroup().size();
-        } catch (UnsupportedOperationException unknownSizeException) {
-            return null;
-        }
-    }
+    GroupOpExpr flatten(ExponentExpr exponent);
 }

@@ -14,6 +14,7 @@ import java.util.Optional;
  */
 public class Multiexponentiation {
     ArrayList<MultiExpTerm> terms = null;
+    //ArrayList<PairingExpTerm> pairingExpTerms = null;
     int minPrecomputedWindowSize = Integer.MAX_VALUE;
     GroupElementImpl constantFactor = null;
 

@@ -72,7 +72,7 @@ public class PairingPerformanceTest {
             g1Elements.add(g1.getUniformlyRandomElement());
             g2Elements.add(g2.getUniformlyRandomElement());
             exponents.add(new Zn(g1.size()).getUniformlyRandomElement().getInteger());
-            expression.opPow(pairing.expr(g1Elements.get(i), g2Elements.get(i)), exponents.get(i));
+            expression.opPow(pairing.applyExpr(g1Elements.get(i), g2Elements.get(i)), exponents.get(i));
         }
 
         System.out.println("Testing " + pairing.getClass().getSimpleName() + " with " + numberOfElements + " pairings...");

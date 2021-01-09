@@ -248,4 +248,14 @@ public class ExtensionFieldElement implements FieldElement, UniqueByteRepresenta
         return accumulator;
 
     }
+
+    @Override
+    public BigInteger asInteger() throws UnsupportedOperationException {
+        if (coefficients.length == 0)
+            return BigInteger.ZERO;
+        for (int i=1;i<coefficients.length;i++)
+            if (!coefficients[i].isZero())
+                throw new UnsupportedOperationException("No integer value for " + this);
+        return coefficients[0].asInteger();
+    }
 }

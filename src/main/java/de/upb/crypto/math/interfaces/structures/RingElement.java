@@ -183,13 +183,14 @@ public interface RingElement extends Element {
     }
 
     /**
-     * Interprets this element as an exponent for the given group.
-     * For example, for a group of size n, ZnElements can usefully serve as exponents.
+     * Interprets this Element as an integer.
+     * Formally, this method shall return the inverse of Ring.getElement(BigInteger), i.e.
+     * x.getStructure().getElement(x.asInteger()).equals(x) (if asInteger() doesn't throw an exception).
      *
-     * @return a useful integer value such that the expression groupElement.pow(this).equals(groupElement.pow(this.asExponent()) makes sense.
-     * @throws UnsupportedOperationException if this ring is not fit to be interpreted as exponents for a group
+     * @return the inverse of x -> ring.getElement(x);
+     * @throws UnsupportedOperationException if no such element exists or cannot be efficiently computed.
      */
-    default BigInteger asExponent() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Cannot interpret "+getClass().getName()+" as an exponent");
+    default BigInteger asInteger() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Cannot interpret "+getClass().getName()+" as an integer");
     }
 }

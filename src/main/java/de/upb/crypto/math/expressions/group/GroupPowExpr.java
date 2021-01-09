@@ -1,15 +1,16 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
+import de.upb.crypto.math.expressions.exponent.ExponentSumExpr;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.math.BigInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-public class GroupPowExpr extends GroupElementExpression {
+public class GroupPowExpr extends AbstractGroupElementExpression {
     protected GroupElementExpression base;
     protected ExponentExpr exponent;
 
@@ -20,7 +21,7 @@ public class GroupPowExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+    public GroupElement evaluate(Substitution substitutions) {
         BigInteger groupOrder = getGroupOrderIfKnown();
 
         if (groupOrder == null)
@@ -36,7 +37,7 @@ public class GroupPowExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public GroupElementExpression substitute(Substitution substitutions) {
         return base.substitute(substitutions).pow(exponent.substitute(substitutions));
     }
 
@@ -54,7 +55,27 @@ public class GroupPowExpr extends GroupElementExpression {
     }
 
     @Override
-    protected GroupOpExpr linearize(ExponentExpr exp) {
-        return base.linearize(exp.mul(this.exponent));
+    public GroupOpExpr linearize() throws IllegalArgumentException {
+        boolean baseHasVariables = base.containsVariables();
+        boolean exponentHasVariables = exponent.containsVariables();
+
+        if (baseHasVariables && exponentHasVariables)
+            throw new IllegalArgumentException("Cannot linearize this expression (it's of the form g^x, where both g and x depend on variables)");
+
+        if (!baseHasVariables && !exponentHasVariables)
+            return new GroupOpExpr(this, new GroupEmptyExpr(base.getGroup()));
+
+        if (baseHasVariables) { //hence exponent doesn't
+            GroupOpExpr baseLinear = base.linearize();
+            return new GroupOpExpr(baseLinear.getLhs().pow(exponent), baseLinear.getRhs().pow(exponent));
+        } else { //exponent has variables, base doesn't.
+            ExponentSumExpr exponentLinear = exponent.linearize();
+            return new GroupOpExpr(base.pow(exponentLinear.getLhs()), base.pow(exponentLinear.getRhs()));
+        }
+    }
+
+    @Override
+    public GroupOpExpr flatten(ExponentExpr exp) {
+        return base.flatten(exp.mul(this.exponent));
     }
 }

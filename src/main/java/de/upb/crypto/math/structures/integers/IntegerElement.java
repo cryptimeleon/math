@@ -15,7 +15,7 @@ import java.math.BigInteger;
  * An Integer (as an Element of IntegerRing)
  */
 public class IntegerElement implements RingElement {
-    private static IntegerRing ring = new IntegerRing();
+    private static final IntegerRing ring = new IntegerRing();
 
     @UniqueByteRepresented
     private final BigInteger v;
@@ -109,7 +109,7 @@ public class IntegerElement implements RingElement {
     }
 
     @Override
-    public BigInteger asExponent() throws UnsupportedOperationException {
+    public BigInteger asInteger() throws UnsupportedOperationException {
         return v;
     }
 }

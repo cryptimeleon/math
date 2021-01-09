@@ -2,16 +2,15 @@ package de.upb.crypto.math.expressions.group;
 
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
+import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import javax.annotation.Nonnull;
-import java.math.BigInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-public class GroupInvExpr extends GroupElementExpression {
+public class GroupInvExpr extends AbstractGroupElementExpression {
     protected GroupElementExpression base;
 
     public GroupInvExpr(@Nonnull GroupElementExpression base) {
@@ -29,12 +28,12 @@ public class GroupInvExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+    public GroupElement evaluate(Substitution substitutions) {
         return base.evaluate(substitutions).inv();
     }
 
     @Override
-    public GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public GroupElementExpression substitute(Substitution substitutions) {
         return base.substitute(substitutions).inv();
     }
 
@@ -44,7 +43,13 @@ public class GroupInvExpr extends GroupElementExpression {
     }
 
     @Override
-    protected GroupOpExpr linearize(ExponentExpr exponent) {
-        return base.linearize(exponent.negate());
+    public GroupOpExpr linearize() throws IllegalArgumentException {
+        GroupOpExpr baseLinear = base.linearize();
+        return new GroupOpExpr(baseLinear.getLhs().inv(), baseLinear.getRhs().inv());
+    }
+
+    @Override
+    public GroupOpExpr flatten(ExponentExpr exponent) {
+        return base.flatten(exponent.negate());
     }
 }

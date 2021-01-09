@@ -4,9 +4,6 @@ import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.PairingExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
-import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import de.upb.crypto.math.structures.cartesian.GroupElementVector;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
@@ -50,12 +47,20 @@ public interface BilinearMap extends BiFunction<GroupElement, GroupElement, Grou
         return lhs.innerProduct(rhs, this);
     }
 
-    default PairingExpr expr(GroupElementExpression g1elem, GroupElementExpression g2elem) {
+    default PairingExpr applyExpr(GroupElementExpression g1elem, GroupElementExpression g2elem) {
         return new PairingExpr(this, g1elem, g2elem);
     }
 
-    default PairingExpr expr(GroupElement g1elem, GroupElement g2elem) {
-        return expr(g1elem.expr(), g2elem.expr());
+    default PairingExpr applyExpr(GroupElement g1elem, GroupElement g2elem) {
+        return applyExpr(g1elem.expr(), g2elem.expr());
+    }
+
+    default PairingExpr applyExpr(GroupElement g1elem, GroupElementExpression g2elem) {
+        return applyExpr(g1elem.expr(), g2elem);
+    }
+
+    default PairingExpr applyExpr(GroupElementExpression g1elem, GroupElement g2elem) {
+        return applyExpr(g1elem, g2elem.expr());
     }
 
     /**

@@ -102,6 +102,10 @@ public class ProductGroupElement implements GroupElement {
         return accumulator;
     }
 
+    public GroupElementVector asVector() {
+        return new GroupElementVector(elems, true);
+    }
+
     @Override
     public Representation getRepresentation() {
         ListRepresentation repr = new ListRepresentation();

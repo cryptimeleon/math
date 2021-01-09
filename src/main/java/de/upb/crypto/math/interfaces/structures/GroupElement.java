@@ -1,9 +1,10 @@
 package de.upb.crypto.math.interfaces.structures;
 
+import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
+import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.structures.cartesian.GroupElementVector;
-import de.upb.crypto.math.structures.cartesian.RingElementVector;
 import de.upb.crypto.math.structures.cartesian.Vector;
 import de.upb.crypto.math.structures.zn.Zn.ZnElement;
 
@@ -55,6 +56,14 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      */
     GroupElement op(Element e) throws IllegalArgumentException;
 
+    default GroupElementExpression op(GroupElementExpression e) {
+        return expr().op(e);
+    }
+
+    default GroupElementExpression op(String variable) {
+        return expr().op(variable);
+    }
+
     /**
      * @return this element "squared" (if op is an multiplication), or "doubled" (if op is addition)
      */
@@ -74,15 +83,20 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * Note that this is only well-defined if k is from Zn, such that getStructure().size() divides n.
      */
     default GroupElement pow(ZnElement k) {
-        return pow(k.asExponent());
+        return pow((RingElement) k);
     }
 
     /**
      * Calculates the result of applying the group operation k times.
-     * Note that this is only well-defined if k has an integer-like structure (e.g., Zn).
+     * This is only well-defined if this.getStructure().size() divides k.getStructure().getCharacteristic()
+     * and k.asInteger() doesn't throw an exception.
      */
     default GroupElement pow(RingElement k) {
-        return pow(k.asExponent());
+        if (!getStructure().size().equals(k.getStructure().getCharacteristic())
+                && !k.getStructure().getCharacteristic().equals(BigInteger.ZERO)
+                && !getStructure().size().mod(k.getStructure().getCharacteristic()).equals(BigInteger.ZERO))
+            throw new IllegalArgumentException("Cannot raise to the power of "+k);
+        return pow(k.asInteger());
     }
 
     /**
@@ -99,11 +113,19 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
 
     /**
      * Computes vector (g^exponents[0], g^exponents[1], ...)
-     * @param exponents the exponents to use (BigInteger, Long, or ZnElements)
+     * @param exponents the exponents to use
      * @return (g^exponents[0], g^exponents[1], ...)
      */
     default GroupElementVector pow(Vector<? extends RingElement> exponents) {
         return GroupElementVector.generate(i -> this, exponents.length()).pow(exponents);
+    }
+
+    default GroupElementExpression pow(ExponentExpr exponent) {
+        return expr().pow(exponent);
+    }
+
+    default GroupElementExpression pow(String variable) {
+        return expr().pow(variable);
     }
 
     /**

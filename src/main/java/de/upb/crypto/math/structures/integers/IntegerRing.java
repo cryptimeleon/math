@@ -73,7 +73,7 @@ public class IntegerRing implements Ring {
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && obj instanceof IntegerRing;
+        return obj instanceof IntegerRing;
     }
 
     @Override
