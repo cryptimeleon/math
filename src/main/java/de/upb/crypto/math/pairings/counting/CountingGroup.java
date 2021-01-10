@@ -95,7 +95,7 @@ public class CountingGroup implements Group {
 
     @Override
     public GroupElement getElement(Representation repr) {
-        return new CountingGroupElement(repr);
+        return new CountingGroupElement(this, repr);
     }
 
     public CountingGroupElement wrap(Zn.ZnElement elem) {
