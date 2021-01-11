@@ -217,14 +217,17 @@ public interface ExponentExpr extends Expression {
 
 
     /**
-     * Returns an equivalent expression of the form y + f(variables), where y is constant (no variables), and the expression f is linear, which means that
+     * Returns an equivalent expression of the form {@code y + f(variables)}, where {@code y} is constant (no variables),
+     * and the expression {@code f} is linear.
+     * Linearity means that
+     * <pre>
      * f(variables) + f(variables2) = f(variables + variables2)
+     * </pre>
+     * The exact result is a {@code ExponentSumExpr} where the left-hand-side {@code y} fulfills
+     * {@code y.containsVariables() == false} and the right-hand side is linear.
      *
-     * The exact result is a ExponentSumExpr
-     * where the left-hand-side y has !y.containsVariables(),
-     * the right-hand-side is linear
-     *
-     * @throws IllegalArgumentException if it's not possible to form the desired output (e.g., the input is something like g^(x_1 * x_2) for variables x_1, x_2).
+     * @throws IllegalArgumentException if it's not possible to form the desired output
+     * (e.g., the input is something like \(g^{x_1 \cdot x_2}\) for variables \(x_1, x_2\)).
      */
     ExponentSumExpr linearize() throws IllegalArgumentException;
 }

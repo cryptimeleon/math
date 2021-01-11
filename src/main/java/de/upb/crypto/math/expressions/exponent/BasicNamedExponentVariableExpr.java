@@ -8,7 +8,14 @@ import de.upb.crypto.math.serialization.StringRepresentation;
 
 import java.util.Objects;
 
+/**
+ * A {@link ExponentVariableExpr} with a specific name.
+ */
 public final class BasicNamedExponentVariableExpr implements ExponentVariableExpr, Representable, UniqueByteRepresentable {
+
+    /**
+     * The name of this variable expression.
+     */
     protected final String name;
 
     public BasicNamedExponentVariableExpr(String name) {

@@ -14,7 +14,7 @@ import de.upb.crypto.math.structures.zn.Zn;
 import java.math.BigInteger;
 
 /**
- * {@link Expression} that evaluates to a {@link GroupElement}.
+ * An {@link Expression} that evaluates to a {@link GroupElement}.
  */
 public abstract class AbstractGroupElementExpression implements GroupElementExpression {
     /**
@@ -29,8 +29,8 @@ public abstract class AbstractGroupElementExpression implements GroupElementExpr
     }
 
     /**
-     * Returns the group s.t. this expression evaluates to an element of this group, or null if group is unknown
-     * (e.g., if expression consists only of variables)
+     * Returns the group such that this expression evaluates to an element of this group, or null if group is unknown
+     * (for example, if expression consists only of variables).
      */
     @Override
     public Group getGroup() {

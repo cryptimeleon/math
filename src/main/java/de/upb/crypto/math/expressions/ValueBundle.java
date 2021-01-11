@@ -21,23 +21,24 @@ import java.util.HashMap;
  * These values can be used to substitute variables with the same name in some {@link Expression}.
  */
 public class ValueBundle implements Substitution{
+
     /**
-     * Maps variable names to substitute {@code GroupElement}'s.
+     * Maps variable expressions to substitute {@code GroupElement}s.
      */
     protected HashMap<VariableExpression, GroupElement> groupElems;
 
     /**
-     * Maps variable names to substitute {@code BigInteger}'s.
+     * Maps variable expressions to substitute {@code BigInteger}s.
      */
     protected HashMap<VariableExpression, BigInteger> ints;
 
     /**
-     * Maps variable names to substitute {@code RingElement}'s.
+     * Maps variable expressions to substitute {@code RingElement}s.
      */
     protected HashMap<VariableExpression, RingElement> ringElems;
 
     /**
-     * Maps variable names to substitute {@code Boolean}'s.
+     * Maps variable expressions to substitute {@code Boolean}s.
      */
     protected HashMap<VariableExpression, Boolean> bools;
     //protected HashMap<VariableExpression, ValueList> lists = new HashMap<>(); //Not yet implemented
@@ -62,7 +63,7 @@ public class ValueBundle implements Substitution{
     }
 
     /**
-     * Creates copy of this {@code ValueBundle}.
+     * Creates a copy of this {@code ValueBundle}.
      * <p>
      * The maps used to store the algebraic elements are recreated, the elements themselves are not cloned.
      */
@@ -70,24 +71,63 @@ public class ValueBundle implements Substitution{
         return new ValueBundle(this);
     }
 
+    /**
+     * Returns the {@code GroupElement} corresponding to the given variable expression.
+     *
+     * @param key the variable expression to retrieve the element for
+     * @return the corresponding group element
+     */
     public GroupElement getGroupElement(VariableExpression key) {
         return groupElems.get(key);
     }
 
+    /**
+     * Returns the {@code RingElement} corresponding to the given variable expression.
+     *
+     * @param key the variable expression to retrieve the element for
+     * @return the corresponding ring element
+     */
     public RingElement getRingElement(VariableExpression key) {
         return ringElems.get(key);
     }
 
+    /**
+     * Returns the {@code ZnElement} corresponding to the given variable expression.
+     *
+     * @param key the variable expression to retrieve the element for
+     * @return the corresponding Zn element
+     */
     public Zn.ZnElement getZnElement(VariableExpression key) {
         return (Zn.ZnElement) ringElems.get(key);
     }
 
+    /**
+     * Returns the {@code ZpElement} corresponding to the given variable expression.
+     *
+     * @param key the variable expression to retrieve the element for
+     * @return the corresponding Zp element
+     */
     public Zp.ZpElement getZpElement(VariableExpression key) {
         return (Zp.ZpElement) ringElems.get(key);
     }
 
+    /**
+     * Returns the {@code Boolean} corresponding to the given variable expression.
+     *
+     * @param key the variable expression to retrieve the Boolean for
+     * @return the corresponding Boolean
+     */
     public Boolean getBoolean(VariableExpression key) { return bools.get(key); }
 
+    /**
+     * Retrieves the {@code BigInteger} corresponding to the given variable expression.
+     * <p>
+     * If the desired integer cannot be found, the method looks for an integer-like ring element
+     * with the given key instead.
+     *
+     * @param key the variable expression to retrieve the integer for
+     * @return the corresponding integer
+     */
     public BigInteger getInteger(VariableExpression key) {
         if (ints.containsKey(key))
             return ints.get(key);

@@ -61,34 +61,60 @@ public interface GroupElementExpression extends Expression {
         return pow(new BasicNamedExponentVariableExpr(exponent));
     }
 
+    /**
+     * Applies the group operation to this expression and the given expression raised to the given power.
+     */
     default GroupElementExpression opPow(GroupElementExpression rhs, ExponentExpr exponentOfRhs) {
         return op(rhs.pow(exponentOfRhs));
     }
 
+    /**
+     * Applies the group operation to this expression and the given expression raised to the given power.
+     */
     default GroupElementExpression opPow(GroupElementExpression rhs, BigInteger exponentOfRhs) {
         return op(rhs.pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
+    /**
+     * Applies the group operation to this expression and the given expression raised to the given power.
+     */
     default GroupElementExpression opPow(GroupElementExpression rhs, Zn.ZnElement exponentOfRhs) {
         return op(rhs.pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
+    /**
+     * Applies the group operation to this expression and the given expression raised to the given power variable.
+     * @param exponentOfRhs the power variable's name
+     */
     default GroupElementExpression opPow(GroupElementExpression rhs, String exponentOfRhs) {
         return op(rhs.pow(new BasicNamedExponentVariableExpr(exponentOfRhs)));
     }
 
+    /**
+     * Applies the group operation to this expression and the given group element raised to the given power.
+     */
     default GroupElementExpression opPow(GroupElement rhs, ExponentExpr exponentOfRhs) {
         return op(rhs.expr().pow(exponentOfRhs));
     }
 
+    /**
+     * Applies the group operation to this expression and the given group element raised to the given power.
+     */
     default GroupElementExpression opPow(GroupElement rhs, BigInteger exponentOfRhs) {
         return op(rhs.expr().pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
+    /**
+     * Applies the group operation to this expression and the given group element raised to the given power.
+     */
     default GroupElementExpression opPow(GroupElement rhs, Zn.ZnElement exponentOfRhs) {
         return op(rhs.expr().pow(new ExponentConstantExpr(exponentOfRhs)));
     }
 
+    /**
+     * Applies the group operation to this expression and the given group element raised to the given power variable.
+     * @param exponentOfRhs the power variable's name
+     */
     default GroupElementExpression opPow(GroupElement rhs, String exponentOfRhs) {
         return op(rhs.expr().pow(new BasicNamedExponentVariableExpr(exponentOfRhs)));
     }
@@ -110,12 +136,13 @@ public interface GroupElementExpression extends Expression {
     }
 
     /**
-     * Returns the group s.t. this expression evaluates to an element of this group, or null if group is unknown
-     * (e.g., if expression consists only of variables)
+     * Returns the group such that this expression evaluates to an element of this group, or null if group is unknown
+     * (for example, if expression consists only of variables).
      */
     Group getGroup();
+
     /**
-     * Prepares this expression for more efficient evaluation by sacrifing memory instead similar to
+     * Prepares this expression for more efficient evaluation by sacrificing memory instead similar to
      * {@link GroupElement#precomputePow()}.
      * <p>
      * First linearizes this expression via {@link #linearize()} and then calls {@link GroupElement#precomputePow()}
@@ -137,30 +164,34 @@ public interface GroupElementExpression extends Expression {
     }
 
     /**
-     * Returns an equivalent expression of the form y * f(groupVariables, exponentVariables), where y is constant (no variables), and the expression f is linear, which means that
-     * f(groupVariables, exponentVariables) * f(groupVariables2, exponentVariables2) = f(groupVariables * groupVariables2, exponentVariables + exponentVariables2)
+     * Returns an equivalent expression of the form {@code y * f(groupVariables, exponentVariables)},
+     * where {@code y} is constant (no variables), and the expression {@code f} is linear.
+     * Linearity means that
+     * <pre>
+     * f(groupVariables, exponentVariables) * f(groupVariables2, exponentVariables2)
+     * = f(groupVariables * groupVariables2, exponentVariables + exponentVariables2)
+     * </pre>
+     * The exact result is a {@code GroupOpExpr} where the left-hand-side {@code y} fulfills
+     * {@code y.containsVariables() == false} and the right-hand side is linear.
      *
-     * The exact result is a GroupOpExpr
-     * where the left-hand-side y has !y.containsVariables(),
-     * the right-hand-side is linear
-     *
-     * @throws IllegalArgumentException if it's not possible to form the desired output (e.g., the input is something like g^(x_1 * x_2) for variables x_1, x_2).
+     * @throws IllegalArgumentException if it's not possible to form the desired output
+     * (e.g., the input is something like \(g^{x_1 \cdot x_2}\) for variables \(x_1, x_2\)).
      */
     GroupOpExpr linearize() throws IllegalArgumentException;
 
     /**
-     * Returns an equivalent expression of the form y * prod(g_i^x_i), where y doesn't contain any variables.
+     * Returns an equivalent expression of the form \(y \cdot \prod(g_i^{x_i})\), where \(y\) doesn't contain any variables.
      *
-     * The exact result is a GroupOpExpr
-     * where the left-hand-side is a GroupElementConstantExpr y and the right-hand-side is an expression tree
-     * where each inner nodes is a GroupOpExpr or a PairingExpr whose children are flattened.
+     * The exact result is a {@code GroupOpExpr}
+     * where the left-hand side is a {@code GroupElementConstantExpr} y and the right-hand side is an expression tree
+     * where each inner nodes is a {@code GroupOpExpr} or a {@code PairingExpr} whose children are flattened.
      */
     default GroupOpExpr flatten() {
         return flatten(new ExponentConstantExpr(BigInteger.ONE));
     }
 
     /**
-     * Linearizes the expression this^exponent.
+     * Linearizes the expression \(\text{this}^\text{exponent}\).
      */
     GroupOpExpr flatten(ExponentExpr exponent);
 }

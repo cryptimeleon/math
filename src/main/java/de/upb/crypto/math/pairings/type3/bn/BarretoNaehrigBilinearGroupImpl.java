@@ -225,7 +225,8 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     }
 
     /**
-     * This functions throws an exception because for type 3 pairings there is not efficient map H:G2->G1.
+     * This functions throws an exception because for type 3 pairings there is no efficient homomorphism
+     * {@code H : G2 -> G1}.
      */
     @Override
     public GroupHomomorphismImpl getHomomorphismG2toG1() {

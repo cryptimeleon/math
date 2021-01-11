@@ -9,7 +9,14 @@ import de.upb.crypto.math.serialization.StringRepresentation;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
+/**
+ * A {@link GroupVariableExpr} with a specific name.
+ */
 public final class BasicNamedGroupVariableExpr implements GroupVariableExpr, Representable, UniqueByteRepresentable {
+
+    /**
+     * The name of this variable expression.
+     */
     protected final String name;
 
     public BasicNamedGroupVariableExpr(@Nonnull String name) {

@@ -6,6 +6,7 @@ import de.upb.crypto.math.expressions.exponent.BasicNamedExponentVariableExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.expressions.group.BasicNamedGroupVariableExpr;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
+import de.upb.crypto.math.expressions.group.GroupOpExpr;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,8 +31,9 @@ public interface Expression {
 
         throw new IllegalArgumentException("Don't know how to handle "+substitution.getClass());
     }
+
     /**
-     * Substitute a specific variable with the given expression.
+     * Substitutes a specific variable with the given expression.
      *
      * @param variable the variable to replace
      * @param substitution the expression to substitute
@@ -93,7 +95,7 @@ public interface Expression {
      *         forEachChild(Expression::treeWalk)
      *     }
      * </pre>
-     * By contract, implementing objects should at least regard dependent variables as child VariableExpressions.
+     * By contract, implementing objects should at least regard dependent variables as child variable expressions.
      */
     default void treeWalk(Consumer<Expression> visitor) {
         visitor.accept(this);

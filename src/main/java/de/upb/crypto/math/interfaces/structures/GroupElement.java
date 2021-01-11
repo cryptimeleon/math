@@ -93,8 +93,8 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
 
     /**
      * Calculates the result of applying the group operation k times.
-     * This is only well-defined if this.getStructure().size() divides k.getStructure().getCharacteristic()
-     * and k.asInteger() doesn't throw an exception.
+     * This is only well-defined if {@code this.getStructure().size()} divides {@code k.getStructure().getCharacteristic()}
+     * and {@code k.asInteger()} doesn't throw an exception.
      */
     default GroupElement pow(RingElement k) {
         if (!getStructure().size().equals(k.getStructure().getCharacteristic())

@@ -1,8 +1,5 @@
 package de.upb.crypto.math.expressions.bool;
 
-import de.upb.crypto.math.expressions.EvaluationException;
-import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
 import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.serialization.Representable;
@@ -11,9 +8,15 @@ import de.upb.crypto.math.serialization.StringRepresentation;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
-import java.util.function.Consumer;
 
+/**
+ * A {@link BoolVariableExpr} with a specific name.
+ */
 public final class BasicNamedBoolVariableExpr implements BoolVariableExpr, Representable, UniqueByteRepresentable {
+
+    /**
+     * The name of this variable expression.
+     */
     protected final String name;
 
     public BasicNamedBoolVariableExpr(@Nonnull String name) {
