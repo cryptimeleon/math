@@ -52,9 +52,9 @@ public class CountingGroupElement implements GroupElement {
         this.elemExpMultiExp = elemExpMultiExp;
     }
 
-    public CountingGroupElement(Representation repr) {
+    public CountingGroupElement(CountingGroup group, Representation repr) {
         ObjectRepresentation objRepr = repr.obj();
-        group = new CountingGroup(objRepr.get("group"));
+        this.group = group;
         elemTotal = (LazyGroupElement) group.groupTotal.getElement(objRepr.get("elemTotal"));
         elemExpMultiExp = (LazyGroupElement) group.groupExpMultiExp.getElement(objRepr.get("elemExpMultiExp"));
     }
@@ -62,7 +62,6 @@ public class CountingGroupElement implements GroupElement {
     @Override
     public Representation getRepresentation() {
         ObjectRepresentation repr = new ObjectRepresentation();
-        repr.put("group", group.getRepresentation());
         repr.put("elemTotal", elemTotal.getRepresentation());
         repr.put("elemExpMultiExp", elemExpMultiExp.getRepresentation());
         return repr;

@@ -2,53 +2,37 @@ package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.EvaluationException;
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.VariableExpression;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
-
 /**
  * A {@link BooleanExpression} representing a variable, a Boolean whose actual Boolean value is not currently known.
  */
-public class BoolVariableExpr implements VariableExpression, BooleanExpression {
-    /**
-     * The name of this variable.
-     */
-    protected final String name;
-
-    public BoolVariableExpr(String name) {
-        this.name = name;
-    }
-
+public interface BoolVariableExpr extends VariableExpression, BooleanExpression {
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
-        Expression replacement = substitutions.apply(this);
-        if (replacement != null)
-            return (BooleanExpression) replacement;
-        return this;
-    }
-
-    @Override
-    public Boolean evaluate() {
+    default Boolean evaluate() {
         throw new EvaluationException(this, "Variable has no value");
     }
 
     @Override
-    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
-        BooleanExpression substitution = (BooleanExpression) substitutions.apply(this);
+    default Boolean evaluate(Substitution substitutions) {
+        BooleanExpression substitution = (BooleanExpression) substitutions.getSubstitution(this);
         if (substitution == null)
             throw new EvaluationException(this, "Variable cannot be evaluated");
         return substitution.evaluate();
     }
 
     @Override
-    public void forEachChild(Consumer<Expression> action) {
+    default void forEachChild(Consumer<Expression> action) {
         //Nothing to do
     }
 
+    @Override
+    default BooleanExpression substitute(Substitution substitutions) {
+        Expression replacement = substitutions.getSubstitution(this);
+        if (replacement != null)
+            return (BooleanExpression) replacement;
+        return this;
+    }
 }

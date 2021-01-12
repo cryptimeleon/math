@@ -1,7 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.structures.zn.Zn;
@@ -9,15 +9,10 @@ import de.upb.crypto.math.structures.zn.Zn;
 import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
-
 /**
  * A {@link GroupElementExpression} representing a constant group element.
  */
-public class GroupElementConstantExpr extends GroupElementExpression {
-    /**
-     * The constant value represented by this expression.
-     */
+public class GroupElementConstantExpr extends AbstractGroupElementExpression {
     protected final GroupElement value;
 
     public GroupElementConstantExpr(@Nonnull GroupElement value) {
@@ -31,17 +26,22 @@ public class GroupElementConstantExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+    public GroupElement evaluate(Substitution substitutions) {
         return value;
     }
 
     @Override
-    public GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public GroupElementExpression substitute(Substitution substitutions) {
         return this;
     }
 
     @Override
-    protected GroupOpExpr linearize(ExponentExpr exponent) {
+    public GroupOpExpr linearize() throws IllegalArgumentException {
+        return new GroupOpExpr(this, new GroupEmptyExpr(value.getStructure()));
+    }
+
+    @Override
+    public GroupOpExpr flatten(ExponentExpr exponent) {
         if (exponent.containsVariables()) {
             return new GroupOpExpr(new GroupEmptyExpr(getGroup()), this.pow(exponent));
         } else {

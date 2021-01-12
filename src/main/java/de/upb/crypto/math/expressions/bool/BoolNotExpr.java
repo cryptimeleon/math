@@ -1,10 +1,9 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.Substitution;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * A {@link BooleanExpression} representing the Boolean NOT of a Boolean expression.
@@ -27,12 +26,12 @@ public class BoolNotExpr implements BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public BooleanExpression substitute(Substitution substitutions) {
         return child.substitute(substitutions).not();
     }
 
     @Override
-    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+    public Boolean evaluate(Substitution substitutions) {
         return !child.evaluate(substitutions);
     }
 

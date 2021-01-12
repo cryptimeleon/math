@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 
@@ -28,12 +29,12 @@ public class ExponentEqualityExpr implements BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public BooleanExpression substitute(Substitution substitutions) {
         return lhs.substitute(substitutions).isEqualTo(rhs.substitute(substitutions));
     }
 
     @Override
-    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+    public Boolean evaluate(Substitution substitutions) {
         return lhs.sub(rhs).evaluate().equals(BigInteger.ZERO);
     }
 

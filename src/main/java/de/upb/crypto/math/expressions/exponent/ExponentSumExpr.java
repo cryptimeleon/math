@@ -1,6 +1,7 @@
 package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.structures.zn.Zn;
 
@@ -58,8 +59,16 @@ public class ExponentSumExpr implements ExponentExpr {
     }
 
     @Override
-    public ExponentExpr substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public ExponentExpr substitute(Substitution substitutions) {
         return lhs.substitute(substitutions).add(rhs.substitute(substitutions));
+    }
+
+    @Override
+    public ExponentSumExpr linearize() throws IllegalArgumentException {
+        ExponentSumExpr lhsLinearized = lhs.linearize();
+        ExponentSumExpr rhsLinearized = rhs.linearize();
+
+        return new ExponentSumExpr(lhsLinearized.getLhs().add(rhsLinearized.getLhs()), lhsLinearized.getRhs().add(rhsLinearized.getRhs()));
     }
 
 }

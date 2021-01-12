@@ -4,6 +4,7 @@ import de.upb.crypto.math.hash.impl.ByteArrayAccumulator;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * A {@code ByteAccumulator} takes a (large) byte-string x as input and outputs a byte array
@@ -17,7 +18,7 @@ import java.nio.charset.StandardCharsets;
  * Usually, this class will be used in the context of the {@link UniqueByteRepresentable} interface.
  * To that end, it contains some helper methods to make it easier to insert certain x into this.
  */
-public abstract class ByteAccumulator {
+public abstract class ByteAccumulator implements Comparable<ByteAccumulator> {
     public static byte SEPARATOR = (byte) '\\';
 
     /**
@@ -138,5 +139,26 @@ public abstract class ByteAccumulator {
      */
     public void append(int integer) {
         append(ByteBuffer.allocate(4).putInt(integer).array());
+    }
+
+    /**
+     * Appends the given String encoded as UTF-8 to the accumulator
+     */
+    public void append(String str) {
+        append(str.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public int compareTo(ByteAccumulator byteAccumulator) {
+        byte[] thisArr = extractBytes();
+        byte[] theirArr = byteAccumulator.extractBytes();
+
+        //Let's go for lexicographic ordering
+        for (int i=0;i<Math.min(thisArr.length, theirArr.length);i++) {
+            if (thisArr[i] != theirArr[i])
+                return thisArr[i] < theirArr[i] ? -1 : 1;
+        }
+
+        return Integer.compare(thisArr.length, theirArr.length);
     }
 }

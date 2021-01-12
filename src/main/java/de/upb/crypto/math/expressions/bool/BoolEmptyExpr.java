@@ -1,10 +1,9 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.Substitution;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * A {@link BooleanExpression} representing an empty expression useful for instantiating a new Boolean expression.
@@ -17,7 +16,7 @@ import java.util.function.Function;
 public class BoolEmptyExpr implements BooleanExpression {
 
     @Override
-    public BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public BooleanExpression substitute(Substitution substitutions) {
         return this;
     }
 
@@ -27,7 +26,7 @@ public class BoolEmptyExpr implements BooleanExpression {
     }
 
     @Override
-    public Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+    public Boolean evaluate(Substitution substitutions) {
         return evaluate();
     }
 

@@ -1,25 +1,23 @@
 package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.ValueBundle;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.VariableExpression;
-
-import java.util.function.Function;
 
 /**
  * An {@link Expression} that evaluates to a {@code Boolean}.
  */
 public interface BooleanExpression extends Expression {
     @Override
-    default BooleanExpression substitute(ValueBundle values) {
-        return (BooleanExpression) Expression.super.substitute(values);
-    }
-
-    @Override
-    BooleanExpression substitute(Function<VariableExpression, ? extends Expression> substitutions);
+    BooleanExpression substitute(Substitution substitutions);
 
     @Override
     default BooleanExpression substitute(String variable, Expression substitution) {
+        return (BooleanExpression) Expression.super.substitute(variable, substitution);
+    }
+
+    @Override
+    default BooleanExpression substitute(VariableExpression variable, Expression substitution) {
         return (BooleanExpression) Expression.super.substitute(variable, substitution);
     }
 
@@ -29,7 +27,7 @@ public interface BooleanExpression extends Expression {
     }
 
     @Override
-    Boolean evaluate(Function<VariableExpression, ? extends Expression> substitutions);
+    Boolean evaluate(Substitution substitutions);
 
     /**
      * Applies a Boolean AND to this and the given Boolean expression.

@@ -1,7 +1,7 @@
 package de.upb.crypto.math.expressions.group;
 
 import de.upb.crypto.math.expressions.Expression;
-import de.upb.crypto.math.expressions.VariableExpression;
+import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
@@ -9,21 +9,24 @@ import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Represents the neutral group element of the given group. Has utility over using a
  * {@link GroupElementConstantExpr} with a neutral element in the sense that the neutral element
  * is replaced on a group operation, leading to saving one potential group operation.
  */
-public class GroupEmptyExpr extends GroupElementExpression {
+public class GroupEmptyExpr extends AbstractGroupElementExpression {
 
     public GroupEmptyExpr(Group group) {
         super(group);
     }
 
+    public GroupEmptyExpr() {
+        super();
+    }
+
     @Override
-    public GroupElement evaluate(Function<VariableExpression, ? extends Expression> substitutions) {
+    public GroupElement evaluate(Substitution substitutions) {
         return this.group.getNeutralElement();
     }
 
@@ -33,7 +36,7 @@ public class GroupEmptyExpr extends GroupElementExpression {
     }
 
     @Override
-    public GroupElementExpression substitute(Function<VariableExpression, ? extends Expression> substitutions) {
+    public GroupElementExpression substitute(Substitution substitutions) {
         return this;
     }
 
@@ -68,7 +71,12 @@ public class GroupEmptyExpr extends GroupElementExpression {
     }
 
     @Override
-    protected GroupOpExpr linearize(ExponentExpr exponent) {
+    public GroupOpExpr linearize() throws IllegalArgumentException {
+        return new GroupOpExpr(this, this);
+    }
+
+    @Override
+    public GroupOpExpr flatten(ExponentExpr exponent) {
         return new GroupOpExpr(this, this);
     }
 }
