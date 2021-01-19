@@ -8,7 +8,6 @@ import de.upb.crypto.math.expressions.group.GroupElementConstantExpr;
 import de.upb.crypto.math.expressions.group.GroupVariableExpr;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingElement;
-import de.upb.crypto.math.structures.integers.IntegerElement;
 import de.upb.crypto.math.structures.zn.Zn;
 import de.upb.crypto.math.structures.zn.Zp;
 

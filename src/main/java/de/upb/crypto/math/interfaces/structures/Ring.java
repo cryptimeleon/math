@@ -233,7 +233,7 @@ public interface Ring extends Structure, RepresentationRestorer {
      * @param elements List of elements to apply the extended euclidean algorithm to
      * @return an array with coefficients and the gcd: [x[0], x[1], ..., x[n-1], gcd(elements)]
      */
-    public default ArrayList<RingElement> extendedEuclideanAlgorithm(List<RingElement> elements) {
+    default ArrayList<RingElement> extendedEuclideanAlgorithm(List<RingElement> elements) {
         if (elements == null || elements.size() == 0)
             return new ArrayList<>(Collections.singleton(getOneElement()));
         if (elements.size() == 1)

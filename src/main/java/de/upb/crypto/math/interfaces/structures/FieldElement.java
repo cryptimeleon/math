@@ -7,44 +7,44 @@ import java.math.BigInteger;
  */
 public interface FieldElement extends RingElement {
     @Override
-    public FieldElement add(Element e);
+    FieldElement add(Element e);
 
     @Override
-    public FieldElement neg();
+    FieldElement neg();
 
     @Override
-    public default FieldElement sub(Element e) {
+    default FieldElement sub(Element e) {
         return (FieldElement) RingElement.super.sub(e);
     }
 
     @Override
-    public FieldElement mul(Element e);
+    FieldElement mul(Element e);
 
     @Override
-    public default FieldElement mul(BigInteger k) {
+    default FieldElement mul(BigInteger k) {
         return (FieldElement) RingElement.super.mul(k);
     }
 
     @Override
-    public default FieldElement mul(long k) {
+    default FieldElement mul(long k) {
         return mul(BigInteger.valueOf(k));
     }
 
     @Override
-    public default FieldElement pow(BigInteger k) {
+    default FieldElement pow(BigInteger k) {
         return (FieldElement) RingElement.super.pow(k);
     }
 
     @Override
-    public default FieldElement pow(long k) {
+    default FieldElement pow(long k) {
         return pow(BigInteger.valueOf(k));
     }
 
     @Override
-    public FieldElement inv() throws UnsupportedOperationException;
+    FieldElement inv() throws UnsupportedOperationException;
 
     @Override
-    public default FieldElement div(Element e) throws IllegalArgumentException {
+    default FieldElement div(Element e) throws IllegalArgumentException {
         return (FieldElement) RingElement.super.div(e);
     }
 
@@ -54,22 +54,22 @@ public interface FieldElement extends RingElement {
     }
 
     @Override
-    public Field getStructure();
+    Field getStructure();
 
     @Override
-    public default boolean divides(RingElement e) throws UnsupportedOperationException {
+    default boolean divides(RingElement e) throws UnsupportedOperationException {
         return this.isZero() == e.isZero();
     }
 
     @Override
-    public default RingElement[] divideWithRemainder(RingElement e) throws UnsupportedOperationException, IllegalArgumentException {
+    default RingElement[] divideWithRemainder(RingElement e) throws UnsupportedOperationException, IllegalArgumentException {
         if (e.isZero())
             throw new IllegalArgumentException("Division by zero");
         return new FieldElement[]{this.div(e), getStructure().getZeroElement()};
     }
 
     @Override
-    public default BigInteger getRank() throws UnsupportedOperationException {
+    default BigInteger getRank() throws UnsupportedOperationException {
         return BigInteger.ZERO;
     }
 

@@ -4,7 +4,6 @@ import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentSumExpr;
-import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
 
 import java.math.BigInteger;

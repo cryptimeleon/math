@@ -10,7 +10,7 @@ public interface EllipticCurve extends GroupImpl {
     /**
      * Returns the base field over which the elliptic curve is defined.
      */
-    public Field getFieldOfDefinition();
+    Field getFieldOfDefinition();
 
     @Override
     default boolean isCommutative() {

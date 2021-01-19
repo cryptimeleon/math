@@ -7,7 +7,7 @@ import java.math.BigInteger;
  */
 public interface RingElement extends Element {
     @Override
-    public Ring getStructure();
+    Ring getStructure();
 
     /**
      * Interprets this element as an element of this ring's unit group.
@@ -200,7 +200,7 @@ public interface RingElement extends Element {
      * <p>
      * Useful if the ring allows squaring to be more efficiently implemented than general exponentiation.
      */
-    public default RingElement square() {
+    default RingElement square() {
         return this.mul(this);
     }
 

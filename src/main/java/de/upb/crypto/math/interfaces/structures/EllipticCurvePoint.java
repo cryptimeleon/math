@@ -11,7 +11,7 @@ public interface EllipticCurvePoint extends GroupElementImpl {
      * Normalizes this elliptic curve point.
      * @return the normalized point
      */
-    public EllipticCurvePoint normalize();
+    EllipticCurvePoint normalize();
 
     /**
      * Checks whether this point is normalized.
@@ -22,7 +22,7 @@ public interface EllipticCurvePoint extends GroupElementImpl {
     /**
      * Returns the base field over which the elliptic curve this point belongs to is defined.
      */
-    public Field getFieldOfDefinition();
+    Field getFieldOfDefinition();
 
 
     /**
@@ -40,7 +40,7 @@ public interface EllipticCurvePoint extends GroupElementImpl {
      * @param Q the second point on the line
      * @return parameterization of line through this and {@code Q}
      */
-    public FieldElement[] computeLine(EllipticCurvePoint Q);
+    FieldElement[] computeLine(EllipticCurvePoint Q);
 
     /**
      * Add this to P with the help of line where line is the result of {@code this.computeLine(P)}.
@@ -51,11 +51,11 @@ public interface EllipticCurvePoint extends GroupElementImpl {
      * @param line the line to use for the addition
      * @return the resulting curve point
      */
-    public EllipticCurvePoint add(EllipticCurvePoint P, FieldElement[] line);
+    EllipticCurvePoint add(EllipticCurvePoint P, FieldElement[] line);
 
 
     @Override
-    public default GroupElementImpl op(GroupElementImpl e) throws IllegalArgumentException {
+    default GroupElementImpl op(GroupElementImpl e) throws IllegalArgumentException {
         EllipticCurvePoint P = (EllipticCurvePoint) e;
 
         return this.add(P, this.computeLine(P));

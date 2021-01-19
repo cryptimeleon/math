@@ -43,7 +43,7 @@ public interface RandomGenerator {
      *
      * @param l length of resulting byte array
      */
-    public byte[] getRandomByteArray(int l);
+    byte[] getRandomByteArray(int l);
 
     /**
      * Generates a random number between {@code 1} and {@code l-1} (inclusive).

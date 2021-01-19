@@ -4,7 +4,6 @@ import de.upb.crypto.math.hash.impl.ByteArrayAccumulator;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 /**
  * A {@code ByteAccumulator} takes a (large) byte-string x as input and outputs a byte array

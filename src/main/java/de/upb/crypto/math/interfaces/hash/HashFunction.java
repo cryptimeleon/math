@@ -14,7 +14,7 @@ public interface HashFunction extends StandaloneRepresentable {
      *
      * @return the output-length in bytes
      */
-    public int getOutputLength();
+    int getOutputLength();
 
     /**
      * Hashes a {@code UniqueByteRepresentable} using the hash function.

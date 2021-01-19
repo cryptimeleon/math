@@ -62,22 +62,17 @@ public class AnnotatedUbrUtil {
                         .sorted(Comparator.comparing(Field::getName))
                         .collect(Collectors.toList())) {
 
-                    boolean access = field.isAccessible();
                     field.setAccessible(true);
-
                     Object fieldValue = field.get(instance);
-
                     if (hasAnnotation(field)) {
                         accumulatableObjects.add(fieldValue);
                     }
-                    field.setAccessible(access);
                 }
                 clazz = clazz.getSuperclass();
             }
         } catch (IllegalArgumentException | IllegalAccessException | SecurityException e) {
             throw new RuntimeException(e);
         }
-
         return accumulateList(accumulator, accumulatableObjects);
     }
 
