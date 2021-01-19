@@ -29,8 +29,6 @@ import java.util.Objects;
  * This allows for tracking both kinds of data.
  *
  * @see CountingBilinearGroup
- * 
- * @author Raphael Heitjohann
  */
 public class CountingBilinearMap implements BilinearMap {
 

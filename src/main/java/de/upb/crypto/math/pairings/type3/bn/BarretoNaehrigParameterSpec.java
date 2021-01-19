@@ -4,8 +4,6 @@ import java.math.BigInteger;
 
 /**
  * Represents a fixed parametrization of a Barreto-Naehrig bilinear group.
- *
- * @author peter
  */
 public class BarretoNaehrigParameterSpec {
     public BigInteger characteristic;

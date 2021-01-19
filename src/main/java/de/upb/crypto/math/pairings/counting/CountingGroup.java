@@ -22,8 +22,6 @@ import java.util.Optional;
  * This counting capability is realized by using two {@link LazyGroup}s that each wrap a {@link CountingGroupImpl}.
  * One counts total group operations and squarings, and the other counts (multi-)exponentiations as a single unit
  * (not including group operations and squarings done inside (multi-)exponentiations).
- *
- * @author Raphael Heitjohann
  */
 public class CountingGroup implements Group {
 

@@ -29,7 +29,6 @@ import java.util.Objects;
  * <li> an element \(b'=b/\alpha\) in \(\mathbb{F}_2\)
  *      with \(\mathbb{G}_2\) a subgroup of size \(n\) in \(E':y^2=x^3+b'\)
  * </ul>
- * @author Peter Guenther (peter.guenther@wincor-nixdorf.com)
  */
 public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
 

@@ -9,7 +9,6 @@ import java.security.NoSuchAlgorithmException;
  * A {@link HashAccumulator} that is used to implement the {@link HashFunction}s
  * {@link SHA256HashFunction} and {@link SHA512HashFunction}.
  *
- * @author Denis Diemert
  */
 public class SHAHashAccumulator extends HashAccumulator {
     protected final MessageDigest digest;

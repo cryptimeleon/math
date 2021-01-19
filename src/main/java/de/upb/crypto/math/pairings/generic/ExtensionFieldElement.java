@@ -17,9 +17,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
- * Elements in ExtensionField.
- *
- * @author peter.guenther
+ * Elements in {@link ExtensionField}.
  */
 
 public class ExtensionFieldElement implements FieldElement, UniqueByteRepresentable {

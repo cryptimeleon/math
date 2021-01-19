@@ -9,8 +9,6 @@ import java.util.List;
 
 /**
  * A class containing multi-exponentiation algorithms.
- *
- * @author Raphael Heitjohann, taken from Swante Scholz' implementation.
  */
 public class ExponentiationAlgorithms {
 

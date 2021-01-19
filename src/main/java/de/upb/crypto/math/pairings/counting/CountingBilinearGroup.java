@@ -30,7 +30,6 @@ import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.TYPE_2;
  * one counts total group operations and one counts each (multi-)exponentiation as one unit.
  * This allows for tracking both kinds of data.
  *
- * @author Raphael Heitjohann
  */
 public class CountingBilinearGroup implements BilinearGroup {
 

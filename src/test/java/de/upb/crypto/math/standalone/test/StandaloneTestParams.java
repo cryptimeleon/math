@@ -8,8 +8,6 @@ import de.upb.crypto.math.serialization.StandaloneRepresentable;
  * this interface should have a constructor that recreates an Representation
  * into an Object. By definition the recreated object and the provided object
  * should be the same (i.e. equals yields true).
- *
- * @author ---
  */
 public class StandaloneTestParams {
     protected Class<? extends StandaloneRepresentable> toTest;

@@ -8,7 +8,6 @@ import de.upb.crypto.math.interfaces.hash.HashFunction;
  * <p>
  * Specifically, it's a {@link ByteAccumulator} that outputs the hash value of its input in {@link #extractBytes()}.
  *
- * @author Denis Diemert
  */
 public abstract class HashAccumulator extends ByteAccumulator {
 

@@ -9,8 +9,6 @@ import de.upb.crypto.math.serialization.Representation;
 
 /**
  * Tate-pairing specific implementation of BN based pairings.
- *
- * @author peter.guenther
  */
 public class BarretoNaehrigTatePairing extends AbstractPairing {
     /**

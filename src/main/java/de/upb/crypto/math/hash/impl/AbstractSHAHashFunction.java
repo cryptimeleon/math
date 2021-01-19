@@ -8,7 +8,6 @@ import de.upb.crypto.math.serialization.StandaloneRepresentable;
 /**
  * The base class for SHA hash functions which implements some common methods.
  *
- * @author Mirko Jürgens, refactoring: Denis Diemert
  */
 abstract class AbstractSHAHashFunction implements HashFunction, StandaloneRepresentable {
 

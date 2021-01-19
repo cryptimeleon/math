@@ -28,8 +28,6 @@ import static de.upb.crypto.math.pairings.generic.BilinearGroup.Type.TYPE_2;
  * capabilities and allows for tracking both kinds of group operation data at once.
  * 
  * @see CountingBilinearGroup
- * 
- * @author Raphael Heitjohann
  */
 public class CountingBilinearGroupImpl implements BilinearGroupImpl {
 

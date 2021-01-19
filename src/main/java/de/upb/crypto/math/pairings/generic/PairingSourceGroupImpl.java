@@ -17,8 +17,6 @@ import java.util.Optional;
  * Implements a subgroup over the Weierstrass Curve.
  * More specifically: The set of Torsion points E[getSize()] = {P\in PairingGroup | P.pow(getSize()) = 1}
  * on an elliptic curve over fieldOfDefinition.
- *
- * @author Jan
  */
 public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
 

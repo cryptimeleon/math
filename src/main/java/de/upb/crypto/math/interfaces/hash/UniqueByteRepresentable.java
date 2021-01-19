@@ -16,7 +16,6 @@ import de.upb.crypto.math.serialization.Representable;
  * (For the sake of sanity and performance, "of the same type" here means also that they are part of the same context,
  * e.g., based on the same group / use the same public parameters)
  *
- * @author Mirko Juergens
  */
 public interface UniqueByteRepresentable {
     /**

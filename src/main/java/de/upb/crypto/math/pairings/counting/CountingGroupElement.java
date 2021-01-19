@@ -19,8 +19,6 @@ import java.util.Objects;
  * wraps two group elements, one for each nested group. Group operations are done for both.
  * 
  * @see CountingGroup
- *
- * @author Raphael Heitjohann
  */
 public class CountingGroupElement implements GroupElement {
 

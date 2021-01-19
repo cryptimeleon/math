@@ -19,8 +19,6 @@ import java.util.Objects;
 
 /**
  * Hash function into G1 and G2.
- *
- * @author peter.guenther
  */
 public class BarretoNaehrigPointEncoding implements HashIntoGroupImpl {
 

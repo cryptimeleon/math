@@ -14,8 +14,6 @@ package de.upb.crypto.math.interfaces.hash;
  * This ensures that the only unescaped separator bytes in {@code acc} are the ones
  * separating list items (all other separator bytes written by the items {@code i} are
  * escaped).
- *
- * @author Jan
  */
 public class EscapingByteAccumulator extends ByteAccumulator {
     protected ByteAccumulator acc;

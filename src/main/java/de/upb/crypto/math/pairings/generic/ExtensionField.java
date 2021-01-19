@@ -15,8 +15,6 @@ import java.util.Optional;
 
 /**
  * An extension field using an irreducible polynomial of the form \(x^\text{extensionDegree} + \text{constant}\).
- *
- * @author peterg
  */
 public class ExtensionField implements Field {
 

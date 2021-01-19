@@ -175,8 +175,6 @@ public class F2FiniteFieldExtension extends FiniteFieldExtension {
      * Every Element stores the coefficients as a {@code BigInteger} as an intermediate format.
      * <p>
      * [1] Julio Lopez and Ricardo Dahab: High-Speed Software Multiplication in \(\mathbb{F}_{2^m}\)
-     *
-     * @author Mirko Jürgens
      */
     public class F2FiniteFieldElement extends FiniteFieldElement {
 

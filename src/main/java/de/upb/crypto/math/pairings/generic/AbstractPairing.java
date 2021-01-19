@@ -11,8 +11,6 @@ import java.util.Objects;
 
 /**
  * Base class for pairings based on BN curves such as Tate Pairing, Ate Pairing and Optimal Ate Pairing.
- *
- * @author peter.guenther
  */
 public abstract class AbstractPairing implements BilinearMapImpl {
     protected PairingSourceGroupImpl g1;
