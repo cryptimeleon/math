@@ -105,7 +105,7 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
         BigInteger t = p.add(BigInteger.ONE).subtract(n);
 
         /* construct G2 */
-        g2impl = new BarretoNaehrigGroup2Impl(n, t, (ExtensionFieldElement) F2.lift(b).div(beta.neg()));
+        g2impl = new BarretoNaehrigGroup2Impl(n, t, (ExtensionFieldElement) F2.createElement(b).div(beta.neg()));
 
         /* get generators of G1 and G2 */
         BarretoNaehrigGroup1ElementImpl P1 = g1impl.getElement(baseField.createElement(spec.x1),
@@ -355,7 +355,7 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
                 continue;
 
             /* map b to extension field */
-            FieldElement bInExt = extField1.lift(b);
+            FieldElement bInExt = extField1.createElement(b);
 
             /*
              * iterate through degree 6 twists of E until we find correct order by iterating through powers coprime to

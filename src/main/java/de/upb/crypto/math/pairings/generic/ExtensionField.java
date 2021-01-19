@@ -14,7 +14,7 @@ import java.util.Optional;
 
 
 /**
- * An extension field using an irreducible polynomial of the form x^extensionDegree + constant.
+ * An extension field using an irreducible polynomial of the form \(x^\text{extensionDegree} + \text{constant}\).
  *
  * @author peterg
  */
@@ -28,7 +28,7 @@ public class ExtensionField implements Field {
 
 
     /**
-     * Create extension defined by polynomial x^extensionDegree+constant
+     * Create extension defined by polynomial \(x^\text{extensionDegree} + \text{constant}\).
      */
     private void init(FieldElement constant, int extensionDegree) {
         this.constant = constant;
@@ -43,14 +43,14 @@ public class ExtensionField implements Field {
     }
 
     /**
-     * Create extension defined by polynomial x^extensionDegree+constant
+     * Create extension defined by polynomial \(x^\text{extensionDegree} + \text{constant}\).
      */
     public ExtensionField(FieldElement constant, int extensionDegree) {
         init(constant, extensionDegree);
     }
 
     /**
-     * Instantiates the prime order finite field Z_p.
+     * Instantiates the prime order finite field Zp.
      * (i.e. the special case of an extension field with extension degree 1)
      *
      * @param p size of the field (must be prime)
@@ -185,7 +185,7 @@ public class ExtensionField implements Field {
 
     @Override
     public ExtensionFieldElement getElement(BigInteger i) {
-        return createElement(new FieldElement[]{constant.getStructure().getElement(i)});
+        return createElement(constant.getStructure().getElement(i));
     }
 
     @Override
@@ -193,31 +193,21 @@ public class ExtensionField implements Field {
         return getElement(BigInteger.valueOf(i));
     }
 
-
-    @Deprecated
-    /*
-     * @deprecated use fromBaseField instead.
-     *
-     */
-    public ExtensionFieldElement lift(FieldElement e) {
-        return this.createElement(new FieldElement[]{e});
-    }
-
     /**
      * Map an integer b to an element in this field.
      * <p>
-     * Let this field L be a degree k extension of a field K given by L=K/(f(X)). Let n be the size of K.
+     * Let this field L be a degree k extension of a field K given by \(L=K/(f(X))\). Let n be the size of K.
      * This function computes the n-ary representation of b:
      * <p>
-     * b=b_0 n^0 + b_1 n^1 + b_2 n^2 ... b_t n^t
+     * \(b=b_0 n^0 + b_1 n^1 + b_2 n^2 ... b_t n^t\)
      * <p>
-     * Then, it maps b_i to c_i in K by recursively invoking K.createElement(b_i) and constructs the polynomial
+     * Then, it maps \(b_i\) to \(c_i\) in K by recursively invoking {@code K.createElement(b_i)}
+     * and constructs the polynomial
      * <p>
-     * p(X) = c_0 X^0 + c_1 X^1 + c_2 X^t + ... + c_t X^t.
-     * Then, it projects p(X) to K/(f(X)) in the canonical way.
+     * \(p(X) = c_0 X^0 + c_1 X^1 + c_2 X^t + ... + c_t X^t\).
+     * Then, it projects \(p(X)\) to \(K/(f(X))\) in the canonical way.
      * <p>
-     * <p>
-     * Hence, this mapping is injective on the integers smaller than this.size().
+     * Hence, this mapping is injective on the integers smaller than {@code this.size()}.
      *
      * @param b the integer to map to a field element
      * @return field element corresponding to the given integer
@@ -227,7 +217,7 @@ public class ExtensionField implements Field {
          * then pass slices to subfield */
 
 
-        List<BigInteger> pary = new ArrayList<BigInteger>();
+        List<BigInteger> pary = new ArrayList<>();
 
         BigInteger a = b.abs();
 
@@ -257,7 +247,7 @@ public class ExtensionField implements Field {
 
         ExtensionFieldElement result = this.createElement(coefficients);
         if (b.compareTo(BigInteger.ZERO) < 0) {
-            result = (ExtensionFieldElement) result.neg();
+            result = result.neg();
         }
 
         return result;
@@ -298,12 +288,12 @@ public class ExtensionField implements Field {
 
     @Override
     public ExtensionFieldElement getZeroElement() {
-        return this.lift(getBaseField().getZeroElement());
+        return this.createElement(getBaseField().getZeroElement());
     }
 
     @Override
     public ExtensionFieldElement getOneElement() {
-        return this.lift(getBaseField().getOneElement());
+        return this.createElement(getBaseField().getOneElement());
     }
 
     @Override
@@ -388,10 +378,7 @@ public class ExtensionField implements Field {
         } else if (!constant.equals(other.constant)) {
             return false;
         }
-        if (extensionDegree != other.extensionDegree) {
-            return false;
-        }
-        return true;
+        return extensionDegree == other.extensionDegree;
     }
 
     public int getExtensionDegree() {

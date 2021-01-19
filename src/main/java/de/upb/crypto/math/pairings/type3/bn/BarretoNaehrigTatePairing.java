@@ -57,12 +57,12 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
         }
 
         FieldElement[] coefficients = new FieldElement[4];
-        coefficients[0] = extField.lift((ExtensionFieldElement) P.getX().mul(line[1]).sub(P.getY().mul(line[0])));
+        coefficients[0] = extField.createElement(P.getX().mul(line[1]).sub(P.getY().mul(line[0])));
 
         coefficients[1] = extField.getZeroElement();
-        coefficients[2] = extField.lift((ExtensionFieldElement) line[1]).mul(Q.getX()).neg();
+        coefficients[2] = extField.createElement(line[1]).mul(Q.getX()).neg();
 
-        coefficients[3] = Q.getY().mul(extField.lift((ExtensionFieldElement) line[0]));
+        coefficients[3] = Q.getY().mul(extField.createElement(line[0]));
 
         return targetField.createElement(coefficients);
     }

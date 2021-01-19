@@ -13,18 +13,6 @@ public interface RandomGenerator {
     boolean nextBit();
 
     /**
-     * Generates a random number between \(0\) and \(2^{\text{length-1}}\) (inclusive).
-     *
-     * @deprecated Use {@link #getRandomElement(int)} instead.
-     * @param length maximum length in bits of the chosen number
-     * @return a uniformly distributed random number between \(0\) and \(2^{\text{length-1}}\) (inclusive)
-     */
-    @Deprecated
-    default BigInteger next(int length) {
-        return this.getRandomElement(length);
-    }
-
-    /**
      * Sets the seed for this random generator.
      * @param seed the seed to use
      */
