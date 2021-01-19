@@ -1,4 +1,4 @@
 /**
- * Contains the old deprecated representation framework annotations and utilities.
+ * Contains the current representation framework interfaces, annotations and utilities.
  */
 package de.upb.crypto.math.serialization.annotations;

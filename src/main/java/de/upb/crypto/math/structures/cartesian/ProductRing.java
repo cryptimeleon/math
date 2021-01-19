@@ -3,8 +3,8 @@ package de.upb.crypto.math.structures.cartesian;
 import de.upb.crypto.math.interfaces.structures.Ring;
 import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
-import de.upb.crypto.math.serialization.annotations.v2.Represented;
+import de.upb.crypto.math.serialization.annotations.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.Represented;
 
 import java.math.BigInteger;
 import java.util.Arrays;

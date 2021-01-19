@@ -1,4 +1,4 @@
-package de.upb.crypto.math.serialization.annotations.v2;
+package de.upb.crypto.math.serialization.annotations;
 
 import de.upb.crypto.math.serialization.Representation;
 

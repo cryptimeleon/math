@@ -4,7 +4,7 @@ import de.upb.crypto.math.interfaces.structures.Element;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
-import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
+import de.upb.crypto.math.serialization.annotations.RepresentationRestorer;
 import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;
 import de.upb.crypto.math.structures.groups.exp.SmallExponentPrecomputation;
 import de.upb.crypto.math.structures.zn.Zp;

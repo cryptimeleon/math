@@ -1,8 +1,8 @@
-package de.upb.crypto.math.serialization.annotations.v2.internal;
+package de.upb.crypto.math.serialization.annotations.internal;
 
 import de.upb.crypto.math.serialization.Representable;
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
+import de.upb.crypto.math.serialization.annotations.RepresentationRestorer;
 
 import java.lang.reflect.Type;
 import java.util.function.Function;

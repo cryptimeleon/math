@@ -1,5 +1,7 @@
 package de.upb.crypto.math.serialization;
 
+import de.upb.crypto.math.serialization.annotations.ReprUtil;
+
 /**
  * Common interface for all objects that can be represented (and thereby serialized) using the Representation framework.
  * This allows us to serialize objects in an interoperable way (in contrast to Java's Serializable), e.g. to use
@@ -13,7 +15,7 @@ package de.upb.crypto.math.serialization;
 public interface Representable {
     /**
      * The representation of this object. Used for serialization.
-     * A convenient way to implement this is using @link {@link de.upb.crypto.math.serialization.annotations.v2.ReprUtil}
+     * A convenient way to implement this is using @link {@link ReprUtil}
      *
      * @return a Representation or null if an equal object can be recreated without any information.
      * @see Representation

@@ -4,7 +4,7 @@ import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
 import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
+import de.upb.crypto.math.serialization.annotations.RepresentationRestorer;
 import de.upb.crypto.math.structures.cartesian.GroupElementVector;
 import de.upb.crypto.math.structures.cartesian.RingElementVector;
 import de.upb.crypto.math.structures.zn.Zn;

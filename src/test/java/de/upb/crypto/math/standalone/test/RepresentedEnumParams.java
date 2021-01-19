@@ -2,7 +2,8 @@ package de.upb.crypto.math.standalone.test;
 
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
-import de.upb.crypto.math.serialization.annotations.*;
+import de.upb.crypto.math.serialization.annotations.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.Represented;
 
 import java.util.*;
 import java.util.function.Function;
@@ -24,13 +25,13 @@ public class RepresentedEnumParams {
         RepresentableEnum testEnum;
         @Represented
         RepresentableEnum nullValue;
-        @RepresentedArray(elementRestorer = @Represented)
+        @Represented
         RepresentableEnum[] enumArray;
-        @RepresentedList(elementRestorer = @Represented)
+        @Represented
         List<RepresentableEnum> enumList;
-        @RepresentedSet(elementRestorer = @Represented)
+        @Represented
         Set<RepresentableEnum> enumSet;
-        @RepresentedMap(keyRestorer = @Represented, valueRestorer = @Represented)
+        @Represented
         Map<RepresentableEnum, RepresentableEnum> enumMap;
 
         public RepresentedEnum() {
@@ -45,12 +46,12 @@ public class RepresentedEnumParams {
         }
 
         public RepresentedEnum(Representation representation) {
-            AnnotatedRepresentationUtil.restoreAnnotatedRepresentation(representation, this);
+            new ReprUtil(this).deserialize(representation);
         }
 
         @Override
         public Representation getRepresentation() {
-            return AnnotatedRepresentationUtil.putAnnotatedRepresentation(this);
+            return ReprUtil.serialize(this);
         }
 
         @Override

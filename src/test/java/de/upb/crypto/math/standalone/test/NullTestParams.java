@@ -2,7 +2,7 @@ package de.upb.crypto.math.standalone.test;
 
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
-import de.upb.crypto.math.serialization.annotations.*;
+import de.upb.crypto.math.serialization.annotations.ReprUtil;
 
 import java.util.*;
 
@@ -16,21 +16,13 @@ public class NullTestParams {
 
     public static class NullTestClass implements StandaloneRepresentable {
 
-        @Represented
         private StandaloneRepresentable nullTestObject;
-        @Represented
         private String nullTestString;
-        @RepresentedList(elementRestorer = @Represented)
         private List<Object> nullTestList;
-        @RepresentedSet(elementRestorer = @Represented)
         private Set<Object> nullTestSet;
-        @RepresentedMap(keyRestorer = @Represented, valueRestorer = @Represented)
         private Map<Object, Object> nullTestMap;
-        @RepresentedMapAndMap(keyRestorer = @Represented, valueRestorer = @RepresentedMap(keyRestorer = @Represented, valueRestorer = @Represented))
         private Map<Object, Map<Object, Object>> nullTestMapOfMaps;
-        @RepresentedMapAndList(keyRestorer = @Represented, valueRestorer = @RepresentedList(elementRestorer = @Represented))
         private Map<Object, List<Object>> nullTestMapOfLists;
-        @RepresentedArray(elementRestorer = @Represented)
         private Object[] nullTestArray;
 
         public NullTestClass() {
@@ -45,13 +37,13 @@ public class NullTestParams {
         }
 
         public NullTestClass(Representation representation) {
-            AnnotatedRepresentationUtil.restoreAnnotatedRepresentation(representation, this);
+            new ReprUtil(this).deserialize(representation);
         }
 
 
         @Override
         public Representation getRepresentation() {
-            return AnnotatedRepresentationUtil.putAnnotatedRepresentation(this);
+            return ReprUtil.serialize(this);
         }
 
         @Override

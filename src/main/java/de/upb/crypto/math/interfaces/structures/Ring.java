@@ -1,7 +1,7 @@
 package de.upb.crypto.math.interfaces.structures;
 
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.serialization.annotations.v2.RepresentationRestorer;
+import de.upb.crypto.math.serialization.annotations.RepresentationRestorer;
 import de.upb.crypto.math.structures.cartesian.RingElementVector;
 
 import java.lang.reflect.Type;
