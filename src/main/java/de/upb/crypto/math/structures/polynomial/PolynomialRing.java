@@ -149,28 +149,6 @@ public class PolynomialRing implements Ring {
         }
 
         /**
-         * Creates a polynomial using a bit string as the coefficients in descending
-         * order, i.e. {@code new Polynomial(10)} returns \(0 + 1 \cdot X + 0 \cdot X^2 + 1 \cdot X^3\).
-         * <p>
-         * This constructor should only be used if the underlying ring is \(\mathbb{Z}_2\).
-         *
-         * @param seed bit string representing coefficients of new polynomial in ascending order
-         */
-        public Polynomial(Seed seed) {
-            if (!baseRing.equals(new Zp(BigInteger.valueOf(2)))) {
-                throw new IllegalArgumentException(
-                        "This constructor should only be used if the underlying ring is Zp2");
-            }
-
-            if (seed.getByteLength() == 0) {
-                seed = new Seed(new byte[]{0});
-            }
-
-            rebuildPolynomial(seed);
-
-        }
-
-        /**
          * Creates a polynomial with the given coefficients.
          * <p>
          * For example, {@code new Polynomial(1,2,3)} returns \(1 + 2 \cdot X + 3 \cdot X^2\).
@@ -549,31 +527,6 @@ public class PolynomialRing implements Ring {
             }
 
             return builder.append("]").toString();
-        }
-
-        /**
-         * Initialize the  polynomial using a bit string as the coefficients in descending
-         * order, i.e. {@code new Polynomial(10)} returns \(0 + 1 \cdot X + 0 \cdot X^2 + 1 \cdot X^3\).
-         * <p>
-         * This constructor should only be used if the underlying ring is \(\mathbb{Z}_2\).
-         *
-         * @param seed the bit string representing the new coefficients
-         */
-        public void rebuildPolynomial(Seed seed) {
-            Zp zp = (Zp) baseRing;
-            this.coefficients = new RingElement[seed.getBitLength()];
-
-            for (int i = 0; i < seed.getBitLength(); i++) {
-                if (seed.getBitAt(i) == 1) {
-                    this.coefficients[i] = zp.createZnElement(BigInteger.ONE);
-                } else {
-                    this.coefficients[i] = zp.createZnElement(BigInteger.ZERO);
-                }
-
-            }
-            computeDegree();
-            ensureArrayNonNull();
-
         }
 
         @Override

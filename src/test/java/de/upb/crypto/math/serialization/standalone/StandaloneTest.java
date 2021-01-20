@@ -106,8 +106,6 @@ public class StandaloneTest {
         ArrayList<StandaloneTestParams> toReturn = new ArrayList<>();
         // add params here
         toReturn.addAll(BarretoNaehrigParams.get());
-        toReturn.add(F2FiniteFieldParams.get());
-        toReturn.add(FiniteFieldExtensionParams.get());
         toReturn.add(HashIntoZnAdditiveGroupParams.get());
         toReturn.add(HashIntoZnParams.get());
         toReturn.add(HashIntoZpParams.get());
@@ -121,7 +119,6 @@ public class StandaloneTest {
         toReturn.add(ZnParams.get());
         toReturn.add(ZpParams.get());
         toReturn.add(SnParams.get());
-        toReturn.add(QuotientRing1Params.get());
         toReturn.add(ExtensionFieldParams.get());
         toReturn.add(VariableOutputLengthHashFunctionParams.get());
         toReturn.add(NullTestParams.get());
