@@ -16,6 +16,9 @@ import java.util.Map.Entry;
 /**
  * Allows converting between a {@code Representation} object and a JSON structure.
  * <p>
+ * The output is not optimized for legibility, i.e. no whitespaces.
+ * For creating pretty-printed JSON output, see {@link JSONPrettyConverter}.
+ * <p>
  * Note that the order of attributes in a JSON Object is meaningless. 
  * However, this {@code Converter} guarantees a consistent order between calls,
  * making the {@code Representation -> String} relation left-unique (i.e. a well-defined mapping).

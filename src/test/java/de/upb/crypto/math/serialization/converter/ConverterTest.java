@@ -118,6 +118,7 @@ public class ConverterTest {
     public static Collection<Converter> getParams() {
         ArrayList<Converter> list = new ArrayList<>();
         list.add(new JSONConverter());
+        list.add(new JSONPrettyConverter());
         list.add(new BinaryFormatConverter());
         list.add(new BinaryFormatConverter(Arrays.asList(someString.get()), Arrays.asList(Zn.class)));
         return list;

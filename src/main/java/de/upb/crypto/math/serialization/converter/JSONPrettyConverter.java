@@ -1,21 +1,22 @@
-package de.upb.crypto.math.serialization.util;
+package de.upb.crypto.math.serialization.converter;
+
 
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.serialization.converter.JSONConverter;
 
 /**
- * Class that allows to pretty-print JSON strings / Representations.
+ * Allows converting between a {@code Representation} object and a pretty-printed JSON structure.
+ * <p>
+ * Note that the order of attributes in a JSON Object is meaningless.
+ * However, this {@code Converter} guarantees a consistent order between calls,
+ * making the {@code Representation -> String} relation left-unique (i.e. a well-defined mapping).
+ * This allows this {@code Converter} to be used for, e.g,. {@code HashRepresentationIntoStructure},
+ * and similar tasks that require a unique and consistent output.
  */
-public abstract class JSONPrettyPrinter {
-    private static final JSONConverter converter = new JSONConverter();
+public class JSONPrettyConverter extends JSONConverter {
 
-    /**
-     * Creates a nicely formatted string from the given representation.
-     * @param repr the representation to pretty-print
-     * @return a formatted string for printing
-     */
-    public static String prettyPrint(Representation repr) {
-        return prettyPrintJson(converter.serialize(repr));
+    @Override
+    public String serialize(Representation r) {
+        return prettyPrintJson(super.serialize(r));
     }
 
     /**
@@ -23,7 +24,7 @@ public abstract class JSONPrettyPrinter {
      * @param json the json to pretty-print
      * @return a formatted string for printing
      */
-    public static String prettyPrintJson(String json) {
+    public String prettyPrintJson(String json) {
         int indent = 0;
         boolean inString = false;
         boolean ignoreNextChar = false;
@@ -60,7 +61,7 @@ public abstract class JSONPrettyPrinter {
         return builder.toString();
     }
 
-    private static void writeNewlineAndIndent(int indent, StringBuilder builder) {
+    private void writeNewlineAndIndent(int indent, StringBuilder builder) {
         builder.append("\n");
         for (int i = 0; i < indent; i++)
             builder.append("   ");
