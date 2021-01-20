@@ -1,10 +1,10 @@
 package de.upb.crypto.math.serialization.standalone.params;
 
-import de.upb.crypto.math.interfaces.structures.Ring;
+import de.upb.crypto.math.structures.rings.Ring;
 import de.upb.crypto.math.serialization.standalone.StandaloneTestParams;
-import de.upb.crypto.math.structures.cartesian.ProductRing;
-import de.upb.crypto.math.structures.zn.Zn;
-import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.structures.rings.cartesian.ProductRing;
+import de.upb.crypto.math.structures.rings.zn.Zn;
+import de.upb.crypto.math.structures.rings.zn.Zp;
 
 import java.math.BigInteger;
 

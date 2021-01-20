@@ -1,7 +1,7 @@
 package de.upb.crypto.math.serialization.standalone.params;
 
 import de.upb.crypto.math.serialization.standalone.StandaloneTestParams;
-import de.upb.crypto.math.structures.zn.HashIntoZnAdditiveGroup;
+import de.upb.crypto.math.structures.rings.zn.HashIntoZnAdditiveGroup;
 
 import java.math.BigInteger;
 

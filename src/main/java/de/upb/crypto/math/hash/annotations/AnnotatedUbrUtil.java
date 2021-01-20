@@ -1,11 +1,11 @@
 package de.upb.crypto.math.hash.annotations;
 
 import de.upb.crypto.math.hash.impl.ByteArrayAccumulator;
-import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.hash.EscapingByteAccumulator;
-import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
-import de.upb.crypto.math.interfaces.structures.Element;
-import de.upb.crypto.math.interfaces.structures.Structure;
+import de.upb.crypto.math.hash.ByteAccumulator;
+import de.upb.crypto.math.hash.EscapingByteAccumulator;
+import de.upb.crypto.math.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.structures.Element;
+import de.upb.crypto.math.structures.Structure;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

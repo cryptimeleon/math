@@ -1,7 +1,7 @@
 package de.upb.crypto.math.serialization.standalone.params;
 
-import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroup;
-import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroup;
+import de.upb.crypto.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.serialization.standalone.StandaloneTestParams;
 
 import java.util.ArrayList;

@@ -3,7 +3,7 @@ package de.upb.crypto.math.expressions.bool;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
-import de.upb.crypto.math.interfaces.structures.Group;
+import de.upb.crypto.math.structures.groups.Group;
 
 import java.util.function.Consumer;
 

@@ -1,10 +1,10 @@
 package de.upb.crypto.math.structures.groups.basic;
 
-import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
-import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
-import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
-import de.upb.crypto.math.pairings.generic.BilinearMap;
+import de.upb.crypto.math.hash.HashIntoStructure;
+import de.upb.crypto.math.structures.groups.mappings.GroupHomomorphism;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearMap;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;

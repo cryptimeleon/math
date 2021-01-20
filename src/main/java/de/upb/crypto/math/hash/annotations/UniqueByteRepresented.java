@@ -1,6 +1,6 @@
 package de.upb.crypto.math.hash.annotations;
 
-import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.hash.UniqueByteRepresentable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

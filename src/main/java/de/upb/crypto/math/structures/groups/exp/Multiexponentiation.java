@@ -1,6 +1,6 @@
 package de.upb.crypto.math.structures.groups.exp;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
+import de.upb.crypto.math.structures.groups.GroupElementImpl;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

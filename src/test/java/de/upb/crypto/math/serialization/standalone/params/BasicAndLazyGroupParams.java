@@ -1,8 +1,8 @@
 package de.upb.crypto.math.serialization.standalone.params;
 
-import de.upb.crypto.math.pairings.counting.CountingBilinearGroupImpl;
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
-import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.counting.CountingBilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroupImpl;
 import de.upb.crypto.math.serialization.standalone.StandaloneTestParams;
 import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
 import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;

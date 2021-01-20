@@ -1,7 +1,9 @@
 package de.upb.crypto.math.structures.cartesian;
 
-import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.RingElement;
+import de.upb.crypto.math.structures.groups.cartesian.GroupElementVector;
+import de.upb.crypto.math.structures.groups.GroupElement;
+import de.upb.crypto.math.structures.rings.RingElement;
+import de.upb.crypto.math.structures.rings.cartesian.RingElementVector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +86,7 @@ public class Vector<X> {
      * Constructs a new {@code Vector<Y>} with {@code n} elements by applying the {@code nextValue} function
      * {@code n } times, storing each result in the resulting vector.
      *
-     * @see de.upb.crypto.math.structures.cartesian.Vector#iterate(Object, Function, int, Function)
+     * @see Vector#iterate(Object, Function, int, Function)
      *
      * @param initialValue the first value of the resulting vector and the basis for the successive values
      * @param nextValue the function producing values for the resulting vector

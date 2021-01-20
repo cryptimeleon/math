@@ -1,9 +1,9 @@
 package de.upb.crypto.math.structures;
 
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupElementImpl;
-import de.upb.crypto.math.interfaces.structures.group.impl.GroupImpl;
-import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
-import de.upb.crypto.math.pairings.type3.bn.BarretoNaehrigBilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.GroupElementImpl;
+import de.upb.crypto.math.structures.groups.GroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.structures.groups.exp.ExponentiationAlgorithms;
 import de.upb.crypto.math.structures.groups.exp.MultiExpTerm;
 import de.upb.crypto.math.structures.groups.exp.Multiexponentiation;

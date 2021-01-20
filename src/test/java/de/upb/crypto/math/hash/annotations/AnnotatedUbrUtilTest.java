@@ -1,9 +1,7 @@
 package de.upb.crypto.math.hash.annotations;
 
-import de.upb.crypto.math.hash.annotations.AnnotatedUbrUtil;
-import de.upb.crypto.math.hash.annotations.UniqueByteRepresented;
-import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.hash.ByteAccumulator;
+import de.upb.crypto.math.hash.UniqueByteRepresentable;
 import org.junit.Test;
 
 import java.util.ArrayList;

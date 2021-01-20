@@ -1,7 +1,7 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
-import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
-import de.upb.crypto.math.interfaces.mappings.impl.HashIntoGroupImpl;
+import de.upb.crypto.math.hash.HashIntoStructure;
+import de.upb.crypto.math.structures.groups.mappings.impl.HashIntoGroupImpl;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;

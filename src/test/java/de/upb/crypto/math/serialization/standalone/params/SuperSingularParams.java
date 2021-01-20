@@ -1,7 +1,7 @@
 package de.upb.crypto.math.serialization.standalone.params;
 
-import de.upb.crypto.math.pairings.type1.supersingular.SupersingularBilinearGroup;
-import de.upb.crypto.math.pairings.type1.supersingular.SupersingularTateGroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.type1.supersingular.SupersingularBilinearGroup;
+import de.upb.crypto.math.structures.groups.elliptic.type1.supersingular.SupersingularTateGroupImpl;
 import de.upb.crypto.math.serialization.standalone.StandaloneTestParams;
 
 import java.util.ArrayList;

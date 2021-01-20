@@ -1,8 +1,8 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
-import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
-import de.upb.crypto.math.interfaces.mappings.impl.GroupHomomorphismImpl;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.structures.groups.mappings.GroupHomomorphism;
+import de.upb.crypto.math.structures.groups.mappings.impl.GroupHomomorphismImpl;
+import de.upb.crypto.math.structures.groups.GroupElement;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;

@@ -1,7 +1,7 @@
 package de.upb.crypto.math.serialization.converter;
 
 import de.upb.crypto.math.serialization.*;
-import de.upb.crypto.math.structures.zn.Zn;
+import de.upb.crypto.math.structures.rings.zn.Zn;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

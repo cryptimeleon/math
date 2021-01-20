@@ -1,7 +1,5 @@
 package de.upb.crypto.math.structures;
 
-import de.upb.crypto.math.interfaces.structures.Element;
-import de.upb.crypto.math.interfaces.structures.Structure;
 import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import org.junit.Test;

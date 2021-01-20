@@ -1,13 +1,13 @@
 package de.upb.crypto.math.serialization.annotations;
 
 
-import de.upb.crypto.math.interfaces.structures.Ring;
-import de.upb.crypto.math.interfaces.structures.RingElement;
+import de.upb.crypto.math.structures.rings.Ring;
+import de.upb.crypto.math.structures.rings.RingElement;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 import de.upb.crypto.math.serialization.standalone.StandaloneTestParams;
-import de.upb.crypto.math.structures.zn.Zn;
-import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.structures.rings.zn.Zn;
+import de.upb.crypto.math.structures.rings.zn.Zp;
 import org.junit.Test;
 
 import java.math.BigInteger;

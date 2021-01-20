@@ -1,12 +1,14 @@
 package de.upb.crypto.math.structures;
 
-import de.upb.crypto.math.interfaces.structures.*;
-import de.upb.crypto.math.structures.integers.IntegerElement;
-import de.upb.crypto.math.structures.integers.IntegerRing;
-import de.upb.crypto.math.structures.polynomial.PolynomialRing;
-import de.upb.crypto.math.structures.polynomial.PolynomialRing.Polynomial;
-import de.upb.crypto.math.structures.zn.Zn;
-import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.structures.rings.Field;
+import de.upb.crypto.math.structures.rings.Ring;
+import de.upb.crypto.math.structures.rings.RingElement;
+import de.upb.crypto.math.structures.rings.integers.IntegerElement;
+import de.upb.crypto.math.structures.rings.integers.IntegerRing;
+import de.upb.crypto.math.structures.rings.polynomial.PolynomialRing;
+import de.upb.crypto.math.structures.rings.polynomial.PolynomialRing.Polynomial;
+import de.upb.crypto.math.structures.rings.zn.Zn;
+import de.upb.crypto.math.structures.rings.zn.Zp;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

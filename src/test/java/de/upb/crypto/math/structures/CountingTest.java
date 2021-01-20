@@ -1,9 +1,9 @@
 package de.upb.crypto.math.structures;
 
-import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.pairings.counting.CountingBilinearGroup;
-import de.upb.crypto.math.pairings.counting.CountingGroup;
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
+import de.upb.crypto.math.structures.groups.GroupElement;
+import de.upb.crypto.math.structures.groups.counting.CountingBilinearGroup;
+import de.upb.crypto.math.structures.groups.counting.CountingGroup;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -1,7 +1,7 @@
 package de.upb.crypto.math.serialization.standalone.params;
 
 import de.upb.crypto.math.serialization.standalone.StandaloneTestParams;
-import de.upb.crypto.math.structures.sn.Sn;
+import de.upb.crypto.math.structures.groups.sn.Sn;
 
 public class SnParams {
 

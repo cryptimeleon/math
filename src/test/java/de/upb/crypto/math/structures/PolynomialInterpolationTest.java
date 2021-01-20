@@ -1,11 +1,11 @@
 package de.upb.crypto.math.structures;
 
-import de.upb.crypto.math.interfaces.structures.Ring;
-import de.upb.crypto.math.interfaces.structures.RingElement;
+import de.upb.crypto.math.structures.rings.Ring;
+import de.upb.crypto.math.structures.rings.RingElement;
 import de.upb.crypto.math.random.interfaces.RandomGenerator;
 import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
-import de.upb.crypto.math.structures.polynomial.PolynomialRing;
-import de.upb.crypto.math.structures.zn.Zp;
+import de.upb.crypto.math.structures.rings.polynomial.PolynomialRing;
+import de.upb.crypto.math.structures.rings.zn.Zp;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
