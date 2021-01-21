@@ -1,5 +1,6 @@
 package de.upb.crypto.math.pairings.generic;
 
+import de.upb.crypto.math.interfaces.hash.HashIntoGroup;
 import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
 import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
 import de.upb.crypto.math.interfaces.structures.Group;
@@ -61,21 +62,21 @@ public interface BilinearGroup extends StandaloneRepresentable {
      * @throws UnsupportedOperationException if no such hash function exists or the bilinear group is not configured
      *                                       to support such functionality
      */
-    HashIntoStructure getHashIntoG1() throws UnsupportedOperationException;
+    HashIntoGroup getHashIntoG1() throws UnsupportedOperationException;
 
     /**
      * Retrieves a hash function that maps byte arrays to G2.
      * @throws UnsupportedOperationException if no such hash function exists or the bilinear group is not configured
      *                                       to support such functionality
      */
-    HashIntoStructure getHashIntoG2() throws UnsupportedOperationException;
+    HashIntoGroup getHashIntoG2() throws UnsupportedOperationException;
 
     /**
      * Retrieves a hash function that maps byte arrays to GT.
      * @throws UnsupportedOperationException if no such hash function exists or the bilinear group is not configured
      *                                       to support such functionality
      */
-    HashIntoStructure getHashIntoGT() throws UnsupportedOperationException;
+    HashIntoGroup getHashIntoGT() throws UnsupportedOperationException;
     
     Integer getSecurityLevel();
     

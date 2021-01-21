@@ -1,6 +1,6 @@
 package de.upb.crypto.math.structures.groups.basic;
 
-import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
+import de.upb.crypto.math.interfaces.hash.HashIntoGroup;
 import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
 import de.upb.crypto.math.pairings.generic.BilinearGroup;
 import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
@@ -21,7 +21,7 @@ public class BasicBilinearGroup implements BilinearGroup {
     BasicGroup g1, g2, gt;
     BasicGroupHomomorphism homG2toG1;
     BilinearMap map;
-    HashIntoStructure hashIntoG1, hashIntoG2, hashIntoGt;
+    HashIntoGroup hashIntoG1, hashIntoG2, hashIntoGt;
 
     public BasicBilinearGroup(BilinearGroupImpl impl) {
         this.impl = impl;
@@ -46,19 +46,19 @@ public class BasicBilinearGroup implements BilinearGroup {
         }
 
         try {
-            hashIntoG1 = new BasicHashIntoStructure(impl.getHashIntoG1(), g1);
+            hashIntoG1 = new HashIntoBasicGroup(impl.getHashIntoG1(), g1);
         } catch (UnsupportedOperationException e) {
             hashIntoG1 = null;
         }
 
         try {
-            hashIntoG2 = new BasicHashIntoStructure(impl.getHashIntoG2(), g2);
+            hashIntoG2 = new HashIntoBasicGroup(impl.getHashIntoG2(), g2);
         } catch (UnsupportedOperationException e) {
             hashIntoG2 = null;
         }
 
         try {
-            hashIntoGt = new BasicHashIntoStructure(impl.getHashIntoGT(), gt);
+            hashIntoGt = new HashIntoBasicGroup(impl.getHashIntoGT(), gt);
         } catch (UnsupportedOperationException e) {
             hashIntoGt = null;
         }
@@ -92,21 +92,21 @@ public class BasicBilinearGroup implements BilinearGroup {
     }
 
     @Override
-    public HashIntoStructure getHashIntoG1() throws UnsupportedOperationException {
+    public HashIntoGroup getHashIntoG1() throws UnsupportedOperationException {
         if (hashIntoG1 == null)
             throw new UnsupportedOperationException("No hash available");
         return hashIntoG1;
     }
 
     @Override
-    public HashIntoStructure getHashIntoG2() throws UnsupportedOperationException {
+    public HashIntoGroup getHashIntoG2() throws UnsupportedOperationException {
         if (hashIntoG2 == null)
             throw new UnsupportedOperationException("No hash available");
         return hashIntoG2;
     }
 
     @Override
-    public HashIntoStructure getHashIntoGT() throws UnsupportedOperationException {
+    public HashIntoGroup getHashIntoGT() throws UnsupportedOperationException {
         if (hashIntoGt == null)
             throw new UnsupportedOperationException("No hash available");
         return hashIntoGt;

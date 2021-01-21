@@ -64,14 +64,14 @@ public class HashIntoZn implements HashIntoStructure {
     }
 
     @Override
-    public Zn.ZnElement hashIntoStructure(byte[] x) {
+    public Zn.ZnElement hash(byte[] x) {
         byte[] hash = hashIntoZn.hash(x);
         return structure.injectiveValueOf(hash);
     }
 
     @Override
-    public Zn.ZnElement hashIntoStructure(String x) {
-        return (Zn.ZnElement) HashIntoStructure.super.hashIntoStructure(x);
+    public Zn.ZnElement hash(String x) {
+        return (Zn.ZnElement) HashIntoStructure.super.hash(x);
     }
 
     /**
