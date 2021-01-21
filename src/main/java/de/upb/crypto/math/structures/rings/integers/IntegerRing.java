@@ -1,9 +1,9 @@
 package de.upb.crypto.math.structures.rings.integers;
 
+import de.upb.crypto.math.random.RandomGenerator;
+import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.rings.Ring;
 import de.upb.crypto.math.structures.rings.RingElement;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
-import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
 import java.util.Optional;
@@ -63,7 +63,7 @@ public class IntegerRing implements Ring {
 
     @Override
     public RingElement getUniformlyRandomUnit() throws UnsupportedOperationException {
-        return new IntegerElement(BigInteger.valueOf(-1).pow(RandomGeneratorSupplier.getRnd().getRandomElement(BigInteger.valueOf(2)).intValue()));
+        return new IntegerElement(BigInteger.valueOf(-1).pow(RandomGenerator.getRandomNumber(BigInteger.valueOf(2)).intValue()));
     }
 
     @Override

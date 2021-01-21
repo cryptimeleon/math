@@ -1,14 +1,14 @@
 package de.upb.crypto.math.structures.groups.elliptic.nopairing;
 
-import de.upb.crypto.math.structures.groups.elliptic.EllipticCurvePoint;
-import de.upb.crypto.math.structures.rings.Field;
-import de.upb.crypto.math.structures.rings.FieldElement;
-import de.upb.crypto.math.structures.groups.GroupElementImpl;
-import de.upb.crypto.math.structures.groups.elliptic.WeierstrassCurve;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
+import de.upb.crypto.math.random.RandomGenerator;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StringRepresentation;
+import de.upb.crypto.math.structures.groups.GroupElementImpl;
 import de.upb.crypto.math.structures.groups.elliptic.AffineEllipticCurvePoint;
+import de.upb.crypto.math.structures.groups.elliptic.EllipticCurvePoint;
+import de.upb.crypto.math.structures.groups.elliptic.WeierstrassCurve;
+import de.upb.crypto.math.structures.rings.Field;
+import de.upb.crypto.math.structures.rings.FieldElement;
 import de.upb.crypto.math.structures.rings.zn.Zp;
 
 import java.math.BigInteger;
@@ -112,7 +112,7 @@ public class Secp256k1 implements WeierstrassCurve {
 
     @Override
     public GroupElementImpl getUniformlyRandomElement() throws UnsupportedOperationException {
-        return getGenerator().pow(RandomGeneratorSupplier.getRnd().getRandomElement(n));
+        return getGenerator().pow(RandomGenerator.getRandomNumber(n));
     }
 
     @Override

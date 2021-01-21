@@ -1,10 +1,10 @@
 package de.upb.crypto.math.structures.rings.zn;
 
+import de.upb.crypto.math.random.RandomGenerator;
+import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.Element;
 import de.upb.crypto.math.structures.rings.Field;
 import de.upb.crypto.math.structures.rings.FieldElement;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
-import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.rings.helpers.FiniteFieldTools;
 
 import java.math.BigInteger;
@@ -46,7 +46,7 @@ public class Zp extends Zn implements Field {
 
     @Override
     public ZpElement getUniformlyRandomUnit() throws UnsupportedOperationException {
-        return createZnElement(RandomGeneratorSupplier.getRnd().getRandomElement(n.subtract(BigInteger.ONE)).add(BigInteger.ONE));
+        return createZnElement(RandomGenerator.getRandomNumber(BigInteger.ONE, n));
     }
 
     @Override

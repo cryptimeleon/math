@@ -1,10 +1,10 @@
 package de.upb.crypto.math.structures.rings.bool;
 
-import de.upb.crypto.math.structures.rings.Ring;
-import de.upb.crypto.math.structures.rings.RingElement;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
+import de.upb.crypto.math.random.RandomGenerator;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.ReprUtil;
+import de.upb.crypto.math.structures.rings.Ring;
+import de.upb.crypto.math.structures.rings.RingElement;
 
 import java.math.BigInteger;
 import java.util.Optional;
@@ -51,7 +51,7 @@ public class BooleanStructure implements Ring {
 
     @Override
     public RingElement getUniformlyRandomElement() throws UnsupportedOperationException {
-        return RandomGeneratorSupplier.getRnd().nextBit() ? BooleanElement.TRUE : BooleanElement.FALSE;
+        return RandomGenerator.getRandomBit() ? BooleanElement.TRUE : BooleanElement.FALSE;
     }
 
     @Override

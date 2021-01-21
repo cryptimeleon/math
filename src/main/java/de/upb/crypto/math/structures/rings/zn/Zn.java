@@ -3,12 +3,12 @@ package de.upb.crypto.math.structures.rings.zn;
 import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.hash.ByteAccumulator;
 import de.upb.crypto.math.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.random.RandomGenerator;
+import de.upb.crypto.math.serialization.BigIntegerRepresentation;
+import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.Element;
 import de.upb.crypto.math.structures.rings.Ring;
 import de.upb.crypto.math.structures.rings.RingElement;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
-import de.upb.crypto.math.serialization.BigIntegerRepresentation;
-import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
 import java.util.Objects;
@@ -96,7 +96,7 @@ public class Zn implements Ring {
 
     @Override
     public ZnElement getUniformlyRandomElement() throws UnsupportedOperationException {
-        return createZnElement(RandomGeneratorSupplier.getRnd().getRandomElement(n));
+        return createZnElement(RandomGenerator.getRandomNumber(n));
     }
 
     @Override
@@ -106,7 +106,7 @@ public class Zn implements Ring {
 
     @Override
     public ZnElement getUniformlyRandomNonzeroElement() {
-        return createZnElement(RandomGeneratorSupplier.getRnd().getRandomNonZeroElement(n));
+        return createZnElement(RandomGenerator.getRandomNonZeroNumber(n));
     }
 
     @Override

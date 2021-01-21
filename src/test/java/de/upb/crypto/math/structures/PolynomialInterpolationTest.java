@@ -1,9 +1,8 @@
 package de.upb.crypto.math.structures;
 
+import de.upb.crypto.math.random.RandomGenerator;
 import de.upb.crypto.math.structures.rings.Ring;
 import de.upb.crypto.math.structures.rings.RingElement;
-import de.upb.crypto.math.random.interfaces.RandomGenerator;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
 import de.upb.crypto.math.structures.rings.polynomial.PolynomialRing;
 import de.upb.crypto.math.structures.rings.zn.Zp;
 import org.junit.Before;
@@ -27,20 +26,18 @@ public class PolynomialInterpolationTest {
 
     private static final int RING_SIZE = 10;
 
-    private RandomGenerator rng;
     private Ring ring;
 
     @Before
     public void setup() {
-        rng = RandomGeneratorSupplier.getRnd();
-        ring = new Zp(rng.getRandomPrime(RING_SIZE));
+        ring = new Zp(RandomGenerator.getRandomPrime(RING_SIZE));
     }
 
 
     @Test
     public void testPolynomialWithRandomCoefficients() {
         //choose a desired degree
-        int degree = rng.getRandomElement(5).intValue() + 5;
+        int degree = RandomGenerator.getRandomNumber(5, 10);
 
         //Take degree + 1 coefficient to form the reference polynomial
         RingElement[] coefficients = Stream.generate(ring::getUniformlyRandomElement)

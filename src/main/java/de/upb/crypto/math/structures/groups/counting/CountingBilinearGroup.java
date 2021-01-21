@@ -1,16 +1,15 @@
 package de.upb.crypto.math.structures.groups.counting;
 
 import de.upb.crypto.math.hash.HashIntoStructure;
-import de.upb.crypto.math.structures.groups.mappings.GroupHomomorphism;
-import de.upb.crypto.math.structures.groups.Group;
-import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
-import de.upb.crypto.math.structures.groups.elliptic.BilinearMap;
-import de.upb.crypto.math.random.interfaces.RandomGenerator;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
+import de.upb.crypto.math.random.RandomGenerator;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;
+import de.upb.crypto.math.structures.groups.Group;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearMap;
 import de.upb.crypto.math.structures.groups.lazy.LazyBilinearGroup;
+import de.upb.crypto.math.structures.groups.mappings.GroupHomomorphism;
 import de.upb.crypto.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
@@ -75,9 +74,8 @@ public class CountingBilinearGroup implements BilinearGroup {
         this.pairingType = pairingType;
 
         ArrayList<BigInteger> primeFactors = new ArrayList<>();
-        RandomGenerator rnd = RandomGeneratorSupplier.getRnd();
         for (int i = 0; i < numPrimeFactors; i++)
-            primeFactors.add(rnd.getRandomPrime(securityParameter));
+            primeFactors.add(RandomGenerator.getRandomPrime(securityParameter));
         
         BigInteger size = primeFactors.stream().reduce(BigInteger.ONE, BigInteger::multiply);
         totalBilGroup = new LazyBilinearGroup(new CountingBilinearGroupImpl(

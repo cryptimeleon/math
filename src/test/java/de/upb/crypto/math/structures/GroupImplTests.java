@@ -1,19 +1,19 @@
 package de.upb.crypto.math.structures;
 
-import de.upb.crypto.math.structures.groups.elliptic.nopairing.Secp256k1;
+import de.upb.crypto.math.random.RandomGenerator;
+import de.upb.crypto.math.serialization.RepresentableRepresentation;
+import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.groups.GroupElementImpl;
 import de.upb.crypto.math.structures.groups.GroupImpl;
 import de.upb.crypto.math.structures.groups.RingAdditiveGroupImpl;
 import de.upb.crypto.math.structures.groups.RingUnitGroupImpl;
 import de.upb.crypto.math.structures.groups.counting.CountingGroupImpl;
 import de.upb.crypto.math.structures.groups.elliptic.BilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.nopairing.Secp256k1;
 import de.upb.crypto.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroupImpl;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
-import de.upb.crypto.math.serialization.RepresentableRepresentation;
-import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.groups.sn.Sn;
 import de.upb.crypto.math.structures.rings.integers.IntegerElement;
 import de.upb.crypto.math.structures.rings.integers.IntegerRing;
-import de.upb.crypto.math.structures.groups.sn.Sn;
 import de.upb.crypto.math.structures.rings.zn.Zn;
 import de.upb.crypto.math.structures.rings.zn.Zp;
 import org.junit.Test;
@@ -202,7 +202,7 @@ public class GroupImplTests {
         // Collect parameters
         TestParams params[][] = new TestParams[][]{
                 {new TestParams(ringUnitGroupImpl)}, {new TestParams(ringAddGroup)},
-                {new TestParams(ringAddGroupInt, () -> ringAddGroupInt.new RingAdditiveGroupElementImpl(new IntegerElement(RandomGeneratorSupplier.getRnd().getRandomElement(BigInteger.valueOf(100000)))))}, {new TestParams(sn)},
+                {new TestParams(ringAddGroupInt, () -> ringAddGroupInt.new RingAdditiveGroupElementImpl(new IntegerElement(RandomGenerator.getRandomNumber(100000))))}, {new TestParams(sn)},
                 {new TestParams(countingGroupImpl)},
                 {new TestParams(bnG1)}, {new TestParams(bnG2)}, {new TestParams(bnGT)},
                 {new TestParams(bnG12)}, {new TestParams(bnG22)}, {new TestParams(bnGT2)},

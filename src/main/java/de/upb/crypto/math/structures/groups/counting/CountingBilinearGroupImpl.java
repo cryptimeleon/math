@@ -1,15 +1,14 @@
 package de.upb.crypto.math.structures.groups.counting;
 
-import de.upb.crypto.math.structures.groups.mappings.impl.GroupHomomorphismImpl;
-import de.upb.crypto.math.structures.groups.mappings.impl.HashIntoGroupImpl;
-import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
-import de.upb.crypto.math.structures.groups.elliptic.BilinearGroupImpl;
-import de.upb.crypto.math.structures.groups.elliptic.BilinearMapImpl;
-import de.upb.crypto.math.random.interfaces.RandomGenerator;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
+import de.upb.crypto.math.random.RandomGenerator;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearMapImpl;
+import de.upb.crypto.math.structures.groups.mappings.impl.GroupHomomorphismImpl;
+import de.upb.crypto.math.structures.groups.mappings.impl.HashIntoGroupImpl;
 import de.upb.crypto.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
@@ -76,9 +75,8 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
         this.enableMultiExpCounting = enableMultiExpCounting;
 
         ArrayList<BigInteger> primeFactors = new ArrayList<>();
-        RandomGenerator rnd = RandomGeneratorSupplier.getRnd();
         for (int i = 0; i < numPrimeFactors; i++)
-            primeFactors.add(rnd.getRandomPrime(securityParameter));
+            primeFactors.add(RandomGenerator.getRandomPrime(securityParameter));
 
         this.size = primeFactors.stream().reduce(BigInteger.ONE, BigInteger::multiply);
         init();

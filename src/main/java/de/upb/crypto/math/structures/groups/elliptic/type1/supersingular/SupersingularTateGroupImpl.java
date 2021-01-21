@@ -1,18 +1,17 @@
 package de.upb.crypto.math.structures.groups.elliptic.type1.supersingular;
 
-import de.upb.crypto.math.structures.groups.mappings.IdentityIsomorphism;
-import de.upb.crypto.math.structures.groups.mappings.impl.HashIntoGroupImpl;
-import de.upb.crypto.math.structures.rings.FieldElement;
+import de.upb.crypto.math.random.RandomGenerator;
+import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.serialization.annotations.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.Represented;
 import de.upb.crypto.math.structures.groups.GroupImpl;
 import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
 import de.upb.crypto.math.structures.groups.elliptic.BilinearGroupImpl;
 import de.upb.crypto.math.structures.groups.elliptic.BilinearMapImpl;
+import de.upb.crypto.math.structures.groups.mappings.IdentityIsomorphism;
+import de.upb.crypto.math.structures.groups.mappings.impl.HashIntoGroupImpl;
+import de.upb.crypto.math.structures.rings.FieldElement;
 import de.upb.crypto.math.structures.rings.extfield.ExtensionField;
-import de.upb.crypto.math.random.interfaces.RandomGenerator;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
-import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.serialization.annotations.ReprUtil;
-import de.upb.crypto.math.serialization.annotations.Represented;
 import de.upb.crypto.math.structures.rings.helpers.FiniteFieldTools;
 
 import java.math.BigInteger;
@@ -135,11 +134,9 @@ public class SupersingularTateGroupImpl implements BilinearGroupImpl {
     protected void init(int logExtFieldSize) {
         BigInteger groupOrder;
 
-        RandomGenerator rng = RandomGeneratorSupplier.getRnd();
-
         // Select a group order from the security parameter
         // Group size in bits is twice the security parameter to resist Pollard's Rho
-        groupOrder = rng.getRandomPrime(2 * securityParameter);
+        groupOrder = RandomGenerator.getRandomPrime(2 * securityParameter);
 
         // Find the field characteristic q and cofactor
         /*

@@ -1,12 +1,12 @@
 package de.upb.crypto.math.structures.groups.elliptic.type3.bn;
 
+import de.upb.crypto.math.random.RandomGenerator;
+import de.upb.crypto.math.serialization.Representation;
+import de.upb.crypto.math.structures.groups.elliptic.PairingSourceGroupElement;
+import de.upb.crypto.math.structures.groups.elliptic.PairingSourceGroupImpl;
 import de.upb.crypto.math.structures.rings.FieldElement;
 import de.upb.crypto.math.structures.rings.extfield.ExtensionField;
 import de.upb.crypto.math.structures.rings.extfield.ExtensionFieldElement;
-import de.upb.crypto.math.structures.groups.elliptic.PairingSourceGroupElement;
-import de.upb.crypto.math.structures.groups.elliptic.PairingSourceGroupImpl;
-import de.upb.crypto.math.random.interfaces.RandomGeneratorSupplier;
-import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
 
@@ -32,7 +32,7 @@ public abstract class BarretoNaehrigSourceGroupImpl extends PairingSourceGroupIm
             /*
              * for every y coordinate that leads to a point, ie, where y^2 -b is a cubic residue, there are three x-coordinates. Select one uniformly at random.
              */
-            int sel = RandomGeneratorSupplier.getRnd().getRandomElement(BigInteger.valueOf(3)).intValue();
+            int sel = RandomGenerator.getRandomNumber(BigInteger.valueOf(3)).intValue();
 
             try {
                 /*
