@@ -1,5 +1,6 @@
-package de.upb.crypto.math.hash;
+package de.upb.crypto.math.structures;
 
+import de.upb.crypto.math.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.structures.Element;
 import de.upb.crypto.math.structures.Structure;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
@@ -16,7 +17,7 @@ public interface HashIntoStructure extends StandaloneRepresentable {
      * @param x a sequence of bytes to hash
      * @return the resulting structure element
      */
-    Element hashIntoStructure(byte[] x);
+    Element hash(byte[] x);
 
 
     /**
@@ -25,8 +26,8 @@ public interface HashIntoStructure extends StandaloneRepresentable {
      * @param ubr the {@code UniqueByteRepresentable} to hash
      * @return the resulting structure element
      */
-    default Element hashIntoStructure(UniqueByteRepresentable ubr) {
-        return hashIntoStructure(ubr.getUniqueByteRepresentation());
+    default Element hash(UniqueByteRepresentable ubr) {
+        return hash(ubr.getUniqueByteRepresentation());
     }
 
     /**
@@ -35,7 +36,7 @@ public interface HashIntoStructure extends StandaloneRepresentable {
      * @param x a {@code String}
      * @return the resulting structure element
      */
-    default Element hashIntoStructure(String x) {
-        return hashIntoStructure(x.getBytes(StandardCharsets.UTF_8));
+    default Element hash(String x) {
+        return hash(x.getBytes(StandardCharsets.UTF_8));
     }
 }

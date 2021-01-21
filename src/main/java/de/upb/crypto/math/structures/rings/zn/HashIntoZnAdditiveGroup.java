@@ -1,7 +1,7 @@
 package de.upb.crypto.math.structures.rings.zn;
 
-import de.upb.crypto.math.hash.HashIntoStructure;
 import de.upb.crypto.math.structures.groups.RingGroup;
+import de.upb.crypto.math.structures.groups.HashIntoGroup;
 import de.upb.crypto.math.serialization.Representation;
 
 import java.math.BigInteger;
@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * @see HashIntoZn
  */
-public class HashIntoZnAdditiveGroup implements HashIntoStructure {
+public class HashIntoZnAdditiveGroup implements HashIntoGroup {
     /**
      * The {@link HashIntoZn} underlying this hash.
      */
@@ -53,8 +53,8 @@ public class HashIntoZnAdditiveGroup implements HashIntoStructure {
     }
 
     @Override
-    public RingGroup.RingGroupElement hashIntoStructure(byte[] x) {
-        return structure.getElement(znHash.hashIntoStructure(x));
+    public RingGroup.RingGroupElement hash(byte[] x) {
+        return structure.getElement(znHash.hash(x));
     }
 
     @Override

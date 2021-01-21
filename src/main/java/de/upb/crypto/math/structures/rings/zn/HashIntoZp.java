@@ -26,8 +26,8 @@ public class HashIntoZp extends HashIntoZn {
     }
 
     @Override
-    public Zp.ZpElement hashIntoStructure(byte[] x) {
-        return (Zp.ZpElement) super.hashIntoStructure(x);
+    public Zp.ZpElement hash(byte[] x) {
+        return (Zp.ZpElement) super.hash(x);
     }
 
     /**

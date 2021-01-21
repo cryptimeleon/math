@@ -3,7 +3,7 @@ package de.upb.crypto.math.structures.rings.zn;
 import de.upb.crypto.math.hash.impl.SHA256HashFunction;
 import de.upb.crypto.math.hash.impl.VariableOutputLengthHashFunction;
 import de.upb.crypto.math.hash.HashFunction;
-import de.upb.crypto.math.hash.HashIntoStructure;
+import de.upb.crypto.math.structures.HashIntoStructure;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;
@@ -64,14 +64,14 @@ public class HashIntoZn implements HashIntoStructure {
     }
 
     @Override
-    public Zn.ZnElement hashIntoStructure(byte[] x) {
+    public Zn.ZnElement hash(byte[] x) {
         byte[] hash = hashIntoZn.hash(x);
         return structure.injectiveValueOf(hash);
     }
 
     @Override
-    public Zn.ZnElement hashIntoStructure(String x) {
-        return (Zn.ZnElement) HashIntoStructure.super.hashIntoStructure(x);
+    public Zn.ZnElement hash(String x) {
+        return (Zn.ZnElement) HashIntoStructure.super.hash(x);
     }
 
     /**

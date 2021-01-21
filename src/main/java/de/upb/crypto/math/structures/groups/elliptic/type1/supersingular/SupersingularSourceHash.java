@@ -32,7 +32,7 @@ public class SupersingularSourceHash implements HashIntoGroupImpl {
     public GroupElementImpl hashIntoGroupImpl(byte[] x) {
         HashIntoZn hash = new HashIntoZn(this.codomain.getFieldOfDefinition().size());
         ExtensionFieldElement z = ((ExtensionField) this.codomain.getFieldOfDefinition()).createElement(
-                hash.hashIntoStructure(x).getInteger()
+                hash.hash(x).getInteger()
         );
         return this.codomain.mapToPoint(z);
     }

@@ -43,6 +43,6 @@ public class HashIntoCountingGroupImpl implements HashIntoGroupImpl {
 
     @Override
     public GroupElementImpl hashIntoGroupImpl(byte[] x) {
-        return group.wrap(hash.hashIntoStructure(x));
+        return group.wrap(hash.hash(x));
     }
 }

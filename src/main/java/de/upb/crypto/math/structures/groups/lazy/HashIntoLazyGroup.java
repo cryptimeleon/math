@@ -1,10 +1,11 @@
 package de.upb.crypto.math.structures.groups.lazy;
 
-import de.upb.crypto.math.hash.HashIntoStructure;
-import de.upb.crypto.math.structures.groups.mappings.impl.HashIntoGroupImpl;
+
+import de.upb.crypto.math.structures.groups.HashIntoGroup;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.annotations.ReprUtil;
 import de.upb.crypto.math.serialization.annotations.Represented;
+import de.upb.crypto.math.structures.groups.mappings.impl.HashIntoGroupImpl;
 
 import java.util.Objects;
 
@@ -15,23 +16,23 @@ import java.util.Objects;
  * <p>
  * For more information, see the <a href="https://upbcuk.github.io/docs/lazy-eval.html">documentation</a>.
  */
-public class LazyHashIntoStructure implements HashIntoStructure {
+public class HashIntoLazyGroup implements HashIntoGroup {
     @Represented
     protected HashIntoGroupImpl impl;
     @Represented
     protected LazyGroup target;
 
-    public LazyHashIntoStructure(HashIntoGroupImpl hash, LazyGroup target) {
+    public HashIntoLazyGroup(HashIntoGroupImpl hash, LazyGroup target) {
         this.impl = hash;
         this.target = target;
     }
 
-    public LazyHashIntoStructure(Representation repr) {
+    public HashIntoLazyGroup(Representation repr) {
         new ReprUtil(this).deserialize(repr);
     }
 
     @Override
-    public LazyGroupElement hashIntoStructure(byte[] x) {
+    public LazyGroupElement hash(byte[] x) {
         return new HashResultLazyGroupElement(this, x);
     }
 
@@ -43,8 +44,8 @@ public class LazyHashIntoStructure implements HashIntoStructure {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof LazyHashIntoStructure)) return false;
-        LazyHashIntoStructure that = (LazyHashIntoStructure) o;
+        if (!(o instanceof HashIntoLazyGroup)) return false;
+        HashIntoLazyGroup that = (HashIntoLazyGroup) o;
         return impl.equals(that.impl);
     }
 

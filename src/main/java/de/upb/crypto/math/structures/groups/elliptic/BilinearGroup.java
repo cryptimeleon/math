@@ -1,9 +1,9 @@
 package de.upb.crypto.math.structures.groups.elliptic;
 
-import de.upb.crypto.math.hash.HashIntoStructure;
-import de.upb.crypto.math.structures.groups.mappings.GroupHomomorphism;
-import de.upb.crypto.math.structures.groups.Group;
+import de.upb.crypto.math.structures.groups.HashIntoGroup;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
+import de.upb.crypto.math.structures.groups.Group;
+import de.upb.crypto.math.structures.groups.mappings.GroupHomomorphism;
 import de.upb.crypto.math.structures.rings.zn.HashIntoZn;
 import de.upb.crypto.math.structures.rings.zn.Zn;
 
@@ -61,21 +61,21 @@ public interface BilinearGroup extends StandaloneRepresentable {
      * @throws UnsupportedOperationException if no such hash function exists or the bilinear group is not configured
      *                                       to support such functionality
      */
-    HashIntoStructure getHashIntoG1() throws UnsupportedOperationException;
+    HashIntoGroup getHashIntoG1() throws UnsupportedOperationException;
 
     /**
      * Retrieves a hash function that maps byte arrays to G2.
      * @throws UnsupportedOperationException if no such hash function exists or the bilinear group is not configured
      *                                       to support such functionality
      */
-    HashIntoStructure getHashIntoG2() throws UnsupportedOperationException;
+    HashIntoGroup getHashIntoG2() throws UnsupportedOperationException;
 
     /**
      * Retrieves a hash function that maps byte arrays to GT.
      * @throws UnsupportedOperationException if no such hash function exists or the bilinear group is not configured
      *                                       to support such functionality
      */
-    HashIntoStructure getHashIntoGT() throws UnsupportedOperationException;
+    HashIntoGroup getHashIntoGT() throws UnsupportedOperationException;
     
     Integer getSecurityLevel();
     
