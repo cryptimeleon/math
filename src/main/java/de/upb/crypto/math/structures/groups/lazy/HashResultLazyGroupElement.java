@@ -5,9 +5,9 @@ package de.upb.crypto.math.structures.groups.lazy;
  */
 public class HashResultLazyGroupElement extends LazyGroupElement {
     protected byte[] preimage;
-    protected LazyHashIntoStructure hash;
+    protected HashIntoLazyGroup hash;
 
-    public HashResultLazyGroupElement(LazyHashIntoStructure hash, byte[] preimage) {
+    public HashResultLazyGroupElement(HashIntoLazyGroup hash, byte[] preimage) {
         super(hash.target);
         this.preimage = preimage;
         this.hash = hash;

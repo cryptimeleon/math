@@ -22,7 +22,7 @@ public class LazyBilinearGroup implements BilinearGroup {
     LazyGroup g1, g2, gt;
     LazyGroupHomomorphism homG2toG1;
     LazyBilinearMap map;
-    LazyHashIntoStructure hashIntoG1, hashIntoG2, hashIntoGt;
+    HashIntoLazyGroup hashIntoG1, hashIntoG2, hashIntoGt;
 
     public LazyBilinearGroup(BilinearGroupImpl impl) {
         this.impl = impl;
@@ -47,19 +47,19 @@ public class LazyBilinearGroup implements BilinearGroup {
         }
 
         try {
-            hashIntoG1 = new LazyHashIntoStructure(impl.getHashIntoG1(), g1);
+            hashIntoG1 = new HashIntoLazyGroup(impl.getHashIntoG1(), g1);
         } catch (UnsupportedOperationException e) {
             hashIntoG1 = null;
         }
 
         try {
-            hashIntoG2 = new LazyHashIntoStructure(impl.getHashIntoG2(), g2);
+            hashIntoG2 = new HashIntoLazyGroup(impl.getHashIntoG2(), g2);
         } catch (UnsupportedOperationException e) {
             hashIntoG2 = null;
         }
 
         try {
-            hashIntoGt = new LazyHashIntoStructure(impl.getHashIntoGT(), gt);
+            hashIntoGt = new HashIntoLazyGroup(impl.getHashIntoGT(), gt);
         } catch (UnsupportedOperationException e) {
             hashIntoGt = null;
         }
@@ -93,21 +93,21 @@ public class LazyBilinearGroup implements BilinearGroup {
     }
 
     @Override
-    public LazyHashIntoStructure getHashIntoG1() throws UnsupportedOperationException {
+    public HashIntoLazyGroup getHashIntoG1() throws UnsupportedOperationException {
         if (hashIntoG1 == null)
             throw new UnsupportedOperationException("No hash available");
         return hashIntoG1;
     }
 
     @Override
-    public LazyHashIntoStructure getHashIntoG2() throws UnsupportedOperationException {
+    public HashIntoLazyGroup getHashIntoG2() throws UnsupportedOperationException {
         if (hashIntoG2 == null)
             throw new UnsupportedOperationException("No hash available");
         return hashIntoG2;
     }
 
     @Override
-    public LazyHashIntoStructure getHashIntoGT() throws UnsupportedOperationException {
+    public HashIntoLazyGroup getHashIntoGT() throws UnsupportedOperationException {
         if (hashIntoGt == null)
             throw new UnsupportedOperationException("No hash available");
         return hashIntoGt;

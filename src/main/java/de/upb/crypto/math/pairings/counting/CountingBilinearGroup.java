@@ -1,6 +1,6 @@
 package de.upb.crypto.math.pairings.counting;
 
-import de.upb.crypto.math.interfaces.hash.HashIntoStructure;
+import de.upb.crypto.math.interfaces.hash.HashIntoGroup;
 import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.pairings.generic.BilinearGroup;
@@ -144,19 +144,19 @@ public class CountingBilinearGroup implements BilinearGroup {
     }
 
     @Override
-    public HashIntoStructure getHashIntoG1() throws UnsupportedOperationException {
-        return new CountingHashIntoStructure(totalBilGroup.getHashIntoG1(), expMultiExpBilGroup.getHashIntoG1());
+    public HashIntoGroup getHashIntoG1() throws UnsupportedOperationException {
+        return new HashIntoCountingGroup(totalBilGroup.getHashIntoG1(), expMultiExpBilGroup.getHashIntoG1());
     }
 
     @Override
-    public HashIntoStructure getHashIntoG2() throws UnsupportedOperationException {
-        return new CountingHashIntoStructure(totalBilGroup.getHashIntoG2(), expMultiExpBilGroup.getHashIntoG2());
+    public HashIntoGroup getHashIntoG2() throws UnsupportedOperationException {
+        return new HashIntoCountingGroup(totalBilGroup.getHashIntoG2(), expMultiExpBilGroup.getHashIntoG2());
 
     }
 
     @Override
-    public HashIntoStructure getHashIntoGT() throws UnsupportedOperationException {
-        return new CountingHashIntoStructure(totalBilGroup.getHashIntoGT(), expMultiExpBilGroup.getHashIntoGT());
+    public HashIntoGroup getHashIntoGT() throws UnsupportedOperationException {
+        return new HashIntoCountingGroup(totalBilGroup.getHashIntoGT(), expMultiExpBilGroup.getHashIntoGT());
 
     }
 
