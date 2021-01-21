@@ -5,7 +5,7 @@ import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.structures.zn.Zn;
+import de.upb.crypto.math.interfaces.structures.RingElement;
 
 import java.math.BigInteger;
 import java.util.function.Consumer;
@@ -61,7 +61,7 @@ public class GroupEmptyExpr extends AbstractGroupElementExpression {
     }
 
     @Override
-    public GroupElementExpression pow(Zn.ZnElement exponent) {
+    public GroupElementExpression pow (RingElement exponent) {
         return this;
     }
 

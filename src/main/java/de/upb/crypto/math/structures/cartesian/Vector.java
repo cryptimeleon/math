@@ -26,7 +26,7 @@ public class Vector<X> {
         this(values, false);
     }
 
-    public Vector(List<X> values) {
+    public Vector(List<? extends X> values) {
         this(values, false);
     }
 
@@ -206,7 +206,7 @@ public class Vector<X> {
         return zip(other, combiner, Vector::instantiateWithSafeArray);
     }
 
-    protected <Y, V extends Vector<Y>> V map(Function<X, Y> map, Function<List<Y>, ? extends V> vectorInstantiator) {
+    public <Y, V extends Vector<Y>> V map(Function<X, Y> map, Function<List<Y>, ? extends V> vectorInstantiator) {
         ArrayList<Y> result = new ArrayList<>(this.values.size());
 
         for (X value : values)
@@ -219,9 +219,27 @@ public class Vector<X> {
         return map(map, Vector::instantiateWithSafeArray);
     }
 
+    public <Y, V extends Vector<Y>> V map(BiFunction<Integer, X, Y> map, Function<List<Y>, ? extends V> vectorInstantiator) {
+        ArrayList<Y> result = new ArrayList<>(this.values.size());
+
+        for (int i=0; i<this.values.size();i++)
+            result.add(map.apply(i, this.values.get(i)));
+
+        return vectorInstantiator.apply(result);
+    }
+
+    public <Y> Vector<Y> map(BiFunction<Integer, X, Y> map) {
+        return map(map, Vector::instantiateWithSafeArray);
+    }
+
     public void forEach(Consumer<X> consumer) {
         for (X value : values)
             consumer.accept(value);
+    }
+
+    public void forEach(BiConsumer<Integer, X> consumer) {
+        for (int i=0;i<values.size();i++)
+            consumer.accept(i, values.get(i));
     }
 
     public X reduce(BinaryOperator<X> combiner) {
