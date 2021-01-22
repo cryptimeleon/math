@@ -35,7 +35,7 @@ public class RingElementVector extends Vector<RingElement> implements Representa
     }
 
     public RingElementVector(Vector<? extends RingElement> vector) {
-        this(vector.values, true);
+        super(vector);
     }
 
     public RingElementVector mul(Vector<? extends RingElement> other) {

@@ -29,7 +29,7 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
     }
 
     public GroupElementVector(Vector<? extends GroupElement> vector) {
-        this(vector.values, true);
+        super(vector);
     }
 
     protected GroupElementVector(GroupElement[] values, boolean isSafe) {

@@ -30,6 +30,10 @@ public class Vector<X> {
         this(values, false);
     }
 
+    public Vector(Vector<? extends X> values) {
+        this.values = values.values;
+    }
+
     /**
      * Construct a new {@code Vector} using the given values which are assumed to be safe
      * (promised to not be changed from the outside).
