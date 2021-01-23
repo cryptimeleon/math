@@ -88,23 +88,6 @@ public class PolynomialRing implements Ring {
         throw new UnsupportedOperationException("infinite ring");
     }
 
-    /**
-     * Generates a random element of this polynomial ring with the given degree
-     * and uniformly randomly generated non-zero coefficients.
-     *
-     * @param degree the degree the resulting polynomial should have
-     * @return the resulting polynomial
-     */
-    public Polynomial getUniformlyRandomElementWithDegreeAndNoZeros(int degree) {
-        if (degree < 0)
-            throw new IllegalArgumentException("A negative degree is not possible.");
-        RingElement[] coefficients = new RingElement[degree + 1];
-        for (int i = 0; i < coefficients.length; ++i) {
-            coefficients[i] = baseRing.getUniformlyRandomNonzeroElement();
-        }
-        return new Polynomial(coefficients);
-    }
-
     @Override
     public Polynomial getUniformlyRandomUnit() throws UnsupportedOperationException {
         return new Polynomial(baseRing.getUniformlyRandomUnit());
@@ -163,19 +146,6 @@ public class PolynomialRing implements Ring {
 
         public RingElement[] getCoefficients() {
             return Arrays.copyOf(coefficients, coefficients.length);
-        }
-
-        /**
-         * Sets the coefficient for the monomial with the given degree.
-         *
-         * @param d the degree of the monomial whose coefficient to set
-         * @param newCoefficient the new coefficient
-         */
-        public void setCoefficient(int d, RingElement newCoefficient) {
-            if (d > degree)
-                throw new IllegalArgumentException("Given degree too large. Not allowed to increase degree.");
-
-            coefficients[d] = newCoefficient;
         }
 
         /**
