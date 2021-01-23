@@ -14,7 +14,6 @@ import de.upb.crypto.math.serialization.Representable;
  * Generally, two elements are only considered equal if they belong to equal structures.
  */
 public interface Element extends Representable, UniqueByteRepresentable {
-    String RECOVERY_METHOD = "getElement";
 
     /**
      * Returns the {@code Structure} that this {@code Element} belongs to.
