@@ -3,13 +3,9 @@ package de.upb.crypto.math.structures.cartesian;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.expressions.group.GroupEmptyExpr;
-import de.upb.crypto.math.interfaces.structures.GroupElement;
-import de.upb.crypto.math.interfaces.structures.RingElement;
-import de.upb.crypto.math.pairings.generic.BilinearMap;
-import de.upb.crypto.math.serialization.ListRepresentation;
-import de.upb.crypto.math.serialization.Representable;
-import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.structures.zn.Zn;
+import de.upb.crypto.math.structures.groups.GroupElement;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearMap;
+import de.upb.crypto.math.structures.rings.RingElement;
 
 import java.math.BigInteger;
 import java.util.List;
