@@ -9,6 +9,7 @@ import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 import de.upb.crypto.math.interfaces.structures.Group;
 import de.upb.crypto.math.interfaces.structures.GroupElement;
+import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.structures.zn.Zn;
 
 import java.math.BigInteger;
@@ -54,8 +55,11 @@ public interface GroupElementExpression extends Expression {
     default GroupElementExpression pow(BigInteger exponent) {
         return pow(new ExponentConstantExpr(exponent));
     }
-    default GroupElementExpression pow(Zn.ZnElement exponent) {
-        return pow(new ExponentConstantExpr(exponent.getInteger()));
+    default GroupElementExpression pow(Long exponent) {
+        return pow(new ExponentConstantExpr(exponent));
+    }
+    default GroupElementExpression pow(RingElement exponent) {
+        return pow(new ExponentConstantExpr(exponent.asInteger()));
     }
     default GroupElementExpression pow(String exponent) {
         return pow(new BasicNamedExponentVariableExpr(exponent));

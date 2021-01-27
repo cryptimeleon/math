@@ -1,5 +1,7 @@
 package de.upb.crypto.math.structures.cartesian;
 
+import de.upb.crypto.math.expressions.exponent.ExponentConstantExpr;
+import de.upb.crypto.math.interfaces.structures.GroupElement;
 import de.upb.crypto.math.interfaces.structures.RingElement;
 import de.upb.crypto.math.serialization.ListRepresentation;
 import de.upb.crypto.math.serialization.Representable;
@@ -33,7 +35,7 @@ public class RingElementVector extends Vector<RingElement> implements Representa
     }
 
     public RingElementVector(Vector<? extends RingElement> vector) {
-        this(vector.values, true);
+        super(vector);
     }
 
     public RingElementVector mul(Vector<? extends RingElement> other) {
@@ -129,5 +131,9 @@ public class RingElementVector extends Vector<RingElement> implements Representa
 
     public ProductRingElement asElementInProductRing() {
         return new ProductRingElement(values);
+    }
+
+    public ExponentExpressionVector asExponentExpr() {
+        return map(v -> new ExponentConstantExpr(v.asInteger()), ExponentExpressionVector::new);
     }
 }
