@@ -102,7 +102,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
         if (!getStructure().size().equals(k.getStructure().getCharacteristic())
                 && !k.getStructure().getCharacteristic().equals(BigInteger.ZERO)
                 && !getStructure().size().mod(k.getStructure().getCharacteristic()).equals(BigInteger.ZERO))
-            throw new IllegalArgumentException("Cannot raise to the power of "+k);
+            throw new IllegalArgumentException("Cannot raise to the power of "+k+" from "+k.getStructure());
         return pow(k.asInteger());
     }
 

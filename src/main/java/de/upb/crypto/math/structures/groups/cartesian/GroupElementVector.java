@@ -1,5 +1,6 @@
 package de.upb.crypto.math.structures.groups.cartesian;
 
+import de.upb.crypto.math.structures.cartesian.GroupElementExpressionVector;
 import de.upb.crypto.math.structures.groups.GroupElement;
 import de.upb.crypto.math.structures.rings.RingElement;
 import de.upb.crypto.math.structures.groups.elliptic.BilinearMap;
@@ -7,7 +8,6 @@ import de.upb.crypto.math.serialization.ListRepresentation;
 import de.upb.crypto.math.serialization.Representable;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.structures.cartesian.Vector;
-import de.upb.crypto.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -29,7 +29,7 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
     }
 
     public GroupElementVector(Vector<? extends GroupElement> vector) {
-        this(vector.toList(), true);
+        super(vector);
     }
 
     protected GroupElementVector(GroupElement[] values, boolean isSafe) {
@@ -56,7 +56,7 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
         return map(g -> g.pow(exponent), GroupElementVector::instantiateWithSafeArray);
     }
 
-    public GroupElementVector pow(Zn.ZnElement exponent) {
+    public GroupElementVector pow (RingElement exponent) {
         return map(g -> g.pow(exponent), GroupElementVector::instantiateWithSafeArray);
     }
 
@@ -86,7 +86,7 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
         return zipReduce(rightHandSide, bilinearMap::apply, GroupElement::op, bilinearMap.getGT().getNeutralElement());
     }
 
-    private static GroupElementVector instantiateWithSafeArray(List<? extends GroupElement> array) {
+    static GroupElementVector instantiateWithSafeArray(List<? extends GroupElement> array) {
         return new GroupElementVector(array, true);
     }
 
@@ -138,6 +138,10 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
         return new ProductGroupElement(values);
     }
 
+    public GroupElementExpressionVector expr() {
+        return map(GroupElement::expr, GroupElementExpressionVector::new);
+    }
+
     public GroupElementVector compute() {
         forEach(GroupElement::compute);
         return this;
@@ -149,7 +153,7 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
     }
 
     public GroupElementVector precomputePow() {
-        forEach(GroupElement::precomputePow);
+        forEach(g -> g.precomputePow());
         return this;
     }
 
