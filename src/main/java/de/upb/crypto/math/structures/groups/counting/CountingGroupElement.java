@@ -125,8 +125,8 @@ public class CountingGroupElement implements GroupElement {
 
     /**
      * Since asynchronous computation makes count data unreliable, this method works like {@link #computeSync()}.
-     * <p>
-     * @inheritDoc
+     *
+     * @see #computeSync()
      */
     @Override
     public GroupElement compute() {
