@@ -2,12 +2,10 @@ package de.upb.crypto.math.expressions.exponent;
 
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.Substitution;
-import de.upb.crypto.math.expressions.VariableExpression;
-import de.upb.crypto.math.structures.zn.Zn;
+import de.upb.crypto.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * An {@link ExponentExpr} representing an exponentiation with both base and exponent being exponent expressions.

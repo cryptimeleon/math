@@ -1,13 +1,13 @@
 package de.upb.crypto.math.structures.groups.basic;
 
-import de.upb.crypto.math.interfaces.hash.HashIntoGroup;
-import de.upb.crypto.math.interfaces.mappings.GroupHomomorphism;
-import de.upb.crypto.math.pairings.generic.BilinearGroup;
-import de.upb.crypto.math.pairings.generic.BilinearGroupImpl;
-import de.upb.crypto.math.pairings.generic.BilinearMap;
+import de.upb.crypto.math.structures.groups.mappings.GroupHomomorphism;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearMap;
+import de.upb.crypto.math.structures.groups.HashIntoGroup;
 import de.upb.crypto.math.serialization.Representation;
-import de.upb.crypto.math.serialization.annotations.v2.ReprUtil;
-import de.upb.crypto.math.serialization.annotations.v2.Represented;
+import de.upb.crypto.math.serialization.annotations.ReprUtil;
+import de.upb.crypto.math.serialization.annotations.Represented;
 
 import java.util.Objects;
 

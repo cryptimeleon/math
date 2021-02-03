@@ -1,14 +1,13 @@
 package de.upb.crypto.math.hash.impl;
 
-import de.upb.crypto.math.interfaces.hash.HashFunction;
-import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.hash.HashFunction;
+import de.upb.crypto.math.hash.UniqueByteRepresentable;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StandaloneRepresentable;
 
 /**
  * The base class for SHA hash functions which implements some common methods.
  *
- * @author Mirko Jürgens, refactoring: Denis Diemert
  */
 abstract class AbstractSHAHashFunction implements HashFunction, StandaloneRepresentable {
 

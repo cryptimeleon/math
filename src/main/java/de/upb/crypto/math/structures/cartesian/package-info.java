@@ -1,4 +1,4 @@
 /**
- * Contains classes related to product groups as well as vectors of different types.
+ * Contains a generic vector implementation.
  */
 package de.upb.crypto.math.structures.cartesian;

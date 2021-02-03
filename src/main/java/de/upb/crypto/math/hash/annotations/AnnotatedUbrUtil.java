@@ -1,11 +1,11 @@
 package de.upb.crypto.math.hash.annotations;
 
 import de.upb.crypto.math.hash.impl.ByteArrayAccumulator;
-import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.hash.EscapingByteAccumulator;
-import de.upb.crypto.math.interfaces.hash.UniqueByteRepresentable;
-import de.upb.crypto.math.interfaces.structures.Element;
-import de.upb.crypto.math.interfaces.structures.Structure;
+import de.upb.crypto.math.hash.ByteAccumulator;
+import de.upb.crypto.math.hash.EscapingByteAccumulator;
+import de.upb.crypto.math.hash.UniqueByteRepresentable;
+import de.upb.crypto.math.structures.Element;
+import de.upb.crypto.math.structures.Structure;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -62,22 +62,17 @@ public class AnnotatedUbrUtil {
                         .sorted(Comparator.comparing(Field::getName))
                         .collect(Collectors.toList())) {
 
-                    boolean access = field.isAccessible();
                     field.setAccessible(true);
-
                     Object fieldValue = field.get(instance);
-
                     if (hasAnnotation(field)) {
                         accumulatableObjects.add(fieldValue);
                     }
-                    field.setAccessible(access);
                 }
                 clazz = clazz.getSuperclass();
             }
         } catch (IllegalArgumentException | IllegalAccessException | SecurityException e) {
             throw new RuntimeException(e);
         }
-
         return accumulateList(accumulator, accumulatableObjects);
     }
 

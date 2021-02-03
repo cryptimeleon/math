@@ -2,12 +2,10 @@ package de.upb.crypto.math.expressions.bool;
 
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.Substitution;
-import de.upb.crypto.math.expressions.VariableExpression;
 import de.upb.crypto.math.expressions.exponent.ExponentExpr;
 
 import java.math.BigInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * A {@link BooleanExpression} representing the Boolean equality "=" of two {@link ExponentExpr} instances.

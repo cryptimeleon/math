@@ -1,6 +1,6 @@
 package de.upb.crypto.math.hash.impl;
 
-import de.upb.crypto.math.interfaces.hash.HashFunction;
+import de.upb.crypto.math.hash.HashFunction;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -9,7 +9,6 @@ import java.security.NoSuchAlgorithmException;
  * A {@link HashAccumulator} that is used to implement the {@link HashFunction}s
  * {@link SHA256HashFunction} and {@link SHA512HashFunction}.
  *
- * @author Denis Diemert
  */
 public class SHAHashAccumulator extends HashAccumulator {
     protected final MessageDigest digest;

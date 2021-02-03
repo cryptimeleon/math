@@ -71,6 +71,8 @@ task javadocLatex(type: Javadoc) {
     options.header = "<script type\"text/javascript&\" src=\"" +
             "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?" +
             "config=TeX-MML-AM_CHTML\"></script>"
+    // reduce javadoc linting
+    options.addBooleanOption('Xdoclint:none', true)
 }
 
 task sourcesJar(type: Jar) {

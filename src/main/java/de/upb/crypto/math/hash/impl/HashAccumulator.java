@@ -1,14 +1,13 @@
 package de.upb.crypto.math.hash.impl;
 
-import de.upb.crypto.math.interfaces.hash.ByteAccumulator;
-import de.upb.crypto.math.interfaces.hash.HashFunction;
+import de.upb.crypto.math.hash.ByteAccumulator;
+import de.upb.crypto.math.hash.HashFunction;
 
 /**
  * Marker interface for accumulators that are used to implement {@link HashFunction}s.
  * <p>
  * Specifically, it's a {@link ByteAccumulator} that outputs the hash value of its input in {@link #extractBytes()}.
  *
- * @author Denis Diemert
  */
 public abstract class HashAccumulator extends ByteAccumulator {
 

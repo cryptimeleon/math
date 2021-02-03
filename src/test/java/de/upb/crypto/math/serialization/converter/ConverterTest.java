@@ -1,7 +1,7 @@
 package de.upb.crypto.math.serialization.converter;
 
 import de.upb.crypto.math.serialization.*;
-import de.upb.crypto.math.structures.zn.Zn;
+import de.upb.crypto.math.structures.rings.zn.Zn;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -118,6 +118,7 @@ public class ConverterTest {
     public static Collection<Converter> getParams() {
         ArrayList<Converter> list = new ArrayList<>();
         list.add(new JSONConverter());
+        list.add(new JSONPrettyConverter());
         list.add(new BinaryFormatConverter());
         list.add(new BinaryFormatConverter(Arrays.asList(someString.get()), Arrays.asList(Zn.class)));
         return list;

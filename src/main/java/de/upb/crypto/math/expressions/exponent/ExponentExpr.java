@@ -3,11 +3,9 @@ package de.upb.crypto.math.expressions.exponent;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.VariableExpression;
-import de.upb.crypto.math.expressions.bool.BooleanExpression;
 import de.upb.crypto.math.expressions.bool.ExponentEqualityExpr;
-import de.upb.crypto.math.expressions.group.GroupOpExpr;
-import de.upb.crypto.math.interfaces.structures.RingElement;
-import de.upb.crypto.math.structures.zn.Zn;
+import de.upb.crypto.math.structures.rings.RingElement;
+import de.upb.crypto.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
 
