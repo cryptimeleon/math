@@ -21,6 +21,7 @@ import de.upb.crypto.math.structures.rings.zn.Zn;
 import de.upb.crypto.math.structures.rings.zn.Zp;
 
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -170,7 +171,7 @@ public class Secp256k1 implements WeierstrassCurve {
     }
 
     public static class HashIntoSecp256k1 implements HashIntoGroupImpl {
-        private HashIntoZp hash;
+        private final HashIntoZp hash;
 
         /**
          * Instantiate this hash function
@@ -208,6 +209,19 @@ public class Secp256k1 implements WeierstrassCurve {
                 //If we were unlucky: try next x
                 xCoordinate = xCoordinate.add(zp.getOneElement());
             }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            HashIntoSecp256k1 that = (HashIntoSecp256k1) o;
+            return hash.equals(that.hash);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(hash);
         }
     }
 }
