@@ -7,6 +7,8 @@ import de.upb.crypto.math.structures.groups.mappings.GroupHomomorphism;
 import de.upb.crypto.math.structures.rings.zn.HashIntoZn;
 import de.upb.crypto.math.structures.rings.zn.Zn;
 
+import java.math.BigInteger;
+
 /**
  * A bilinear group containing the associated source and target groups as well as the bilinear pairing function.
  */
@@ -97,5 +99,12 @@ public interface BilinearGroup extends StandaloneRepresentable {
      */
     default Zn getZn() {
         return getG1().getZn();
+    }
+
+    /**
+     * Retrieves the size of G1 (same as size of G2 and target group)
+     */
+    default BigInteger size() {
+        return getG1().size();
     }
 }

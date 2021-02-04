@@ -1,14 +1,23 @@
 package de.upb.crypto.math.structures.groups.elliptic.nopairing;
 
+import de.upb.crypto.math.hash.HashFunction;
+import de.upb.crypto.math.hash.impl.VariableOutputLengthHashFunction;
 import de.upb.crypto.math.random.RandomGenerator;
+import de.upb.crypto.math.serialization.RepresentableRepresentation;
 import de.upb.crypto.math.serialization.Representation;
 import de.upb.crypto.math.serialization.StringRepresentation;
+import de.upb.crypto.math.structures.groups.GroupElement;
 import de.upb.crypto.math.structures.groups.GroupElementImpl;
 import de.upb.crypto.math.structures.groups.elliptic.AffineEllipticCurvePoint;
 import de.upb.crypto.math.structures.groups.elliptic.EllipticCurvePoint;
 import de.upb.crypto.math.structures.groups.elliptic.WeierstrassCurve;
+import de.upb.crypto.math.structures.groups.mappings.impl.HashIntoGroupImpl;
 import de.upb.crypto.math.structures.rings.Field;
 import de.upb.crypto.math.structures.rings.FieldElement;
+import de.upb.crypto.math.structures.rings.helpers.FiniteFieldTools;
+import de.upb.crypto.math.structures.rings.zn.HashIntoZn;
+import de.upb.crypto.math.structures.rings.zn.HashIntoZp;
+import de.upb.crypto.math.structures.rings.zn.Zn;
 import de.upb.crypto.math.structures.rings.zn.Zp;
 
 import java.math.BigInteger;
@@ -158,5 +167,47 @@ public class Secp256k1 implements WeierstrassCurve {
     @Override
     public int hashCode() {
         return 0;
+    }
+
+    public static class HashIntoSecp256k1 implements HashIntoGroupImpl {
+        private HashIntoZp hash;
+
+        /**
+         * Instantiate this hash function
+         * @param hash a random oracle hash function to the curve's base field
+         */
+        public HashIntoSecp256k1(HashIntoZp hash) {
+            this.hash = hash;
+            if (!hash.getTargetStructure().equals(zp))
+                throw new IllegalStateException("Hash must be into Z"+p);
+        }
+
+        public HashIntoSecp256k1() {
+            this(new HashIntoZp(zp));
+        }
+
+        public HashIntoSecp256k1(Representation repr) {
+            hash = (HashIntoZp) repr.repr().recreateRepresentable();
+        }
+
+        @Override
+        public Representation getRepresentation() {
+            return new RepresentableRepresentation(hash);
+        }
+
+        @Override
+        public GroupElementImpl hashIntoGroupImpl(byte[] x) {
+            Zp.ZpElement xCoordinate = this.hash.hash(x);
+
+            while (true) {
+                Zp.ZpElement ySquared = xCoordinate.pow(3).add(b);
+
+                if (ySquared.isSquare()) //check if y is quadratic residue.
+                    return new Secp256k1().getElement(xCoordinate, ySquared.sqrt());
+
+                //If we were unlucky: try next x
+                xCoordinate = xCoordinate.add(zp.getOneElement());
+            }
+        }
     }
 }
