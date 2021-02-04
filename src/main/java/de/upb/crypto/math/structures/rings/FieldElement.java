@@ -75,4 +75,20 @@ public interface FieldElement extends RingElement {
         return BigInteger.ZERO;
     }
 
+    /**
+     * Computes this^characteristic.
+     */
+    default FieldElement applyFrobenius() {
+        return this.pow(getStructure().getCharacteristic());
+    }
+
+    /**
+     * Computes this^(characteristic^numberOfApplications)
+     */
+    default FieldElement applyFrobenius(int numberOfApplications) {
+       FieldElement result = this;
+        for (int i=0;i<numberOfApplications;i++)
+            result = result.applyFrobenius();
+        return result;
+    }
 }

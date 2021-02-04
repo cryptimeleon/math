@@ -1,5 +1,6 @@
 package de.upb.crypto.math.structures.groups.elliptic.type3.bn;
 
+import de.upb.crypto.math.structures.groups.elliptic.PairingTargetGroupElementImpl;
 import de.upb.crypto.math.structures.rings.FieldElement;
 import de.upb.crypto.math.structures.groups.elliptic.AbstractPairing;
 import de.upb.crypto.math.structures.rings.extfield.ExtensionField;
@@ -7,21 +8,32 @@ import de.upb.crypto.math.structures.rings.extfield.ExtensionFieldElement;
 import de.upb.crypto.math.structures.groups.elliptic.PairingSourceGroupElement;
 import de.upb.crypto.math.serialization.Representation;
 
+import java.math.BigInteger;
+
 /**
  * Tate-pairing specific implementation of BN based pairings.
  */
 public class BarretoNaehrigTatePairing extends AbstractPairing {
+    BigInteger lambda2, lambda1, lambda0;
+
     /**
      * Construct Tate pairing \(\mathbb{G}_1 \times \mathbb{G}_2 \rightarrow \mathbb{G}_T\).
      */
-    public BarretoNaehrigTatePairing(BarretoNaehrigGroup1Impl g1, BarretoNaehrigGroup2Impl g2, BarretoNaehrigTargetGroupImpl gT) {
+    public BarretoNaehrigTatePairing(BarretoNaehrigGroup1Impl g1, BarretoNaehrigGroup2Impl g2, BarretoNaehrigTargetGroupImpl gT, BigInteger u) {
         super(g1, g2, gT);
-
+        lambda2 = u.pow(2).multiply(BigInteger.valueOf(6)).add(BigInteger.ONE);
+        lambda1 = u.pow(3).multiply(BigInteger.valueOf(-36))
+                .add(u.pow(2).multiply(BigInteger.valueOf(-18)))
+                .add(u.multiply(BigInteger.valueOf(-12)))
+                .add(BigInteger.ONE);
+        lambda0 = u.pow(3).multiply(BigInteger.valueOf(-36))
+                .add(u.pow(2).multiply(BigInteger.valueOf(-30)))
+                .add(u.multiply(BigInteger.valueOf(-18)))
+                .add(BigInteger.valueOf(-2));
     }
 
-    public BarretoNaehrigTatePairing(BarretoNaehrigSourceGroupImpl g1, BarretoNaehrigSourceGroupImpl g2,
-                                     BarretoNaehrigTargetGroupImpl gT) {
-        super(g1, g2, gT);
+    public BarretoNaehrigTatePairing(BarretoNaehrigGroup1Impl g1, BarretoNaehrigGroup2Impl g2, BarretoNaehrigTargetGroupImpl gT) {
+        super(g1,g2,gT);
     }
 
     public BarretoNaehrigTatePairing(Representation r) {
@@ -75,6 +87,27 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
             return result;
         }
 
+    }
+
+    @Override
+    public PairingTargetGroupElementImpl exponentiate(FieldElement f) {
+        FieldElement result;
+
+        if (lambda2 != null) {
+            //https://eprint.iacr.org/2008/490.pdf section 3
+            result = f.applyFrobenius(6).div(f);
+            result = result.applyFrobenius(2).mul(result);
+
+            ////https://eprint.iacr.org/2008/490.pdf section 5 (the "hard part" mentioned in section 3)
+            FieldElement resultFrob1 = result.applyFrobenius();
+            FieldElement resultFrob2 = resultFrob1.applyFrobenius();
+            FieldElement resultFrob3 = resultFrob2.applyFrobenius();
+            result = resultFrob3.mul(resultFrob2.pow(lambda2)).mul(resultFrob1.pow(lambda1)).mul(result.pow(lambda0));
+        } else {
+            result = f.pow(gT.getCofactor());
+        }
+
+        return gT.getElement((ExtensionFieldElement) result);
     }
 
     @Override

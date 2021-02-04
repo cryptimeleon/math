@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 /**
- * Base class for pairings based on BN curves such as Tate Pairing, Ate Pairing and Optimal Ate Pairing.
+ * Base class for pairings such as Tate Pairing, Ate Pairing and Optimal Ate Pairing.
  */
 public abstract class AbstractPairing implements BilinearMapImpl {
     protected PairingSourceGroupImpl g1;
@@ -44,8 +44,7 @@ public abstract class AbstractPairing implements BilinearMapImpl {
      * @return f^e
      */
     public PairingTargetGroupElementImpl exponentiate(FieldElement f) {
-        PairingTargetGroupElementImpl result = gT.getElement((ExtensionFieldElement) f.pow(gT.getCofactor()));
-        return result;
+        return gT.getElement((ExtensionFieldElement) f.pow(gT.getCofactor()));
     }
 
     public AbstractPairing(Representation r) {

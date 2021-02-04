@@ -215,6 +215,11 @@ public class Zp extends Zn implements Field {
                 throw new ArithmeticException("Input has to be quadratic residue.");
             }
         }
+
+        @Override
+        public FieldElement applyFrobenius() {
+            return this;
+        }
     }
 
     @Override

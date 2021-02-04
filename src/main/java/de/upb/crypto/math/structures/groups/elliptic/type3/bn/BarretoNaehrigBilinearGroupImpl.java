@@ -391,7 +391,7 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
                     /* tschakka, we are done */
                     gT = new BarretoNaehrigTargetGroupImpl(v, n);
 
-                    init(P1, P2, gT);
+                    init(P1, P2, gT, u);
                     return;
                 }
             }
@@ -406,12 +406,12 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
      * @param gT target group
      */
     private void init(BarretoNaehrigGroup1ElementImpl P1, BarretoNaehrigGroup2ElementImpl P2,
-                                                 BarretoNaehrigTargetGroupImpl gT) {
+                                                 BarretoNaehrigTargetGroupImpl gT, BigInteger u) {
         g1impl = (BarretoNaehrigGroup1Impl) P1.getStructure();
         g2impl = (BarretoNaehrigGroup2Impl) P2.getStructure();
         gtimpl = gT;
 
-        bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gT);
+        bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gT, u);
         hashIntoG1impl = new BarretoNaehrigPointEncoding(g1impl);
         hashIntoG2impl = new BarretoNaehrigPointEncoding(g2impl);
     }
