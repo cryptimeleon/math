@@ -11,6 +11,7 @@ import de.upb.crypto.math.structures.groups.basic.BasicBilinearGroup;
 import de.upb.crypto.math.structures.rings.zn.Zn;
 import de.upb.crypto.math.structures.rings.zn.Zp;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -21,6 +22,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @RunWith(Parameterized.class)
 public class PairingTests {
@@ -44,7 +46,6 @@ public class PairingTests {
         assertTrue(p1.pow(pairing.getG1().size()).isNeutralElement());
         assertTrue(p2.pow(pairing.getG2().size()).isNeutralElement());
 
-
         //test only applies for symmetric type 1 pairings.
         if (pairing.isSymmetric()) {
 
@@ -65,6 +66,8 @@ public class PairingTests {
         t3 = pairing.apply(p1, p2.op(r2));
         t4 = t1.op(t2);
         assertEquals(t4, t3);
+        assertTrue(t1.pow(pairing.getG1().size()).isNeutralElement());
+        assertFalse(t1.isNeutralElement());
 
         //Bilinearity in second argument
         // e(R1,P2+R2)e(-R1,P2)e(-R1,R2)=1
@@ -85,61 +88,6 @@ public class PairingTests {
         assertEquals(pairing.apply(p1.pow(x1), p2.pow(x2)), pairing.apply(p1, p2).pow(x1.mul(x2)));
     }
 
-    @Test
-    public void testExpressions() {
-        GroupElement g[] = new GroupElement[5];
-        GroupElement h[] = new GroupElement[g.length];
-        Zp.ZpElement exp[] = new Zp.ZpElement[g.length];
-        Zp zp = new Zp(pairing.getG1().size());
-
-        for (int i = 0; i < g.length; i++) {
-            g[i] = pairing.getG1().getUniformlyRandomElement();
-            h[i] = pairing.getG2().getUniformlyRandomElement();
-            exp[i] = zp.getUniformlyRandomElement();
-        }
-        exp[0] = zp.getZeroElement();
-
-        //Compute result using expression
-        GroupElementExpression expr = pairing.getGT().expr();
-        for (int i = 0; i < g.length; i++) {
-            expr = expr.op(pairing.applyExpr(g[i], h[i]).pow(exp[i]));
-        }
-        GroupElement resultExpr = expr.evaluate();
-
-        //Compute result naively using pow() in G1
-        GroupElement naive = pairing.getGT().getNeutralElement();
-        for (int i = 0; i < g.length; i++) {
-            naive = naive.op(pairing.apply(g[i].pow(exp[i]), h[i]));
-        }
-        assertEquals(naive, resultExpr);
-
-        //Compute result naively using pow() in G2
-        naive = pairing.getGT().getNeutralElement();
-        for (int i = 0; i < g.length; i++) {
-            naive = naive.op(pairing.apply(g[i], h[i].pow(exp[i])));
-        }
-        assertEquals(naive, resultExpr);
-
-        //Compute result naively using pow() in GT
-        naive = pairing.getGT().getNeutralElement();
-        for (int i = 0; i < g.length; i++) {
-            naive = naive.op(pairing.apply(g[i], h[i]).pow(exp[i]));
-        }
-        assertEquals(naive, resultExpr);
-
-        //Try nested expressions: e(g[i] * g[i+1], h[i])^2
-        expr = pairing.getGT().expr();
-        for (int i = 0; i + 1 < g.length; i += 2) {
-            expr = expr.opPow(pairing.applyExpr(g[i].expr().op(g[i + 1]).pow(exp[i]), h[i].expr()), BigInteger.valueOf(2));
-        }
-        resultExpr = expr.evaluate();
-        naive = pairing.getGT().getNeutralElement();
-        for (int i = 0; i + 1 < g.length; i += 2) {
-            naive = naive.op(pairing.apply(g[i].op(g[i + 1]), h[i], exp[i].mul(zp.valueOf(2))));
-        }
-        assertEquals(resultExpr, naive);
-    }
-
     @Parameters(name = "Test: {0}") // add (name="Test: {0}") for jUnit 4.12+ to print Pairing's name to test
     public static Collection<BilinearMap[]> data() {
         // Counting curves
@@ -154,14 +102,13 @@ public class PairingTests {
         BilinearGroup supsingGroup = new BasicBilinearGroup(new SupersingularTateGroupImpl(80));
 
         // BN curves
-        BilinearGroup bnGroup = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl(100));
-        BilinearGroup bnGroup256 = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl("SFC-256"));
+        BilinearGroup bnGroup = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl(80));
 
         // Collect parameters
         BilinearMap[][] params = new BilinearMap[][] {
                 {countingGroup1.getBilinearMap()}, {countingGroup2.getBilinearMap()}, {countingGroup3.getBilinearMap()},
                 {supsingGroup.getBilinearMap()},
-                {bnGroup.getBilinearMap()}, {bnGroup256.getBilinearMap()}
+                {bnGroup.getBilinearMap()}
         };
         return Arrays.asList(params);
     }

@@ -1,7 +1,11 @@
 package de.upb.crypto.math.structures;
 
+import de.upb.crypto.math.random.RandomGenerator;
 import de.upb.crypto.math.structures.groups.GroupElementImpl;
 import de.upb.crypto.math.structures.groups.GroupImpl;
+import de.upb.crypto.math.structures.groups.counting.CountingBilinearGroupImpl;
+import de.upb.crypto.math.structures.groups.counting.CountingGroupImpl;
+import de.upb.crypto.math.structures.groups.elliptic.BilinearGroup;
 import de.upb.crypto.math.structures.groups.elliptic.BilinearGroupImpl;
 import de.upb.crypto.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import de.upb.crypto.math.structures.groups.exp.ExponentiationAlgorithms;
@@ -17,10 +21,10 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExpTests {
+    public static final BilinearGroupImpl bilGroup = new CountingBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
 
     @Test
     public void testMultiExpAlgs() {
-        BilinearGroupImpl bilGroup = new BarretoNaehrigBilinearGroupImpl(60);
         for (int i = 0; i < 10; ++i) {
             Multiexponentiation multiexponentiation = genMultiExp(bilGroup.getG1(), 10);
             System.out.println(multiexponentiation);
@@ -35,14 +39,12 @@ public class ExpTests {
     }
 
     private static Multiexponentiation genMultiExp(GroupImpl group, int numTerms) {
-        SecureRandom secRand = new SecureRandom();
-        Random rand = new Random(secRand.nextLong());
         Multiexponentiation multiexponentiation = new Multiexponentiation();
         for (int i = 0; i < numTerms; ++i) {
             multiexponentiation.put(
                     new MultiExpTerm(
                             group.getUniformlyRandomNonNeutral(),
-                            BigInteger.valueOf(rand.nextInt())
+                            RandomGenerator.getRandomNumber(BigInteger.valueOf(Integer.MAX_VALUE))
                     )
             );
         }
@@ -59,15 +61,11 @@ public class ExpTests {
 
     @Test
     public void testExpAlgs() {
-        BilinearGroupImpl bilGroup = new BarretoNaehrigBilinearGroupImpl(60);
-
-        SecureRandom secRand = new SecureRandom();
-        Random rand = new Random(secRand.nextLong());
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 4; ++i) {
             GroupElementImpl elem = bilGroup.getG1().getUniformlyRandomNonNeutral();
-            BigInteger exponent = BigInteger.valueOf(rand.nextInt());
-            System.out.println("Chosen element: " + elem);
-            System.out.println("Chosen exponent: " + exponent);
+            BigInteger exponent = RandomGenerator.getRandomNumber(BigInteger.valueOf(Integer.MAX_VALUE));
+            //System.out.println("Chosen element: " + elem);
+            //System.out.println("Chosen exponent: " + exponent);
             GroupElementImpl naiveResult = ExponentiationAlgorithms.binSquareMultiplyExp(elem, exponent);
             GroupElementImpl slidingResult = ExponentiationAlgorithms.slidingWindowExp(
                     elem, exponent, new SmallExponentPrecomputation(elem), 4
