@@ -37,6 +37,11 @@ public class ExponentEqualityExpr implements BooleanExpression {
     }
 
     @Override
+    public LazyBoolEvaluationResult evaluateLazy(Substitution substitution) {
+        return evaluate(substitution) ? LazyBoolEvaluationResult.TRUE : LazyBoolEvaluationResult.FALSE;
+    }
+
+    @Override
     public void forEachChild(Consumer<Expression> action) {
         action.accept(lhs);
         action.accept(rhs);

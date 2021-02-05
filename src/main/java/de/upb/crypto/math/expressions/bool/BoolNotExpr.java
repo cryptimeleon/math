@@ -36,6 +36,24 @@ public class BoolNotExpr implements BooleanExpression {
     }
 
     @Override
+    public LazyBoolEvaluationResult evaluateLazy(Substitution substitutions) {
+        LazyBoolEvaluationResult childResult = child.evaluateLazy(substitutions);
+        if (childResult.isResultKnown())
+            return LazyBoolEvaluationResult.valueOf(!childResult.getResult());
+        return new LazyBoolEvaluationResult() {
+            @Override
+            public boolean getResult() {
+                return !childResult.getResult();
+            }
+
+            @Override
+            boolean isResultKnown() {
+                return false;
+            }
+        };
+    }
+
+    @Override
     public void forEachChild(Consumer<Expression> action) {
         action.accept(child);
     }

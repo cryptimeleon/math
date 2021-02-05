@@ -4,6 +4,7 @@ import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.Substitution;
 import de.upb.crypto.math.expressions.group.GroupElementExpression;
 import de.upb.crypto.math.structures.groups.Group;
+import de.upb.crypto.math.structures.groups.GroupElement;
 
 import java.util.function.Consumer;
 
@@ -55,8 +56,32 @@ public class GroupEqualityExpr implements BooleanExpression {
     }
 
     @Override
+    public LazyBoolEvaluationResult evaluateLazy(Substitution substitution) {
+        return new LazyGroupEqualityResult(lhs.evaluate(substitution), rhs.evaluate(substitution));
+    }
+
+    @Override
     public void forEachChild(Consumer<Expression> action) {
         action.accept(lhs);
         action.accept(rhs);
+    }
+
+    private static class LazyGroupEqualityResult extends LazyBoolEvaluationResult {
+        protected final GroupElement lhs, rhs;
+
+        public LazyGroupEqualityResult(GroupElement lhs, GroupElement rhs) {
+            this.lhs = lhs.compute();
+            this.rhs = rhs.compute();
+        }
+
+        @Override
+        public boolean getResult() {
+            return lhs.equals(rhs);
+        }
+
+        @Override
+        public boolean isResultKnown() {
+            return lhs.isComputed() && rhs.isComputed(); //already done (e.g., values have been computed before)
+        }
     }
 }

@@ -49,6 +49,27 @@ public class BoolOrExpr implements BooleanExpression {
     }
 
     @Override
+    public LazyBoolEvaluationResult evaluateLazy(Substitution substitutions) {
+        LazyBoolEvaluationResult lhs = this.lhs.evaluateLazy(substitutions);
+        LazyBoolEvaluationResult rhs = this.rhs.evaluateLazy(substitutions);
+        if (lhs.isResultKnown())
+            return lhs.getResult() ? LazyBoolEvaluationResult.TRUE : rhs;
+        if (rhs.isResultKnown())
+            return rhs.getResult() ? LazyBoolEvaluationResult.TRUE : lhs;
+        return new LazyBoolEvaluationResult() {
+            @Override
+            public boolean getResult() {
+                return lhs.getResult() || rhs.getResult();
+            }
+
+            @Override
+            boolean isResultKnown() {
+                return false;
+            }
+        };
+    }
+
+    @Override
     public void forEachChild(Consumer<Expression> action) {
         action.accept(lhs);
         action.accept(rhs);
