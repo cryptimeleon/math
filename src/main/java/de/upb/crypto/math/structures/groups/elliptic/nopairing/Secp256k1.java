@@ -170,12 +170,15 @@ public class Secp256k1 implements WeierstrassCurve {
         return 0;
     }
 
+    /**
+     * A hash function mapping bit strings into the group such that
+     */
     public static class HashIntoSecp256k1 implements HashIntoGroupImpl {
         private final HashIntoZp hash;
 
         /**
-         * Instantiate this hash function
-         * @param hash a random oracle hash function to the curve's base field
+         * Instantiate this hash function into Secp256k1
+         * @param hash a hash function mapping into the base field Zp that outputs random-looking images (like SHA256 or SHA3)
          */
         public HashIntoSecp256k1(HashIntoZp hash) {
             this.hash = hash;
@@ -183,6 +186,9 @@ public class Secp256k1 implements WeierstrassCurve {
                 throw new IllegalStateException("Hash must be into Z"+p);
         }
 
+        /**
+         * Instantiate the hash function with a default internal hash function.
+         */
         public HashIntoSecp256k1() {
             this(new HashIntoZp(zp));
         }
@@ -204,7 +210,7 @@ public class Secp256k1 implements WeierstrassCurve {
                 Zp.ZpElement ySquared = xCoordinate.pow(3).add(b);
 
                 if (ySquared.isSquare()) //check if y is quadratic residue.
-                    return new Secp256k1().getElement(xCoordinate, ySquared.sqrt());
+                    return new Secp256k1().getElement(xCoordinate, ySquared.sqrt()); //note that all elliptic curve points lie in the group (i.e. cofactor 1)
 
                 //If we were unlucky: try next x
                 xCoordinate = xCoordinate.add(zp.getOneElement());
