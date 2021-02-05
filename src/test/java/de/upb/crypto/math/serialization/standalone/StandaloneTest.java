@@ -128,7 +128,7 @@ public class StandaloneTest {
         toReturn.add(ProductGroupParams.get());
         toReturn.add(ReprUtilTest.Foo.getStandaloneTestParams());
         toReturn.addAll(CountingBilinearGroupParams.get());
-        toReturn.add(Secp256k1Params.get());
+        toReturn.addAll(Secp256k1Params.get());
 
         // remove all provided params
         for (StandaloneTestParams stp : toReturn) {
