@@ -31,8 +31,7 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version:'1.1'
     implementation group: 'org.reflections', name: 'reflections', version:'0.9.10'
-    implementation group: 'javax.xml.bind', name: 'jaxb-api', version:'2.1'
-
+    
     // For tests
     testCompileOnly(
             'junit:junit:4.12'
