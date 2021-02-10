@@ -1,5 +1,6 @@
 package de.upb.crypto.math.expressions.bool;
 
+import de.upb.crypto.math.expressions.EvaluationException;
 import de.upb.crypto.math.expressions.Expression;
 import de.upb.crypto.math.expressions.Substitution;
 
@@ -22,12 +23,17 @@ public class BoolEmptyExpr implements BooleanExpression {
 
     @Override
     public Boolean evaluate() {
-        throw new IllegalArgumentException("Cannot evaluate an empty expression.");
+        throw new EvaluationException(this, "Cannot evaluate an empty expression.");
     }
 
     @Override
     public Boolean evaluate(Substitution substitutions) {
         return evaluate();
+    }
+
+    @Override
+    public LazyBoolEvaluationResult evaluateLazy(Substitution substitutions) {
+        throw new EvaluationException(this, "Cannot evaluate an empty expression.");
     }
 
     @Override

@@ -35,4 +35,12 @@ public interface BoolVariableExpr extends VariableExpression, BooleanExpression 
             return (BooleanExpression) replacement;
         return this;
     }
+
+    @Override
+    default LazyBoolEvaluationResult evaluateLazy(Substitution substitutions) {
+        BooleanExpression substitution = (BooleanExpression) substitutions.getSubstitution(this);
+        if (substitution == null)
+            throw new EvaluationException(this, "Variable cannot be evaluated");
+        return substitution.evaluateLazy();
+    }
 }

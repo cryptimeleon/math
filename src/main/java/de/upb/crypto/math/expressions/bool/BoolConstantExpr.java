@@ -29,6 +29,11 @@ public class BoolConstantExpr implements BooleanExpression {
     }
 
     @Override
+    public LazyBoolEvaluationResult evaluateLazy(Substitution substitutions) {
+        return LazyBoolEvaluationResult.valueOf(value);
+    }
+
+    @Override
     public void forEachChild(Consumer<Expression> action) {
         //Nothing to do
     }

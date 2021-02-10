@@ -8,6 +8,9 @@ import de.upb.crypto.math.expressions.VariableExpression;
  * An {@link Expression} that evaluates to a {@code Boolean}.
  */
 public interface BooleanExpression extends Expression {
+    BoolConstantExpr TRUE = new BoolConstantExpr(true);
+    BoolConstantExpr FALSE = new BoolConstantExpr(false);
+
     @Override
     BooleanExpression substitute(Substitution substitutions);
 
@@ -28,6 +31,22 @@ public interface BooleanExpression extends Expression {
 
     @Override
     Boolean evaluate(Substitution substitutions);
+
+    /**
+     * Evaluates the result of this expression (with the given substitutions) concurrently in the background. <br>
+     * The result can be retrieved by calling getResult() on the return value.
+     */
+    LazyBoolEvaluationResult evaluateLazy(Substitution substitutions);
+
+    /**
+     * Evaluates the result of this expression concurrently in the background. Result can be retrieved
+     * by calling getResult() on the return value.<br>
+     * Use this for (potentially) more computationally expensive expressions.
+     */
+    default LazyBoolEvaluationResult evaluateLazy() {
+        return evaluateLazy(e -> null);
+    }
+
 
     /**
      * Applies a Boolean AND to this and the given Boolean expression.
@@ -51,5 +70,9 @@ public interface BooleanExpression extends Expression {
      */
     default BooleanExpression not() {
         return new BoolNotExpr(this);
+    }
+
+    static BooleanExpression valueOf(boolean bool) {
+        return bool ? TRUE : FALSE;
     }
 }
