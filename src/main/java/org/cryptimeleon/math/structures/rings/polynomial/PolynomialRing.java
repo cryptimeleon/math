@@ -7,6 +7,7 @@ import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.Element;
 import org.cryptimeleon.math.structures.rings.Ring;
 import org.cryptimeleon.math.structures.rings.RingElement;
+import org.cryptimeleon.math.structures.rings.cartesian.RingElementVector;
 import org.cryptimeleon.math.structures.rings.zn.Zp;
 import org.cryptimeleon.math.structures.rings.zn.Zp.ZpElement;
 
@@ -59,6 +60,13 @@ public class PolynomialRing implements Ring {
     @Override
     public Polynomial getOneElement() {
         return new Polynomial(baseRing.getOneElement());
+    }
+
+    /**
+     * Returns the Polynomial 1*x + 0
+     */
+    public Polynomial getX() {
+        return new Polynomial(1);
     }
 
     @Override
@@ -146,6 +154,10 @@ public class PolynomialRing implements Ring {
 
         public RingElement[] getCoefficients() {
             return Arrays.copyOf(coefficients, coefficients.length);
+        }
+
+        public RingElementVector getCoefficientVector() {
+            return new RingElementVector(getCoefficients());
         }
 
         /**
@@ -278,6 +290,9 @@ public class PolynomialRing implements Ring {
          */
         @Override
         public Polynomial add(Element e) {
+            if (e.getStructure().equals(getBaseRing()))
+                return add(new Polynomial((RingElement) e));
+
             Polynomial[] polys = new Polynomial[]{this, (Polynomial) e};
             Arrays.sort(polys, Comparator.comparing(p -> p.degree));
 
@@ -308,12 +323,12 @@ public class PolynomialRing implements Ring {
         /**
          * Computes the inner product of the coefficient vectors.
          */
-        public ZpElement scalarProduct(Polynomial e) {
+        public ZpElement innerProduct(Polynomial e) {
             if (!(baseRing instanceof Zp) || !(e.getStructure().baseRing instanceof Zp)) {
                 throw new UnsupportedOperationException("Only supported for ZpElements");
             }
             ZpElement result = (ZpElement) baseRing.getZeroElement();
-            int minLength = e.coefficients.length < coefficients.length ? e.coefficients.length : coefficients.length;
+            int minLength = Math.min(e.coefficients.length, coefficients.length);
             for (int i = 0; i < minLength; i++) {
                 result = result.add(coefficients[i].mul(e.coefficients[i]));
             }
@@ -331,6 +346,8 @@ public class PolynomialRing implements Ring {
          */
         @Override
         public Polynomial sub(Element e) {
+            if (e.getStructure().equals(getBaseRing()))
+                return sub(new Polynomial((RingElement) e));
 
             Polynomial[] polys = new Polynomial[]{this, (Polynomial) e};
             Arrays.sort(polys, Comparator.comparing(p -> p.degree));
@@ -356,6 +373,9 @@ public class PolynomialRing implements Ring {
          */
         @Override
         public Polynomial mul(Element e) {
+            if (e.getStructure().equals(getBaseRing()))
+                return scalarMul(e);
+
             Polynomial a = (Polynomial) e, b = this;
 
             // At this point, polys[0] is the polynomial with smaller degree.
@@ -415,9 +435,9 @@ public class PolynomialRing implements Ring {
         }
 
         /**
-         * Normalizes this polynomial by factoring out the coefficient corresponding to the highest exponent.
+         * Normalizes this polynomial by multiplying it with the inverse of the leading coefficient.
          * <p>
-         * Results in a polynomial with coefficient one for the highest (leading) exponent.
+         * Results in a polynomial with coefficient one for the highest (leading) coefficient.
          *
          * @throws UnsupportedOperationException if the highest coefficient is not a unit, i.e. cannot be factored out
          */
@@ -542,6 +562,13 @@ public class PolynomialRing implements Ring {
     @Override
     public BigInteger getCharacteristic() {
         return this.getBaseRing().getCharacteristic();
+    }
+
+    /**
+     * Returns \(\sum \mathit{coefficient}_i \cdot X^i \).
+     */
+    public Polynomial valueOf(RingElement... coefficients) {
+        return getPoly(coefficients);
     }
 
     /**

@@ -83,6 +83,11 @@ public class CountingGroup implements Group {
     }
 
     @Override
+    public Zn getZn() {
+        return groupTotal.getZn();
+    }
+
+    @Override
     public GroupElement getUniformlyRandomElement() throws UnsupportedOperationException {
         return new CountingGroupElement(
                 this,

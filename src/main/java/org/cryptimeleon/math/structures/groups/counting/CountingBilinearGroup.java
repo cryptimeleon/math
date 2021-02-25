@@ -95,6 +95,16 @@ public class CountingBilinearGroup implements BilinearGroup {
         this(securityParameter, pairingType, 1);
     }
 
+    /**
+     *
+     * Initializes this prime order bilinear group of 128 bit size
+     *
+     * @param pairingType the type of pairing that should be offered by this bilinear group
+     */
+    public CountingBilinearGroup(BilinearGroup.Type pairingType) {
+        this(128, pairingType);
+    }
+
     public CountingBilinearGroup(Representation repr) {
         ReprUtil.deserialize(this, repr);
         init();
