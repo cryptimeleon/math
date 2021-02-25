@@ -1,13 +1,15 @@
 plugins {
-    // Apply the java-library plugin to add support for Java Library
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
 }
 
 group = 'org.cryptimeleon'
 version = '1.0.0' + (Boolean.valueOf(System.getProperty("disablesnapshot")) ? "" : "-SNAPSHOT")
 
-description = """"""
+description = 'The Math library provides the mathematical foundation for the other Cryptimeleon libraries. ' +
+        'It provides basics such as mathematical groups, rings and fields, e.g. Z_n , ' +
+        'as well as implementations of cryptographic pairings.'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -90,80 +92,82 @@ java {
     registerFeature("tests") {
         usingSourceSet(sourceSets.test)
     }
+    withJavadocJar()
+    withSourcesJar()
 }
 
 
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-                versionMapping {
-                    usage('java-api') {
-                        fromResolutionOf('runtimeClasspath')
-                    }
-                    usage('java-runtime') {
-                        fromResolutionResult()
-                    }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
                 }
-                artifacts {
-                    archives javadocJar, sourcesJar
+                usage('java-runtime') {
+                    fromResolutionResult()
                 }
+            }
+            artifacts {
+                archives javadocJar, sourcesJar
+            }
 
-                pom {
-                    name = 'Craco'
-                    description = 'Craco (CRyptogrAphic COnstructions) is a Java library providing implementations of various cryptographic primitives and low-level constructions. This includes primitives such as commitment schemes, signature schemes, and much more.\n' +
-                            '\n' +
-                            'The goal of Craco is to provide common cryptographic schemes for usage in more high-level protocols as well as to offer facilities for improving the process of implementing more low-level schemes such as signature and encryption schemes.'
-                    url = 'https://cryptimeleon.org'
-                    licenses {
-                        license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
+            pom {
+                name = 'Math'
+                url = 'https://cryptimeleon.org'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
-                    developers {
-                        developer {
-                            id = 'jbobolz'
-                            name = 'Jan Bobolz'
-                            email = 'mail@jan-bobolz.de'
-                            organization = 'Paderborn University'
-                        }
-                        developer {
-                            id = 'feidens'
-                            name = 'Fabian Eidens'
-                            email = 'fabianeidens@gmail.com'
-                            organization = 'Paderborn University'
-                            url = 'https://feidens.github.io/'
-                        }
-                        developer {
-                            id = 'rheitjoh'
-                            name = 'Raphael Heitjohann'
-                            email = 'rheitjoh@mail.uni-paderborn.de'
-                            organization = 'Paderborn University'
-                        }
+                }
+                developers {
+                    developer {
+                        id = 'jbobolz'
+                        name = 'Jan Bobolz'
+                        email = 'mail@jan-bobolz.de'
+                        organization = 'Paderborn University'
                     }
-                    scm {
-                        connection = 'scm:git:git://github.com/cryptimeleon/craco.git'
-                        developerConnection = 'scm:git:https://github.com/cryptimeleon/craco.git'
-                        url = 'https://github.com/cryptimeleon/craco/'
+                    developer {
+                        id = 'feidens'
+                        name = 'Fabian Eidens'
+                        email = 'fabianeidens@gmail.com'
+                        organization = 'Paderborn University'
+                        url = 'https://feidens.github.io/'
                     }
+                    developer {
+                        id = 'rheitjoh'
+                        name = 'Raphael Heitjohann'
+                        email = 'rheitjoh@mail.uni-paderborn.de'
+                        organization = 'Paderborn University'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/cryptimeleon/math.git'
+                    developerConnection = 'scm:git:https://github.com/cryptimeleon/math.git'
+                    url = 'https://github.com/cryptimeleon/math/'
                 }
             }
         }
-        repositories {
-            maven {
-                credentials {
-                    username = System.getProperty('nexus.user')
-                    password = System.getProperty('nexus.key')
-                }
-                // change URLs to point to your repos, e.g. http://my.org/repo
-                id = 'ossrh'
-                name = 'Central Repository OSSRH'
-                def releasesRepoUrl = "$buildDir/repos/releases"
-                def snapshotsRepoUrl = "$buildDir/repos/snapshots"
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+    }
+    repositories {
+        maven {
+            credentials {
+                username = System.getenv("OSSRH_USERNAME")
+                password = System.getenv("OSSRH_TOKEN")
             }
+            name = 'ossrh'
+            def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
-
+    }
 }
 
+signing {
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava
+}
