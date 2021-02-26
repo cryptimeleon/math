@@ -5,6 +5,7 @@ plugins {
 }
 
 group = 'org.cryptimeleon'
+archivesBaseName = project.name
 version = '1.0.0' + (Boolean.valueOf(System.getProperty("disablesnapshot")) ? "" : "-SNAPSHOT")
 
 description = 'The Math library provides the mathematical foundation for the other Cryptimeleon libraries. ' +
@@ -157,10 +158,9 @@ publishing {
                 username = System.getenv("OSSRH_USERNAME")
                 password = System.getenv("OSSRH_TOKEN")
             }
-            name = 'ossrh'
+            name = 'OSSRH'
             def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-            def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            url = version.endsWith('SNAPSHOT') ? '' : releasesRepoUrl
         }
     }
 }
