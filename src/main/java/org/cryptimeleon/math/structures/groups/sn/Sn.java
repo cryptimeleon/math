@@ -82,7 +82,7 @@ public class Sn implements GroupImpl {
     }
 
     @Override
-    public SnElementImpl getElement(Representation repr) {
+    public SnElementImpl restoreElement(Representation repr) {
         return new SnElementImpl(repr);
     }
 

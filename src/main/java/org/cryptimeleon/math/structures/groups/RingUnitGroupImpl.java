@@ -97,8 +97,8 @@ public class RingUnitGroupImpl extends RingGroupImpl {
     }
 
     @Override
-    public RingUnitGroupElementImpl getElement(Representation repr) {
-        return new RingUnitGroupElementImpl(ring.getElement(repr));
+    public RingUnitGroupElementImpl restoreElement(Representation repr) {
+        return new RingUnitGroupElementImpl(ring.restoreElement(repr));
     }
 
     @Override

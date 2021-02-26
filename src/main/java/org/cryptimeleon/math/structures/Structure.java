@@ -65,7 +65,7 @@ public interface Structure extends StandaloneRepresentable {
      * @param repr the {@code Representation} returned by {@link Element#getRepresentation()}
      * @return the decoded element corresponding to the representation
      */
-    Element getElement(Representation repr);
+    Element restoreElement(Representation repr);
 
     /**
      * Returns the number of bytes returned by this structure's {@link Element#getUniqueByteRepresentation()},

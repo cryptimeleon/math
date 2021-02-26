@@ -43,9 +43,9 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
     }
 
     /**
-     * Recreates a group element from its representation.
+     * Restores a group element from its representation.
      */
-    GroupElementImpl getElement(Representation repr);
+    GroupElementImpl restoreElement(Representation repr);
 
     /**
      * Returns any generator of this group if the group is cyclic and it's feasible to compute a generator.
@@ -128,7 +128,7 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
         if (!(type instanceof Class && GroupElementImpl.class.isAssignableFrom((Class) type)))
             throw new IllegalArgumentException("Group cannot recreate type "+type.getTypeName()+" from representation");
 
-        return getElement(repr);
+        return restoreElement(repr);
     }
 
     /**

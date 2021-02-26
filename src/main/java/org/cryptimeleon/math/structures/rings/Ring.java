@@ -50,25 +50,25 @@ public interface Ring extends Structure, RepresentationRestorer {
     RingElement getOneElement();
 
     @Override
-    RingElement getElement(Representation repr);
+    RingElement restoreElement(Representation repr);
 
     /**
-     * Recreates a {@link RingElementVector} containing ring elements from this {@code Ring} from a
+     * Restores a {@link RingElementVector} containing ring elements from this {@code Ring} from a
      * {@code Representation} of that vector.
      *
      * @param repr a representation of a {@code RingElementVector}
      *             (obtained via {@link RingElementVector#getRepresentation()}).
      */
-    default RingElementVector getVector(Representation repr) {
-        return RingElementVector.fromStream(repr.list().stream().map(this::getElement));
+    default RingElementVector restoreVector(Representation repr) {
+        return RingElementVector.fromStream(repr.list().stream().map(this::restoreElement));
     }
 
     @Override
     default Object recreateFromRepresentation(Type type, Representation repr) {
         if (type instanceof Class && RingElement.class.isAssignableFrom((Class) type))
-            return getElement(repr);
+            return restoreElement(repr);
         if (type instanceof Class && RingElementVector.class.isAssignableFrom((Class) type))
-            return getVector(repr);
+            return restoreVector(repr);
 
         throw new IllegalArgumentException("Group cannot recreate type "+type.getTypeName()+" from representation");
     }

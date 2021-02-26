@@ -82,11 +82,11 @@ public class PolynomialRing implements Ring {
     }
 
     @Override
-    public Polynomial getElement(Representation arg) {
+    public Polynomial restoreElement(Representation arg) {
         ListRepresentation repr = (ListRepresentation) arg;
         RingElement[] coefficients = new RingElement[repr.size()];
         for (int i = 0; i < repr.size(); i++)
-            coefficients[i] = baseRing.getElement(repr.get(i));
+            coefficients[i] = baseRing.restoreElement(repr.get(i));
 
         return new Polynomial(coefficients);
     }

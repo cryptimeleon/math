@@ -75,8 +75,8 @@ public class Zp extends Zn implements Field {
     }
 
     @Override
-    public ZpElement getElement(Representation repr) {
-        return (ZpElement) super.getElement(repr);
+    public ZpElement restoreElement(Representation repr) {
+        return (ZpElement) super.restoreElement(repr);
     }
 
     @Override

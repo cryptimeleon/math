@@ -29,7 +29,7 @@ public class ProductGroupElement implements GroupElement {
     public ProductGroupElement(Representation repr) {
         this.elems = new GroupElement[repr.list().size()];
         for (int i=0;i<repr.list().size();i++)
-            this.elems[i] = elems[i].getStructure().getElement(repr.list().get(i));
+            this.elems[i] = elems[i].getStructure().restoreElement(repr.list().get(i));
     }
 
     @Override

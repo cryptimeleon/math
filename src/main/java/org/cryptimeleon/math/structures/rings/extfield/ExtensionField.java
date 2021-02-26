@@ -89,10 +89,10 @@ public class ExtensionField implements Field {
         Field baseField = (Field) ((RepresentableRepresentation) o.get("baseField")).recreateRepresentable();
 
 
-        init(baseField.getElement(o.get("constant")), o.get("extensionDegree").bigInt().get().intValueExact());
+        init(baseField.restoreElement(o.get("constant")), o.get("extensionDegree").bigInt().get().intValueExact());
 
         if (o.get("cubeRoot") != null)
-            this.setCubeRoot(this.getElement(o.get("cubeRoot")));
+            this.setCubeRoot(this.restoreElement(o.get("cubeRoot")));
     }
 
 
@@ -295,11 +295,11 @@ public class ExtensionField implements Field {
     }
 
     @Override
-    public ExtensionFieldElement getElement(Representation repr) {
+    public ExtensionFieldElement restoreElement(Representation repr) {
         ListRepresentation lr = (ListRepresentation) repr;
         FieldElement[] coefficients = new FieldElement[lr.size()];
         for (int i = 0; i < lr.size(); i++)
-            coefficients[i] = this.getBaseField().getElement(lr.get(i));
+            coefficients[i] = this.getBaseField().restoreElement(lr.get(i));
 
         return this.createElement(coefficients);
     }

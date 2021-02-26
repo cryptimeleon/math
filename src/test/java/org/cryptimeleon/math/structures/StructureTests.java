@@ -23,7 +23,7 @@ public abstract class StructureTests {
         Structure s = getStructureToTest();
 
         Representation repr = elem.getRepresentation();
-        Element elem2 = s.getElement(repr);
+        Element elem2 = s.restoreElement(repr);
 
         assertEquals("Reserialized element should be equal to original", elem, elem2);
         assertEquals("Reserialized element's hashCode should be equal to original", elem.hashCode(), elem2.hashCode());

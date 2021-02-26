@@ -38,7 +38,7 @@ public class ProductGroup implements Group {
     }
 
     @Override
-    public GroupElement getElement(Representation repr) {
+    public GroupElement restoreElement(Representation repr) {
         return new ProductGroupElement(repr);
     }
 

@@ -28,7 +28,7 @@ public interface Field extends Ring {
     FieldElement getOneElement();
 
     @Override
-    FieldElement getElement(Representation repr);
+    FieldElement restoreElement(Representation repr);
 
     @Override
     FieldElement getElement(BigInteger i);

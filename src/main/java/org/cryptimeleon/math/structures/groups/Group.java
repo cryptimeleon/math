@@ -51,17 +51,17 @@ public interface Group extends Structure, RepresentationRestorer {
     }
 
     @Override
-    GroupElement getElement(Representation repr);
+    GroupElement restoreElement(Representation repr);
 
     /**
-     * Recreates a {@link GroupElementVector} containing group elements from this {@code Group} from a
+     * Restores a {@link GroupElementVector} containing group elements from this {@code Group} from a
      * {@code Representation} of that vector.
      *
      * @param repr a representation of a {@code GroupElementVector}
      *             (obtained via {@link GroupElementVector#getRepresentation()}).
      */
-    default GroupElementVector getVector(Representation repr) {
-        return GroupElementVector.fromStream(repr.list().stream().map(this::getElement));
+    default GroupElementVector restoreVector(Representation repr) {
+        return GroupElementVector.fromStream(repr.list().stream().map(this::restoreElement));
     }
 
     /**
@@ -93,9 +93,9 @@ public interface Group extends Structure, RepresentationRestorer {
     @Override
     default Object recreateFromRepresentation(Type type, Representation repr) {
         if (type instanceof Class && GroupElement.class.isAssignableFrom((Class) type))
-            return getElement(repr);
+            return restoreElement(repr);
         if (type instanceof Class && GroupElementVector.class.isAssignableFrom((Class) type))
-            return getVector(repr);
+            return restoreVector(repr);
 
         throw new IllegalArgumentException("Group cannot recreate type "+type.getTypeName()+" from representation");
     }

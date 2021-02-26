@@ -83,13 +83,13 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
         this.size = ((BigIntegerRepresentation) or.get("size")).get();
         this.cofactor = ((BigIntegerRepresentation) or.get("cofactor")).get();
         this.field = (Field) ((RepresentableRepresentation) or.get("field")).recreateRepresentable();
-        this.a1 = this.field.getElement(or.get("a1"));
-        this.a2 = this.field.getElement(or.get("a2"));
-        this.a3 = this.field.getElement(or.get("a3"));
-        this.a4 = this.field.getElement(or.get("a4"));
-        this.a6 = this.field.getElement(or.get("a6"));
+        this.a1 = this.field.restoreElement(or.get("a1"));
+        this.a2 = this.field.restoreElement(or.get("a2"));
+        this.a3 = this.field.restoreElement(or.get("a3"));
+        this.a4 = this.field.restoreElement(or.get("a4"));
+        this.a6 = this.field.restoreElement(or.get("a6"));
 
-        this.setGenerator(this.getElement(or.get("generator")));
+        this.setGenerator(this.restoreElement(or.get("generator")));
     }
 
     @Override
@@ -211,11 +211,11 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
     }
 
     @Override
-    public PairingSourceGroupElement getElement(Representation repr) {
+    public PairingSourceGroupElement restoreElement(Representation repr) {
         ObjectRepresentation or = (ObjectRepresentation) repr;
-        FieldElement x = getFieldOfDefinition().getElement(or.get("x"));
-        FieldElement y = getFieldOfDefinition().getElement(or.get("y"));
-        FieldElement z = getFieldOfDefinition().getElement(or.get("z"));
+        FieldElement x = getFieldOfDefinition().restoreElement(or.get("x"));
+        FieldElement y = getFieldOfDefinition().restoreElement(or.get("y"));
+        FieldElement z = getFieldOfDefinition().restoreElement(or.get("z"));
         if (z.isZero())
             return (PairingSourceGroupElement) getNeutralElement();
 

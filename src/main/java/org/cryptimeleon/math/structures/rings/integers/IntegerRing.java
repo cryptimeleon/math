@@ -52,7 +52,7 @@ public class IntegerRing implements Ring {
     }
 
     @Override
-    public IntegerElement getElement(Representation repr) {
+    public IntegerElement restoreElement(Representation repr) {
         return new IntegerElement(repr.bigInt().get());
     }
 
