@@ -103,12 +103,14 @@ public class PairingTests {
 
         // BN curves
         BilinearGroup bnGroup = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl(80));
+        BilinearGroup sfcBn = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl("SFC-256"));
 
         // Collect parameters
         BilinearMap[][] params = new BilinearMap[][] {
                 {countingGroup1.getBilinearMap()}, {countingGroup2.getBilinearMap()}, {countingGroup3.getBilinearMap()},
                 {supsingGroup.getBilinearMap()},
-                {bnGroup.getBilinearMap()}
+                {bnGroup.getBilinearMap()},
+                { sfcBn.getBilinearMap()}
         };
         return Arrays.asList(params);
     }

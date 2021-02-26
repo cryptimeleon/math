@@ -151,7 +151,7 @@ public class ExtensionFieldElement implements FieldElement, UniqueByteRepresenta
 
     @Override
     public ExtensionFieldElement applyFrobenius() {
-        //Yes, this is very suboptimal.
+        //Yes, this is probably suboptimal.
         ExtensionFieldElement result = getStructure().getZeroElement();
         for (int i=0; i<coefficients.length; i++) {
             result = result.add(field.createElement(coefficients[i].applyFrobenius()).mul(getStructure().frobeniusOfXPowers[i]));

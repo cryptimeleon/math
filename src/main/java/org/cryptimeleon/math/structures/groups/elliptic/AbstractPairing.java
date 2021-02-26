@@ -47,16 +47,6 @@ public abstract class AbstractPairing implements BilinearMapImpl {
         return gT.getElement((ExtensionFieldElement) f.pow(gT.getCofactor()));
     }
 
-    public AbstractPairing(Representation r) {
-        ObjectRepresentation or = (ObjectRepresentation) r;
-
-        init(
-                (PairingSourceGroupImpl) ((RepresentableRepresentation) or.get("G1")).recreateRepresentable(),
-                (PairingSourceGroupImpl) ((RepresentableRepresentation) or.get("G2")).recreateRepresentable(),
-                (PairingTargetGroupImpl) ((RepresentableRepresentation) or.get("GT")).recreateRepresentable()
-        );
-    }
-
     /**
      * Abstract class that evaluates a line through a given point at another point.
      * <p>

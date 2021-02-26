@@ -3,6 +3,7 @@ package org.cryptimeleon.math.structures.groups.elliptic.type3.bn;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.elliptic.AbstractPairing;
 import org.cryptimeleon.math.structures.groups.elliptic.PairingSourceGroupElement;
+import org.cryptimeleon.math.structures.groups.elliptic.PairingTargetGroupElementImpl;
 import org.cryptimeleon.math.structures.rings.FieldElement;
 import org.cryptimeleon.math.structures.rings.extfield.ExtensionField;
 import org.cryptimeleon.math.structures.rings.extfield.ExtensionFieldElement;
@@ -29,14 +30,6 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
                 .add(u.pow(2).multiply(BigInteger.valueOf(-30)))
                 .add(u.multiply(BigInteger.valueOf(-18)))
                 .add(BigInteger.valueOf(-2));
-    }
-
-    public BarretoNaehrigTatePairing(BarretoNaehrigGroup1Impl g1, BarretoNaehrigGroup2Impl g2, BarretoNaehrigTargetGroupImpl gT) {
-        super(g1,g2,gT);
-    }
-
-    public BarretoNaehrigTatePairing(Representation r) {
-        super(r);
     }
 
     /**
@@ -118,4 +111,6 @@ public class BarretoNaehrigTatePairing extends AbstractPairing {
     public boolean isSymmetric() {
         return false;
     }
+
+
 }

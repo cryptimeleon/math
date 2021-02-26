@@ -6,24 +6,26 @@ import java.math.BigInteger;
  * Represents a fixed parametrization of a Barreto-Naehrig bilinear group.
  */
 public class BarretoNaehrigParameterSpec {
-    public BigInteger characteristic;
-    public BigInteger size;
-    public BigInteger alpha;
-    public BigInteger beta0;
-    public BigInteger beta1;
-    public BigInteger b;
-    public BigInteger x1;
-    public BigInteger y1;
-    public BigInteger x20;
-    public BigInteger x21;
-    public BigInteger y20;
-    public BigInteger y21;
-    public String pairing;
-    public String hash;
+    public final BigInteger u;
+    public final BigInteger characteristic;
+    public final BigInteger size;
+    public final BigInteger alpha;
+    public final BigInteger beta0;
+    public final BigInteger beta1;
+    public final BigInteger b;
+    public final BigInteger x1;
+    public final BigInteger y1;
+    public final BigInteger x20;
+    public final BigInteger x21;
+    public final BigInteger y20;
+    public final BigInteger y21;
+    public final String pairing;
+    public final String hash;
 
-    public BarretoNaehrigParameterSpec(BigInteger characteristic, BigInteger size, BigInteger alpha, BigInteger beta0, BigInteger beta1, BigInteger b, BigInteger x1, BigInteger y1, BigInteger x20, BigInteger x21, BigInteger y20, BigInteger y21,
+    public BarretoNaehrigParameterSpec(BigInteger u, BigInteger characteristic, BigInteger size, BigInteger alpha, BigInteger beta0, BigInteger beta1, BigInteger b, BigInteger x1, BigInteger y1, BigInteger x20, BigInteger x21, BigInteger y20, BigInteger y21,
                                        String pairing, String hash) {
         super();
+        this.u = u;
         this.characteristic = characteristic;
         this.size = size;
         this.alpha = alpha;
@@ -46,6 +48,7 @@ public class BarretoNaehrigParameterSpec {
      */
     public static BarretoNaehrigParameterSpec sfc256() {
         return new BarretoNaehrigParameterSpec(
+                new BigInteger("36893488147419130051", 10),
                 new BigInteger("2400000000001d76ea000000090b16017d00013bcce1b73032502782f6c062b4d9b", 16),
                 new BigInteger("2400000000001d76ea000000090b16017b80013bcce1b6930dd02782f6b04f13265", 16),
                 BigInteger.ONE,
