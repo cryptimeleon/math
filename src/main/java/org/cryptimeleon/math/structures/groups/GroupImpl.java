@@ -124,7 +124,7 @@ public interface GroupImpl extends StandaloneRepresentable, RepresentationRestor
     double estimateCostInvPerOp();
 
     @Override
-    default GroupElementImpl recreateFromRepresentation(Type type, Representation repr) {
+    default GroupElementImpl restoreFromRepresentation(Type type, Representation repr) {
         if (!(type instanceof Class && GroupElementImpl.class.isAssignableFrom((Class) type)))
             throw new IllegalArgumentException("Group cannot recreate type "+type.getTypeName()+" from representation");
 

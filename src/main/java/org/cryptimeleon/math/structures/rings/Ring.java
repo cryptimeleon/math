@@ -64,7 +64,7 @@ public interface Ring extends Structure, RepresentationRestorer {
     }
 
     @Override
-    default Object recreateFromRepresentation(Type type, Representation repr) {
+    default Object restoreFromRepresentation(Type type, Representation repr) {
         if (type instanceof Class && RingElement.class.isAssignableFrom((Class) type))
             return restoreElement(repr);
         if (type instanceof Class && RingElementVector.class.isAssignableFrom((Class) type))
