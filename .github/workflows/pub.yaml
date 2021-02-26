@@ -16,9 +16,9 @@ jobs:
         with:
           java-version: 1.8
       - name: Publish to the Maven Central Repository
-          run: ./gradlew publish -PcheckoutIfCloned=true -Prelease=true
-          env:
-            OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-            OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-            ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_PRIVATE_KEY }}
-            ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.GPG_PASSPHRASE }}
+        run: ./gradlew publish -PcheckoutIfCloned -Prelease
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.GPG_PASSPHRASE }}
