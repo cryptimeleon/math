@@ -14,7 +14,7 @@ public class ProductGroup implements Group {
     @Represented
     protected Group[] groups;
 
-    public ProductGroup(Group[] groups) {
+    public ProductGroup(Group... groups) {
         this.groups = groups;
     }
 

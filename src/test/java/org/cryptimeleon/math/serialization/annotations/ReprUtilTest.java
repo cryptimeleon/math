@@ -1,11 +1,10 @@
 package org.cryptimeleon.math.serialization.annotations;
 
 
-import org.cryptimeleon.math.structures.rings.Ring;
-import org.cryptimeleon.math.structures.rings.RingElement;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.StandaloneRepresentable;
-import org.cryptimeleon.math.serialization.standalone.StandaloneTestParams;
+import org.cryptimeleon.math.structures.rings.Ring;
+import org.cryptimeleon.math.structures.rings.RingElement;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 import org.cryptimeleon.math.structures.rings.zn.Zp;
 import org.junit.Test;
@@ -26,6 +25,10 @@ public class ReprUtilTest {
     public static class Foo implements StandaloneRepresentable {
         @Represented
         Zp zp;
+
+        public Foo() {
+            this(new Zp(BigInteger.valueOf(17)));
+        }
 
         public Foo(Zp zp) {
             this.zp = zp;
@@ -59,10 +62,6 @@ public class ReprUtilTest {
         @Override
         public int hashCode() {
             return Objects.hash(zp);
-        }
-
-        public static StandaloneTestParams getStandaloneTestParams() {
-            return new StandaloneTestParams(new Foo(new Zp(BigInteger.valueOf(2))));
         }
     }
 

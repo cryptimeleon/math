@@ -1,20 +1,13 @@
-package org.cryptimeleon.math.serialization.standalone.params;
+package org.cryptimeleon.math.serialization.annotations;
 
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.StandaloneRepresentable;
-import org.cryptimeleon.math.serialization.annotations.ReprUtil;
-import org.cryptimeleon.math.serialization.annotations.Represented;
-import org.cryptimeleon.math.serialization.standalone.StandaloneTestParams;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class RepresentedEnumParams {
-
-    public static StandaloneTestParams get() {
-        return new StandaloneTestParams(RepresentedEnum.class, new RepresentedEnum());
-    }
 
     public enum RepresentableEnum {
         ENUM_VALUE1, ENUM_VALUE2, ENUM_VALUE3
