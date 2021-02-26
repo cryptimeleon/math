@@ -6,7 +6,8 @@ plugins {
 
 group = 'org.cryptimeleon'
 archivesBaseName = project.name
-version = '1.0.0' + (Boolean.valueOf(System.getProperty("disablesnapshot")) ? "" : "-SNAPSHOT")
+boolean isRelease = project.hasProperty("release")
+version = '1.0.0'  + (isRelease ? "" : "-SNAPSHOT")
 
 description = 'The Math library provides the mathematical foundation for the other Cryptimeleon libraries. ' +
         'It provides basics such as mathematical groups, rings and fields, e.g. Z_n , ' +
@@ -166,6 +167,7 @@ publishing {
 }
 
 signing {
+    required(project.hasProperty("release"))
     def signingKey = findProperty("signingKey")
     def signingPassword = findProperty("signingPassword")
     useInMemoryPgpKeys(signingKey, signingPassword)
