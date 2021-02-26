@@ -262,7 +262,12 @@ public class ReprUtil {
                 return value;
             }
             // Retrieve the correct handler for the given field and restore the value from the representation entry
-            value = getHandlerForField(field).deserializeFromRepresentation(topLevelRepr.obj().get(field.getName()), name -> getOrRecreateRestorer(name, topLevelRepr));
+            RepresentationHandler handlerForField = getHandlerForField(field);
+            try {
+                value = handlerForField.deserializeFromRepresentation(topLevelRepr.obj().get(field.getName()), name -> getOrRecreateRestorer(name, topLevelRepr));
+            } catch (RuntimeException e) {
+                throw new RuntimeException("An exception was thrown while restoring "+ field.getType().getSimpleName() + " " + field.getName()  +" in "+instance.getClass().getSimpleName(), e);
+            }
             field.set(instance, value);
             return value;
         } catch (IllegalAccessException e) {
