@@ -120,7 +120,7 @@ public class Secp256k1 implements WeierstrassCurve {
     }
 
     @Override
-    public GroupElementImpl getElement(Representation repr) {
+    public GroupElementImpl restoreElement(Representation repr) {
         return new AffineEllipticCurvePoint(this, repr);
     }
 

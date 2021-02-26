@@ -17,8 +17,8 @@ public interface RepresentationRestorer {
      *
      * @param type tells the restorer which type the restored object should have
      * @param repr the representation to restore the object from
-     * @return the recreated object
+     * @return the restored object
      * @throws IllegalArgumentException if the restorer is unable to handle the given type
      */
-    Object recreateFromRepresentation(Type type, Representation repr) throws IllegalArgumentException;
+    Object restoreFromRepresentation(Type type, Representation repr) throws IllegalArgumentException;
 }

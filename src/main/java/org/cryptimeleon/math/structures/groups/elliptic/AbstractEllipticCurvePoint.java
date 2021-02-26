@@ -18,9 +18,9 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
     }
 
     public AbstractEllipticCurvePoint(WeierstrassCurve curve, Representation repr) {
-        this(curve, curve.getFieldOfDefinition().getElement(repr.obj().get("x")),
-                curve.getFieldOfDefinition().getElement(repr.obj().get("y")),
-                curve.getFieldOfDefinition().getElement(repr.obj().get("z")));
+        this(curve, curve.getFieldOfDefinition().restoreElement(repr.obj().get("x")),
+                curve.getFieldOfDefinition().restoreElement(repr.obj().get("y")),
+                curve.getFieldOfDefinition().restoreElement(repr.obj().get("z")));
     }
 
     public Field getFieldOfDefinition() {

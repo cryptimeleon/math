@@ -307,7 +307,7 @@ public class Zn implements Ring {
     }
 
     @Override
-    public ZnElement getElement(Representation repr) {
+    public ZnElement restoreElement(Representation repr) {
         return createZnElement(((BigIntegerRepresentation) repr).get());
     }
 

@@ -97,7 +97,7 @@ public class CountingGroup implements Group {
     }
 
     @Override
-    public GroupElement getElement(Representation repr) {
+    public GroupElement restoreElement(Representation repr) {
         return new CountingGroupElement(this, repr);
     }
 

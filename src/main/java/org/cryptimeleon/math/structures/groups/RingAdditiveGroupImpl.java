@@ -114,8 +114,8 @@ public class RingAdditiveGroupImpl extends RingGroupImpl {
     }
 
     @Override
-    public RingAdditiveGroupElementImpl getElement(Representation repr) {
-        return new RingAdditiveGroupElementImpl(ring.getElement(repr));
+    public RingAdditiveGroupElementImpl restoreElement(Representation repr) {
+        return new RingAdditiveGroupElementImpl(ring.restoreElement(repr));
     }
 
     @Override

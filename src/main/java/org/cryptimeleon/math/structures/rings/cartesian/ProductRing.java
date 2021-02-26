@@ -66,7 +66,7 @@ public class ProductRing implements Ring {
     }
 
     @Override
-    public RingElement getElement(Representation repr) {
+    public RingElement restoreElement(Representation repr) {
         return new ProductRingElement(repr);
     }
 

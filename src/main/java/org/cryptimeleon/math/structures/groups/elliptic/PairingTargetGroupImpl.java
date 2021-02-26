@@ -106,8 +106,8 @@ public abstract class PairingTargetGroupImpl implements GroupImpl, Representable
     }
 
     @Override
-    public PairingTargetGroupElementImpl getElement(Representation repr) {
-        return getElement((ExtensionFieldElement) fieldOfDefinition.getElement(repr));
+    public PairingTargetGroupElementImpl restoreElement(Representation repr) {
+        return getElement((ExtensionFieldElement) fieldOfDefinition.restoreElement(repr));
     }
 
     /**

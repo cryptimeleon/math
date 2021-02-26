@@ -71,8 +71,8 @@ public class BasicGroup implements Group {
     }
 
     @Override
-    public GroupElement getElement(Representation repr) {
-        return wrap(impl.getElement(repr));
+    public GroupElement restoreElement(Representation repr) {
+        return wrap(impl.restoreElement(repr));
     }
 
     @Override

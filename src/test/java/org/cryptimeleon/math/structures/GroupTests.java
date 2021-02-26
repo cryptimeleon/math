@@ -267,7 +267,7 @@ public class GroupTests {
         GroupElement elem = elementSupplier.get();
 
         Representation repr = elem.getRepresentation();
-        GroupElement elem2 = group.getElement(repr);
+        GroupElement elem2 = group.restoreElement(repr);
 
         assertEquals("Reserialized element should be equal to original", elem, elem2);
         assertEquals("Reserialized element's hashCode should be equal to original", elem.hashCode(), elem2.hashCode());

@@ -23,7 +23,7 @@ public class CustomRepresentationRestorer implements RepresentationRestorer {
     }
 
     @Override
-    public Object recreateFromRepresentation(Type type, Representation repr) {
+    public Object restoreFromRepresentation(Type type, Representation repr) {
         return restorer.apply(repr);
     }
 }

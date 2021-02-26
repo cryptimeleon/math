@@ -149,8 +149,8 @@ public class CountingGroupImpl implements GroupImpl {
     }
 
     @Override
-    public GroupElementImpl getElement(Representation repr) {
-        return wrap(zn.getElement(repr));
+    public GroupElementImpl restoreElement(Representation repr) {
+        return wrap(zn.restoreElement(repr));
     }
 
     @Override

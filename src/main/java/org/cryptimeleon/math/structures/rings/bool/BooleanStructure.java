@@ -35,7 +35,7 @@ public class BooleanStructure implements Ring {
     }
 
     @Override
-    public RingElement getElement(Representation repr) {
+    public RingElement restoreElement(Representation repr) {
         return new BooleanElement(repr);
     }
 
