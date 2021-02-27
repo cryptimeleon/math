@@ -45,6 +45,8 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
 
     //Impl
     @Represented
+    private BigInteger u;
+    @Represented
     private BarretoNaehrigGroup1Impl g1impl;
     @Represented
     private BarretoNaehrigGroup2Impl g2impl;
@@ -78,6 +80,9 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     }
 
     public BarretoNaehrigBilinearGroupImpl(BarretoNaehrigParameterSpec spec) {
+        /* get parameter u that identifies the BN curve */
+        u = spec.u;
+
         /* get size of groups */
         BigInteger n = spec.size;
 
@@ -140,7 +145,7 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
 
         /* construct new bilinearMap based on its name */
         if ("Tate".equals(spec.pairing)) {
-            bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gtimpl);
+            bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gtimpl, u);
         } else {
             throw new IllegalArgumentException("Pairing of type " + spec.pairing + " not supported.");
         }
@@ -148,7 +153,7 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
 
     public BarretoNaehrigBilinearGroupImpl(Representation representation) {
         new ReprUtil(this).deserialize(representation);
-        bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gtimpl);
+        bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gtimpl, u);
     }
 
     @Override
@@ -391,7 +396,7 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
                     /* tschakka, we are done */
                     gT = new BarretoNaehrigTargetGroupImpl(v, n);
 
-                    init(P1, P2, gT);
+                    init(P1, P2, gT, u);
                     return;
                 }
             }
@@ -406,12 +411,12 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
      * @param gT target group
      */
     private void init(BarretoNaehrigGroup1ElementImpl P1, BarretoNaehrigGroup2ElementImpl P2,
-                                                 BarretoNaehrigTargetGroupImpl gT) {
+                                                 BarretoNaehrigTargetGroupImpl gT, BigInteger u) {
         g1impl = (BarretoNaehrigGroup1Impl) P1.getStructure();
         g2impl = (BarretoNaehrigGroup2Impl) P2.getStructure();
         gtimpl = gT;
 
-        bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gT);
+        bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gT, u);
         hashIntoG1impl = new BarretoNaehrigPointEncoding(g1impl);
         hashIntoG2impl = new BarretoNaehrigPointEncoding(g2impl);
     }

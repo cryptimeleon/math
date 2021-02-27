@@ -23,6 +23,11 @@ public class ExtensionField implements Field {
     protected FieldElement constant;
     protected int extensionDegree;
     protected PolynomialRing.Polynomial definingPolynomial;
+    /**
+     * frobeniusOfXPowers[i] = (x^p)^i mod (x^extensionDegree + constant)
+     * for i <= extensionDegree
+     */
+    protected ExtensionFieldElement[] frobeniusOfXPowers;
 
 
     /**
@@ -38,6 +43,15 @@ public class ExtensionField implements Field {
             coefficients[i] = constant.getStructure().getZeroElement();
 
         this.definingPolynomial = PolynomialRing.getPoly(coefficients);
+
+        //Precompute frobenius stuff (there's probably an embarrassingly better way to do this but ... here we go for now)
+        frobeniusOfXPowers = new ExtensionFieldElement[extensionDegree+1];
+        frobeniusOfXPowers[0] = getOneElement();
+        if (extensionDegree > 0) {
+            frobeniusOfXPowers[1] = (ExtensionFieldElement) createElement(constant.getStructure().getZeroElement(), constant.getStructure().getOneElement()).pow(getCharacteristic()); //"x^p"
+            for (int i = 2; i < frobeniusOfXPowers.length; i++)
+                frobeniusOfXPowers[i] = frobeniusOfXPowers[i-1].mul(frobeniusOfXPowers[1]);
+        }
     }
 
     /**
