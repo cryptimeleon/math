@@ -266,7 +266,7 @@ public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
         BarretoNaehrigGroup1ElementImpl P1;
         BarretoNaehrigGroup2ElementImpl P2;
 
-        BigInteger u = BigInteger.ONE.shiftLeft(groupBitSize / 4 + 1);
+        u = BigInteger.ONE.shiftLeft(groupBitSize / 4 + 1);
 
         /*
          * assure that u=1 mod 2 and u=1 mod 3. u=1 mod 2 assures that p(u) = 3 mod 4 and hence -1 is QNR in F_p u=1 mod

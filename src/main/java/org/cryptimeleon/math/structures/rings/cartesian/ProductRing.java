@@ -14,7 +14,7 @@ public class ProductRing implements Ring {
     @Represented
     protected Ring[] rings;
 
-    public ProductRing(Ring[] rings) {
+    public ProductRing(Ring... rings) {
         this.rings = rings;
     }
 

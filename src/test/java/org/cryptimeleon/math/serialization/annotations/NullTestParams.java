@@ -1,9 +1,7 @@
-package org.cryptimeleon.math.serialization.standalone.params;
+package org.cryptimeleon.math.serialization.annotations;
 
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.StandaloneRepresentable;
-import org.cryptimeleon.math.serialization.annotations.ReprUtil;
-import org.cryptimeleon.math.serialization.standalone.StandaloneTestParams;
 
 import java.util.*;
 
@@ -11,10 +9,6 @@ import java.util.*;
  * Verify that all serialization Annotations support (de-)serialization of null values
  */
 public class NullTestParams {
-    public static StandaloneTestParams get() {
-        return new StandaloneTestParams(NullTestClass.class, new NullTestClass());
-    }
-
     public static class NullTestClass implements StandaloneRepresentable {
 
         private StandaloneRepresentable nullTestObject;
