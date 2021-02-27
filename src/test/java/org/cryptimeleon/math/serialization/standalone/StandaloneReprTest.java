@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -87,6 +88,6 @@ public class StandaloneReprTest {
             System.err.println(notTestedClass.getName() + " implements StandaloneRepresentable was not tested by StandaloneTest. You need to define a StandaloneSubTest for it.");
         }
 
-        assertTrue(classesToTest.isEmpty(), "Missing StandaloneRepresentation tests for some class(es).");
+        assertTrue(classesToTest.isEmpty(), "Missing (or failed) StandaloneRepresentation tests for "+classesToTest.stream().map(Class::getSimpleName).sorted().collect(Collectors.joining(", ")));
     }
 }
