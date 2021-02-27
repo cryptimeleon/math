@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 
 public class ExtensionFieldElement implements FieldElement, UniqueByteRepresentable {
 
-    private ExtensionField field;
-    private FieldElement[] coefficients;
+    private final ExtensionField field;
+    private final FieldElement[] coefficients;
 
     public ExtensionFieldElement(ExtensionField f, FieldElement[] coefficients) {
         this.field = f;
@@ -150,6 +150,17 @@ public class ExtensionFieldElement implements FieldElement, UniqueByteRepresenta
     }
 
     @Override
+    public ExtensionFieldElement applyFrobenius() {
+        //Yes, this is probably suboptimal.
+        ExtensionFieldElement result = getStructure().getZeroElement();
+        for (int i=0; i<coefficients.length; i++) {
+            result = result.add(field.createElement(coefficients[i].applyFrobenius()).mul(getStructure().frobeniusOfXPowers[i]));
+        }
+        return result;
+        //return (ExtensionFieldElement) this.pow(getStructure().getCharacteristic());
+    }
+
+    @Override
     public ExtensionField getStructure() {
         return this.field;
     }
@@ -209,24 +220,6 @@ public class ExtensionFieldElement implements FieldElement, UniqueByteRepresenta
 
         return "["+Arrays.stream(coefficients).map(Object::toString).collect(Collectors.joining(", "))+"]";
     }
-
-    public ArrayList<BigInteger> asBigIntegerList() {
-        ArrayList<BigInteger> list = new ArrayList<BigInteger>();
-
-        for (FieldElement c : coefficients) {
-            if (c instanceof ExtensionFieldElement) {
-                for (BigInteger cc : ((ExtensionFieldElement) c).asBigIntegerList()) {
-                    list.add(cc);
-                }
-            } else if (c instanceof ZnElement) {
-                list.add(((ZnElement) c).getInteger());
-            }
-        }
-
-        return list;
-
-    }
-
 
     @Override
     public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {

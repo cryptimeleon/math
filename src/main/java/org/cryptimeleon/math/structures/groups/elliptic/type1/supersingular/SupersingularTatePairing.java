@@ -19,10 +19,6 @@ public class SupersingularTatePairing extends AbstractPairing {
         //	this.distortionMap = new SupersingularTypeADistortionMap(g1,gT.getFieldOfDefinition());
     }
 
-    public SupersingularTatePairing(Representation r) {
-        super(r);
-    }
-
     @Override
     protected ExtensionFieldElement evaluateLine(FieldElement[] line, PairingSourceGroupElement P, PairingSourceGroupElement Q) {
         ExtensionField targetField = (ExtensionField) gT.getFieldOfDefinition();
