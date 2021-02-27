@@ -117,12 +117,17 @@ public class MapRepresentationHandler implements RepresentationHandler {
         // Try to call default constructor to create collection.
         try {
             result = (Map) mapType.getConstructor().newInstance();
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
-                | InvocationTargetException e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e ) {
             // if the type has no constructor, fall back to LinkedHashMap
             if (mapType.isAssignableFrom(LinkedHashMap.class))
                 result = new LinkedHashMap<>();
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof RuntimeException)
+                throw (RuntimeException) e.getCause();
+            else
+                throw new RuntimeException("An error occured during invocation of the constructor of "+mapType.getSimpleName(), e);
         }
+
         if (result == null)
             throw new RuntimeException("Cannot instantiate type "+ mapType.getName());
 

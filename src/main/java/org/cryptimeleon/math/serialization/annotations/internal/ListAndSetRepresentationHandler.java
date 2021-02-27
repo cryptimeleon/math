@@ -95,19 +95,29 @@ public class ListAndSetRepresentationHandler implements RepresentationHandler {
         //Try to call default constructor to create collection.
         try {
             result = (Collection) collectionType.getConstructor().newInstance();
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             // if the type is an interface, we try the defined fallback classes
             // for example, fall back to ArrayList if the type is List
             for (Class<?> fallback : supportedFallbackClasses) {
                 try {
                     if (collectionType.isAssignableFrom(fallback))
                         result = (Collection) fallback.getConstructor().newInstance();
-                } catch (InstantiationException | NoSuchMethodException | IllegalAccessException
-                        | InvocationTargetException ex) {
+                } catch (InstantiationException | NoSuchMethodException | IllegalAccessException ex) {
                     throw new RuntimeException("Cannot instantiate type "+collectionType.getName());
+                } catch (InvocationTargetException ex) {
+                    if (e.getCause() instanceof RuntimeException)
+                        throw (RuntimeException) ex.getCause();
+                    else
+                        throw new RuntimeException("An error occured during invocation of the constructor of "+fallback.getSimpleName(), ex);
                 }
             }
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof RuntimeException)
+                throw (RuntimeException) e.getCause();
+            else
+                throw new RuntimeException("An error occured during invocation of the constructor of "+collectionType.getSimpleName(), e);
         }
+
         if (result == null)
             throw new RuntimeException("Cannot instantiate type "+collectionType.getName());
 

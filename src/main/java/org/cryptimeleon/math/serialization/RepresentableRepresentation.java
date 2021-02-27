@@ -77,9 +77,13 @@ public class RepresentableRepresentation extends Representation {
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("Cannot find class " + representedTypeName, e);
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException e) {
-            throw new IllegalArgumentException("Don't know how to handle Representable type '" + representedTypeName
-                    + "'", e);
+                | IllegalArgumentException e) {
+            throw new IllegalArgumentException("Error instantiating '" + representedTypeName + "' from representation", e);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof RuntimeException)
+                throw (RuntimeException) e.getCause();
+            else
+                throw new IllegalArgumentException(e);
         }
     }
 

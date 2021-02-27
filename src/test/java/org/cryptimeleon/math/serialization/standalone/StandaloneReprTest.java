@@ -68,9 +68,14 @@ public abstract class StandaloneReprTest {
                 .map(clazz -> {
                     try {
                         return clazz.getDeclaredConstructor().newInstance();
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException e) {
                         e.printStackTrace();
                         return null;
+                    } catch (InvocationTargetException e) {
+                        if (e.getCause() instanceof RuntimeException)
+                            throw (RuntimeException) e.getCause();
+                        else
+                            throw new RuntimeException("An exception was thrown in the constructor of "+clazz.getSimpleName(), e);
                     }
                 })
                 .filter(Objects::nonNull)
@@ -85,8 +90,10 @@ public abstract class StandaloneReprTest {
                     .forEach(clazz -> {
                         try {
                             test(clazz.getConstructor().newInstance());
-                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException e) {
                             fail(e);
+                        } catch (InvocationTargetException e) {
+                            fail("Exception was thrown during constructor invocation of "+clazz.getSimpleName(), e.getCause());
                         }
                     });
         }
@@ -102,7 +109,7 @@ public abstract class StandaloneReprTest {
         classesToTest.removeIf(c -> c.isInterface() || Modifier.isAbstract(c.getModifiers()) || !c.getPackage().getName().startsWith(packageToTest));
 
         for (Class<? extends StandaloneRepresentable> notTestedClass : classesToTest) {
-            System.err.println(notTestedClass.getName() + " implements StandaloneRepresentable was not tested by StandaloneTest. You need to define a StandaloneSubTest for it.");
+            System.err.println(notTestedClass.getName() + " implements StandaloneRepresentable but was not tested by StandaloneTest (or the test failed). You need to define a StandaloneReprSubTest for it.");
         }
 
         assertTrue(classesToTest.isEmpty(), "Missing (or failed) StandaloneRepresentation tests for "+classesToTest.stream().map(Class::getSimpleName).sorted().collect(Collectors.joining(", ")));
