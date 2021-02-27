@@ -58,9 +58,10 @@ public abstract class StandaloneReprSubTest {
             assertNotNull(constructor);
             Representation repr = (Representation) clazz.getMethod("getRepresentation").invoke(object);
             assertEquals(object, constructor.newInstance(repr));
-        } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
-            e.printStackTrace();
-            fail("An exception occured while serializing/deserializing "+clazz.getName());
+        } catch (IllegalAccessException | InstantiationException | NoSuchMethodException e) {
+            fail("An error occured while serializing/deserializing "+clazz.getName(), e);
+        } catch (InvocationTargetException e) {
+            fail("An exception was thrown while serializing/deserializing "+clazz.getName(), e.getCause());
         }
     }
 
@@ -78,8 +79,7 @@ public abstract class StandaloneReprSubTest {
             } catch (IllegalAccessException e) {
                 fail(e);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
-                fail("Exception thrown during execution of "+getClass().getName()+"::"+method.getName(), e);
+                fail("Exception thrown during execution of "+getClass().getName()+"::"+method.getName(), e.getCause());
             }
         }
 

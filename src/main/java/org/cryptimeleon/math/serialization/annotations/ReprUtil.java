@@ -329,9 +329,14 @@ public class ReprUtil {
             String methodToCall = parsedRestorerString[i];
             try {
                 currentObject = currentObject.getClass().getMethod(methodToCall).invoke(currentObject);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            } catch (IllegalAccessException | NoSuchMethodException e) {
                 e.printStackTrace();
                 throw new IllegalArgumentException("Cannot call desired method "+methodToCall+" on "+currentObject.getClass().getName(), e);
+            } catch (InvocationTargetException e) {
+                if (e.getCause() instanceof RuntimeException)
+                    throw (RuntimeException) e.getCause();
+                else
+                    throw new RuntimeException("An error occured during invocation of "+methodToCall+ " on "+currentObject.getClass(), e);
             }
         }
 
