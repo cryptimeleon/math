@@ -1,13 +1,17 @@
 plugins {
-    // Apply the java-library plugin to add support for Java Library
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
 }
 
 group = 'org.cryptimeleon'
-version = '1.0.0' + (Boolean.valueOf(System.getProperty("disablesnapshot")) ? "" : "-SNAPSHOT")
+archivesBaseName = project.name
+boolean isRelease = project.hasProperty("release")
+version = '1.0.0'  + (isRelease ? "" : "-SNAPSHOT")
 
-description = """"""
+description = 'The Math library provides the mathematical foundation for the other Cryptimeleon libraries. ' +
+        'It provides basics such as mathematical groups, rings and fields, e.g. Z_n , ' +
+        'as well as implementations of cryptographic pairings.'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -18,12 +22,9 @@ tasks.withType(JavaCompile) {
 
 
 repositories {
-    jcenter()
-    mavenCentral()
     mavenLocal()
-    maven { url "https://nexus.cs.upb.de/repository/sfb901-libs/" }
-    maven { url "https://nexus.cs.upb.de/repository/sfb901-releases/" }
-    maven { url "https://nexus.cs.upb.de/repository/sfb901-snapshots/" }
+    mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -94,27 +95,82 @@ java {
     registerFeature("tests") {
         usingSourceSet(sourceSets.test)
     }
+    withJavadocJar()
+    withSourcesJar()
 }
+
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            artifacts {
+                archives javadocJar, sourcesJar
+            }
+
+            pom {
+                name = 'Math'
+                url = 'https://cryptimeleon.org'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'jbobolz'
+                        name = 'Jan Bobolz'
+                        email = 'mail@jan-bobolz.de'
+                        organization = 'Paderborn University'
+                    }
+                    developer {
+                        id = 'feidens'
+                        name = 'Fabian Eidens'
+                        email = 'fabianeidens@gmail.com'
+                        organization = 'Paderborn University'
+                        url = 'https://feidens.github.io/'
+                    }
+                    developer {
+                        id = 'rheitjoh'
+                        name = 'Raphael Heitjohann'
+                        email = 'rheitjoh@mail.uni-paderborn.de'
+                        organization = 'Paderborn University'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/cryptimeleon/math.git'
+                    developerConnection = 'scm:git:https://github.com/cryptimeleon/math.git'
+                    url = 'https://github.com/cryptimeleon/math/'
+                }
+            }
         }
     }
-
     repositories {
         maven {
             credentials {
-                username = System.getProperty('nexus.user')
-                password = System.getProperty('nexus.key')
+                username = System.getenv("OSSRH_USERNAME")
+                password = System.getenv("OSSRH_TOKEN")
             }
-            def releasesRepoUrl = "https://nexus.cs.upb.de/repository/sfb901-releases/"
-            def snapshotsRepoUrl = "https://nexus.cs.upb.de/repository/sfb901-snapshots/"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            name = 'OSSRH'
+            def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            url = version.endsWith('SNAPSHOT') ? '' : releasesRepoUrl
         }
     }
 }
 
+signing {
+    required(project.hasProperty("release"))
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava
+}
