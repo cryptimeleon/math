@@ -7,8 +7,10 @@ import org.cryptimeleon.math.serialization.annotations.RepresentationRestorer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -112,6 +114,9 @@ public class MapRepresentationHandler implements RepresentationHandler {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object deserializeFromRepresentation(Representation repr, Function<String, RepresentationRestorer> getRegisteredRestorer) {
+        if (repr == null)
+            return null;
+
         Map result = null;
 
         // Try to call default constructor to create collection.
@@ -141,8 +146,11 @@ public class MapRepresentationHandler implements RepresentationHandler {
 
     @Override
     public Representation serializeToRepresentation(Object obj) {
+        if (obj == null)
+            return null;
         if (!(obj instanceof Map))
             throw new IllegalArgumentException("Cannot handle representation of "+obj.getClass().getName());
+
         MapRepresentation repr = new MapRepresentation();
         ((Map<?,?>) obj).forEach(
                 (k, v) -> repr.put(

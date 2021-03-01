@@ -44,8 +44,7 @@ public class StandaloneRepresentationHandler implements RepresentationHandler {
     }
 
     @Override
-    public Object deserializeFromRepresentation(Representation repr,
-                                                Function<String, RepresentationRestorer> getRegisteredRestorer) {
+    public Object deserializeFromRepresentation(Representation repr, Function<String, RepresentationRestorer> getRegisteredRestorer) {
         if (repr == null) {
             return null;
         }

@@ -38,11 +38,15 @@ public class DependentRepresentationHandler implements RepresentationHandler {
 
     @Override
     public Object deserializeFromRepresentation(Representation repr, Function<String, RepresentationRestorer> getRegisteredRestorer) {
+        if (repr == null)
+            return null;
         return getRegisteredRestorer.apply(restorerString).restoreFromRepresentation(typeToRestore, repr);
     }
 
     @Override
     public Representation serializeToRepresentation(Object object) {
+        if (object == null)
+            return null;
         return ((Representable) object).getRepresentation();
     }
 }
