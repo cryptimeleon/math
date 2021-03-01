@@ -1,2 +1,6 @@
 build/**
 .gradle/**
+out/**
+.idea/**
+.composite-enable
+gradle.properties
