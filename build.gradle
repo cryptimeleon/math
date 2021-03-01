@@ -9,9 +9,6 @@ archivesBaseName = project.name
 boolean isRelease = project.hasProperty("release")
 version = '1.0.0'  + (isRelease ? "" : "-SNAPSHOT")
 
-description = 'The Math library provides the mathematical foundation for the other Cryptimeleon libraries. ' +
-        'It provides basics such as mathematical groups, rings and fields, e.g. Z_n , ' +
-        'as well as implementations of cryptographic pairings.'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -119,6 +116,9 @@ publishing {
             pom {
                 name = 'Math'
                 url = 'https://cryptimeleon.org'
+                description = 'The Math library provides the mathematical foundation for the other Cryptimeleon libraries. ' +
+                        'It provides basics such as mathematical groups, rings and fields, e.g. Z_n , ' +
+                        'as well as implementations of cryptographic pairings.'
                 licenses {
                     license {
                         name = 'The Apache License, Version 2.0'
