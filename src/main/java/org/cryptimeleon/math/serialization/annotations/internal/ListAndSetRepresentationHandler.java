@@ -88,8 +88,10 @@ public class ListAndSetRepresentationHandler implements RepresentationHandler {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Object deserializeFromRepresentation(Representation repr,
-                                                Function<String, RepresentationRestorer> getRegisteredRestorer) {
+    public Object deserializeFromRepresentation(Representation repr, Function<String, RepresentationRestorer> getRegisteredRestorer) {
+        if (repr == null)
+            return null;
+
         Collection result = null;
 
         //Try to call default constructor to create collection.
@@ -130,12 +132,19 @@ public class ListAndSetRepresentationHandler implements RepresentationHandler {
 
     @Override
     public Representation serializeToRepresentation(Object obj) {
+        if (obj == null)
+            return null;
+
         if (!(obj instanceof List || obj instanceof Set))
             throw new IllegalArgumentException("Cannot handle representation of "+obj.getClass().getName());
+
+        if (!(obj instanceof List)) { //shuffle elements to avoid order leak
+            obj = Arrays.asList(((Set<?>) obj).toArray());
+            Collections.shuffle((List<?>) obj);
+        }
+
         ListRepresentation repr = new ListRepresentation();
         for (Object inner : (Iterable<?>) obj) {
-            //TODO sort elements in case of a Set type to avoid leaking something.
-            // Or is that done by the Converter? No, cannot.
             repr.put(elementHandler.serializeToRepresentation(inner));
         }
         return repr;

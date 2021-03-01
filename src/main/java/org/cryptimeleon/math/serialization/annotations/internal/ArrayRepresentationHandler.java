@@ -51,6 +51,9 @@ public class ArrayRepresentationHandler implements RepresentationHandler {
 
     @Override
     public Object deserializeFromRepresentation(Representation repr, Function<String, RepresentationRestorer> getRegisteredRestorer) {
+        if (repr == null)
+            return null;
+
         //Create array
         Object result = Array.newInstance(elementType, repr.list().size());
 
@@ -64,6 +67,9 @@ public class ArrayRepresentationHandler implements RepresentationHandler {
 
     @Override
     public Representation serializeToRepresentation(Object obj) {
+        if (obj == null)
+            return null;
+
         ListRepresentation repr = new ListRepresentation();
 
         for (int i=0; i<Array.getLength(obj); i++)
