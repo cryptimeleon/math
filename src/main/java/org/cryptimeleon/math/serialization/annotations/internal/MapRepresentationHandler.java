@@ -7,10 +7,8 @@ import org.cryptimeleon.math.serialization.annotations.RepresentationRestorer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
