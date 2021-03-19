@@ -3,6 +3,7 @@ package org.cryptimeleon.math.structures;
 import org.cryptimeleon.math.structures.rings.Field;
 import org.cryptimeleon.math.structures.rings.Ring;
 import org.cryptimeleon.math.structures.rings.RingElement;
+import org.cryptimeleon.math.structures.rings.extfield.ExtensionField;
 import org.cryptimeleon.math.structures.rings.integers.IntegerElement;
 import org.cryptimeleon.math.structures.rings.integers.IntegerRing;
 import org.cryptimeleon.math.structures.rings.polynomial.PolynomialRing;
@@ -241,6 +242,9 @@ public class RingTests extends StructureTests {
         // Polynomial ring over z13
         PolynomialRing polyRing = new PolynomialRing(z13);
 
+        // ExtensionField
+        ExtensionField extensionField = new ExtensionField(z13.getElement(11), 2);
+
         // Collect parameters
         TestParams[][] params = new TestParams[][]{
                 {new TestParams(integerRing, () -> new IntegerElement(5), () -> new IntegerElement(-1))},
@@ -251,7 +255,8 @@ public class RingTests extends StructureTests {
                         () -> polyRing.new Polynomial(new Random().nextBoolean() ? z13.getUniformlyRandomElement() :
                                 z13.getZeroElement(),
                                 z13.getUniformlyRandomElement()),
-                        polyRing::getUniformlyRandomUnit)}
+                        polyRing::getUniformlyRandomUnit)},
+                {new TestParams(extensionField)}
         };
         return Arrays.asList(params);
     }
