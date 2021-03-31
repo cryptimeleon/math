@@ -1,6 +1,9 @@
 package org.cryptimeleon.math.structures.rings.zn;
 
+import org.cryptimeleon.math.expressions.bool.BooleanExpression;
+import org.cryptimeleon.math.expressions.bool.ExponentEqualityExpr;
 import org.cryptimeleon.math.expressions.exponent.ExponentConstantExpr;
+import org.cryptimeleon.math.expressions.exponent.ExponentExpr;
 import org.cryptimeleon.math.hash.ByteAccumulator;
 import org.cryptimeleon.math.hash.UniqueByteRepresentable;
 import org.cryptimeleon.math.random.RandomGenerator;
@@ -293,6 +296,42 @@ public class Zn implements Ring {
 
         public ExponentConstantExpr asExponentExpression() {
             return new ExponentConstantExpr(this);
+        }
+
+        /**
+         * Returns an expression "this = other".
+         * This is for building expressions, i.e. only useful if unknown variables are involved.
+         * To compare two {@linkplain ZnElement}s normally, just use {@link #equals(Object)}.
+         */
+        public ExponentEqualityExpr isEqualTo(ExponentExpr other) {
+            return asExponentExpression().isEqualTo(other);
+        }
+
+        /**
+         * Returns an expression "this = other".
+         * This is for building expressions, i.e. only useful if unknown variables are involved.
+         * To compare two {@linkplain ZnElement}s normally, just use {@link #equals(Object)}.
+         */
+        public ExponentEqualityExpr isEqualTo(ZnElement other) {
+            return isEqualTo(other.asExponentExpression());
+        }
+
+        /**
+         * Returns an expression "this = other mod n".
+         * This is for building expressions, i.e. only useful if unknown variables are involved.
+         * To compare two {@linkplain ZnElement}s normally, just use {@link #equals(Object)}.
+         */
+        public ExponentEqualityExpr isEqualTo(BigInteger other) {
+            return isEqualTo(valueOf(other));
+        }
+
+        /**
+         * Returns an expression "this = other mod n".
+         * This is for building expressions, i.e. only useful if unknown variables are involved.
+         * To compare two {@linkplain ZnElement}s normally, just use {@link #equals(Object)}.
+         */
+        public ExponentEqualityExpr isEqualTo(long other) {
+            return isEqualTo(valueOf(other));
         }
 
         @Override
