@@ -102,7 +102,7 @@ public class IntegerRing implements Ring {
     public static BigInteger[] decomposeIntoDigits(BigInteger number, BigInteger base) {
         int power = 0;
         BigInteger basePower = BigInteger.ONE;
-        // as soon as number is smaller than number^power, it can be decomposed into power digits.
+        // as soon as number is smaller than base^power, it can be decomposed into power digits.
         while (basePower.compareTo(number) < 0) {
             basePower = basePower.multiply(base);
             power++;
