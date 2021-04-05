@@ -97,7 +97,7 @@ public class IntegerRing implements Ring {
      * For example, for base = 2, this does bit decomposition.
      *
      * @return an array {@code A} containing values {@code A[i] < base} such that
-     * \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
+     *      \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
      */
     public static BigInteger[] decomposeIntoDigits(BigInteger number, BigInteger base) {
         int power = 0;
@@ -116,7 +116,7 @@ public class IntegerRing implements Ring {
      * For example, for base = 2, this does bit decomposition.
      *
      * @return an array {@code A} containing values {@code A[i] < base} such that
-     * \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
+     *      \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
      * @throws IllegalArgumentException if {@code numDigits} is not enough to represent the given number
      */
     public static BigInteger[] decomposeIntoDigits(BigInteger number, BigInteger base, int numDigits) {
