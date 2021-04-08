@@ -375,6 +375,7 @@ public class Zn implements Ring {
         if (bytes.length > (n.bitLength() - 1) / 8)
             throw new IllegalArgumentException("Too many bytes to map injectively to Zn " +
                     "(allowed are byte arrays of length " + (n.bitLength() - 1) / 8 + ")");
+
         // Normalize to make the most significant byte 0 (includes the sign bit).
         // This ensures that the resulting BigInteger number is nonnegative.
         byte[] normalized = new byte[bytes.length + 1];
@@ -384,6 +385,13 @@ public class Zn implements Ring {
         if (result.compareTo(n) > 0 || result.signum() < 0)
             throw new RuntimeException("This should not happen");
         return createZnElement(result);
+    }
+
+    /**
+     * Interprets given bytes as an integer and projects that number into Zn. For short byte[], this map is injective.
+     */
+    public ZnElement valueOf(byte[] bytes) {
+        return createZnElement(new BigInteger(1, bytes));
     }
 
     @Override
