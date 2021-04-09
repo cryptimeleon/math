@@ -1,6 +1,7 @@
 package org.cryptimeleon.math.serialization;
 
 import org.cryptimeleon.math.serialization.converter.JSONConverter;
+import org.cryptimeleon.math.structures.cartesian.Vector;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -22,7 +23,11 @@ public class ListRepresentation extends Representation implements Iterable<Repre
 
     }
 
-    public ListRepresentation(List<Representation> list) {
+    public ListRepresentation(Vector<? extends Representation> vector) {
+        this(vector.toList());
+    }
+
+    public ListRepresentation(List<? extends Representation> list) {
         this.list.addAll(list);
     }
 

@@ -135,6 +135,16 @@ public class Zp extends Zn implements Field {
         }
 
         @Override
+        public ZpElement square() {
+            return (ZpElement) super.square();
+        }
+
+        @Override
+        public ZpElement div(Element e) throws IllegalArgumentException {
+            return (ZpElement) super.div(e);
+        }
+
+        @Override
         public ZpElement pow(BigInteger k) {
             return (ZpElement) super.pow(k);
         }
