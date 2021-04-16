@@ -86,7 +86,7 @@ task javadocJar(type: Jar) {
 }
 
 tasks.withType(Javadoc) {
-      options.addStringOption('Xdoclint:none', true)
+      options.addBooleanOption('Xdoclint:none', true)
 }
 
 //packageTests.dependsOn 'test'
