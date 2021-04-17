@@ -1,4 +1,4 @@
-package org.cryptimeleon.math.structures.groups.counting;
+package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
@@ -10,21 +10,21 @@ import org.cryptimeleon.math.structures.groups.mappings.GroupHomomorphism;
 import java.util.Objects;
 
 /**
- * A homomorphism between two {@link CountingGroup}s.
+ * A homomorphism between two {@link DebugGroup}s.
  */
-public class CountingHomomorphism implements GroupHomomorphism {
+public class DebugHomomorphism implements GroupHomomorphism {
 
     @Represented
     private LazyGroupHomomorphism totalHom;
     @Represented
     private LazyGroupHomomorphism expMultiExpHom;
 
-    public CountingHomomorphism(LazyGroupHomomorphism totalHom, LazyGroupHomomorphism expMultiExpHom) {
+    public DebugHomomorphism(LazyGroupHomomorphism totalHom, LazyGroupHomomorphism expMultiExpHom) {
         this.totalHom = totalHom;
         this.expMultiExpHom = expMultiExpHom;
     }
 
-    public CountingHomomorphism(Representation repr) {
+    public DebugHomomorphism(Representation repr) {
         new ReprUtil(this).deserialize(repr);
     }
 
@@ -35,10 +35,10 @@ public class CountingHomomorphism implements GroupHomomorphism {
 
     @Override
     public GroupElement apply(GroupElement groupElement) {
-        return new CountingGroupElement(
-                new CountingGroup(totalHom.getTargetGroup(), expMultiExpHom.getTargetGroup()),
-                totalHom.apply(((CountingGroupElement) groupElement).elemTotal),
-                expMultiExpHom.apply(((CountingGroupElement) groupElement).elemExpMultiExp)
+        return new DebugGroupElement(
+                new DebugGroup(totalHom.getTargetGroup(), expMultiExpHom.getTargetGroup()),
+                totalHom.apply(((DebugGroupElement) groupElement).elemTotal),
+                expMultiExpHom.apply(((DebugGroupElement) groupElement).elemExpMultiExp)
         );
     }
 
@@ -46,7 +46,7 @@ public class CountingHomomorphism implements GroupHomomorphism {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CountingHomomorphism that = (CountingHomomorphism) o;
+        DebugHomomorphism that = (DebugHomomorphism) o;
         return Objects.equals(totalHom, that.totalHom) &&
                 Objects.equals(expMultiExpHom, that.expMultiExpHom);
     }

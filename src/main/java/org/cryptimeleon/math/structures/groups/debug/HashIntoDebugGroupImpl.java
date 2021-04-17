@@ -1,4 +1,4 @@
-package org.cryptimeleon.math.structures.groups.counting;
+package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
@@ -8,19 +8,19 @@ import org.cryptimeleon.math.structures.rings.zn.HashIntoZn;
 import java.util.Objects;
 
 /**
- * Allows hashing a byte array to a {@link CountingGroupImpl} via {@link HashIntoZn}.
+ * Allows hashing a byte array to a {@link DebugGroupImpl} via {@link HashIntoZn}.
  */
-public class HashIntoCountingGroupImpl implements HashIntoGroupImpl {
-    protected CountingGroupImpl group;
+public class HashIntoDebugGroupImpl implements HashIntoGroupImpl {
+    protected DebugGroupImpl group;
     protected HashIntoZn hash;
 
-    public HashIntoCountingGroupImpl(CountingGroupImpl group) {
+    public HashIntoDebugGroupImpl(DebugGroupImpl group) {
         this.group = group;
         this.hash = new HashIntoZn(group.size());
     }
 
-    public HashIntoCountingGroupImpl(Representation repr) {
-        this(new CountingGroupImpl(repr));
+    public HashIntoDebugGroupImpl(Representation repr) {
+        this(new DebugGroupImpl(repr));
     }
 
     @Override
@@ -32,7 +32,7 @@ public class HashIntoCountingGroupImpl implements HashIntoGroupImpl {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        HashIntoCountingGroupImpl that = (HashIntoCountingGroupImpl) o;
+        HashIntoDebugGroupImpl that = (HashIntoDebugGroupImpl) o;
         return Objects.equals(group, that.group);
     }
 

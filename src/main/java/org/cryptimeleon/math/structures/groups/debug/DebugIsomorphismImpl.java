@@ -1,4 +1,4 @@
-package org.cryptimeleon.math.structures.groups.counting;
+package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
@@ -9,20 +9,20 @@ import org.cryptimeleon.math.structures.groups.mappings.impl.GroupHomomorphismIm
 import java.util.Objects;
 
 /**
- * Implements an isomorphism between two {@link CountingGroupImpl}s.
+ * Implements an isomorphism between two {@link DebugGroupImpl}s.
  */
-public class CountingIsomorphismImpl implements GroupHomomorphismImpl {
+public class DebugIsomorphismImpl implements GroupHomomorphismImpl {
     @Represented
-    private CountingGroupImpl src;
+    private DebugGroupImpl src;
     @Represented
-    private CountingGroupImpl target;
+    private DebugGroupImpl target;
 
-    public CountingIsomorphismImpl(CountingGroupImpl src, CountingGroupImpl target) {
+    public DebugIsomorphismImpl(DebugGroupImpl src, DebugGroupImpl target) {
         this.src = src;
         this.target = target;
     }
 
-    public CountingIsomorphismImpl(Representation repr) {
+    public DebugIsomorphismImpl(Representation repr) {
         new ReprUtil(this).deserialize(repr);
     }
 
@@ -35,14 +35,14 @@ public class CountingIsomorphismImpl implements GroupHomomorphismImpl {
     public GroupElementImpl apply(GroupElementImpl groupElement) {
         if (!groupElement.getStructure().equals(src))
             throw new IllegalArgumentException("Tried to apply isomorphism on wrong group (argument was from " + groupElement.getStructure() + ")");
-        return new CountingGroupElementImpl(target, ((CountingGroupElementImpl) groupElement).elem);
+        return new DebugGroupElementImpl(target, ((DebugGroupElementImpl) groupElement).elem);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CountingIsomorphismImpl that = (CountingIsomorphismImpl) o;
+        DebugIsomorphismImpl that = (DebugIsomorphismImpl) o;
         return Objects.equals(src, that.src) &&
                 Objects.equals(target, that.target);
     }

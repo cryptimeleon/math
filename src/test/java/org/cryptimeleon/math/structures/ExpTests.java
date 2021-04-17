@@ -3,7 +3,7 @@ package org.cryptimeleon.math.structures;
 import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.groups.GroupImpl;
-import org.cryptimeleon.math.structures.groups.counting.CountingBilinearGroupImpl;
+import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.exp.ExponentiationAlgorithms;
@@ -17,7 +17,7 @@ import java.math.BigInteger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExpTests {
-    public static final BilinearGroupImpl bilGroup = new CountingBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
+    public static final BilinearGroupImpl bilGroup = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
 
     @Test
     public void testMultiExpAlgs() {

@@ -7,7 +7,7 @@ import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.groups.GroupImpl;
 import org.cryptimeleon.math.structures.groups.RingAdditiveGroupImpl;
 import org.cryptimeleon.math.structures.groups.RingUnitGroupImpl;
-import org.cryptimeleon.math.structures.groups.counting.CountingGroupImpl;
+import org.cryptimeleon.math.structures.groups.debug.DebugGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.nopairing.Secp256k1;
 import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroupImpl;
@@ -187,7 +187,7 @@ public class GroupImplTests {
         RingAdditiveGroupImpl ringAddGroupInt = new RingAdditiveGroupImpl(new IntegerRing());
 
         // Debug group
-        CountingGroupImpl countingGroupImpl = new CountingGroupImpl("Testgroup", BigInteger.valueOf(1000));
+        DebugGroupImpl debugGroupImpl = new DebugGroupImpl("Testgroup", BigInteger.valueOf(1000));
 
         // BarretoNaehrig
         BilinearGroupImpl bnGroup = new BarretoNaehrigBilinearGroupImpl(128);
@@ -203,7 +203,7 @@ public class GroupImplTests {
         TestParams params[][] = new TestParams[][]{
                 {new TestParams(ringUnitGroupImpl)}, {new TestParams(ringAddGroup)},
                 {new TestParams(ringAddGroupInt, () -> ringAddGroupInt.new RingAdditiveGroupElementImpl(new IntegerElement(RandomGenerator.getRandomNumber(100000))))}, {new TestParams(sn)},
-                {new TestParams(countingGroupImpl)},
+                {new TestParams(debugGroupImpl)},
                 {new TestParams(bnG1)}, {new TestParams(bnG2)}, {new TestParams(bnGT)},
                 {new TestParams(bnG12)}, {new TestParams(bnG22)}, {new TestParams(bnGT2)},
                 {new TestParams(new Secp256k1())}

@@ -1,4 +1,4 @@
-package org.cryptimeleon.math.structures.groups.counting;
+package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
@@ -20,7 +20,7 @@ import java.util.Optional;
  * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
  * number of terms in each multi-exponentiation.
  */
-public class CountingGroupImpl implements GroupImpl {
+public class DebugGroupImpl implements GroupImpl {
 
     /**
      * Name of this group. Group elements between {@code CountingGroupElementImpl} instances only allow for group
@@ -87,7 +87,7 @@ public class CountingGroupImpl implements GroupImpl {
      *             and n
      * @param n    the size of this group
      */
-    public CountingGroupImpl(String name, BigInteger n) {
+    public DebugGroupImpl(String name, BigInteger n) {
         this(name, n, false, false);
     }
 
@@ -105,7 +105,7 @@ public class CountingGroupImpl implements GroupImpl {
      *                               the former is not done and group operations within multi-exponentiations
      *                               are added to the total count
      */
-    public CountingGroupImpl(String name, BigInteger n, boolean enableExpCounting, boolean enableMultiExpCounting) {
+    public DebugGroupImpl(String name, BigInteger n, boolean enableExpCounting, boolean enableMultiExpCounting) {
         zn = new Zn(n);
         this.name = name;
         this.enableExpCounting = enableExpCounting;
@@ -118,7 +118,7 @@ public class CountingGroupImpl implements GroupImpl {
         numRetrievedRepresentations = 0;
     }
 
-    public CountingGroupImpl(Representation repr) {
+    public DebugGroupImpl(Representation repr) {
         new ReprUtil(this).deserialize(repr);
         numInversions = 0;
         numOps = 0;
@@ -172,7 +172,7 @@ public class CountingGroupImpl implements GroupImpl {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (other == null || this.getClass() != other.getClass()) return false;
-        CountingGroupImpl that = (CountingGroupImpl) other;
+        DebugGroupImpl that = (DebugGroupImpl) other;
         return Objects.equals(name, that.name)
                 && Objects.equals(zn, that.zn)
                 && Objects.equals(enableExpCounting, that.enableExpCounting)
@@ -218,11 +218,11 @@ public class CountingGroupImpl implements GroupImpl {
     public GroupElementImpl multiexp(Multiexponentiation mexp) {
         // This method is only used if enableMultiExpCounting is set to true; hence, we count
         // the multi-exponentiation done.
-        CountingGroupElementImpl result = (CountingGroupElementImpl) mexp.getConstantFactor().orElse(getNeutralElement());
+        DebugGroupElementImpl result = (DebugGroupElementImpl) mexp.getConstantFactor().orElse(getNeutralElement());
         for (MultiExpTerm term : mexp.getTerms()) {
             // Use methods where we can disable counting since we only want to count the multi-exponentiation here
-            result = (CountingGroupElementImpl) result
-                    .op(((CountingGroupElementImpl) term.getBase()).pow(term.getExponent(),false), false);
+            result = (DebugGroupElementImpl) result
+                    .op(((DebugGroupElementImpl) term.getBase()).pow(term.getExponent(),false), false);
         }
         addMultiExpBaseNumber(mexp.getTerms().size());
         return result;
@@ -231,8 +231,8 @@ public class CountingGroupImpl implements GroupImpl {
     /**
      * Wraps a {@code ZnElement} in a {@code CountingGroupElementImpl} belonging to this group.
      */
-    public CountingGroupElementImpl wrap(Zn.ZnElement elem) {
-        return new CountingGroupElementImpl(this, elem);
+    public DebugGroupElementImpl wrap(Zn.ZnElement elem) {
+        return new DebugGroupElementImpl(this, elem);
     }
 
     @Override
