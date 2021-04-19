@@ -1,4 +1,4 @@
-package org.cryptimeleon.math.structures.groups.counting;
+package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.hash.ByteAccumulator;
 import org.cryptimeleon.math.serialization.ObjectRepresentation;
@@ -13,19 +13,19 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 /**
- * An element of {@link CountingGroup}.
+ * An element of {@link DebugGroup}.
  * <p>
- * As {@code CountingGroup} itself consists of two nested groups, {@code CountingGroupElement} also essentially
+ * As {@code DebugGroup} itself consists of two nested groups, {@code DebugGroupElement} also essentially
  * wraps two group elements, one for each nested group. Group operations are done for both.
  * 
- * @see CountingGroup
+ * @see DebugGroup
  */
-public class CountingGroupElement implements GroupElement {
+public class DebugGroupElement implements GroupElement {
 
     /**
      * The group this element belongs to.
      */
-    protected CountingGroup group;
+    protected DebugGroup group;
 
     /**
      * This element as a member of the group responsible for counting total group operations.
@@ -44,13 +44,13 @@ public class CountingGroupElement implements GroupElement {
      * @param elemTotal the version of this group element belonging to the group counting total group operations
      * @param elemExpMultiExp the version of this group element belonging to the group counting (multi)-exponentiations
      */
-    public CountingGroupElement(CountingGroup group, LazyGroupElement elemTotal, LazyGroupElement elemExpMultiExp) {
+    public DebugGroupElement(DebugGroup group, LazyGroupElement elemTotal, LazyGroupElement elemExpMultiExp) {
         this.group = group;
         this.elemTotal = elemTotal;
         this.elemExpMultiExp = elemExpMultiExp;
     }
 
-    public CountingGroupElement(CountingGroup group, Representation repr) {
+    public DebugGroupElement(DebugGroup group, Representation repr) {
         ObjectRepresentation objRepr = repr.obj();
         this.group = group;
         elemTotal = (LazyGroupElement) group.groupTotal.restoreElement(objRepr.get("elemTotal"));
@@ -67,7 +67,7 @@ public class CountingGroupElement implements GroupElement {
 
     @Override
     public Group getStructure() {
-        return new CountingGroup(
+        return new DebugGroup(
                 (LazyGroup) elemTotal.getStructure(),
                 (LazyGroup) elemExpMultiExp.getStructure()
         );
@@ -75,7 +75,7 @@ public class CountingGroupElement implements GroupElement {
 
     @Override
     public GroupElement inv() {
-        return new CountingGroupElement(
+        return new DebugGroupElement(
                 group,
                 (LazyGroupElement) elemTotal.inv(),
                 (LazyGroupElement) elemExpMultiExp.inv()
@@ -88,8 +88,8 @@ public class CountingGroupElement implements GroupElement {
             throw new IllegalArgumentException("Argument element is null");
         if (e.getClass() != this.getClass())
             throw new IllegalArgumentException("Argument element is not a CountingGroupElement");
-        CountingGroupElement other = (CountingGroupElement) e;
-        return new CountingGroupElement(
+        DebugGroupElement other = (DebugGroupElement) e;
+        return new DebugGroupElement(
                 group,
                 (LazyGroupElement) elemTotal.op(other.elemTotal),
                 (LazyGroupElement) elemExpMultiExp.op(other.elemExpMultiExp)
@@ -98,7 +98,7 @@ public class CountingGroupElement implements GroupElement {
 
     @Override
     public GroupElement pow(BigInteger exponent) {
-        return new CountingGroupElement(
+        return new DebugGroupElement(
                 group,
                 (LazyGroupElement) elemTotal.pow(exponent),
                 (LazyGroupElement) elemExpMultiExp.pow(exponent)
@@ -107,7 +107,7 @@ public class CountingGroupElement implements GroupElement {
 
     @Override
     public GroupElement precomputePow() {
-        return new CountingGroupElement(
+        return new DebugGroupElement(
                 group,
                 (LazyGroupElement) elemTotal.precomputePow(),
                 (LazyGroupElement) elemExpMultiExp.precomputePow()
@@ -116,7 +116,7 @@ public class CountingGroupElement implements GroupElement {
 
     @Override
     public GroupElement precomputePow(int windowSize) {
-        return new CountingGroupElement(
+        return new DebugGroupElement(
                 group,
                 (LazyGroupElement) elemTotal.precomputePow(windowSize),
                 (LazyGroupElement) elemExpMultiExp.precomputePow(windowSize)
@@ -131,7 +131,7 @@ public class CountingGroupElement implements GroupElement {
     @Override
     public GroupElement compute() {
         // counting requires synchronization so we always do computeSync
-        return new CountingGroupElement(
+        return new DebugGroupElement(
                 group,
                 (LazyGroupElement) elemTotal.computeSync(),
                 (LazyGroupElement) elemExpMultiExp.computeSync()
@@ -140,7 +140,7 @@ public class CountingGroupElement implements GroupElement {
 
     @Override
     public GroupElement computeSync() {
-        return new CountingGroupElement(
+        return new DebugGroupElement(
                 group,
                 (LazyGroupElement) elemTotal.computeSync(),
                 (LazyGroupElement) elemExpMultiExp.computeSync()
@@ -161,7 +161,7 @@ public class CountingGroupElement implements GroupElement {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CountingGroupElement other = (CountingGroupElement) o;
+        DebugGroupElement other = (DebugGroupElement) o;
         return Objects.equals(group, other.group)
                 && Objects.equals(elemTotal, other.elemTotal)
                 && Objects.equals(elemExpMultiExp, other.elemExpMultiExp);

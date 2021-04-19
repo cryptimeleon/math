@@ -2,7 +2,7 @@ package org.cryptimeleon.math.structures;
 
 import org.cryptimeleon.math.structures.groups.Group;
 import org.cryptimeleon.math.structures.groups.GroupElement;
-import org.cryptimeleon.math.structures.groups.counting.CountingGroupImpl;
+import org.cryptimeleon.math.structures.groups.debug.DebugGroupImpl;
 import org.cryptimeleon.math.serialization.RepresentableRepresentation;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.basic.BasicGroup;
@@ -214,11 +214,11 @@ public class GroupTests {
     @Parameters(name = "Test: {0}")
     public static Collection<TestParams[]> data() {
         // Some setup
-        CountingGroupImpl countingGroupImpl = new CountingGroupImpl(
+        DebugGroupImpl debugGroupImpl = new DebugGroupImpl(
                 "testGroupImpl", BigInteger.probablePrime(128, new Random())
         );
-        BasicGroup basicGroup = new BasicGroup(countingGroupImpl);
-        LazyGroup lazyGroup = new LazyGroup(countingGroupImpl);
+        BasicGroup basicGroup = new BasicGroup(debugGroupImpl);
+        LazyGroup lazyGroup = new LazyGroup(debugGroupImpl);
 
         // Collect parameters
         TestParams[][] params = new TestParams[][]{

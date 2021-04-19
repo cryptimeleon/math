@@ -1,4 +1,4 @@
-package org.cryptimeleon.math.structures.groups.counting;
+package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.serialization.Representation;
@@ -20,12 +20,12 @@ import java.util.Objects;
  * Allows for selecting between counting total group operations, or (multi-)exponentiations plus group operations
  * outside of (multi-)exponentiations.
  * <p>
- * Usually, you should be using {@link CountingBilinearGroup} instead of this class as it provides pairing counting
+ * Usually, you should be using {@link DebugBilinearGroup} instead of this class as it provides pairing counting
  * capabilities and allows for tracking both kinds of group operation data at once.
  * 
- * @see CountingBilinearGroup
+ * @see DebugBilinearGroup
  */
-public class CountingBilinearGroupImpl implements BilinearGroupImpl {
+public class DebugBilinearGroupImpl implements BilinearGroupImpl {
 
     /**
      * The security level offered by this bilinear group in number of bits.
@@ -62,10 +62,10 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
     /**
      * The underlying bilinear map used for applying the pairing function and counting it.
      */
-    CountingBilinearMapImpl bilinearMapImpl;
+    DebugBilinearMapImpl bilinearMapImpl;
 
-    public CountingBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors,
-                                     boolean enableExpCounting, boolean enableMultiExpCounting) {
+    public DebugBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors,
+                                  boolean enableExpCounting, boolean enableMultiExpCounting) {
         this.securityParameter = securityParameter;
         this.pairingType = pairingType;
         this.enableExpCounting = enableExpCounting;
@@ -79,16 +79,16 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
         init();
     }
 
-    public CountingBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors) {
+    public DebugBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors) {
         this(securityParameter, pairingType, numPrimeFactors, false, false);
     }
 
-    public CountingBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType) {
+    public DebugBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType) {
         this(securityParameter, pairingType, 1);
     }
 
-    public CountingBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, BigInteger size,
-                                     boolean enableExpCounting, boolean enableMultiExpCounting) {
+    public DebugBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, BigInteger size,
+                                  boolean enableExpCounting, boolean enableMultiExpCounting) {
         this.securityParameter = securityParameter;
         this.pairingType = pairingType;
         this.enableExpCounting = enableExpCounting;
@@ -98,10 +98,10 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
     }
 
     protected void init() {
-        bilinearMapImpl = new CountingBilinearMapImpl(pairingType, size, enableExpCounting, enableMultiExpCounting);
+        bilinearMapImpl = new DebugBilinearMapImpl(pairingType, size, enableExpCounting, enableMultiExpCounting);
     }
 
-    public CountingBilinearGroupImpl(Representation repr) {
+    public DebugBilinearGroupImpl(Representation repr) {
         ReprUtil.deserialize(this, repr);
         init();
     }
@@ -110,7 +110,7 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
     public boolean equals(Object other) {
         if (this == other) return true;
         if (other == null || this.getClass() != other.getClass()) return false;
-        CountingBilinearGroupImpl that = (CountingBilinearGroupImpl) other;
+        DebugBilinearGroupImpl that = (DebugBilinearGroupImpl) other;
         return Objects.equals(pairingType, that.pairingType)
                 && Objects.equals(size, that.size)
                 && Objects.equals(enableExpCounting, that.enableExpCounting)
@@ -128,17 +128,17 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
     }
 
     @Override
-    public CountingGroupImpl getG1() {
+    public DebugGroupImpl getG1() {
         return bilinearMapImpl.g1;
     }
 
     @Override
-    public CountingGroupImpl getG2() {
+    public DebugGroupImpl getG2() {
         return bilinearMapImpl.g2;
     }
 
     @Override
-    public CountingGroupImpl getGT() {
+    public DebugGroupImpl getGT() {
         return bilinearMapImpl.gt;
     }
 
@@ -151,22 +151,22 @@ public class CountingBilinearGroupImpl implements BilinearGroupImpl {
     public GroupHomomorphismImpl getHomomorphismG2toG1() throws UnsupportedOperationException {
         if (pairingType != BilinearGroup.Type.TYPE_1 && pairingType != BilinearGroup.Type.TYPE_2)
             throw new UnsupportedOperationException("Didn't require existence of a group homomorphism");
-        return new CountingIsomorphismImpl(getG2(), getG1());
+        return new DebugIsomorphismImpl(getG2(), getG1());
     }
 
     @Override
     public HashIntoGroupImpl getHashIntoG1() throws UnsupportedOperationException {
-        return new HashIntoCountingGroupImpl(getG1());
+        return new HashIntoDebugGroupImpl(getG1());
     }
 
     @Override
     public HashIntoGroupImpl getHashIntoG2() throws UnsupportedOperationException {
-        return new HashIntoCountingGroupImpl(getG2());
+        return new HashIntoDebugGroupImpl(getG2());
     }
 
     @Override
     public HashIntoGroupImpl getHashIntoGT() throws UnsupportedOperationException {
-        return new HashIntoCountingGroupImpl(getGT());
+        return new HashIntoDebugGroupImpl(getGT());
     }
 
     /**

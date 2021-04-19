@@ -1,4 +1,4 @@
-package org.cryptimeleon.math.structures.groups.counting;
+package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
@@ -19,11 +19,11 @@ import java.util.Optional;
  * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
  * number of terms in each multi-exponentiation.
  * <p>
- * This counting capability is realized by using two {@link LazyGroup}s that each wrap a {@link CountingGroupImpl}.
+ * This counting capability is realized by using two {@link LazyGroup}s that each wrap a {@link DebugGroupImpl}.
  * One counts total group operations and squarings, and the other counts (multi-)exponentiations as a single unit
  * (not including group operations and squarings done inside (multi-)exponentiations).
  */
-public class CountingGroup implements Group {
+public class DebugGroup implements Group {
 
     /**
      * Tracks total numbers, meaning that group operations done in (multi-)exp algorithms are also tracked.
@@ -45,32 +45,32 @@ public class CountingGroup implements Group {
      * @param name the name of the group
      * @param n the desired size of the group
      */
-    public CountingGroup(String name, BigInteger n) {
-        groupTotal = new LazyGroup(new CountingGroupImpl(name, n, false, false));
-        groupExpMultiExp = new LazyGroup(new CountingGroupImpl(name, n, true, true));
+    public DebugGroup(String name, BigInteger n) {
+        groupTotal = new LazyGroup(new DebugGroupImpl(name, n, false, false));
+        groupExpMultiExp = new LazyGroup(new DebugGroupImpl(name, n, true, true));
     }
 
-    public CountingGroup(String name, long n) {
+    public DebugGroup(String name, long n) {
         this(name, BigInteger.valueOf(n));
     }
 
     /**
-     * This constructor allows instantiating the {@link CountingGroup} with specific {@link LazyGroup} instances.
+     * This constructor allows instantiating the {@link DebugGroup} with specific {@link LazyGroup} instances.
      * This can, for example, be used to change the choice of (multi-)exponentiation algorithm by configuring
      * the {@link LazyGroup} instances to use a different (multi-)exponentiation algorithm.
      */
-    public CountingGroup(LazyGroup groupTotal, LazyGroup groupExpMultiExp) {
+    public DebugGroup(LazyGroup groupTotal, LazyGroup groupExpMultiExp) {
         this.groupTotal = groupTotal;
         this.groupExpMultiExp = groupExpMultiExp;
     }
 
-    public CountingGroup(Representation repr) {
+    public DebugGroup(Representation repr) {
         new ReprUtil(this).deserialize(repr);
     }
 
     @Override
     public GroupElement getNeutralElement() {
-        return new CountingGroupElement(
+        return new DebugGroupElement(
                 this,
                 (LazyGroupElement) groupTotal.getNeutralElement(),
                 (LazyGroupElement) groupExpMultiExp.getNeutralElement()
@@ -89,7 +89,7 @@ public class CountingGroup implements Group {
 
     @Override
     public GroupElement getUniformlyRandomElement() throws UnsupportedOperationException {
-        return new CountingGroupElement(
+        return new DebugGroupElement(
                 this,
                 (LazyGroupElement) groupTotal.getUniformlyRandomElement(),
                 (LazyGroupElement) groupExpMultiExp.getUniformlyRandomElement()
@@ -98,14 +98,14 @@ public class CountingGroup implements Group {
 
     @Override
     public GroupElement restoreElement(Representation repr) {
-        return new CountingGroupElement(this, repr);
+        return new DebugGroupElement(this, repr);
     }
 
-    public CountingGroupElement wrap(Zn.ZnElement elem) {
-        return new CountingGroupElement(
+    public DebugGroupElement wrap(Zn.ZnElement elem) {
+        return new DebugGroupElement(
                 this,
-                new ConstLazyGroupElement(groupTotal, ((CountingGroupImpl) groupTotal.getImpl()).wrap(elem)),
-                new ConstLazyGroupElement(groupExpMultiExp, ((CountingGroupImpl) groupExpMultiExp.getImpl()).wrap(elem))
+                new ConstLazyGroupElement(groupTotal, ((DebugGroupImpl) groupTotal.getImpl()).wrap(elem)),
+                new ConstLazyGroupElement(groupExpMultiExp, ((DebugGroupImpl) groupExpMultiExp.getImpl()).wrap(elem))
         );
     }
 
@@ -134,14 +134,14 @@ public class CountingGroup implements Group {
      * Retrieves number of group squarings including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumSquaringsTotal() {
-        return ((CountingGroupImpl) groupTotal.getImpl()).getNumSquarings();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumSquarings();
     }
 
     /**
      * Retrieves number of group inversions including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumInversionsTotal() {
-        return ((CountingGroupImpl) groupTotal.getImpl()).getNumInversions();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumInversions();
     }
 
     /**
@@ -149,21 +149,21 @@ public class CountingGroup implements Group {
      * Does not include squarings.
      */
     public long getNumOpsTotal() {
-        return ((CountingGroupImpl) groupTotal.getImpl()).getNumOps();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOps();
     }
 
     /**
      * Retrieves number of group squarings not including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumSquaringsNoExpMultiExp() {
-        return ((CountingGroupImpl) groupExpMultiExp.getImpl()).getNumSquarings();
+        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumSquarings();
     }
 
     /**
      * Retrieves number of group inversions not including ones done in (multi-)exponentiation algorithms.
      */
     public long getNumInversionsNoExpMultiExp() {
-        return ((CountingGroupImpl) groupExpMultiExp.getImpl()).getNumInversions();
+        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumInversions();
     }
 
     /**
@@ -171,21 +171,21 @@ public class CountingGroup implements Group {
      * Does not include squarings.
      */
     public long getNumOpsNoExpMultiExp() {
-        return((CountingGroupImpl) groupExpMultiExp.getImpl()).getNumOps();
+        return((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumOps();
     }
 
     /**
      * Retrieves number of group exponentiations done.
      */
     public long getNumExps() {
-        return ((CountingGroupImpl) groupExpMultiExp.getImpl()).getNumExps();
+        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumExps();
     }
 
     /**
      * Retrieves number of terms of each multi-exponentiation done.
      */
     public List<Integer> getMultiExpTermNumbers() {
-        return ((CountingGroupImpl) groupExpMultiExp.getImpl()).getMultiExpTermNumbers();
+        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getMultiExpTermNumbers();
     }
 
     /**
@@ -193,15 +193,15 @@ public class CountingGroup implements Group {
      */
     public long getNumRetrievedRepresentations() {
         // one of the groups suffices since we represent both elements
-        return ((CountingGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentations();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentations();
     }
 
     /**
      * Resets all counters.
      */
     public void resetCounters() {
-        ((CountingGroupImpl) groupTotal.getImpl()).resetCounters();
-        ((CountingGroupImpl) groupExpMultiExp.getImpl()).resetCounters();
+        ((DebugGroupImpl) groupTotal.getImpl()).resetCounters();
+        ((DebugGroupImpl) groupExpMultiExp.getImpl()).resetCounters();
     }
 
     /**
@@ -229,7 +229,7 @@ public class CountingGroup implements Group {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CountingGroup other = (CountingGroup) o;
+        DebugGroup other = (DebugGroup) o;
         return Objects.equals(groupTotal, other.groupTotal)
                 && Objects.equals(groupExpMultiExp, other.groupExpMultiExp);
     }

@@ -1,4 +1,4 @@
-package org.cryptimeleon.math.structures.groups.counting;
+package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
@@ -16,11 +16,11 @@ import java.util.Objects;
  * (multiplication in Zn).
  * It is insecure since DLOG is trivial in Zn.
  */
-public class CountingBilinearMapImpl implements BilinearMapImpl {
+public class DebugBilinearMapImpl implements BilinearMapImpl {
     /**
      * The groups underlying the bilinear group.
      */
-    protected CountingGroupImpl g1, g2, gt;
+    protected DebugGroupImpl g1, g2, gt;
 
     /**
      * Zn of order the bilinear group's size.
@@ -55,17 +55,17 @@ public class CountingBilinearMapImpl implements BilinearMapImpl {
      *                               the former is not done and group operations within multi-exponentiations
      *                               are added to the total count
      */
-    public CountingBilinearMapImpl(BilinearGroup.Type type, BigInteger groupSize, boolean enableExpCounting,
-                                   boolean enableMultiExpCounting) {
+    public DebugBilinearMapImpl(BilinearGroup.Type type, BigInteger groupSize, boolean enableExpCounting,
+                                boolean enableMultiExpCounting) {
         this.size = groupSize;
         this.zn = new Zn(groupSize);
         this.pairingType = type;
-        g1 = new CountingGroupImpl("G1", groupSize, enableExpCounting, enableMultiExpCounting);
+        g1 = new DebugGroupImpl("G1", groupSize, enableExpCounting, enableMultiExpCounting);
         if (type == BilinearGroup.Type.TYPE_1)
             g2 = g1;
         else
-            g2 = new CountingGroupImpl("G2", groupSize, enableExpCounting, enableMultiExpCounting);
-        gt = new CountingGroupImpl("GT", groupSize, enableExpCounting, enableMultiExpCounting);
+            g2 = new DebugGroupImpl("G2", groupSize, enableExpCounting, enableMultiExpCounting);
+        gt = new DebugGroupImpl("GT", groupSize, enableExpCounting, enableMultiExpCounting);
         numPairings = 0;
     }
 
@@ -76,14 +76,14 @@ public class CountingBilinearMapImpl implements BilinearMapImpl {
 
     @Override
     public GroupElementImpl apply(GroupElementImpl g1, GroupElementImpl g2) {
-        if (!(g1 instanceof CountingGroupElementImpl) || !((CountingGroupElementImpl) g1).group.equals(this.g1))
+        if (!(g1 instanceof DebugGroupElementImpl) || !((DebugGroupElementImpl) g1).group.equals(this.g1))
             throw new IllegalArgumentException("first pairing argument is not in " + this.g1.name + ". It's in "
-                    + (!(g1 instanceof CountingGroupElementImpl) ? g1.getStructure() : g1 == null ? null : ((CountingGroupElementImpl) g1).group.name));
-        if (!(g2 instanceof CountingGroupElementImpl) || !((CountingGroupElementImpl) g2).group.equals(this.g2))
+                    + (!(g1 instanceof DebugGroupElementImpl) ? g1.getStructure() : g1 == null ? null : ((DebugGroupElementImpl) g1).group.name));
+        if (!(g2 instanceof DebugGroupElementImpl) || !((DebugGroupElementImpl) g2).group.equals(this.g2))
             throw new IllegalArgumentException("first pairing argument is not in " + this.g2.name + ". It's in "
-                    + (!(g2 instanceof CountingGroupElementImpl) ? g2.getStructure() : g2 == null ? null : ((CountingGroupElementImpl) g2).group.name));
+                    + (!(g2 instanceof DebugGroupElementImpl) ? g2.getStructure() : g2 == null ? null : ((DebugGroupElementImpl) g2).group.name));
 
-        GroupElementImpl result = gt.wrap(((CountingGroupElementImpl) g1).elem.mul(((CountingGroupElementImpl) g2).elem));
+        GroupElementImpl result = gt.wrap(((DebugGroupElementImpl) g1).elem.mul(((DebugGroupElementImpl) g2).elem));
         incrementNumPairings();
         return result;
     }
@@ -102,7 +102,7 @@ public class CountingBilinearMapImpl implements BilinearMapImpl {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CountingBilinearMapImpl that = (CountingBilinearMapImpl) o;
+        DebugBilinearMapImpl that = (DebugBilinearMapImpl) o;
         return pairingType == that.pairingType &&
                 Objects.equals(size, that.size);
     }

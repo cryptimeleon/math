@@ -1,4 +1,4 @@
-package org.cryptimeleon.math.structures.groups.counting;
+package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.hash.ByteAccumulator;
 import org.cryptimeleon.math.serialization.Representation;
@@ -11,14 +11,14 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 /**
- * An element of {@link CountingGroupImpl} able to count group operations, inversions and squarings
+ * An element of {@link DebugGroupImpl} able to count group operations, inversions and squarings
  * it is involved with.
  * The actual group operations are realized via a Zn element.
  *
- * @see CountingGroupElement
- * @see CountingGroupImpl
+ * @see DebugGroupElement
+ * @see DebugGroupImpl
  */
-public class CountingGroupElementImpl implements GroupElementImpl {
+public class DebugGroupElementImpl implements GroupElementImpl {
     /**
      * The underlying Zn element that realizes the actual group operations.
      */
@@ -27,7 +27,7 @@ public class CountingGroupElementImpl implements GroupElementImpl {
     /**
      * The group this element belongs to.
      */
-    protected CountingGroupImpl group;
+    protected DebugGroupImpl group;
 
     /**
      * Initializes this element as belonging to the given group and using the given Zn element for its group operations.
@@ -35,7 +35,7 @@ public class CountingGroupElementImpl implements GroupElementImpl {
      * @param group The group this element belongs to.
      * @param elem The Zn element through which the group operations are done.
      */
-    public CountingGroupElementImpl(CountingGroupImpl group, Zn.ZnElement elem) {
+    public DebugGroupElementImpl(DebugGroupImpl group, Zn.ZnElement elem) {
         this.elem = elem;
         this.group = group;
     }
@@ -54,19 +54,19 @@ public class CountingGroupElementImpl implements GroupElementImpl {
 
     /**
      * Allows to configure whether to count this operation.
-     * Helpful for the {@link CountingGroupImpl#multiexp(Multiexponentiation)} method.
+     * Helpful for the {@link DebugGroupImpl#multiexp(Multiexponentiation)} method.
      * @param count {@code true} if we want to count the operation, {@code false} otherwise
      */
     protected GroupElementImpl op(GroupElementImpl e, boolean count) {
-        if (!(e instanceof CountingGroupElementImpl) || !((CountingGroupElementImpl) e).group.equals(group))
+        if (!(e instanceof DebugGroupElementImpl) || !((DebugGroupElementImpl) e).group.equals(group))
             throw new IllegalArgumentException("Incompatible groups. LHS: "
                     + group.name + "("
                     + group.size()
                     + "), RHS: "
-                    + (e instanceof CountingGroupElementImpl ? ((CountingGroupElementImpl) e).group.name + "(" + ((CountingGroupElementImpl) e).group.size() + ")"
+                    + (e instanceof DebugGroupElementImpl ? ((DebugGroupElementImpl) e).group.name + "(" + ((DebugGroupElementImpl) e).group.size() + ")"
                     : e == null ? "null" : e.getStructure())
             );
-        GroupElementImpl result = group.wrap(elem.add(((CountingGroupElementImpl) e).elem));
+        GroupElementImpl result = group.wrap(elem.add(((DebugGroupElementImpl) e).elem));
         if (count) {
             if (this.equals(e)) {
                 group.incrementNumSquarings();
@@ -84,7 +84,7 @@ public class CountingGroupElementImpl implements GroupElementImpl {
 
     /**
      * Allows to configure whether to count this exponentiation.
-     * Helpful for the {@link CountingGroupImpl#multiexp(Multiexponentiation)} method.
+     * Helpful for the {@link DebugGroupImpl#multiexp(Multiexponentiation)} method.
      * @param k exponent
      * @param count {@code true} if we want to count the exponentiation, {@code false} otherwise
      */
@@ -126,7 +126,7 @@ public class CountingGroupElementImpl implements GroupElementImpl {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CountingGroupElementImpl that = (CountingGroupElementImpl) o;
+        DebugGroupElementImpl that = (DebugGroupElementImpl) o;
         return Objects.equals(elem, that.elem) &&
                 Objects.equals(group, that.group);
     }

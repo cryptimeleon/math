@@ -5,8 +5,8 @@ import org.cryptimeleon.math.structures.groups.RingAdditiveGroupImpl;
 import org.cryptimeleon.math.structures.groups.RingUnitGroupImpl;
 import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.cartesian.ProductGroup;
-import org.cryptimeleon.math.structures.groups.counting.CountingBilinearGroup;
-import org.cryptimeleon.math.structures.groups.counting.CountingBilinearGroupImpl;
+import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;
+import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBilinearGroup;
@@ -75,15 +75,15 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
     }
 
     public void testLazyAndBasicGroup() {
-        BilinearGroupImpl debugGroupImpl = new CountingBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1);
+        BilinearGroupImpl debugGroupImpl = new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1);
 
         testBilinearGroup(new LazyBilinearGroup(debugGroupImpl));
         testBilinearGroup(new BasicBilinearGroup(debugGroupImpl));
     }
 
     public void testCountingGroup() {
-        testBilinearGroup(new CountingBilinearGroup(128, BilinearGroup.Type.TYPE_1));
-        testBilinearGroupImpl(new CountingBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1));
+        testBilinearGroup(new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_1));
+        testBilinearGroupImpl(new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1));
     }
 
     public void testExtensionField() {
