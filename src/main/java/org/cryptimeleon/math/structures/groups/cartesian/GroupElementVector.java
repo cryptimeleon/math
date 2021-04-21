@@ -126,8 +126,19 @@ public class GroupElementVector extends Vector<GroupElement> implements Represen
         return new GroupElementVector(super.truncate(newLength));
     }
 
+    @Override
     public GroupElementVector concatenate(Vector<? extends GroupElement> secondPart) {
         return new GroupElementVector(super.concatenate(secondPart));
+    }
+
+    @Override
+    public GroupElementVector append(GroupElement valueToAppend) {
+        return new GroupElementVector(super.append(valueToAppend));
+    }
+
+    @Override
+    public GroupElementVector prepend(GroupElement valueToPrepend) {
+        return new GroupElementVector(super.prepend(valueToPrepend));
     }
 
     public static GroupElementVector fromStream(Stream<? extends GroupElement> stream) {

@@ -302,6 +302,19 @@ public class Vector<X> {
         return instantiateWithSafeArray(result);
     }
 
+    public Vector<X> append(X valueToAppend) {
+        ArrayList<X> result = new ArrayList<>(values);
+        result.add(valueToAppend);
+        return instantiateWithSafeArray(result);
+    }
+
+    public Vector<X> prepend(X valueToPrepend) {
+        ArrayList<X> result = new ArrayList<>();
+        result.add(valueToPrepend);
+        result.addAll(values);
+        return instantiateWithSafeArray(result);
+    }
+
     public Vector<X> replace(int index, X substitute) {
         ArrayList<X> result = new ArrayList<>(values);
         result.set(index, substitute);
