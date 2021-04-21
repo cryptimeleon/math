@@ -172,6 +172,10 @@ public class Zn implements Ring {
             return createZnElementUnsafe(result);
         }
 
+        public ExponentExpr add(ExponentExpr e) {
+            return asExponentExpression().add(e);
+        }
+
         @Override
         public ZnElement neg() {
             return v.equals(BigInteger.ZERO) ? this : createZnElementUnsafe(n.subtract(v));
@@ -184,6 +188,10 @@ public class Zn implements Ring {
             if (result.signum() == -1)
                 result = result.add(n);
             return createZnElementUnsafe(result);
+        }
+
+        public ExponentExpr sub(ExponentExpr e) {
+            return asExponentExpression().sub(e);
         }
 
         @Override
@@ -202,6 +210,10 @@ public class Zn implements Ring {
             return mul(BigInteger.valueOf(k));
         }
 
+        public ExponentExpr mul(ExponentExpr e) {
+            return asExponentExpression().mul(e);
+        }
+
         @Override
         public ZnElement pow(BigInteger k) {
             return createZnElementUnsafe(v.modPow(k, n));
@@ -210,6 +222,10 @@ public class Zn implements Ring {
         @Override
         public ZnElement pow(long k) {
             return pow(BigInteger.valueOf(k));
+        }
+
+        public ExponentExpr pow(ExponentExpr e) {
+            return asExponentExpression().pow(e);
         }
 
         @Override
