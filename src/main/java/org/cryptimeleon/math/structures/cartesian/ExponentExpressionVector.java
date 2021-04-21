@@ -115,7 +115,18 @@ public class ExponentExpressionVector extends Vector<ExponentExpr> {
         return new ExponentExpressionVector(super.truncate(newLength));
     }
 
+    @Override
     public ExponentExpressionVector concatenate(Vector<? extends ExponentExpr> secondPart) {
         return new ExponentExpressionVector(super.concatenate(secondPart));
+    }
+
+    @Override
+    public ExponentExpressionVector append(ExponentExpr valueToAppend) {
+        return new ExponentExpressionVector(super.append(valueToAppend));
+    }
+
+    @Override
+    public ExponentExpressionVector prepend(ExponentExpr valueToPrepend) {
+        return new ExponentExpressionVector(super.prepend(valueToPrepend));
     }
 }

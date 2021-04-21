@@ -139,4 +139,29 @@ public class IntegerRing implements Ring {
 
         return result;
     }
+
+    /**
+     * Decomposes a given number into digits with the given base.
+     * <p>
+     * For example, for base = 2, this does bit decomposition.
+     *
+     * @return an array {@code A} containing values {@code A[i] < base} such that
+     *         \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
+     */
+    public static BigInteger[] decomposeIntoDigits(BigInteger number, long base) {
+        return decomposeIntoDigits(number, BigInteger.valueOf(base));
+    }
+
+    /**
+     * Decomposes a given number into the given number of digits with the given base.
+     * <p>
+     * For example, for base = 2, this does bit decomposition.
+     *
+     * @return an array {@code A} containing values {@code A[i] < base} such that
+     *         \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
+     * @throws IllegalArgumentException if {@code numDigits} is not enough to represent the given number
+     */
+    public static BigInteger[] decomposeIntoDigits(BigInteger number, long base, int numDigits) {
+        return decomposeIntoDigits(number, BigInteger.valueOf(base), numDigits);
+    }
 }

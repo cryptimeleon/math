@@ -116,6 +116,16 @@ public class GroupElementExpressionVector extends Vector<GroupElementExpression>
     }
 
     @Override
+    public GroupElementExpressionVector append(GroupElementExpression valueToAppend) {
+        return new GroupElementExpressionVector(super.append(valueToAppend));
+    }
+
+    @Override
+    public GroupElementExpressionVector prepend(GroupElementExpression valueToPrepend) {
+        return new GroupElementExpressionVector(super.prepend(valueToPrepend));
+    }
+
+    @Override
     public GroupElementExpressionVector replace(int index, GroupElementExpression substitute) {
         return new GroupElementExpressionVector(super.replace(index, substitute));
     }
