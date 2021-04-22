@@ -238,6 +238,16 @@ public class Zn implements Ring {
         }
 
         @Override
+        public ZnElement square() {
+            return mul(this);
+        }
+
+        @Override
+        public ZnElement div(Element e) throws IllegalArgumentException {
+            return (ZnElement) RingElement.super.div(e);
+        }
+
+        @Override
         public boolean divides(RingElement e) throws UnsupportedOperationException {
             // this divides e over Zn iff gcd(this, n) divides e over the integers (http://shoup.net/ntb/ntb-v2.pdf, Theorem 2.5 (i))
             return v.gcd(n).remainder(((ZnElement) e).v).equals(BigInteger.ZERO);
@@ -430,6 +440,7 @@ public class Zn implements Ring {
         if (bytes.length > (n.bitLength() - 1) / 8)
             throw new IllegalArgumentException("Too many bytes to map injectively to Zn " +
                     "(allowed are byte arrays of length " + (n.bitLength() - 1) / 8 + ")");
+
         // Normalize to make the most significant byte 0 (includes the sign bit).
         // This ensures that the resulting BigInteger number is nonnegative.
         byte[] normalized = new byte[bytes.length + 1];
@@ -439,6 +450,13 @@ public class Zn implements Ring {
         if (result.compareTo(n) > 0 || result.signum() < 0)
             throw new RuntimeException("This should not happen");
         return createZnElement(result);
+    }
+
+    /**
+     * Interprets given bytes as an integer and projects that number into Zn. For short byte[], this map is injective.
+     */
+    public ZnElement valueOf(byte[] bytes) {
+        return createZnElement(new BigInteger(1, bytes));
     }
 
     @Override
