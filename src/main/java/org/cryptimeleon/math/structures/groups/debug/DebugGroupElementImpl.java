@@ -18,7 +18,7 @@ import java.util.Objects;
  * @see DebugGroupElement
  * @see DebugGroupImpl
  */
-public class DebugGroupElementImpl implements GroupElementImpl {
+class DebugGroupElementImpl implements GroupElementImpl {
     /**
      * The underlying Zn element that realizes the actual group operations.
      */

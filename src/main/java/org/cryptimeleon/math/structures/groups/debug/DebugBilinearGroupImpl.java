@@ -25,7 +25,7 @@ import java.util.Objects;
  * 
  * @see DebugBilinearGroup
  */
-public class DebugBilinearGroupImpl implements BilinearGroupImpl {
+class DebugBilinearGroupImpl implements BilinearGroupImpl {
 
     /**
      * The security level offered by this bilinear group in number of bits.

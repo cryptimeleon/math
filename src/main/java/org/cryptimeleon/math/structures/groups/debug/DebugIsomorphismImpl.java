@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * Implements an isomorphism between two {@link DebugGroupImpl}s.
  */
-public class DebugIsomorphismImpl implements GroupHomomorphismImpl {
+class DebugIsomorphismImpl implements GroupHomomorphismImpl {
     @Represented
     private DebugGroupImpl src;
     @Represented

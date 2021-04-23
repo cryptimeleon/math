@@ -16,7 +16,7 @@ import java.util.Objects;
  * (multiplication in Zn).
  * It is insecure since DLOG is trivial in Zn.
  */
-public class DebugBilinearMapImpl implements BilinearMapImpl {
+class DebugBilinearMapImpl implements BilinearMapImpl {
     /**
      * The groups underlying the bilinear group.
      */
