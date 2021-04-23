@@ -4,9 +4,8 @@ import org.cryptimeleon.math.structures.groups.GroupElement;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearMap;
-import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularTateGroupImpl;
-import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroupImpl;
-import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
+import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBasicBilinearGroup;
+import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroup;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,11 +94,11 @@ public class PairingTests {
                 new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_3);
 
         // Supersingular curve groups
-        BilinearGroup supsingGroup = new BasicBilinearGroup(new SupersingularTateGroupImpl(80));
+        BilinearGroup supsingGroup = new SupersingularBasicBilinearGroup(80);
 
         // BN curves
-        BilinearGroup bnGroup = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl(80));
-        BilinearGroup sfcBn = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl("SFC-256"));
+        BilinearGroup bnGroup = new BarretoNaehrigBilinearGroup(80);
+        BilinearGroup sfcBn = new BarretoNaehrigBilinearGroup("SFC-256");
 
         // Collect parameters
         BilinearMap[][] params = new BilinearMap[][] {

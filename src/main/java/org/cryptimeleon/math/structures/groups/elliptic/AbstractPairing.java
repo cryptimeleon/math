@@ -1,8 +1,5 @@
 package org.cryptimeleon.math.structures.groups.elliptic;
 
-import org.cryptimeleon.math.serialization.ObjectRepresentation;
-import org.cryptimeleon.math.serialization.RepresentableRepresentation;
-import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.rings.FieldElement;
 import org.cryptimeleon.math.structures.rings.extfield.ExtensionField;

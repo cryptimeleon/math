@@ -4,11 +4,9 @@ import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.lazy.LazyBilinearGroup;
 
 /**
- * Offers a less verbose way to instantiate a Barreto-Naehrig bilinear group which uses lazy evaluation.
- * <p>
- * Essentially just a {@link LazyBilinearGroup} wrapper around {@link BarretoNaehrigBilinearGroupImpl}.
+ * A type 1 supersingular bilinear group where operations are evaluated lazily.
  *
- * @see BarretoNaehrigTargetGroupImpl
+ * @see BarretoNaehrigBasicBilinearGroup for the version without lazy evaluation
  */
 public class BarretoNaehrigBilinearGroup extends LazyBilinearGroup {
 

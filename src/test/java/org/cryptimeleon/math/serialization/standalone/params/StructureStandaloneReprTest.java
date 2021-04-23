@@ -10,9 +10,7 @@ import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBilinearGroup;
-import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularTateGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroup;
-import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.lazy.LazyBilinearGroup;
 import org.cryptimeleon.math.structures.groups.sn.Sn;
 import org.cryptimeleon.math.structures.rings.cartesian.ProductRing;
@@ -66,11 +64,11 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
 
     public void testBarretoNaehrig() {
         testBilinearGroup(new BarretoNaehrigBilinearGroup(80));
-        testBilinearGroupImpl(new BarretoNaehrigBilinearGroupImpl(80));
+        //testBilinearGroupImpl(new BarretoNaehrigBilinearGroupImpl(80));
     }
 
     public void testSupersingular() {
-        testBilinearGroupImpl(new SupersingularTateGroupImpl(80));
+        //testBilinearGroupImpl(new SupersingularTateGroupImpl(80));
         testBilinearGroup(new SupersingularBilinearGroup(80));
     }
 

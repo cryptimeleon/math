@@ -8,7 +8,7 @@ import java.math.BigInteger;
 /**
  * Abstract class for elements of both G1 and G2.
  */
-public abstract class BarretoNaehrigSourceGroupElementImpl extends PairingSourceGroupElement {
+abstract class BarretoNaehrigSourceGroupElementImpl extends PairingSourceGroupElement {
 
     public BarretoNaehrigSourceGroupElementImpl(BarretoNaehrigSourceGroupImpl curve, FieldElement x, FieldElement y) {
         super(curve, x, y);

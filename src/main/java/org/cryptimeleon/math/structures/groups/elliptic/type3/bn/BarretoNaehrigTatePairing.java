@@ -1,6 +1,5 @@
 package org.cryptimeleon.math.structures.groups.elliptic.type3.bn;
 
-import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.elliptic.AbstractPairing;
 import org.cryptimeleon.math.structures.groups.elliptic.PairingSourceGroupElement;
 import org.cryptimeleon.math.structures.groups.elliptic.PairingTargetGroupElementImpl;
