@@ -1,8 +1,7 @@
-package org.cryptimeleon.math.serialization.annotations.internal;
+package org.cryptimeleon.math.serialization.annotations;
 
 import org.cryptimeleon.math.serialization.Representable;
 import org.cryptimeleon.math.serialization.Representation;
-import org.cryptimeleon.math.serialization.annotations.RepresentationRestorer;
 
 import java.lang.reflect.Type;
 import java.util.function.Function;
@@ -10,7 +9,7 @@ import java.util.function.Function;
 /**
  * Handles representations that depend on some {@link RepresentationRestorer} in order to be recreated.
  */
-public class DependentRepresentationHandler implements RepresentationHandler {
+class DependentRepresentationHandler implements RepresentationHandler {
     /**
      * Restorer string indicating the {@code RepresentationRestorer} to use.
      */

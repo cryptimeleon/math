@@ -1,7 +1,6 @@
-package org.cryptimeleon.math.serialization.annotations.internal;
+package org.cryptimeleon.math.serialization.annotations;
 
 import org.cryptimeleon.math.serialization.*;
-import org.cryptimeleon.math.serialization.annotations.RepresentationRestorer;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -11,7 +10,7 @@ import java.util.function.Function;
  * Handles serialization/deserialization of the representation of {@link StandaloneRepresentable} implementers
  * and some other simple types.
  */
-public class StandaloneRepresentationHandler implements RepresentationHandler {
+class StandaloneRepresentationHandler implements RepresentationHandler {
 
     // it may be temping to add int.class etc. here, but it doesn't work because the ReprUtil assumes that everything
     // that's not null is already set (and int is auto-initialized with 0)

@@ -1,8 +1,7 @@
-package org.cryptimeleon.math.serialization.annotations.internal;
+package org.cryptimeleon.math.serialization.annotations;
 
 import org.cryptimeleon.math.serialization.ListRepresentation;
 import org.cryptimeleon.math.serialization.Representation;
-import org.cryptimeleon.math.serialization.annotations.RepresentationRestorer;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
@@ -11,7 +10,7 @@ import java.util.function.Function;
 /**
  * A handler for serializing/deserializing arrays.
  */
-public class ArrayRepresentationHandler implements RepresentationHandler {
+class ArrayRepresentationHandler implements RepresentationHandler {
     /**
      * Handler for the array elements.
      */

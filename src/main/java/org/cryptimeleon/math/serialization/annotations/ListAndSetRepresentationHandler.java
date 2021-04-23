@@ -1,8 +1,7 @@
-package org.cryptimeleon.math.serialization.annotations.internal;
+package org.cryptimeleon.math.serialization.annotations;
 
 import org.cryptimeleon.math.serialization.ListRepresentation;
 import org.cryptimeleon.math.serialization.Representation;
-import org.cryptimeleon.math.serialization.annotations.RepresentationRestorer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -13,7 +12,7 @@ import java.util.function.Function;
 /**
  * A handler for serializing/deserializing {@link List} and {@link Set} instances.
  */
-public class ListAndSetRepresentationHandler implements RepresentationHandler {
+class ListAndSetRepresentationHandler implements RepresentationHandler {
     private static final Class<?>[] supportedFallbackClasses = new Class[] {ArrayList.class, HashSet.class};
 
     /**
