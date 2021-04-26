@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Represents the result of a group operation.
  */
-public class OpLazyGroupElement extends LazyGroupElement {
+class OpLazyGroupElement extends LazyGroupElement {
     LazyGroupElement lhs, rhs;
     GroupElementImpl accumulatedConstant = null;
     List<MultiExpTerm> terms = null;

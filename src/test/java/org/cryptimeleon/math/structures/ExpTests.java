@@ -3,7 +3,6 @@ package org.cryptimeleon.math.structures;
 import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.groups.GroupImpl;
-import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.exp.ExponentiationAlgorithms;
@@ -12,15 +11,20 @@ import org.cryptimeleon.math.structures.groups.exp.Multiexponentiation;
 import org.cryptimeleon.math.structures.groups.exp.SmallExponentPrecomputation;
 import org.junit.Test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExpTests {
-    public static final BilinearGroupImpl bilGroup = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
 
     @Test
-    public void testMultiExpAlgs() {
+    public void testMultiExpAlgs() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Class<?> c = Class.forName("org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl");
+        Constructor<?> constructor = c.getConstructor(int.class, BilinearGroup.Type.class);
+        constructor.setAccessible(true);
+        BilinearGroupImpl bilGroup = (BilinearGroupImpl) constructor.newInstance(60, BilinearGroup.Type.TYPE_3);
         for (int i = 0; i < 10; ++i) {
             Multiexponentiation multiexponentiation = genMultiExp(bilGroup.getG1(), 10);
             System.out.println(multiexponentiation);
@@ -56,7 +60,11 @@ public class ExpTests {
     }
 
     @Test
-    public void testExpAlgs() {
+    public void testExpAlgs() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Class<?> c = Class.forName("org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl");
+        Constructor<?> constructor = c.getConstructor(int.class, BilinearGroup.Type.class);
+        constructor.setAccessible(true);
+        BilinearGroupImpl bilGroup = (BilinearGroupImpl) constructor.newInstance(60, BilinearGroup.Type.TYPE_3);
         for (int i = 0; i < 4; ++i) {
             GroupElementImpl elem = bilGroup.getG1().getUniformlyRandomNonNeutral();
             BigInteger exponent = RandomGenerator.getRandomNumber(BigInteger.valueOf(Integer.MAX_VALUE));

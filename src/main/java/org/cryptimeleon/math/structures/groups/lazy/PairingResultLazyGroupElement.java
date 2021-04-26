@@ -5,7 +5,7 @@ import org.cryptimeleon.math.structures.groups.GroupElement;
 /**
  * Represents the result of a pairing evaluation.
  */
-public class PairingResultLazyGroupElement extends LazyGroupElement {
+class PairingResultLazyGroupElement extends LazyGroupElement {
     protected LazyGroupElement lhs, rhs;
     protected LazyBilinearMap bilMap;
 

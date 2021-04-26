@@ -5,7 +5,7 @@ import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 /**
  * Represents a constant value.
  */
-public class ConstLazyGroupElement extends LazyGroupElement {
+class ConstLazyGroupElement extends LazyGroupElement {
     public ConstLazyGroupElement(LazyGroup group, GroupElementImpl concreteValue) {
         super(group, concreteValue);
     }
