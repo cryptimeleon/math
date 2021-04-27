@@ -3,6 +3,7 @@ package org.cryptimeleon.math.serialization.standalone.params;
 import org.cryptimeleon.math.serialization.standalone.StandaloneReprSubTest;
 import org.cryptimeleon.math.structures.groups.RingAdditiveGroupImpl;
 import org.cryptimeleon.math.structures.groups.RingUnitGroupImpl;
+import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.cartesian.ProductGroup;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
@@ -11,12 +12,15 @@ import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.Supe
 import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroup;
+import org.cryptimeleon.math.structures.groups.lazy.LazyBilinearGroup;
 import org.cryptimeleon.math.structures.groups.sn.Sn;
 import org.cryptimeleon.math.structures.rings.cartesian.ProductRing;
 import org.cryptimeleon.math.structures.rings.extfield.ExtensionField;
 import org.cryptimeleon.math.structures.rings.polynomial.PolynomialRing;
 import org.cryptimeleon.math.structures.rings.zn.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 
 public class StructureStandaloneReprTest extends StandaloneReprSubTest {
@@ -42,47 +46,28 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
         } catch (UnsupportedOperationException ignored) {}
     }
 
-    public void testBilinearGroupImpl(BilinearGroupImpl bilGroup) {
-        test(bilGroup);
-        test(bilGroup.getG1());
-        test(bilGroup.getG2());
-        test(bilGroup.getGT());
-        try {
-            test(bilGroup.getHashIntoG1());
-        } catch (UnsupportedOperationException ignored) {}
-        try {
-            test(bilGroup.getHashIntoG2());
-        } catch (UnsupportedOperationException ignored) {}
-        try {
-            test(bilGroup.getHashIntoGT());
-        } catch (UnsupportedOperationException ignored) {}
-        try {
-            test(bilGroup.getHomomorphismG2toG1());
-        } catch (UnsupportedOperationException ignored) {}
-    }
-
     public void testBarretoNaehrig() {
         testBilinearGroup(new BarretoNaehrigBasicBilinearGroup(80));
         testBilinearGroup(new BarretoNaehrigBilinearGroup(80));
-        //testBilinearGroupImpl(new BarretoNaehrigBilinearGroupImpl(80));
     }
 
     public void testSupersingular() {
-        //testBilinearGroupImpl(new SupersingularTateGroupImpl(80));
         testBilinearGroup(new SupersingularBasicBilinearGroup(80));
         testBilinearGroup(new SupersingularBilinearGroup(80));
     }
 
-    public void testLazyAndBasicGroup() {
-//        BilinearGroupImpl debugGroupImpl = new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1);
+    public void testLazyAndBasicGroup() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Class<?> c = Class.forName("org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl");
+        Constructor<?> constructor = c.getConstructor(int.class, BilinearGroup.Type.class);
+        constructor.setAccessible(true);
+        BilinearGroupImpl bilGroupImpl = (BilinearGroupImpl) constructor.newInstance(60, BilinearGroup.Type.TYPE_3);
 
-//        testBilinearGroup(new LazyBilinearGroup(debugGroupImpl));
-//        testBilinearGroup(new BasicBilinearGroup(debugGroupImpl));
+        testBilinearGroup(new LazyBilinearGroup(bilGroupImpl));
+        testBilinearGroup(new BasicBilinearGroup(bilGroupImpl));
     }
 
     public void testDebugGroup() {
         testBilinearGroup(new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_1));
-        //testBilinearGroupImpl(new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1));
     }
 
     public void testExtensionField() {

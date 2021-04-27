@@ -105,8 +105,9 @@ public abstract class StandaloneReprTest {
         Set<Class<? extends StandaloneRepresentable>> classesToTest = reflection.getSubTypesOf(StandaloneRepresentable.class);
         classesToTest.removeAll(testedClasses);
 
-        //Remove interfaces and stuff from other packages
-        classesToTest.removeIf(c -> c.isInterface() || Modifier.isAbstract(c.getModifiers()) || !c.getPackage().getName().startsWith(packageToTest));
+        // Remove interfaces and stuff from other packages, and classes that are not public
+        classesToTest.removeIf(c -> c.isInterface() || Modifier.isAbstract(c.getModifiers())
+                || !c.getPackage().getName().startsWith(packageToTest) || !Modifier.isPublic(c.getModifiers()));
 
         for (Class<? extends StandaloneRepresentable> notTestedClass : classesToTest) {
             System.err.println(notTestedClass.getName() + " implements StandaloneRepresentable but was not tested by StandaloneTest (or the test failed). You need to define a StandaloneReprSubTest for it.");
