@@ -6,6 +6,7 @@ import org.cryptimeleon.math.structures.groups.RingUnitGroupImpl;
 import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.cartesian.ProductGroup;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;
+import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBasicBilinearGroup;
@@ -19,8 +20,6 @@ import org.cryptimeleon.math.structures.rings.extfield.ExtensionField;
 import org.cryptimeleon.math.structures.rings.polynomial.PolynomialRing;
 import org.cryptimeleon.math.structures.rings.zn.*;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 
 public class StructureStandaloneReprTest extends StandaloneReprSubTest {
@@ -56,11 +55,8 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
         testBilinearGroup(new SupersingularBilinearGroup(80));
     }
 
-    public void testLazyAndBasicGroup() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Class<?> c = Class.forName("org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl");
-        Constructor<?> constructor = c.getConstructor(int.class, BilinearGroup.Type.class);
-        constructor.setAccessible(true);
-        BilinearGroupImpl bilGroupImpl = (BilinearGroupImpl) constructor.newInstance(60, BilinearGroup.Type.TYPE_3);
+    public void testLazyAndBasicGroup() {
+        BilinearGroupImpl bilGroupImpl = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
 
         testBilinearGroup(new LazyBilinearGroup(bilGroupImpl));
         testBilinearGroup(new BasicBilinearGroup(bilGroupImpl));

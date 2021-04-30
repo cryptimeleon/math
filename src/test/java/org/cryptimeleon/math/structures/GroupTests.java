@@ -6,6 +6,7 @@ import org.cryptimeleon.math.serialization.RepresentableRepresentation;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.GroupImpl;
 import org.cryptimeleon.math.structures.groups.basic.BasicGroup;
+import org.cryptimeleon.math.structures.groups.debug.DebugGroupImpl;
 import org.cryptimeleon.math.structures.groups.lazy.LazyGroup;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 import org.junit.Test;
@@ -13,8 +14,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Supplier;
@@ -214,12 +213,9 @@ public class GroupTests {
     }
 
     @Parameters(name = "Test: {0}")
-    public static Collection<TestParams[]> data() throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public static Collection<TestParams[]> data() {
         // Some setup
-        Class<?> c = Class.forName("org.cryptimeleon.math.structures.groups.debug.DebugGroupImpl");
-        Constructor<?> constructor = c.getConstructor(String.class, BigInteger.class);
-        constructor.setAccessible(true);
-        GroupImpl debugGroupImpl = (GroupImpl) constructor.newInstance(
+        GroupImpl debugGroupImpl = new DebugGroupImpl(
                 "testGroupImpl", BigInteger.probablePrime(128, new Random())
         );
         BasicGroup basicGroup = new BasicGroup(debugGroupImpl);

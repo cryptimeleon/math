@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * Allows hashing a byte array to a {@link DebugGroupImpl} via {@link HashIntoZn}.
  */
-class HashIntoDebugGroupImpl implements HashIntoGroupImpl {
+public class HashIntoDebugGroupImpl implements HashIntoGroupImpl {
     protected DebugGroupImpl group;
     protected HashIntoZn hash;
 

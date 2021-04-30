@@ -20,7 +20,7 @@ import java.util.Optional;
  * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
  * number of terms in each multi-exponentiation.
  */
-class DebugGroupImpl implements GroupImpl {
+public class DebugGroupImpl implements GroupImpl {
 
     /**
      * Name of this group. Group elements between {@code CountingGroupElementImpl} instances only allow for group
