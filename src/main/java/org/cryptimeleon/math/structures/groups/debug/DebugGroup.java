@@ -241,6 +241,6 @@ public class DebugGroup implements Group {
 
     @Override
     public String toString() {
-        return "CountingGroup(" + groupTotal + ";" + groupExpMultiExp + ")";
+        return this.getClass().getSimpleName() + "(" + groupTotal + ";" + groupExpMultiExp + ")";
     }
 }
