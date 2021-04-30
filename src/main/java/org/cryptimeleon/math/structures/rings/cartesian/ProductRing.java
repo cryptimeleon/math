@@ -51,6 +51,16 @@ public class ProductRing implements Ring {
     }
 
     @Override
+    public double estimateCostInvPerOp() {
+        return Arrays.stream(rings).map(Ring::estimateCostInvPerOp).reduce(0.0, Double::sum);
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        return Arrays.stream(rings).map(Ring::estimateCostNegPerOp).reduce(0.0, Double::sum);
+    }
+
+    @Override
     public BigInteger sizeUnitGroup() throws UnsupportedOperationException {
         return Arrays.stream(rings).map(Ring::sizeUnitGroup).reduce(BigInteger.ONE, BigInteger::multiply);
     }

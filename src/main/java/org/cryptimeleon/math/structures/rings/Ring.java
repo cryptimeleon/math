@@ -263,6 +263,20 @@ public interface Ring extends Structure, RepresentationRestorer {
     }
 
     /**
+     * Estimates the number of inversions that can be done per group operation for the same cost.
+     * For example, {@code 2} would mean that an inversion costs half as much as a group operation, on average.
+     * @return estimated number of inversions that can be done per group operation for the same cost
+     */
+    double estimateCostInvPerOp();
+
+    /**
+     * Estimates the number of negations (additive inversions) that can be done per group operation for the same cost.
+     * For example, {@code 2} would mean that a negation costs half as much as a group operation, on average.
+     * @return estimated number of inversions that can be done per group operation for the same cost
+     */
+    double estimateCostNegPerOp();
+
+    /**
      * Returns true if this ring is known to be commutative.
      */
     boolean isCommutative();

@@ -427,6 +427,18 @@ public class Zn implements Ring {
     }
 
     @Override
+    public double estimateCostInvPerOp() {
+        // Used Zn(2^128) here
+        return 0.1;
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        // Used Zn(2^128) here
+        return 1;
+    }
+
+    @Override
     public boolean isCommutative() {
         return true;
     }
