@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A algebraic ring with 1.
+ * An algebraic ring with 1.
  */
 public interface Ring extends Structure, RepresentationRestorer {
     /**

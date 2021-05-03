@@ -13,9 +13,11 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 /**
- * A Group. Operations are defined on its elements.
- * <p>
- * Usually wrapped by a {@link Group} to offer additional evaluation capabilities.
+ * An algebraic group implementation which can be wrapped by a {@link Group} to offer additional evaluation capabilities.
+ * Operations are defined on its elements.
+ *
+ * @see Group for the wrapper class
+ * @see GroupElementImpl for the element class
  */
 public interface GroupImpl extends StandaloneRepresentable, RepresentationRestorer {
     /**

@@ -165,7 +165,7 @@ public class Secp256k1 implements WeierstrassCurve {
     }
 
     /**
-     * A hash function mapping bit strings into the group such that
+     * A hash function mapping bit strings into Secp256k1.
      */
     public static class HashIntoSecp256k1 implements HashIntoGroupImpl {
         private final HashIntoZp hash;

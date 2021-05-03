@@ -24,8 +24,8 @@ public class ExtensionField implements Field {
     protected int extensionDegree;
     protected PolynomialRing.Polynomial definingPolynomial;
     /**
-     * frobeniusOfXPowers[i] = (x^p)^i mod (x^extensionDegree + constant)
-     * for i <= extensionDegree
+     * \(\text{frobeniusOfXPowers}[i] = (x^p)^i \mod (x^\text{extensionDegree} + \text{constant})\)
+     * for \(i \leq extensionDegree\)
      */
     protected ExtensionFieldElement[] frobeniusOfXPowers;
 

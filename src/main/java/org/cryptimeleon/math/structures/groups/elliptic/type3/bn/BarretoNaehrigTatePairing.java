@@ -12,7 +12,7 @@ import java.math.BigInteger;
 /**
  * Tate-pairing specific implementation of BN based pairings.
  */
-public class BarretoNaehrigTatePairing extends AbstractPairing {
+class BarretoNaehrigTatePairing extends AbstractPairing {
     BigInteger lambda2, lambda1, lambda0;
 
     /**

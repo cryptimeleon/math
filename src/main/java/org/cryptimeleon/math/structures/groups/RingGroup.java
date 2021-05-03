@@ -7,7 +7,7 @@ import org.cryptimeleon.math.structures.rings.Ring;
 import org.cryptimeleon.math.structures.rings.RingElement;
 
 /**
- * Represents a group instantiated from either the additive or unit groups from a ring.
+ * Represents a group instantiated from either the additive or unit group of a ring.
  */
 public class RingGroup extends BasicGroup {
     protected RingGroup(GroupImpl impl) {
