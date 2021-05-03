@@ -1,8 +1,6 @@
 package org.cryptimeleon.math.serialization.standalone.params;
 
 import org.cryptimeleon.math.serialization.standalone.StandaloneReprSubTest;
-import org.cryptimeleon.math.structures.groups.RingAdditiveGroupImpl;
-import org.cryptimeleon.math.structures.groups.RingUnitGroupImpl;
 import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.cartesian.ProductGroup;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;
@@ -45,6 +43,25 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
         } catch (UnsupportedOperationException ignored) {}
     }
 
+    public void testBilinearGroupImpl(BilinearGroupImpl bilGroup) {
+        test(bilGroup);
+        test(bilGroup.getG1());
+        test(bilGroup.getG2());
+        test(bilGroup.getGT());
+        try {
+            test(bilGroup.getHashIntoG1());
+        } catch (UnsupportedOperationException ignored) {}
+        try {
+            test(bilGroup.getHashIntoG2());
+        } catch (UnsupportedOperationException ignored) {}
+        try {
+            test(bilGroup.getHashIntoGT());
+        } catch (UnsupportedOperationException ignored) {}
+        try {
+            test(bilGroup.getHomomorphismG2toG1());
+        } catch (UnsupportedOperationException ignored) {}
+    }
+
     public void testBarretoNaehrig() {
         testBilinearGroup(new BarretoNaehrigBasicBilinearGroup(80));
         testBilinearGroup(new BarretoNaehrigBilinearGroup(80));
@@ -64,6 +81,7 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
 
     public void testDebugGroup() {
         testBilinearGroup(new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_1));
+        testBilinearGroupImpl(new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1));
     }
 
     public void testExtensionField() {
@@ -86,8 +104,6 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
     public void testRingGroups() {
         test(zp.asUnitGroup());
         test(zp.asAdditiveGroup());
-        test(new RingUnitGroupImpl(zp));
-        test(new RingAdditiveGroupImpl(zp));
     }
 
     public void testRings() {

@@ -205,6 +205,17 @@ public class ExtensionField implements Field {
         return getElement(BigInteger.valueOf(i));
     }
 
+    @Override
+    public double estimateCostInvPerOp() {
+        // Tested with base field Zp(741618179)
+        return 0.3;
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        return constant.getStructure().estimateCostNegPerOp();
+    }
+
     /**
      * Map an integer b to an element in this field.
      * <p>

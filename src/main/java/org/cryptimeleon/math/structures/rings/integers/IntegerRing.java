@@ -52,6 +52,16 @@ public class IntegerRing implements Ring {
     }
 
     @Override
+    public double estimateCostInvPerOp() {
+        return 6;
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        return 2;
+    }
+
+    @Override
     public IntegerElement restoreElement(Representation repr) {
         return new IntegerElement(repr.bigInt().get());
     }

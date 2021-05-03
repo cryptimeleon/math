@@ -52,12 +52,14 @@ public class ProductRing implements Ring {
 
     @Override
     public double estimateCostInvPerOp() {
-        return Arrays.stream(rings).map(Ring::estimateCostInvPerOp).reduce(0.0, Double::sum);
+        // Calculate average inversion cost
+        return Arrays.stream(rings).map(Ring::estimateCostInvPerOp).reduce(0.0, Double::sum) / rings.length;
     }
 
     @Override
     public double estimateCostNegPerOp() {
-        return Arrays.stream(rings).map(Ring::estimateCostNegPerOp).reduce(0.0, Double::sum);
+        // Calculate average negation cost
+        return Arrays.stream(rings).map(Ring::estimateCostNegPerOp).reduce(0.0, Double::sum) / rings.length;
     }
 
     @Override

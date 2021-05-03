@@ -65,6 +65,16 @@ public class BooleanStructure implements Ring {
     }
 
     @Override
+    public double estimateCostInvPerOp() {
+        return 1;
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        return 1;
+    }
+
+    @Override
     public boolean isCommutative() {
         return true;
     }
