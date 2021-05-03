@@ -87,6 +87,7 @@ public abstract class StandaloneReprTest {
             reflection.getSubTypesOf(StandaloneRepresentable.class).stream()
                     .filter(clazz -> clazz.getPackage().getName().startsWith(packageToTest)) //only use those that belong to the desired package
                     .filter(clazz -> Arrays.stream(clazz.getConstructors()).anyMatch(constr -> constr.getParameterCount() == 0))
+                    .filter(clazz -> Modifier.isPublic(clazz.getModifiers()))
                     .forEach(clazz -> {
                         try {
                             test(clazz.getConstructor().newInstance());
