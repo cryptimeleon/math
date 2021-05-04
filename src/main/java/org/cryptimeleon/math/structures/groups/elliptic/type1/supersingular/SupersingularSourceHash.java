@@ -9,7 +9,7 @@ import org.cryptimeleon.math.structures.rings.extfield.ExtensionField;
 import org.cryptimeleon.math.structures.rings.extfield.ExtensionFieldElement;
 import org.cryptimeleon.math.structures.rings.zn.HashIntoZn;
 
-public class SupersingularSourceHash implements HashIntoGroupImpl {
+class SupersingularSourceHash implements HashIntoGroupImpl {
     private SupersingularSourceGroupImpl codomain;
 
     public SupersingularSourceHash(SupersingularSourceGroupImpl codomain) {

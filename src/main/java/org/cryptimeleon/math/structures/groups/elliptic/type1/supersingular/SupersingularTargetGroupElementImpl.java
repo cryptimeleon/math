@@ -7,7 +7,7 @@ import org.cryptimeleon.math.structures.rings.extfield.ExtensionFieldElement;
 /**
  * @see PairingTargetGroupElementImpl
  */
-public class SupersingularTargetGroupElementImpl extends PairingTargetGroupElementImpl {
+class SupersingularTargetGroupElementImpl extends PairingTargetGroupElementImpl {
 
     public SupersingularTargetGroupElementImpl(PairingTargetGroupImpl g, ExtensionFieldElement fe) {
         super(g, fe);

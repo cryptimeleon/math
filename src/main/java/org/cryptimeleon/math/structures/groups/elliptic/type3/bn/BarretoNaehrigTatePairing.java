@@ -1,6 +1,5 @@
 package org.cryptimeleon.math.structures.groups.elliptic.type3.bn;
 
-import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.elliptic.AbstractPairing;
 import org.cryptimeleon.math.structures.groups.elliptic.PairingSourceGroupElement;
 import org.cryptimeleon.math.structures.groups.elliptic.PairingTargetGroupElementImpl;
@@ -13,7 +12,7 @@ import java.math.BigInteger;
 /**
  * Tate-pairing specific implementation of BN based pairings.
  */
-public class BarretoNaehrigTatePairing extends AbstractPairing {
+class BarretoNaehrigTatePairing extends AbstractPairing {
     BigInteger lambda2, lambda1, lambda0;
 
     /**

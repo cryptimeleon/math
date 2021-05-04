@@ -15,7 +15,7 @@ import java.util.Optional;
  * The unit group consists of the set of elements with a multiplicative inverse.
  * The group operation is multiplication and the neutral element is called the one element.
  */
-public class RingUnitGroupImpl extends RingGroupImpl {
+class RingUnitGroupImpl extends RingGroupImpl {
     public RingUnitGroupImpl(Ring ring) {
         super(ring);
     }
@@ -41,9 +41,7 @@ public class RingUnitGroupImpl extends RingGroupImpl {
 
     @Override
     public double estimateCostInvPerOp() {
-        // Does not really work here since the numbers depend on the exact ring
-        // Used Zn(2^128) here
-        return 0.1;
+        return ring.estimateCostInvPerOp();
     }
 
     @Override

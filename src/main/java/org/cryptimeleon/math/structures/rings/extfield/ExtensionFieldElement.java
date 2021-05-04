@@ -8,10 +8,8 @@ import org.cryptimeleon.math.structures.Element;
 import org.cryptimeleon.math.structures.rings.FieldElement;
 import org.cryptimeleon.math.structures.rings.RingElement;
 import org.cryptimeleon.math.structures.rings.polynomial.PolynomialRing;
-import org.cryptimeleon.math.structures.rings.zn.Zn.ZnElement;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;

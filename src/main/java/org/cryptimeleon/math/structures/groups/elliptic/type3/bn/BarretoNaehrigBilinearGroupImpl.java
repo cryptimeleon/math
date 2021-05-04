@@ -34,7 +34,7 @@ import java.util.Objects;
  *      with \(\mathbb{G}_2\) a subgroup of size \(n\) in \(E':y^2=x^3+b'\)
  * </ul>
  */
-public class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
+class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
 
     @Represented
     private Integer securityParameter;

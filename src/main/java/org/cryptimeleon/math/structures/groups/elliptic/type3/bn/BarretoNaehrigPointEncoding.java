@@ -20,7 +20,7 @@ import java.util.Objects;
 /**
  * Hash function into G1 and G2.
  */
-public class BarretoNaehrigPointEncoding implements HashIntoGroupImpl {
+class BarretoNaehrigPointEncoding implements HashIntoGroupImpl {
 
     @Represented
     private BarretoNaehrigSourceGroupImpl codomain;

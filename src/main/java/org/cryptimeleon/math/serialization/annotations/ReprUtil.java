@@ -2,7 +2,6 @@ package org.cryptimeleon.math.serialization.annotations;
 
 import org.cryptimeleon.math.serialization.ObjectRepresentation;
 import org.cryptimeleon.math.serialization.Representation;
-import org.cryptimeleon.math.serialization.annotations.internal.*;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearMap;
 

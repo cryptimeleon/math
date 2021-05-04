@@ -15,7 +15,7 @@ import java.math.BigInteger;
  * <p>
  * This class implements a subgroup of \(E:y^2=x^3+b\).
  */
-public abstract class BarretoNaehrigSourceGroupImpl extends PairingSourceGroupImpl {
+abstract class BarretoNaehrigSourceGroupImpl extends PairingSourceGroupImpl {
     public BarretoNaehrigSourceGroupImpl(BigInteger size, BigInteger cofactor, ExtensionFieldElement a6) {
         super(size, cofactor, a6.getStructure().getZeroElement(), a6);
     }

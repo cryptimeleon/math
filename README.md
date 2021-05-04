@@ -4,8 +4,8 @@
 ## Math
 
 The Cryptimeleon Math library provides the mathematical foundation for the other Cryptimeleon libraries.
-It provides basics such as mathematical groups, rings and fields, e.g. Zn, as well as implementations of cryptographic pairings.
-Furthermore, it provides serialization support for the implemented structures.
+It implements basics such as mathematical groups, rings and fields, e.g. Zn, as well as implementations of cryptographic pairings.
+Furthermore, it offers serialization support for the implemented structures.
 
 ## Security Disclaimer
 **WARNING: This library is meant to be used for prototyping and as a research tool *only*. It has not been sufficiently vetted for use in security-critical production environments. All implementations are to be considered experimental.**

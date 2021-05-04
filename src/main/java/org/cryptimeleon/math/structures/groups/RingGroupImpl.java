@@ -8,7 +8,7 @@ import org.cryptimeleon.math.structures.rings.RingElement;
 /**
  * Common base class for ring subgroups (additive/unit groups).
  */
-public abstract class RingGroupImpl implements GroupImpl {
+abstract class RingGroupImpl implements GroupImpl {
     protected final Ring ring;
 
     /**

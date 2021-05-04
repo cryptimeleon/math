@@ -1,6 +1,5 @@
 package org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular;
 
-import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.elliptic.AbstractPairing;
 import org.cryptimeleon.math.structures.groups.elliptic.PairingSourceGroupElement;
 import org.cryptimeleon.math.structures.rings.FieldElement;
@@ -10,7 +9,7 @@ import org.cryptimeleon.math.structures.rings.extfield.ExtensionFieldElement;
 /**
  * Tate-pairing implementation for the supersingular bilinear group.
  */
-public class SupersingularTatePairing extends AbstractPairing {
+class SupersingularTatePairing extends AbstractPairing {
 
     //SupersingularTypeADistortionMap distortionMap;
 

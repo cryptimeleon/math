@@ -1,7 +1,6 @@
 package org.cryptimeleon.math.serialization.converter;
 
 import org.cryptimeleon.math.serialization.*;
-import org.cryptimeleon.math.serialization.*;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 import org.junit.Assert;
 import org.junit.Test;

@@ -74,6 +74,17 @@ public class PolynomialRing implements Ring {
         return new Polynomial(baseRing.getElement(i));
     }
 
+    @Override
+    public double estimateCostInvPerOp() {
+        // Can only invert polynomials of degree zero
+        return baseRing.estimateCostInvPerOp();
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        return baseRing.estimateCostNegPerOp();
+    }
+
     /**
      * Returns the base ring.
      */

@@ -9,7 +9,7 @@ import java.math.BigInteger;
 /**
  * G1 in the Barreto-Naehrig bilinear group.
  */
-public class BarretoNaehrigGroup1Impl extends BarretoNaehrigSourceGroupImpl {
+class BarretoNaehrigGroup1Impl extends BarretoNaehrigSourceGroupImpl {
     /**
      * Construct subgroup of E:y^2=x^3+a6 using given parameters.
      *

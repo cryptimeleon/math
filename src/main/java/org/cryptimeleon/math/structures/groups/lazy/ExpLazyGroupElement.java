@@ -8,7 +8,7 @@ import java.math.BigInteger;
 /**
  * Represents an exponentiation with a base and exponent.
  */
-public class ExpLazyGroupElement extends LazyGroupElement {
+class ExpLazyGroupElement extends LazyGroupElement {
     LazyGroupElement base;
     BigInteger exponent;
 

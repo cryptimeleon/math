@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * Allows interpreting a ring as its additive group.
  */
-public class RingAdditiveGroupImpl extends RingGroupImpl {
+class RingAdditiveGroupImpl extends RingGroupImpl {
 
     /**
      * Instantiates this ring additive group.
@@ -37,9 +37,7 @@ public class RingAdditiveGroupImpl extends RingGroupImpl {
 
     @Override
     public double estimateCostInvPerOp() {
-        // Does not really work here since the numbers depend on the exact ring
-        // Used Zn(2^128) here
-        return 1;
+        return ring.estimateCostNegPerOp();
     }
 
     @Override

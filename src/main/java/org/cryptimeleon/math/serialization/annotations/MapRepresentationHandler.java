@@ -1,8 +1,7 @@
-package org.cryptimeleon.math.serialization.annotations.internal;
+package org.cryptimeleon.math.serialization.annotations;
 
 import org.cryptimeleon.math.serialization.MapRepresentation;
 import org.cryptimeleon.math.serialization.Representation;
-import org.cryptimeleon.math.serialization.annotations.RepresentationRestorer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -14,7 +13,7 @@ import java.util.function.Function;
 /**
  * A handler for serializing/deserializing {@link Map} instances.
  */
-public class MapRepresentationHandler implements RepresentationHandler {
+class MapRepresentationHandler implements RepresentationHandler {
     /**
      * Handler for the map's keys.
      */

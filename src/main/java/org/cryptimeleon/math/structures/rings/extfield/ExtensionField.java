@@ -24,8 +24,8 @@ public class ExtensionField implements Field {
     protected int extensionDegree;
     protected PolynomialRing.Polynomial definingPolynomial;
     /**
-     * frobeniusOfXPowers[i] = (x^p)^i mod (x^extensionDegree + constant)
-     * for i <= extensionDegree
+     * \(\text{frobeniusOfXPowers}[i] = (x^p)^i \mod (x^\text{extensionDegree} + \text{constant})\)
+     * for \(i \leq extensionDegree\)
      */
     protected ExtensionFieldElement[] frobeniusOfXPowers;
 
@@ -203,6 +203,17 @@ public class ExtensionField implements Field {
     @Override
     public ExtensionFieldElement getElement(long i) {
         return getElement(BigInteger.valueOf(i));
+    }
+
+    @Override
+    public double estimateCostInvPerOp() {
+        // Tested with base field Zp(741618179)
+        return 0.3;
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        return constant.getStructure().estimateCostNegPerOp();
     }
 
     /**

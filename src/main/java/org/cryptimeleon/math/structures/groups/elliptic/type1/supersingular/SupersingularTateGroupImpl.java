@@ -20,7 +20,7 @@ import java.util.Objects;
 /**
  * The implementation of our supersingular bilinear group.
  */
-public class SupersingularTateGroupImpl implements BilinearGroupImpl {
+class SupersingularTateGroupImpl implements BilinearGroupImpl {
 
     @Represented
     private Integer securityParameter;

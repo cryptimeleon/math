@@ -17,10 +17,10 @@ import java.math.BigInteger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExpTests {
-    public static final BilinearGroupImpl bilGroup = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
 
     @Test
     public void testMultiExpAlgs() {
+        BilinearGroupImpl bilGroup = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
         for (int i = 0; i < 10; ++i) {
             Multiexponentiation multiexponentiation = genMultiExp(bilGroup.getG1(), 10);
             System.out.println(multiexponentiation);
@@ -57,6 +57,7 @@ public class ExpTests {
 
     @Test
     public void testExpAlgs() {
+        BilinearGroupImpl bilGroup = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
         for (int i = 0; i < 4; ++i) {
             GroupElementImpl elem = bilGroup.getG1().getUniformlyRandomNonNeutral();
             BigInteger exponent = RandomGenerator.getRandomNumber(BigInteger.valueOf(Integer.MAX_VALUE));

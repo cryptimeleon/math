@@ -5,7 +5,6 @@ import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
 import org.cryptimeleon.math.structures.groups.Group;
 import org.cryptimeleon.math.structures.groups.GroupElement;
-import org.cryptimeleon.math.structures.groups.lazy.ConstLazyGroupElement;
 import org.cryptimeleon.math.structures.groups.lazy.LazyGroup;
 import org.cryptimeleon.math.structures.groups.lazy.LazyGroupElement;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
@@ -104,8 +103,8 @@ public class DebugGroup implements Group {
     public DebugGroupElement wrap(Zn.ZnElement elem) {
         return new DebugGroupElement(
                 this,
-                new ConstLazyGroupElement(groupTotal, ((DebugGroupImpl) groupTotal.getImpl()).wrap(elem)),
-                new ConstLazyGroupElement(groupExpMultiExp, ((DebugGroupImpl) groupExpMultiExp.getImpl()).wrap(elem))
+                groupTotal.wrap(((DebugGroupImpl) groupTotal.getImpl()).wrap(elem)),
+                groupExpMultiExp.wrap(((DebugGroupImpl) groupExpMultiExp.getImpl()).wrap(elem))
         );
     }
 

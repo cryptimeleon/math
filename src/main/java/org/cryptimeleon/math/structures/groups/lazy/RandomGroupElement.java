@@ -5,7 +5,7 @@ import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 /**
  * Represents the result of generating a group element unformly at random.
  */
-public class RandomGroupElement extends LazyGroupElement {
+class RandomGroupElement extends LazyGroupElement {
     private GroupElementImpl value = null;
 
     public RandomGroupElement(LazyGroup group) {

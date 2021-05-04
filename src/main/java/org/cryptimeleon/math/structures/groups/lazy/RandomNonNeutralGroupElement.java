@@ -5,7 +5,7 @@ import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 /**
  * Represents the result of generating a non-neutral group element uniformly at random.
  */
-public class RandomNonNeutralGroupElement extends LazyGroupElement {
+class RandomNonNeutralGroupElement extends LazyGroupElement {
     private GroupElementImpl value = null;
 
     public RandomNonNeutralGroupElement(LazyGroup group) {

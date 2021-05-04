@@ -3,7 +3,7 @@ package org.cryptimeleon.math.structures.groups.lazy;
 /**
  * Represents the result of applying a group homomorphism to some group element.
  */
-public class HomomorphismResultLazyGroupElement extends LazyGroupElement {
+class HomomorphismResultLazyGroupElement extends LazyGroupElement {
     protected LazyGroupElement preimage;
     protected LazyGroupHomomorphism homomorphism;
 
