@@ -305,7 +305,7 @@ public class ExtensionField implements Field {
     }
 
     @Override
-    public FieldElement getPrimitiveElement() throws UnsupportedOperationException {
+    public FieldElement getUnitGroupGenerator() throws UnsupportedOperationException {
         return null;
     }
 

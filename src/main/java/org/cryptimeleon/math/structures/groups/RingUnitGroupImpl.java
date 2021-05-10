@@ -102,7 +102,7 @@ class RingUnitGroupImpl extends RingGroupImpl {
     @Override
     public GroupElementImpl getGenerator() throws UnsupportedOperationException {
         if (ring instanceof Field)
-            return new RingUnitGroupElementImpl(((Field) ring).getPrimitiveElement());
+            return new RingUnitGroupElementImpl(((Field) ring).getUnitGroupGenerator());
         throw new UnsupportedOperationException("Cannot compute generator for this ring group " + this);
     }
 

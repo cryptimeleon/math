@@ -50,7 +50,7 @@ public class RingTests extends StructureTests {
 
         // getPrimitiveElement
         try {
-            RingElement primitive = field.getPrimitiveElement();
+            RingElement primitive = field.getUnitGroupGenerator();
             assertNotNull(ring.size()); // finite size if no exception was thrown
 
             // TODO test generating property

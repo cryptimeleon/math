@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Renamed counting group classes and package to debug
+- Made several classes package-private to clean up javadoc
 
 ## [1.0.0] - 2021-03-01
 

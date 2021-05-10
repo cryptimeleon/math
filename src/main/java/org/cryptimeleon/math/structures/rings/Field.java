@@ -11,10 +11,12 @@ public interface Field extends Ring {
     /**
      * If this is a finite field, returns a generator of the field's unit group.
      * Repeated calls may or may not always return the same element.
+     * <p>
+     * Keep in mind that this algorithm may run very slowly if a generator is hard to find.
      *
      * @throws UnsupportedOperationException if operation is not feasible or undefined
      */
-    FieldElement getPrimitiveElement() throws UnsupportedOperationException;
+    FieldElement getUnitGroupGenerator() throws UnsupportedOperationException;
 
     @Override
     default BigInteger sizeUnitGroup() {

@@ -70,7 +70,8 @@ public class Zp extends Zn implements Field {
     }
 
     @Override
-    public ZpElement getPrimitiveElement() throws UnsupportedOperationException {
+    public ZpElement getUnitGroupGenerator() throws UnsupportedOperationException {
+        // First we need to factorize p-1, and then compute a generator from that
         throw new UnsupportedOperationException("Not implemented");
     }
 
