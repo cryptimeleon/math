@@ -53,7 +53,7 @@ class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     @Represented
     private BarretoNaehrigTargetGroupImpl gtimpl;
     @Represented
-    private BarretoNaehrigPointEncoding hashIntoG1impl;
+    private BarretoNaehrigHashToG1Impl hashIntoG1impl;
     @Represented
     private BarretoNaehrigPointEncoding hashIntoG2impl;
 
@@ -140,7 +140,8 @@ class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
             default:
                 throw new IllegalArgumentException("Unknown hash function " + spec.hash);
         }
-        hashIntoG1impl = new BarretoNaehrigPointEncoding(hash, g1impl);
+        // Why does the spec supply the hash function?
+        hashIntoG1impl = new BarretoNaehrigHashToG1Impl(g1impl);
         hashIntoG2impl = new BarretoNaehrigPointEncoding(hash, g2impl);
 
         /* construct new bilinearMap based on its name */
@@ -200,7 +201,7 @@ class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
     }
 
     @Override
-    public HashIntoGroupImpl getHashIntoG1() throws UnsupportedOperationException {
+    public HashIntoGroupImpl getHashIntoG1() {
         return this.hashIntoG1impl;
     }
 
@@ -417,7 +418,7 @@ class BarretoNaehrigBilinearGroupImpl implements BilinearGroupImpl {
         gtimpl = gT;
 
         bilinearMapImpl = new BarretoNaehrigTatePairing(g1impl, g2impl, gT, u);
-        hashIntoG1impl = new BarretoNaehrigPointEncoding(g1impl);
+        hashIntoG1impl = new BarretoNaehrigHashToG1Impl(g1impl);
         hashIntoG2impl = new BarretoNaehrigPointEncoding(g2impl);
     }
 
