@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Implemented new indifferentiable hash functions to G1 and G2 for Barreto-Naehrig bilinear groups
+
 ### Changed
 - Renamed counting group classes and package to debug
 
