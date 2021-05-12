@@ -15,43 +15,35 @@ import org.cryptimeleon.math.structures.rings.zn.Zn;
 import java.math.BigInteger;
 import java.util.Objects;
 
-/**
- * Indifferentiable encoding, that is, an encoding that can be used to implement a hash function that can be used
- * to replace a ROM. More general than Boneh-Franklin admissible in that regard.
- */
-class BarretoNaehrigHashToG1Impl implements HashIntoGroupImpl {
+class BarretoNaehrigHashToSourceGroupImpl implements HashIntoGroupImpl {
 
     @Represented
-    public BarretoNaehrigGroup1Impl group1Impl;
-    private Field baseField;
-    private FieldElement b;
+    BarretoNaehrigSourceGroupImpl groupImpl;
+    Field baseField;
+    FieldElement b;
 
-    private FieldElement c1;
-    private FieldElement c2;
+    FieldElement c1;
+    FieldElement c2;
 
-    private HashFunction hashFunction1;
-    private HashFunction hashFunction2;
+    HashFunction hashFunction1;
+    HashFunction hashFunction2;
 
-    public BarretoNaehrigHashToG1Impl(BarretoNaehrigGroup1Impl group1Impl) {
-        this.group1Impl = group1Impl;
-        init();
+    public BarretoNaehrigHashToSourceGroupImpl(BarretoNaehrigSourceGroupImpl group1Impl) {
+        this.groupImpl = group1Impl;
+        baseField = groupImpl.getFieldOfDefinition();
+        init(new VariableOutputLengthHashFunction((baseField.size().bitLength() - 1) / 8));
     }
 
-    public BarretoNaehrigHashToG1Impl(Representation repr) {
+    public BarretoNaehrigHashToSourceGroupImpl(BarretoNaehrigSourceGroupImpl group1Impl, HashFunction hashFunction) {
+        this.groupImpl = group1Impl;
+        baseField = groupImpl.getFieldOfDefinition();
+        init(hashFunction);
+    }
+
+    public BarretoNaehrigHashToSourceGroupImpl(Representation repr) {
         new ReprUtil(this).deserialize(repr);
-        init();
-    }
-
-    public void init() {
-        b = group1Impl.getA6();
-        baseField = group1Impl.getFieldOfDefinition();
-        hashFunction1 = new VariableOutputLengthHashFunction((baseField.size().bitLength() - 1) / 8);
-        // TODO: Need an independent hash function. Using the same two functions does not fulfill that.
-        hashFunction2 = new VariableOutputLengthHashFunction((baseField.size().bitLength() - 1) / 8);
-        // c1 = sqrt{-3}
-        c1 = FiniteFieldTools.sqrt(baseField.getElement(-3));
-        // c2 = (-1 + sqrt{-3})/2
-        c2 = baseField.getOneElement().neg().add(c1).div(baseField.getElement(2));
+        baseField = groupImpl.getFieldOfDefinition();
+        init(new VariableOutputLengthHashFunction((baseField.size().bitLength() - 1) / 8));
     }
 
     @Override
@@ -61,14 +53,34 @@ class BarretoNaehrigHashToG1Impl implements HashIntoGroupImpl {
         // To get indifferentiability (Fouque and Tibouchi, Section 5), we need to
         //  calculate f(h1(m)) + f(h2(m)),
         //  where f is the SW encoding and h1 and h2 are independent random oracles to F_q.
-        byte[] h1 = hashFunction1.hash(x);
+
+        // Add prefixes to make hash functions independent
+        byte[] concat0X = new byte[1 + x.length];
+        concat0X[0] = 0;
+        System.arraycopy(x, 0, concat0X, 1, x.length);
+
+        byte[] concat1X = new byte[1 + x.length];
+        concat1X[0] = 1;
+        System.arraycopy(x, 0, concat1X, 1, x.length);
+
+        byte[] h1 = hashFunction1.hash(concat0X);
         BigInteger i1 = new BigInteger(h1);
-        byte[] h2 = hashFunction2.hash(x);
+        byte[] h2 = hashFunction2.hash(concat1X);
         BigInteger i2 = new BigInteger(h2);
 
         GroupElementImpl result = SWEncode(baseField.getElement(i1)).op(SWEncode(baseField.getElement(i2)));
-        System.out.println(result.pow(group1Impl.getCofactor()));
-        return result;
+        return groupImpl.multiplyByCofactor(result);
+    }
+
+    void init(HashFunction hashFunction) {
+        b = groupImpl.getA6();
+        // Need two independent hash functions for indifferentiability
+        hashFunction1 = hashFunction;
+        hashFunction2 = hashFunction;
+        // c1 = sqrt{-3}
+        c1 = FiniteFieldTools.sqrt(baseField.getElement(-3));
+        // c2 = (-1 + sqrt{-3})/2
+        c2 = baseField.getOneElement().neg().add(c1).div(baseField.getElement(2));
     }
 
     /**
@@ -80,13 +92,13 @@ class BarretoNaehrigHashToG1Impl implements HashIntoGroupImpl {
      * Implements algorithm 1 of P.-A. Fouque and M. Tibouchi, "Indifferentiable Hashing to Barreto–Naehrig Curves"
      * @param t the input
      */
-    private GroupElementImpl SWEncode(FieldElement t) {
+    GroupElementImpl SWEncode(FieldElement t) {
         if (t.isZero()) {
             // f(0) = ((-1 + \sqrt{-3})/2, \sqrt{1+b}) as suggested by Fouque and Tibouchi, Section 3
-            return group1Impl.getElement(c2, FiniteFieldTools.sqrt(baseField.getOneElement().add(b)));
+            return groupImpl.getElement(c2, FiniteFieldTools.sqrt(baseField.getOneElement().add(b)));
         }
         // w = sqrt{-3} * t/(1+b+t^2)
-        FieldElement w = baseField.getOneElement().add(group1Impl.getA6().add(t.pow(2))).inv().mul(t).mul(c1);
+        FieldElement w = baseField.getOneElement().add(groupImpl.getA6().add(t.pow(2))).inv().mul(t).mul(c1);
         // x_1 = (-1 + sqrt{-3})/2 - tw
         FieldElement x1 = c2.add(t.mul(w).neg());
         // x_2 = -1 - x_1
@@ -111,13 +123,13 @@ class BarretoNaehrigHashToG1Impl implements HashIntoGroupImpl {
         FieldElement y;
         if (i == 1) {
             y = baseField.getElement(chi(r3.square().mul(t))).mul(FiniteFieldTools.sqrt(x1.pow(3).add(b)));
-            return group1Impl.getElement(x1, y);
+            return groupImpl.getElement(x1, y);
         } else if (i == 2) {
             y = baseField.getElement(chi(r3.square().mul(t))).mul(FiniteFieldTools.sqrt(x2.pow(3).add(b)));
-            return group1Impl.getElement(x2, y);
+            return groupImpl.getElement(x2, y);
         } else if (i == 3) {
             y = baseField.getElement(chi(r3.square().mul(t))).mul(FiniteFieldTools.sqrt(x3.pow(3).add(b)));
-            return group1Impl.getElement(x3, y);
+            return groupImpl.getElement(x3, y);
         }
         throw new IllegalStateException("Unreachable!");
     }
@@ -125,7 +137,7 @@ class BarretoNaehrigHashToG1Impl implements HashIntoGroupImpl {
     /**
      * Implements character function chi_q of F_q^* extended with zero.
      */
-    private int chi(FieldElement t) {
+    int chi(FieldElement t) {
         if (t.equals(baseField.getZeroElement())) {
             return 0;
         }
@@ -136,17 +148,18 @@ class BarretoNaehrigHashToG1Impl implements HashIntoGroupImpl {
         }
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BarretoNaehrigHashToG1Impl that = (BarretoNaehrigHashToG1Impl) o;
-        return Objects.equals(group1Impl, that.group1Impl);
+        BarretoNaehrigHashToSourceGroupImpl that = (BarretoNaehrigHashToSourceGroupImpl) o;
+        return Objects.equals(groupImpl, that.groupImpl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(group1Impl, hashFunction1, hashFunction2);
+        return Objects.hash(groupImpl, hashFunction1, hashFunction2);
     }
 
     @Override

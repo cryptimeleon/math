@@ -59,7 +59,7 @@ abstract class BarretoNaehrigSourceGroupImpl extends PairingSourceGroupImpl {
             throw new IllegalArgumentException("Require cofactor coprime to order of subgroup.");
         }
 
-        return cofactorMultiplication(this.decompressX(y, sel), y);
+        return multiplyByCofactor(this.decompressX(y, sel), y);
     }
 
     /**
