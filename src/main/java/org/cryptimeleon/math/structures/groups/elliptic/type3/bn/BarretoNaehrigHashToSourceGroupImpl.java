@@ -15,6 +15,14 @@ import org.cryptimeleon.math.structures.rings.zn.Zn;
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * Class for indifferentiable hashing to G1 and G2 of the Barreto-Naehrig bilinear group.
+ * <p>
+ * Indifferentiable means that the resulting hash function is indifferentiable from a random oracle.
+ * <p>
+ * Hashing is done via the Shallue-van de Woestijne encoding from P.-A. Fouque and M. Tibouchi:
+ * "Indifferentiable Hashing to Barreto–Naehrig Curves".
+ */
 class BarretoNaehrigHashToSourceGroupImpl implements HashIntoGroupImpl {
 
     @Represented
@@ -69,6 +77,7 @@ class BarretoNaehrigHashToSourceGroupImpl implements HashIntoGroupImpl {
         BigInteger i2 = new BigInteger(h2);
 
         GroupElementImpl result = SWEncode(baseField.getElement(i1)).op(SWEncode(baseField.getElement(i2)));
+        // Make sure that the resulting element is in the correct subgroup
         return groupImpl.multiplyByCofactor(result);
     }
 
@@ -147,7 +156,6 @@ class BarretoNaehrigHashToSourceGroupImpl implements HashIntoGroupImpl {
             return -1;
         }
     }
-
 
     @Override
     public boolean equals(Object o) {
