@@ -63,7 +63,7 @@ class StandaloneRepresentationHandler implements RepresentationHandler {
         }
 
         if (type.isAssignableFrom(Integer.class) && repr instanceof BigIntegerRepresentation) {
-            return repr.bigInt().get().intValueExact();
+            return repr.bigInt().get().intValue();
         }
 
         if (type.isAssignableFrom(String.class) && repr instanceof StringRepresentation) {
