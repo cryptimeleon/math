@@ -26,7 +26,6 @@ public abstract class StandaloneReprSubTest {
     protected final void test(StandaloneRepresentable object) {
         Class<? extends StandaloneRepresentable> clazz = object.getClass();
         testedClasses.add(clazz);
-
         //Test for constructor with single Representation parameter
         try {
             Constructor<? extends StandaloneRepresentable> constructor = clazz.getConstructor(Representation.class);
