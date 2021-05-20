@@ -63,7 +63,11 @@ class StandaloneRepresentationHandler implements RepresentationHandler {
         }
 
         if (type.isAssignableFrom(Integer.class) && repr instanceof BigIntegerRepresentation) {
-            return repr.bigInt().get().intValue();
+            BigInteger value = repr.bigInt().get();
+            if (value.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0 
+                    || value.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) < 0)
+                throw new ArithmeticException("Integer value of BigInteger " + value + " is out of integer range");
+            return value.intValue();
         }
 
         if (type.isAssignableFrom(String.class) && repr instanceof StringRepresentation) {
