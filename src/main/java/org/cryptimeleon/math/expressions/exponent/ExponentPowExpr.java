@@ -2,6 +2,7 @@ package org.cryptimeleon.math.expressions.exponent;
 
 import org.cryptimeleon.math.expressions.Expression;
 import org.cryptimeleon.math.expressions.Substitution;
+import org.cryptimeleon.math.misc.BigIntegerTools;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
@@ -42,7 +43,9 @@ public class ExponentPowExpr implements ExponentExpr {
 
     @Override
     public BigInteger evaluate() {
-        return base.evaluate().pow(exponent.evaluate().intValueExact());
+        return base.evaluate().pow(
+                BigIntegerTools.getExactInt(exponent.evaluate())
+        );
     }
 
     @Override

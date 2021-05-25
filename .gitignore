@@ -1,7 +1,8 @@
 build/**
-android/build/**
+android-test/build/**
 .gradle/**
 out/**
 .idea/**
 .composite-enable
 gradle.properties
+local.properties
