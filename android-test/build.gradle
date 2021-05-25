@@ -20,16 +20,38 @@ android {
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
+    // make the android-test subproject just reuse the math stuff
     sourceSets {
         main {
             java.srcDirs = ["../src/main/java"]
         }
 
-        androidTest {
-            setRoot '../src/test'
+        // unit tests. Run via test task
+        test {
+            java.srcDirs = ["../src/test/java"]
         }
     }
 
+    testOptions {
+        unitTests {
+            all {
+                useJUnitPlatform()
+                maxParallelForks 4
+                //we want display the following test events
+                testLogging {
+                    events "PASSED", "STARTED", "FAILED", "SKIPPED"
+                }
+                afterSuite { desc, result ->
+                    if (!desc.parent) { // will match the outermost suite
+                        def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                        def startItem = '|  ', endItem = '  |'
+                        def repeatLength = startItem.length() + output.length() + endItem.length()
+                        println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+                    }
+                }
+            }
+        }
+    }
 }
 
 repositories {
@@ -40,4 +62,15 @@ repositories {
 dependencies {
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version:'1.1'
     implementation group: 'org.reflections', name: 'reflections', version:'0.9.10'
+
+    // (Required) Writing and executing Unit Tests on the JUnit Platform
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+
+    // (Optional) If you need "Parameterized Tests"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.1"
+
+    // (Optional) If you also have JUnit 4-based tests
+    testImplementation "junit:junit:4.13"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.7.1"
 }
