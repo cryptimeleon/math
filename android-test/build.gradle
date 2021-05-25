@@ -1,0 +1,43 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.2.1'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 30
+    defaultConfig {
+        minSdkVersion 28
+        targetSdkVersion 30
+
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ["../src/main/java"]
+        }
+
+        androidTest {
+            setRoot '../src/test'
+        }
+    }
+
+}
+
+repositories {
+    mavenCentral()
+    google()
+}
+
+dependencies {
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version:'1.1'
+    implementation group: 'org.reflections', name: 'reflections', version:'0.9.10'
+}
