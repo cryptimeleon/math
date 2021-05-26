@@ -1,6 +1,6 @@
 package org.cryptimeleon.math.structures.groups;
 
-import org.cryptimeleon.math.expressions.bool.BooleanExpression;
+import org.cryptimeleon.math.expressions.bool.GroupEqualityExpr;
 import org.cryptimeleon.math.expressions.exponent.ExponentExpr;
 import org.cryptimeleon.math.expressions.group.GroupElementConstantExpr;
 import org.cryptimeleon.math.expressions.group.GroupElementExpression;
@@ -160,7 +160,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * @param expr an expression to compare this group element to
      * @return an expression the evaluates to true (for some variable instantiation) if this is equal to expr.
      */
-    default BooleanExpression isEqualTo(GroupElementExpression expr) {
+    default GroupEqualityExpr isEqualTo(GroupElementExpression expr) {
         return expr().isEqualTo(expr);
     }
 
@@ -172,7 +172,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * @param expr an expression to compare this group element to
      * @return an expression the evaluates to true (for some variable instantiation) if this is equal to expr.
      */
-    default BooleanExpression isEqualTo(String expr) {
+    default GroupEqualityExpr isEqualTo(String expr) {
         return expr().isEqualTo(expr);
     }
 
@@ -184,7 +184,7 @@ public interface GroupElement extends Element, UniqueByteRepresentable {
      * @param other another group element to compare this group element to
      * @return an expression the evaluates to true iff this.equals(other).
      */
-    default BooleanExpression isEqualTo(GroupElement other) {
+    default GroupEqualityExpr isEqualTo(GroupElement other) {
         return expr().isEqualTo(other);
     }
 
