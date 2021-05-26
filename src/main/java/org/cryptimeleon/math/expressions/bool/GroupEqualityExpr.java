@@ -46,7 +46,7 @@ public class GroupEqualityExpr implements BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Substitution substitutions) {
+    public GroupEqualityExpr substitute(Substitution substitutions) {
         return lhs.substitute(substitutions).isEqualTo(rhs.substitute(substitutions));
     }
 
