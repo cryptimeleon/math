@@ -27,7 +27,7 @@ public class ExponentEqualityExpr implements BooleanExpression {
     }
 
     @Override
-    public BooleanExpression substitute(Substitution substitutions) {
+    public ExponentEqualityExpr substitute(Substitution substitutions) {
         return lhs.substitute(substitutions).isEqualTo(rhs.substitute(substitutions));
     }
 
