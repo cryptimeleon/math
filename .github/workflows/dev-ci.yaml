@@ -19,7 +19,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Build with Gradle
-        run: ./gradlew :build -PcheckoutIfCloned
+        run: ./gradlew :build
   android:
     runs-on: macos-latest
     steps:
