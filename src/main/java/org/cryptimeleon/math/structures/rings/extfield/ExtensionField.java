@@ -1,5 +1,6 @@
 package org.cryptimeleon.math.structures.rings.extfield;
 
+import org.cryptimeleon.math.misc.BigIntegerTools;
 import org.cryptimeleon.math.serialization.*;
 import org.cryptimeleon.math.structures.rings.Field;
 import org.cryptimeleon.math.structures.rings.FieldElement;
@@ -103,7 +104,10 @@ public class ExtensionField implements Field {
         Field baseField = (Field) ((RepresentableRepresentation) o.get("baseField")).recreateRepresentable();
 
 
-        init(baseField.restoreElement(o.get("constant")), o.get("extensionDegree").bigInt().get().intValueExact());
+        init(baseField.restoreElement(
+                o.get("constant")),
+                BigIntegerTools.getExactInt(o.get("extensionDegree").bigInt().get())
+        );
 
         if (o.get("cubeRoot") != null)
             this.setCubeRoot(this.restoreElement(o.get("cubeRoot")));

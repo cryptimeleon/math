@@ -1,5 +1,6 @@
 package org.cryptimeleon.math.serialization.annotations;
 
+import org.cryptimeleon.math.misc.BigIntegerTools;
 import org.cryptimeleon.math.serialization.*;
 
 import java.lang.reflect.Type;
@@ -63,7 +64,7 @@ class StandaloneRepresentationHandler implements RepresentationHandler {
         }
 
         if (type.isAssignableFrom(Integer.class) && repr instanceof BigIntegerRepresentation) {
-            return repr.bigInt().get().intValueExact();
+            return BigIntegerTools.getExactInt(repr.bigInt().get());
         }
 
         if (type.isAssignableFrom(String.class) && repr instanceof StringRepresentation) {
