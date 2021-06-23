@@ -17,12 +17,3 @@ jobs:
           java-version: 1.8
       - name: Build with Gradle
         run: ./gradlew :build -Prelease
-  android:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run tests on emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 28
-          script: ./gradlew android-test:connectedAndroidTest -Prelease -Pandroid.useAndroidX=true --info
