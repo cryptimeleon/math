@@ -1,4 +1,4 @@
-name: Scheduled main CI
+name: Scheduled main Java CI
 
 on:
   # Nightly builds to ensure dependencies don't break anything
