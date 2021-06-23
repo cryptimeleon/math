@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `BasicBilinearGroup` wrappers for the implemented bilinear groups
 - Convenience methods for the vector classes
 - `square`, `div` and `valueOf` convenience methods for `Zn` and `Zp` classes
+- PRF classes from Craco now are part of Math
+- `ByteArrayImpl`, a byte array implementation
 
 ### Changed
 - Renamed "counting" group classes and package to "debug"
