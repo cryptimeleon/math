@@ -6,6 +6,7 @@ import org.cryptimeleon.math.hash.impl.ByteArrayAccumulator;
 import org.cryptimeleon.math.misc.ByteArrayImpl;
 import org.cryptimeleon.math.prf.PrfKey;
 import org.cryptimeleon.math.prf.aes.AesPseudorandomFunction;
+import org.cryptimeleon.math.prf.aes.LongAesPseudoRandomFunction;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.StandaloneRepresentable;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;

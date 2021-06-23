@@ -1,4 +1,4 @@
 /**
  * Contains basic interfaces related to pseudorandom functions.
  */
-package org.cryptimeleon.craco.prf;
+package org.cryptimeleon.math.prf;

@@ -2,7 +2,7 @@ package org.cryptimeleon.math.prf;
 
 import org.cryptimeleon.math.misc.ByteArrayImpl;
 import org.cryptimeleon.math.prf.aes.AesPseudorandomFunction;
-import org.cryptimeleon.math.prf.zn.LongAesPseudoRandomFunction;
+import org.cryptimeleon.math.prf.aes.LongAesPseudoRandomFunction;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

@@ -1,10 +1,9 @@
-package org.cryptimeleon.math.prf.zn;
+package org.cryptimeleon.math.prf.aes;
 
 import org.cryptimeleon.math.misc.ByteArrayImpl;
 import org.cryptimeleon.math.prf.PrfKey;
 import org.cryptimeleon.math.prf.PrfPreimage;
 import org.cryptimeleon.math.prf.PseudorandomFunction;
-import org.cryptimeleon.math.prf.aes.AesPseudorandomFunction;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
