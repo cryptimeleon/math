@@ -4,6 +4,11 @@ import java.math.BigInteger;
 
 /**
  * Represents a fixed parametrization of a Barreto-Naehrig bilinear group.
+ * 
+ * @see BarretoNaehrigBilinearGroup#BarretoNaehrigBilinearGroup(BarretoNaehrigParameterSpec) 
+ * @see BarretoNaehrigBilinearGroup#BarretoNaehrigBilinearGroup(String) 
+ * @see BarretoNaehrigBasicBilinearGroup#BarretoNaehrigBasicBilinearGroup(BarretoNaehrigParameterSpec)
+ * @see BarretoNaehrigBasicBilinearGroup#BarretoNaehrigBasicBilinearGroup(String) 
  */
 public class BarretoNaehrigParameterSpec {
     public final BigInteger u;

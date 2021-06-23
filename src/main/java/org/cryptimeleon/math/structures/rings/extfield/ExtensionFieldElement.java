@@ -8,10 +8,8 @@ import org.cryptimeleon.math.structures.Element;
 import org.cryptimeleon.math.structures.rings.FieldElement;
 import org.cryptimeleon.math.structures.rings.RingElement;
 import org.cryptimeleon.math.structures.rings.polynomial.PolynomialRing;
-import org.cryptimeleon.math.structures.rings.zn.Zn.ZnElement;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -83,19 +81,23 @@ public class ExtensionFieldElement implements FieldElement, UniqueByteRepresenta
 
     @Override
     public ExtensionFieldElement mul(Element e) {
-        ExtensionFieldElement bne = (ExtensionFieldElement) e;
+        ExtensionFieldElement other = (ExtensionFieldElement) e;
 
-        FieldElement[] result = new FieldElement[this.coefficients.length + bne.coefficients.length];
+        FieldElement[] result = new FieldElement[field.extensionDegree];
+        Arrays.fill(result, field.getBaseField().getZeroElement());
 
-        for (int i = 0; i < result.length; i++)
-            result[i] = this.getStructure().getBaseField().getZeroElement();
-
-        for (int i = 0; i < this.coefficients.length; i++)
-            for (int j = 0; j < bne.coefficients.length; j++) {
-                result[i + j] = result[i + j].add(this.coefficients[i].mul(bne.coefficients[j]));
+        for (int i = 0; i < this.coefficients.length; i++) {
+            FieldElement coefficient = this.coefficients[i];
+            for (int j=0; j < other.coefficients.length; j++) {
+                if (i+j < field.extensionDegree) {
+                    result[i+j] = result[i+j].add(coefficient.mul(other.coefficients[j]));
+                } else { //using that x^extensionDegree = -constant, so we write this as this[i]*other[j] * x^{i+j} = this[i]*other[j]*(-constant)*x^{i+j-extensionDegree}
+                    result[i+j-field.extensionDegree] = result[i+j-field.extensionDegree].sub(coefficient.mul(other.coefficients[j]).mul(field.constant));
+                }
             }
+        }
 
-        return this.getStructure().createElement(result);
+        return field.createElement(result);
     }
 
     /**

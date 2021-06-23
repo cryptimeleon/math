@@ -6,9 +6,8 @@ import org.cryptimeleon.math.serialization.Representable;
 import java.math.BigInteger;
 
 /**
- * Immutable objects representing elements of a group.
- * <p>
- * Usually wrapped by a {@link GroupElement} to offer additional evaluation capabilities.
+ * Immutable objects representing elements of a group usually wrapped by a {@link GroupElement} to offer
+ * additional evaluation capabilities.
  * <p>
  * Implementations must properly implement {@code equals()} and {@code hashCode()}.
  */

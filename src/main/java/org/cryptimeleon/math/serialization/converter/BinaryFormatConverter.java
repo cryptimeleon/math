@@ -1,5 +1,6 @@
 package org.cryptimeleon.math.serialization.converter;
 
+import org.cryptimeleon.math.misc.BigIntegerTools;
 import org.cryptimeleon.math.serialization.*;
 
 import java.math.BigInteger;
@@ -114,7 +115,7 @@ public class BinaryFormatConverter extends Converter<byte[]> {
             // Format: type(1) || int(4) for 32 bit integers, and type(1) || ptr(4) for long integers.
             BigInteger value = repr.bigInt().get();
             try {
-                int valueAsInlineInt = value.intValueExact();
+                int valueAsInlineInt = BigIntegerTools.getExactInt(value);
                 structure.append(TYPE_INT_INLINE);
                 structure.append(valueAsInlineInt);
             } catch (ArithmeticException e) {

@@ -126,8 +126,19 @@ public class RingElementVector extends Vector<RingElement> implements Representa
         return new RingElementVector(super.truncate(newLength));
     }
 
+    @Override
     public RingElementVector concatenate(Vector<? extends RingElement> secondPart) {
         return new RingElementVector(super.concatenate(secondPart));
+    }
+
+    @Override
+    public RingElementVector append(RingElement valueToAppend) {
+        return new RingElementVector(super.append(valueToAppend));
+    }
+
+    @Override
+    public RingElementVector prepend(RingElement valueToPrepend) {
+        return new RingElementVector(super.prepend(valueToPrepend));
     }
 
     public ProductRingElement asElementInProductRing() {

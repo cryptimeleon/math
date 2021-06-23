@@ -8,7 +8,7 @@ import org.cryptimeleon.math.structures.rings.FieldElement;
  *
  * @see SupersingularSourceGroupImpl
  */
-public class SupersingularSourceGroupElementImpl extends PairingSourceGroupElement {
+class SupersingularSourceGroupElementImpl extends PairingSourceGroupElement {
 
     public SupersingularSourceGroupElementImpl(SupersingularSourceGroupImpl curve, FieldElement x, FieldElement y) {
         super(curve, x, y);

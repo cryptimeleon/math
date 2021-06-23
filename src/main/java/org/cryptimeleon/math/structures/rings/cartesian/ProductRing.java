@@ -51,6 +51,18 @@ public class ProductRing implements Ring {
     }
 
     @Override
+    public double estimateCostInvPerOp() {
+        // Calculate average inversion cost
+        return Arrays.stream(rings).map(Ring::estimateCostInvPerOp).reduce(0.0, Double::sum) / rings.length;
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        // Calculate average negation cost
+        return Arrays.stream(rings).map(Ring::estimateCostNegPerOp).reduce(0.0, Double::sum) / rings.length;
+    }
+
+    @Override
     public BigInteger sizeUnitGroup() throws UnsupportedOperationException {
         return Arrays.stream(rings).map(Ring::sizeUnitGroup).reduce(BigInteger.ONE, BigInteger::multiply);
     }

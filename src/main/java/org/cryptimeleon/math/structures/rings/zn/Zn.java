@@ -1,6 +1,9 @@
 package org.cryptimeleon.math.structures.rings.zn;
 
+import org.cryptimeleon.math.expressions.bool.BooleanExpression;
+import org.cryptimeleon.math.expressions.bool.ExponentEqualityExpr;
 import org.cryptimeleon.math.expressions.exponent.ExponentConstantExpr;
+import org.cryptimeleon.math.expressions.exponent.ExponentExpr;
 import org.cryptimeleon.math.hash.ByteAccumulator;
 import org.cryptimeleon.math.hash.UniqueByteRepresentable;
 import org.cryptimeleon.math.random.RandomGenerator;
@@ -169,6 +172,10 @@ public class Zn implements Ring {
             return createZnElementUnsafe(result);
         }
 
+        public ExponentExpr add(ExponentExpr e) {
+            return asExponentExpression().add(e);
+        }
+
         @Override
         public ZnElement neg() {
             return v.equals(BigInteger.ZERO) ? this : createZnElementUnsafe(n.subtract(v));
@@ -181,6 +188,10 @@ public class Zn implements Ring {
             if (result.signum() == -1)
                 result = result.add(n);
             return createZnElementUnsafe(result);
+        }
+
+        public ExponentExpr sub(ExponentExpr e) {
+            return asExponentExpression().sub(e);
         }
 
         @Override
@@ -199,6 +210,10 @@ public class Zn implements Ring {
             return mul(BigInteger.valueOf(k));
         }
 
+        public ExponentExpr mul(ExponentExpr e) {
+            return asExponentExpression().mul(e);
+        }
+
         @Override
         public ZnElement pow(BigInteger k) {
             return createZnElementUnsafe(v.modPow(k, n));
@@ -209,6 +224,10 @@ public class Zn implements Ring {
             return pow(BigInteger.valueOf(k));
         }
 
+        public ExponentExpr pow(ExponentExpr e) {
+            return asExponentExpression().pow(e);
+        }
+
         @Override
         public ZnElement inv() throws UnsupportedOperationException {
             try {
@@ -216,6 +235,16 @@ public class Zn implements Ring {
             } catch (ArithmeticException e) {
                 throw new UnsupportedOperationException("This element (" + v + ") is not invertible modulo " + n);
             }
+        }
+
+        @Override
+        public ZnElement square() {
+            return mul(this);
+        }
+
+        @Override
+        public ZnElement div(Element e) throws IllegalArgumentException {
+            return (ZnElement) RingElement.super.div(e);
         }
 
         @Override
@@ -293,6 +322,42 @@ public class Zn implements Ring {
 
         public ExponentConstantExpr asExponentExpression() {
             return new ExponentConstantExpr(this);
+        }
+
+        /**
+         * Returns an expression "this = other".
+         * This is for building expressions, i.e. only useful if unknown variables are involved.
+         * To compare two {@linkplain ZnElement}s normally, just use {@link #equals(Object)}.
+         */
+        public ExponentEqualityExpr isEqualTo(ExponentExpr other) {
+            return asExponentExpression().isEqualTo(other);
+        }
+
+        /**
+         * Returns an expression "this = other".
+         * This is for building expressions, i.e. only useful if unknown variables are involved.
+         * To compare two {@linkplain ZnElement}s normally, just use {@link #equals(Object)}.
+         */
+        public ExponentEqualityExpr isEqualTo(ZnElement other) {
+            return isEqualTo(other.asExponentExpression());
+        }
+
+        /**
+         * Returns an expression "this = other mod n".
+         * This is for building expressions, i.e. only useful if unknown variables are involved.
+         * To compare two {@linkplain ZnElement}s normally, just use {@link #equals(Object)}.
+         */
+        public ExponentEqualityExpr isEqualTo(BigInteger other) {
+            return isEqualTo(valueOf(other));
+        }
+
+        /**
+         * Returns an expression "this = other mod n".
+         * This is for building expressions, i.e. only useful if unknown variables are involved.
+         * To compare two {@linkplain ZnElement}s normally, just use {@link #equals(Object)}.
+         */
+        public ExponentEqualityExpr isEqualTo(long other) {
+            return isEqualTo(valueOf(other));
         }
 
         @Override
@@ -375,6 +440,7 @@ public class Zn implements Ring {
         if (bytes.length > (n.bitLength() - 1) / 8)
             throw new IllegalArgumentException("Too many bytes to map injectively to Zn " +
                     "(allowed are byte arrays of length " + (n.bitLength() - 1) / 8 + ")");
+
         // Normalize to make the most significant byte 0 (includes the sign bit).
         // This ensures that the resulting BigInteger number is nonnegative.
         byte[] normalized = new byte[bytes.length + 1];
@@ -384,6 +450,13 @@ public class Zn implements Ring {
         if (result.compareTo(n) > 0 || result.signum() < 0)
             throw new RuntimeException("This should not happen");
         return createZnElement(result);
+    }
+
+    /**
+     * Interprets given bytes as an integer and projects that number into Zn. For short byte[], this map is injective.
+     */
+    public ZnElement valueOf(byte[] bytes) {
+        return createZnElement(new BigInteger(1, bytes));
     }
 
     @Override
@@ -424,6 +497,18 @@ public class Zn implements Ring {
     @Override
     public ZnElement getElement(BigInteger i) {
         return createZnElement(i);
+    }
+
+    @Override
+    public double estimateCostInvPerOp() {
+        // Used Zn(2^128) here
+        return 0.1;
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        // Used Zn(2^128) here
+        return 1;
     }
 
     @Override

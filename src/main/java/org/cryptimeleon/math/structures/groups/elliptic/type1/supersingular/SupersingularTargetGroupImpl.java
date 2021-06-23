@@ -11,7 +11,7 @@ import java.math.BigInteger;
 /**
  * @see PairingTargetGroupImpl
  */
-public class SupersingularTargetGroupImpl extends PairingTargetGroupImpl {
+class SupersingularTargetGroupImpl extends PairingTargetGroupImpl {
 
     public SupersingularTargetGroupImpl(ExtensionField f, BigInteger size) {
         super(f, size);

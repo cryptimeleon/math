@@ -1,22 +1,17 @@
 package org.cryptimeleon.math.pairings;
 
-import org.cryptimeleon.math.expressions.group.GroupElementExpression;
 import org.cryptimeleon.math.structures.groups.GroupElement;
-import org.cryptimeleon.math.structures.groups.counting.CountingBilinearGroup;
+import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearMap;
-import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularTateGroupImpl;
-import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroupImpl;
-import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
+import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBasicBilinearGroup;
+import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroup;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
-import org.cryptimeleon.math.structures.rings.zn.Zp;
 import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -92,18 +87,18 @@ public class PairingTests {
     public static Collection<BilinearMap[]> data() {
         // Counting curves
         BilinearGroup countingGroup1 =
-                new CountingBilinearGroup(128, BilinearGroup.Type.TYPE_1);
+                new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_1);
         BilinearGroup countingGroup2 =
-                new CountingBilinearGroup(128, BilinearGroup.Type.TYPE_2);
+                new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_2);
         BilinearGroup countingGroup3 =
-                new CountingBilinearGroup(128, BilinearGroup.Type.TYPE_3);
+                new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_3);
 
         // Supersingular curve groups
-        BilinearGroup supsingGroup = new BasicBilinearGroup(new SupersingularTateGroupImpl(80));
+        BilinearGroup supsingGroup = new SupersingularBasicBilinearGroup(80);
 
         // BN curves
-        BilinearGroup bnGroup = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl(80));
-        BilinearGroup sfcBn = new BasicBilinearGroup(new BarretoNaehrigBilinearGroupImpl("SFC-256"));
+        BilinearGroup bnGroup = new BarretoNaehrigBilinearGroup(80);
+        BilinearGroup sfcBn = new BarretoNaehrigBilinearGroup("SFC-256");
 
         // Collect parameters
         BilinearMap[][] params = new BilinearMap[][] {

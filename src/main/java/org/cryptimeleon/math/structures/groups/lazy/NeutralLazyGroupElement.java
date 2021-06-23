@@ -6,7 +6,7 @@ import org.cryptimeleon.math.structures.groups.exp.Multiexponentiation;
 /**
  * Represents the neutral group element in the lazy evaluation framework.
  */
-public class NeutralLazyGroupElement extends LazyGroupElement {
+class NeutralLazyGroupElement extends LazyGroupElement {
     public NeutralLazyGroupElement(LazyGroup group) {
         super(group, group.impl.getNeutralElement());
     }

@@ -3,7 +3,7 @@ package org.cryptimeleon.math.structures.groups.lazy;
 /**
  * Represents the result of hashing a byte array to some structure.
  */
-public class HashResultLazyGroupElement extends LazyGroupElement {
+class HashResultLazyGroupElement extends LazyGroupElement {
     protected byte[] preimage;
     protected HashIntoLazyGroup hash;
 

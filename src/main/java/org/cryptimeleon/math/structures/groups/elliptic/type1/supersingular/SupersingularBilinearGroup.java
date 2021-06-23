@@ -4,11 +4,12 @@ import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.lazy.LazyBilinearGroup;
 
 /**
- * Offers a less verbose way to instantiate a Supersingular bilinear group which uses lazy evaluation.
+ * A type 1 supersingular bilinear group where operations are evaluated lazily.
  * <p>
- * Essentially just a {@link LazyBilinearGroup} wrapper around {@link SupersingularTateGroupImpl}.
+ * Due to lazy evaluation, this group is more efficient than its non-lazy counterpart
+ * {@link SupersingularBasicBilinearGroup}.
  *
- * @see SupersingularTateGroupImpl
+ * @see SupersingularBasicBilinearGroup for the version without lazy evaluation
  */
 public class SupersingularBilinearGroup extends LazyBilinearGroup {
 

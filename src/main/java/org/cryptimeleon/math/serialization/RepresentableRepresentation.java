@@ -2,6 +2,7 @@ package org.cryptimeleon.math.serialization;
 
 import org.cryptimeleon.math.serialization.converter.JSONConverter;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -67,12 +68,18 @@ public class RepresentableRepresentation extends Representation {
                 if (c.isEnum()) {
                     return Enum.valueOf((Class<? extends Enum>) c, representation.str().get());
                 }
-                return c.getConstructor(Representation.class).newInstance(representation);
-            } catch (NoSuchMethodException e) { //no constructor with single Representation paramenter
-                if (representation == null) //no representation necessary. Try default constructor
-                    return c.getConstructor(new Class<?>[]{}).newInstance();
-                else
+                Constructor<?> constructor = c.getConstructor(Representation.class);
+                constructor.setAccessible(true);
+                return constructor.newInstance(representation);
+            } catch (NoSuchMethodException e) { //no constructor with single Representation parameter
+                if (representation == null)  {
+                    // no representation necessary. Try default constructor
+                    Constructor<?> constructor = c.getConstructor(new Class<?>[]{});
+                    constructor.setAccessible(true);
+                    return constructor.newInstance();
+                } else {
                     throw e;
+                }
             }
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("Cannot find class " + representedTypeName, e);

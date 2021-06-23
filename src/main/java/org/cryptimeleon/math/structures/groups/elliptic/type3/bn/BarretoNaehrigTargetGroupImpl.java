@@ -11,7 +11,7 @@ import java.math.BigInteger;
 /**
  * Target group GT.
  */
-public class BarretoNaehrigTargetGroupImpl extends PairingTargetGroupImpl {
+class BarretoNaehrigTargetGroupImpl extends PairingTargetGroupImpl {
     /**
      * Constructs a subgroup of given size in F12 where F12=F(v)=F[x]/(x^6+v).
      *

@@ -17,7 +17,7 @@ import java.math.BigInteger;
  * Let \(E := {(x,y) \in \mathbb{F}_q \times \mathbb{F}_q | y^2 = x^3 - 3x}\) (\(q\) prime and \(q = 3 \mod 4\)).
  * Then this class represents E[getSize()], i.e. the subgroup of size getSize().
  */
-public class SupersingularSourceGroupImpl extends PairingSourceGroupImpl {
+class SupersingularSourceGroupImpl extends PairingSourceGroupImpl {
 
     /**
      * Instantiates the group.

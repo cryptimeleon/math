@@ -52,6 +52,16 @@ public class IntegerRing implements Ring {
     }
 
     @Override
+    public double estimateCostInvPerOp() {
+        return 6;
+    }
+
+    @Override
+    public double estimateCostNegPerOp() {
+        return 2;
+    }
+
+    @Override
     public IntegerElement restoreElement(Representation repr) {
         return new IntegerElement(repr.bigInt().get());
     }
@@ -97,14 +107,14 @@ public class IntegerRing implements Ring {
      * For example, for base = 2, this does bit decomposition.
      *
      * @return an array {@code A} containing values {@code A[i] < base} such that
-     *         \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
+     *      \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
      */
     public static BigInteger[] decomposeIntoDigits(BigInteger number, BigInteger base) {
         int power = 0;
-        BigInteger numberPowered = BigInteger.ONE;
-        // as soon as number is smaller than number^power, it can be decomposed into power digits.
-        while (numberPowered.compareTo(number) < 0) {
-            numberPowered = numberPowered.multiply(number);
+        BigInteger basePower = BigInteger.ONE;
+        // as soon as number is smaller than base^power, it can be decomposed into power digits.
+        while (basePower.compareTo(number) < 0) {
+            basePower = basePower.multiply(base);
             power++;
         }
         return decomposeIntoDigits(number, base, power);
@@ -116,7 +126,7 @@ public class IntegerRing implements Ring {
      * For example, for base = 2, this does bit decomposition.
      *
      * @return an array {@code A} containing values {@code A[i] < base} such that
-     *         \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
+     *      \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
      * @throws IllegalArgumentException if {@code numDigits} is not enough to represent the given number
      */
     public static BigInteger[] decomposeIntoDigits(BigInteger number, BigInteger base, int numDigits) {
@@ -138,5 +148,30 @@ public class IntegerRing implements Ring {
                     + " with " + numDigits + " digits");
 
         return result;
+    }
+
+    /**
+     * Decomposes a given number into digits with the given base.
+     * <p>
+     * For example, for base = 2, this does bit decomposition.
+     *
+     * @return an array {@code A} containing values {@code A[i] < base} such that
+     *         \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
+     */
+    public static BigInteger[] decomposeIntoDigits(BigInteger number, long base) {
+        return decomposeIntoDigits(number, BigInteger.valueOf(base));
+    }
+
+    /**
+     * Decomposes a given number into the given number of digits with the given base.
+     * <p>
+     * For example, for base = 2, this does bit decomposition.
+     *
+     * @return an array {@code A} containing values {@code A[i] < base} such that
+     *         \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
+     * @throws IllegalArgumentException if {@code numDigits} is not enough to represent the given number
+     */
+    public static BigInteger[] decomposeIntoDigits(BigInteger number, long base, int numDigits) {
+        return decomposeIntoDigits(number, BigInteger.valueOf(base), numDigits);
     }
 }

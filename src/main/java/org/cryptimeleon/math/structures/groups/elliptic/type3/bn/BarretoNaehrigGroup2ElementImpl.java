@@ -5,7 +5,7 @@ import org.cryptimeleon.math.structures.rings.FieldElement;
 /**
  * Element of G2.
  */
-public class BarretoNaehrigGroup2ElementImpl extends BarretoNaehrigSourceGroupElementImpl {
+class BarretoNaehrigGroup2ElementImpl extends BarretoNaehrigSourceGroupElementImpl {
     /**
      * Construct point on given curve with given x- and y-coordinates.
      *

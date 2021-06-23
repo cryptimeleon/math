@@ -86,7 +86,7 @@ public class LazyGroup implements Group {
         init();
     }
 
-    protected LazyGroupElement wrap(GroupElementImpl impl) {
+    public LazyGroupElement wrap(GroupElementImpl impl) {
         return new ConstLazyGroupElement(this, impl);
     }
 

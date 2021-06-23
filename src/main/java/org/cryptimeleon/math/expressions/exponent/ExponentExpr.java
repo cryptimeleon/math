@@ -77,6 +77,9 @@ public interface ExponentExpr extends Expression {
         return new ExponentSumExpr(this, other);
     }
 
+    /**
+     * Adds the given constant to this expression.
+     */
     default ExponentExpr add(Zn.ZnElement other) {
         return add(other.asExponentExpression());
     }
@@ -91,6 +94,20 @@ public interface ExponentExpr extends Expression {
     }
 
     /**
+     * Adds the given constant to this expression.
+     */
+    default ExponentExpr add(BigInteger other) {
+        return add(new ExponentConstantExpr(other));
+    }
+
+    /**
+     * Adds the given constant to this expression.
+     */
+    default ExponentExpr add(long other) {
+        return add(BigInteger.valueOf(other));
+    }
+
+    /**
      * Subtracts the given expression from this expression.
      * Realized by adding the negation.
      * @param other the subtrahend
@@ -100,6 +117,9 @@ public interface ExponentExpr extends Expression {
         return add(other.negate());
     }
 
+    /**
+     * Subtracts the given constant from this expression.
+     */
     default ExponentExpr sub(Zn.ZnElement other) {
         return sub(other.asExponentExpression());
     }
@@ -112,6 +132,20 @@ public interface ExponentExpr extends Expression {
      */
     default ExponentExpr sub(String other) {
         return sub(new BasicNamedExponentVariableExpr(other));
+    }
+
+    /**
+     * Subtracts the given constant from this expression.
+     */
+    default ExponentExpr sub(BigInteger other) {
+        return sub(new ExponentConstantExpr(other));
+    }
+
+    /**
+     * Adds the given constant to this expression.
+     */
+    default ExponentExpr sub(long other) {
+        return sub(BigInteger.valueOf(other));
     }
 
     /**
@@ -132,6 +166,11 @@ public interface ExponentExpr extends Expression {
         return mul(new ExponentConstantExpr(other));
     }
 
+    /**
+     * Multiplies this expression with the given constant.
+     * @param other the factor
+     * @return the result of multiplication
+     */
     default ExponentExpr mul(RingElement other) { return mul(other.asInteger()); }
 
     /**

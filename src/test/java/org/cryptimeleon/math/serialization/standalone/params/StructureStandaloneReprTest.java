@@ -1,18 +1,16 @@
 package org.cryptimeleon.math.serialization.standalone.params;
 
 import org.cryptimeleon.math.serialization.standalone.StandaloneReprSubTest;
-import org.cryptimeleon.math.structures.groups.RingAdditiveGroupImpl;
-import org.cryptimeleon.math.structures.groups.RingUnitGroupImpl;
 import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.cartesian.ProductGroup;
-import org.cryptimeleon.math.structures.groups.counting.CountingBilinearGroup;
-import org.cryptimeleon.math.structures.groups.counting.CountingBilinearGroupImpl;
+import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;
+import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroupImpl;
+import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBilinearGroup;
-import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularTateGroupImpl;
+import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroup;
-import org.cryptimeleon.math.structures.groups.elliptic.type3.bn.BarretoNaehrigBilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.lazy.LazyBilinearGroup;
 import org.cryptimeleon.math.structures.groups.sn.Sn;
 import org.cryptimeleon.math.structures.rings.cartesian.ProductRing;
@@ -65,25 +63,25 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
     }
 
     public void testBarretoNaehrig() {
+        testBilinearGroup(new BarretoNaehrigBasicBilinearGroup(80));
         testBilinearGroup(new BarretoNaehrigBilinearGroup(80));
-        testBilinearGroupImpl(new BarretoNaehrigBilinearGroupImpl(80));
     }
 
     public void testSupersingular() {
-        testBilinearGroupImpl(new SupersingularTateGroupImpl(80));
+        testBilinearGroup(new SupersingularBasicBilinearGroup(80));
         testBilinearGroup(new SupersingularBilinearGroup(80));
     }
 
     public void testLazyAndBasicGroup() {
-        BilinearGroupImpl debugGroupImpl = new CountingBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1);
+        BilinearGroupImpl bilGroupImpl = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
 
-        testBilinearGroup(new LazyBilinearGroup(debugGroupImpl));
-        testBilinearGroup(new BasicBilinearGroup(debugGroupImpl));
+        testBilinearGroup(new LazyBilinearGroup(bilGroupImpl));
+        testBilinearGroup(new BasicBilinearGroup(bilGroupImpl));
     }
 
-    public void testCountingGroup() {
-        testBilinearGroup(new CountingBilinearGroup(128, BilinearGroup.Type.TYPE_1));
-        testBilinearGroupImpl(new CountingBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1));
+    public void testDebugGroup() {
+        testBilinearGroup(new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_1));
+        testBilinearGroupImpl(new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1));
     }
 
     public void testExtensionField() {
@@ -106,8 +104,6 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
     public void testRingGroups() {
         test(zp.asUnitGroup());
         test(zp.asAdditiveGroup());
-        test(new RingUnitGroupImpl(zp));
-        test(new RingAdditiveGroupImpl(zp));
     }
 
     public void testRings() {
