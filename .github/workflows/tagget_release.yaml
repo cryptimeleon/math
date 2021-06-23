@@ -1,4 +1,4 @@
-name: Maven publishing
+name: Tagget release
 
 on:
   push:
@@ -25,6 +25,8 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
+          draft: false
           files: |
             LICENSE
             build/libs/*.jar
+        id: "automatic_releases"
