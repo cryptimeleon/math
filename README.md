@@ -1,6 +1,7 @@
 ![Build Status](https://github.com/cryptimeleon/math/workflows/Development%20Java%20CI/badge.svg)
 ![Build Status](https://github.com/cryptimeleon/math/workflows/Main%20Java%20CI/badge.svg)
 ![Build Status](https://github.com/cryptimeleon/math/workflows/Scheduled%20Main%20Java%20CI/badge.svg)
+![Build Status](https://github.com/cryptimeleon/math/workflows/Android%20CI/badge.svg)
 ## Math
 
 The Cryptimeleon Math library provides the mathematical foundation for the other Cryptimeleon libraries.
