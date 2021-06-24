@@ -235,7 +235,7 @@ public class DebugGroup implements Group {
     }
 
     /**
-     * Allows setting the window size used for used for the non-cached precomputations computed during the
+     * Sets the window size used for used for the non-cached precomputations computed during the
      * exponentiation algorithm.
      * <p>
      * A larger window size leads to an exponential increase in the number of precomputations done during
@@ -258,7 +258,7 @@ public class DebugGroup implements Group {
     }
 
     /**
-     * Allows setting the window size used for the cached precomputations.
+     * Sets the window size used for the cached precomputations.
      * <p>
      * A larger window size leads to an exponential increase in the number of cached precomputations done but
      * can also improve the performance of later exponentiations.
