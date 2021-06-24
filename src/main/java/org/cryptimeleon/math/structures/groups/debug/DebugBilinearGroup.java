@@ -215,7 +215,8 @@ public class DebugBilinearGroup implements BilinearGroup {
     @Override
     public String toString() {
         return "DebugBilinearGroup of type " + pairingType
-                + " simulating security level of " + securityParameter + " bits";
+                + " simulating security level of " + securityParameter + " bits"
+                + " using groups of size " + g1.size();
     }
 
     /**
