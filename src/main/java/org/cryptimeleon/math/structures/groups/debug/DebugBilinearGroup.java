@@ -212,6 +212,12 @@ public class DebugBilinearGroup implements BilinearGroup {
         return Objects.hash(totalBilGroup, expMultiExpBilGroup, bilMap);
     }
 
+    @Override
+    public String toString() {
+        return "DebugBilinearGroup of type " + pairingType
+                + " simulating security level of " + securityParameter + " bits";
+    }
+
     /**
      * Returns the number of pairings computed in this bilinear group.
      */
@@ -231,9 +237,9 @@ public class DebugBilinearGroup implements BilinearGroup {
      */
     public void resetCounters() {
         resetNumPairings();
-        ((DebugGroup) getG1()).resetCounters();
-        ((DebugGroup) getG2()).resetCounters();
-        ((DebugGroup) getGT()).resetCounters();
+        g1.resetCounters();
+        g2.resetCounters();
+        gT.resetCounters();
     }
 
     /**

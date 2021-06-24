@@ -302,6 +302,7 @@ public class DebugGroup implements Group {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "(" + groupTotal + ";" + groupExpMultiExp + ")";
+        DebugGroupImpl debugImpl = (DebugGroupImpl) groupTotal.getImpl();
+        return this.getClass().getSimpleName() + " with name " + debugImpl.name + " of size " + debugImpl.size();
     }
 }
