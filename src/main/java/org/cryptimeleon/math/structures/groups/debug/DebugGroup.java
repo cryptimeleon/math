@@ -5,6 +5,8 @@ import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
 import org.cryptimeleon.math.structures.groups.Group;
 import org.cryptimeleon.math.structures.groups.GroupElement;
+import org.cryptimeleon.math.structures.groups.exp.ExpAlgorithm;
+import org.cryptimeleon.math.structures.groups.exp.MultiExpAlgorithm;
 import org.cryptimeleon.math.structures.groups.lazy.LazyGroup;
 import org.cryptimeleon.math.structures.groups.lazy.LazyGroupElement;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
@@ -224,6 +226,66 @@ public class DebugGroup implements Group {
                 + getNumRetrievedRepresentations() + "\n";
     }
 
+    /**
+     * Returns the window size used for the non-cached precomputations computed during the exponentiation algorithm.
+     */
+    public int getExponentiationWindowSize() {
+        // assume they both have the same one
+        return groupTotal.getExponentiationWindowSize();
+    }
+
+    /**
+     * Sets the window size used for used for the non-cached precomputations computed during the
+     * exponentiation algorithm.
+     * <p>
+     * A larger window size leads to an exponential increase in the number of precomputations done during
+     * exponentiation. As the precomputations affected by this variable are only temporarily stored during execution
+     * of the exponentiation algorithm, we do not recommend setting this too high as the cost of computing the
+     * whole window quickly exceeds its performance benefits during the actual exponentiation.
+     * <p>
+     * If you want to change the number of cached precomputations, use {@link this#setPrecomputationWindowSize(int)}.
+     */
+    public void setExponentiationWindowSize(int exponentiationWindowSize) {
+        groupTotal.setExponentiationWindowSize(exponentiationWindowSize);
+        groupExpMultiExp.setExponentiationWindowSize(exponentiationWindowSize);
+    }
+
+    /**
+     * Returns the window size used for the precomputations.
+     */
+    public int getPrecomputationWindowSize() {
+        return groupTotal.getPrecomputationWindowSize();
+    }
+
+    /**
+     * Sets the window size used for the cached precomputations.
+     * <p>
+     * A larger window size leads to an exponential increase in the number of cached precomputations done but
+     * can also improve the performance of later exponentiations.
+     */
+    public void setPrecomputationWindowSize(int precomputationWindowSize) {
+        groupTotal.setPrecomputationWindowSize(precomputationWindowSize);
+        groupExpMultiExp.setPrecomputationWindowSize(precomputationWindowSize);
+    }
+
+    public MultiExpAlgorithm getSelectedMultiExpAlgorithm() {
+        return groupTotal.getSelectedMultiExpAlgorithm();
+    }
+
+    public void setSelectedMultiExpAlgorithm(MultiExpAlgorithm selectedMultiExpAlgorithm) {
+        groupTotal.setSelectedMultiExpAlgorithm(selectedMultiExpAlgorithm);
+        groupExpMultiExp.setSelectedMultiExpAlgorithm(selectedMultiExpAlgorithm);
+    }
+
+    public ExpAlgorithm getSelectedExpAlgorithm() {
+        return groupTotal.getSelectedExpAlgorithm();
+    }
+
+    public void setSelectedExpAlgorithm(ExpAlgorithm selectedExpAlgorithm) {
+        groupTotal.setSelectedExpAlgorithm(selectedExpAlgorithm);
+        groupExpMultiExp.setSelectedExpAlgorithm(selectedExpAlgorithm);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -240,6 +302,7 @@ public class DebugGroup implements Group {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "(" + groupTotal + ";" + groupExpMultiExp + ")";
+        DebugGroupImpl debugImpl = (DebugGroupImpl) groupTotal.getImpl();
+        return this.getClass().getSimpleName() + " with name " + debugImpl.name + " of size " + debugImpl.size();
     }
 }

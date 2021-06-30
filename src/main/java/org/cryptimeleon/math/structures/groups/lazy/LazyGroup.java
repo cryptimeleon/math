@@ -209,18 +209,41 @@ public class LazyGroup implements Group {
         }
     }
 
+    /**
+     * Returns the window size used for the non-cached precomputations computed during the exponentiation algorithm.
+     */
     public int getExponentiationWindowSize() {
         return exponentiationWindowSize;
     }
 
+    /**
+     * Allows setting the window size used for used for the non-cached precomputations computed during the
+     * exponentiation algorithm.
+     * <p>
+     * A larger window size leads to an exponential increase in the number of precomputations done during
+     * exponentiation. As the precomputations affected by this variable are only temporarily stored during execution
+     * of the exponentiation algorithm, we do not recommend setting this too high as the cost of computing the
+     * whole window quickly exceeds its performance benefits during the actual exponentiation.
+     * <p>
+     * If you want to change the number of cached precomputations, use {@link this#setPrecomputationWindowSize(int)}.
+     */
     public void setExponentiationWindowSize(int exponentiationWindowSize) {
         this.exponentiationWindowSize = exponentiationWindowSize;
     }
 
+    /**
+     * Returns the window size used for the precomputations.
+     */
     public int getPrecomputationWindowSize() {
         return precomputationWindowSize;
     }
 
+    /**
+     * Allows setting the window size used for the cached precomputations.
+     * <p>
+     * A larger window size leads to an exponential increase in the number of cached precomputations done but
+     * can also improve the performance of later exponentiations.
+     */
     public void setPrecomputationWindowSize(int precomputationWindowSize) {
         this.precomputationWindowSize = precomputationWindowSize;
     }
