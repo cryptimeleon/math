@@ -41,4 +41,9 @@ class BarretoNaehrigTargetGroupImpl extends PairingTargetGroupImpl {
     public double estimateCostInvPerOp() {
         return 614;
     }
+
+    @Override
+    public String toString() {
+        return "BN GT";
+    }
 }

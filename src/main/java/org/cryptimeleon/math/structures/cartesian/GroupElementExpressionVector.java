@@ -83,6 +83,8 @@ public class GroupElementExpressionVector extends Vector<GroupElementExpression>
             return g.pow((Long) exp);
         if (exp instanceof ExponentExpr)
             return g.pow((ExponentExpr) exp);
+        if (exp instanceof String)
+            return g.pow((String) exp);
         throw new IllegalArgumentException("Cannot compute g^"+exp.getClass().getName());
     }
 
