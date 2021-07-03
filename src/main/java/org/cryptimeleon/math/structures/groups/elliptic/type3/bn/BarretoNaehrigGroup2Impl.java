@@ -47,4 +47,9 @@ class BarretoNaehrigGroup2Impl extends BarretoNaehrigSourceGroupImpl {
     public double estimateCostInvPerOp() {
         return 600;
     }
+
+    @Override
+    public String toString() {
+        return "BN G2";
+    }
 }
