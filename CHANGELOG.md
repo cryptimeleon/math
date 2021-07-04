@@ -6,13 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.0.1]
+## [2.1.0]
 
 ### Added
 - Algorithm selection for debug groups
 
-### Changed
-- Fixed `IntegerRing.decomposeIntoDigits`
+### Fixed
+- `IntegerRing.decomposeIntoDigits` sometimes worked incorrectly
 
 ## [2.0.0] - 2021-06-23
 
