@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1]
+
+### Added
+- Algorithm selection for debug groups
+
 ### Changed
 - Fixed `IntegerRing.decomposeIntoDigits`
 
@@ -40,4 +45,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]: https://github.com/cryptimeleon/math/compare/v2.0.0...HEAD
 [2.0.0]: https://github.com/cryptimeleon/math/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/cryptimeleon/math/releases/tag/v1.0.0
-
