@@ -150,11 +150,7 @@ abstract class BarretoNaehrigSourceGroupImpl extends PairingSourceGroupImpl {
 
     @Override
     public String toString() {
-        String s = "";
-
-        s += "Subgroup of F-rational points on E:x^3+b with b=" + this.getA6().toString();
-
-        return s;
+        return "Subgroup of F-rational points on E:x^3+b with b=" + this.getA6().toString();
     }
 
     @Override

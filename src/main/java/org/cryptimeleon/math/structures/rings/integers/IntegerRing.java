@@ -6,6 +6,8 @@ import org.cryptimeleon.math.structures.rings.Ring;
 import org.cryptimeleon.math.structures.rings.RingElement;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -110,14 +112,19 @@ public class IntegerRing implements Ring {
      *      \(\sum_i{ \text{A}[i] \cdot \text{base}^i} = \text{number}\)
      */
     public static BigInteger[] decomposeIntoDigits(BigInteger number, BigInteger base) {
-        int power = 0;
-        BigInteger basePower = BigInteger.ONE;
-        // as soon as number is smaller than base^power, it can be decomposed into power digits.
-        while (basePower.compareTo(number) < 0) {
-            basePower = basePower.multiply(base);
-            power++;
+        if (base.signum() <= 0 || number.signum() < 0)
+            throw new IllegalArgumentException("Parameters must be positive/non-negative");
+
+        ArrayList<BigInteger> result = new ArrayList<>();
+        BigInteger remainingDigits = number;
+
+        while (remainingDigits.signum() != 0) {
+            BigInteger[] div = remainingDigits.divideAndRemainder(base);
+            result.add(div[1]); //current digit
+            remainingDigits = div[0]; // remaining digits
         }
-        return decomposeIntoDigits(number, base, power);
+
+        return result.toArray(new BigInteger[0]);
     }
 
     /**
@@ -134,18 +141,16 @@ public class IntegerRing implements Ring {
             throw new IllegalArgumentException("Parameters must be positive/non-negative");
 
         BigInteger[] result = new BigInteger[numDigits];
-        BigInteger remainder = number;
+        BigInteger remainingDigits = number;
 
-        for (int j = numDigits - 1; j >= 0; j--) {
-            BigInteger basePowJ = base.pow(j);
-            BigInteger[] div = remainder.divideAndRemainder(basePowJ);
-            result[j] = div[0]; // current digit
-            remainder = div[1]; // remainder value (to be represented with the remaining digits)
+        for (int j=0; j < numDigits; j++) {
+            BigInteger[] div = remainingDigits.divideAndRemainder(base);
+            result[j] = div[1]; //current digit
+            remainingDigits = div[0]; // remaining digits
         }
 
-        if (remainder.signum() != 0)
-            throw new IllegalArgumentException("Unable to represent " + number.toString() + " base " + base.toString()
-                    + " with " + numDigits + " digits");
+        if (remainingDigits.signum() != 0)
+            throw new IllegalArgumentException("Unable to represent " + number + " base " + base + " with " + numDigits + " digits");
 
         return result;
     }
