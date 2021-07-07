@@ -12,6 +12,7 @@ import org.cryptimeleon.math.structures.groups.lazy.LazyGroupElement;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

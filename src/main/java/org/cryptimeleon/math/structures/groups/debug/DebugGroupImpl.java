@@ -11,10 +11,7 @@ import org.cryptimeleon.math.structures.groups.exp.SmallExponentPrecomputation;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
@@ -50,34 +47,35 @@ public class DebugGroupImpl implements GroupImpl {
     protected Boolean enableMultiExpCounting;
 
     /**
-     * The counted number of inversions.
+     * Maps the name of each bucket to the actual {@code CountingBucket} object.
      */
-    protected long numInversions;
+    static HashMap<String, CountingBucket> countingBucketMap = new HashMap<>();
 
     /**
-     * The counted number of operations. Squarings are not considered in the group operation counter.
+     * The default counting bucket used whenever no named bucket is selected.
      */
-    protected long numOps;
+    static CountingBucket defaultBucket = new CountingBucket();
 
     /**
-     * The counted number of squarings.
+     * The currently used bucket.
      */
-    protected long numSquarings;
+    static CountingBucket currentBucket = defaultBucket;
 
     /**
-     * The counted number of exponentiations.
+     * Sets the currently used operation count storage bucket to the one with the given name.
+     * If a bucket with the given name does not exist, a new one is created.
+     * <p>
+     * All operations executed after setting a bucket will be counted within that bucket only.
+     *
+     * @param name the name of the bucket to enable
      */
-    protected long numExps;
-
-    /**
-     * Number of retrieved representations for elements of this group.
-     */
-    protected long numRetrievedRepresentations;
-
-    /**
-     * Contains number of terms for each multi-exponentiation performed.
-     */
-    protected List<Integer> multiExpTermNumbers;
+    public void setBucket(String name) {
+        if (!countingBucketMap.containsKey(name)) {
+            // if map does not contain bucket with that name, add new one
+            countingBucketMap.put(name, new CountingBucket());
+        }
+        currentBucket = countingBucketMap.get(name);
+    }
 
     /**
      * Instantiates this group with the given name and group size and to not count (multi-)exponentiations
@@ -238,86 +236,5 @@ public class DebugGroupImpl implements GroupImpl {
     @Override
     public double estimateCostInvPerOp() {
         return 1.6;
-    }
-
-    protected void incrementNumOps() {
-        ++numOps;
-    }
-
-    protected void incrementNumInversions() {
-        ++numInversions;
-    }
-
-    protected void incrementNumSquarings() {
-        ++numSquarings;
-    }
-
-    protected void incrementNumExps() {
-        ++numExps;
-    }
-
-    /**
-     * Tracks the fact that a multi-exponentiation with the given number of terms was done.
-     * @param numTerms the number of terms (bases) in the multi-exponentiation
-     */
-    protected void addMultiExpBaseNumber(int numTerms) {
-        if (numTerms > 1) {
-            multiExpTermNumbers.add(numTerms);
-        }
-    }
-
-    protected void incrementNumRetrievedRepresentations() {
-        ++numRetrievedRepresentations;
-    }
-
-    public long getNumInversions() {
-        return numInversions;
-    }
-
-    public long getNumOps() {
-        return numOps;
-    }
-
-    public long getNumSquarings() {
-        return numSquarings;
-    }
-
-    public long getNumExps() { return numExps; }
-
-    public List<Integer> getMultiExpTermNumbers() {
-        return multiExpTermNumbers;
-    }
-
-    public long getNumRetrievedRepresentations() {
-        return numRetrievedRepresentations;
-    }
-
-    public void resetOpsCounter() {
-        numOps = 0;
-    }
-
-    public void resetInvsCounter() {
-        numInversions = 0;
-    }
-
-    public void resetSquaringsCounter() {
-        numSquarings = 0;
-    }
-
-    public void resetExpsCounter() { numExps = 0; }
-
-    public void resetMultiExpTermNumbers() { multiExpTermNumbers = new LinkedList<>(); }
-
-    public void resetRetrievedRepresentationsCounter() {
-        numRetrievedRepresentations = 0;
-    }
-
-    public void resetCounters() {
-        resetOpsCounter();
-        resetInvsCounter();
-        resetSquaringsCounter();
-        resetExpsCounter();
-        resetMultiExpTermNumbers();
-        resetRetrievedRepresentationsCounter();
     }
 }
