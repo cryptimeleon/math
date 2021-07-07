@@ -7,39 +7,23 @@ import java.util.List;
 /**
  * Stores group operation data.
  */
-class CountingBucket {
+public class CountingBucket {
 
     /**
-     * The counted number of inversions including (multi-)exponentiations.
+     * The counted number of inversions.
      */
-    protected long numInversionsTotal;
+    protected long numInversions;
 
     /**
-     * The counted number of inversions not including (multi-)exponentiations.
-     */
-    protected long numInversionsNoExpMultiExp;
-
-    /**
-     * The counted number of operations including (multi-)exponentiations.
+     * The counted number of operations.
      * Squarings are not considered in the group operation counter.
      */
-    protected long numOpsTotal;
+    protected long numOps;
 
     /**
-     * The counted number of operations not including (multi-)exponentiations.
-     * Squarings are not considered in the group operation counter.
+     * The counted number of squarings.
      */
-    protected long numOpsNoExpMultiExp;
-
-    /**
-     * The counted number of squarings including (multi-)exponentiations.
-     */
-    protected long numSquaringsTotal;
-
-    /**
-     * The counted number of squarings not including (multi-)exponentiations.
-     */
-    protected long numSquaringsNoExpMultiExp;
+    protected long numSquarings;
 
     /**
      * The counted number of exponentiations.
@@ -57,39 +41,25 @@ class CountingBucket {
     protected List<Integer> multiExpTermNumbers;
 
     public CountingBucket() {
-        this.numInversionsTotal = 0;
-        this.numInversionsNoExpMultiExp = 0;
-        this.numOpsTotal = 0;
-        this.numOpsNoExpMultiExp = 0;
-        this.numSquaringsTotal = 0;
-        this.numSquaringsNoExpMultiExp = 0;
+        this.numInversions = 0;
+        this.numOps = 0;
+        this.numSquarings = 0;
         this.numExps = 0;
         this.numRetrievedRepresentations = 0;
         this.multiExpTermNumbers = new ArrayList<>();
     }
 
-    public void incrementNumOpsTotal() {
-        ++numOpsTotal;
+    public void incrementNumOps() {
+        ++numOps;
     }
 
-    public void incrementNumOpsNoExpMultiExp() {
-        ++numOpsNoExpMultiExp;
+
+    public void incrementNumInversions() {
+        ++numInversions;
     }
 
-    public void incrementNumInversionsTotal() {
-        ++numInversionsTotal;
-    }
-
-    public void incrementNumInversionsNoExpMultiExp() {
-        ++numInversionsNoExpMultiExp;
-    }
-
-    public void incrementNumSquaringsTotal() {
-        ++numSquaringsTotal;
-    }
-
-    public void incrementNumSquaringsNoExpMultiExp() {
-        ++numSquaringsNoExpMultiExp;
+    public void incrementNumSquarings() {
+        ++numSquarings;
     }
 
     public void incrementNumExps() {
@@ -110,28 +80,16 @@ class CountingBucket {
         ++numRetrievedRepresentations;
     }
 
-    public long getNumInversionsTotal() {
-        return numInversionsTotal;
+    public long getNumInversions() {
+        return numInversions;
     }
 
-    public long getNumInversionsNoExpMultiExp() {
-        return numInversionsNoExpMultiExp;
+    public long getNumOps() {
+        return numOps;
     }
 
-    public long getNumOpsTotal() {
-        return numOpsTotal;
-    }
-
-    public long getNumOpsNoExpMultiExp() {
-        return numOpsNoExpMultiExp;
-    }
-
-    public long getNumSquaringsTotal() {
-        return numSquaringsTotal;
-    }
-
-    public long getNumSquaringsNoExpMultiExp() {
-        return numSquaringsNoExpMultiExp;
+    public long getNumSquarings() {
+        return numSquarings;
     }
 
     public long getNumExps() {
@@ -146,28 +104,16 @@ class CountingBucket {
         return multiExpTermNumbers;
     }
 
-    public void resetOpsTotalCounter() {
-        numOpsTotal = 0;
+    public void resetOpsCounter() {
+        numOps = 0;
     }
 
-    public void resetOpsNoExpMultiExpCounter() {
-        numOpsNoExpMultiExp = 0;
+    public void resetInversionsCounter() {
+        numInversions = 0;
     }
 
-    public void resetInversionsTotalCounter() {
-        numInversionsTotal = 0;
-    }
-
-    public void resetInversionsNoExpMultiExpCounter() {
-        numInversionsNoExpMultiExp = 0;
-    }
-
-    public void resetSquaringsTotalCounter() {
-        numSquaringsTotal = 0;
-    }
-
-    public void resetSquaringsNoExpMultiExpCounter() {
-        numSquaringsNoExpMultiExp = 0;
+    public void resetSquaringsCounter() {
+        numSquarings = 0;
     }
 
     public void resetExpsCounter() { numExps = 0; }
@@ -182,12 +128,9 @@ class CountingBucket {
      * Resets all counters.
      */
     public void resetCounters() {
-        resetOpsTotalCounter();
-        resetOpsNoExpMultiExpCounter();
-        resetInversionsTotalCounter();
-        resetInversionsNoExpMultiExpCounter();
-        resetSquaringsTotalCounter();
-        resetSquaringsNoExpMultiExpCounter();
+        resetOpsCounter();
+        resetInversionsCounter();
+        resetSquaringsCounter();
         resetExpsCounter();
         resetMultiExpTermNumbers();
         resetRetrievedRepresentationsCounter();

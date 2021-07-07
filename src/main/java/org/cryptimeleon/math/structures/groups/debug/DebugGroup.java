@@ -12,7 +12,6 @@ import org.cryptimeleon.math.structures.groups.lazy.LazyGroupElement;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +37,7 @@ public class DebugGroup implements Group {
      * and multi-exponentiation data.
      */
     @Represented
-    LazyGroup groupExpMultiExp;
+    LazyGroup groupNoExpMultiExp;
 
     /**
      * Initializes the counting group with a given name and size.
@@ -48,8 +47,8 @@ public class DebugGroup implements Group {
      * @param n the desired size of the group
      */
     public DebugGroup(String name, BigInteger n) {
-        groupTotal = new LazyGroup(new DebugGroupImpl(name, n, false, false));
-        groupExpMultiExp = new LazyGroup(new DebugGroupImpl(name, n, true, true));
+        groupTotal = new LazyGroup(new DebugGroupImplTotal(name, n));
+        groupNoExpMultiExp = new LazyGroup(new DebugGroupImplNoExpMultiExp(name, n));
     }
 
     public DebugGroup(String name, long n) {
@@ -63,7 +62,7 @@ public class DebugGroup implements Group {
      */
     public DebugGroup(LazyGroup groupTotal, LazyGroup groupExpMultiExp) {
         this.groupTotal = groupTotal;
-        this.groupExpMultiExp = groupExpMultiExp;
+        this.groupNoExpMultiExp = groupExpMultiExp;
     }
 
     public DebugGroup(Representation repr) {
@@ -75,7 +74,7 @@ public class DebugGroup implements Group {
         return new DebugGroupElement(
                 this,
                 (LazyGroupElement) groupTotal.getNeutralElement(),
-                (LazyGroupElement) groupExpMultiExp.getNeutralElement()
+                (LazyGroupElement) groupNoExpMultiExp.getNeutralElement()
         );
     }
 
@@ -94,7 +93,7 @@ public class DebugGroup implements Group {
         return new DebugGroupElement(
                 this,
                 (LazyGroupElement) groupTotal.getUniformlyRandomElement(),
-                (LazyGroupElement) groupExpMultiExp.getUniformlyRandomElement()
+                (LazyGroupElement) groupNoExpMultiExp.getUniformlyRandomElement()
         );
     }
 
@@ -107,14 +106,14 @@ public class DebugGroup implements Group {
         return new DebugGroupElement(
                 this,
                 groupTotal.wrap(((DebugGroupImpl) groupTotal.getImpl()).wrap(elem)),
-                groupExpMultiExp.wrap(((DebugGroupImpl) groupExpMultiExp.getImpl()).wrap(elem))
+                groupNoExpMultiExp.wrap(((DebugGroupImpl) groupNoExpMultiExp.getImpl()).wrap(elem))
         );
     }
 
     @Override
     public Optional<Integer> getUniqueByteLength() {
         Optional<Integer> totalLength = groupTotal.getUniqueByteLength();
-        Optional<Integer> expMultiExpLength = groupExpMultiExp.getUniqueByteLength();
+        Optional<Integer> expMultiExpLength = groupNoExpMultiExp.getUniqueByteLength();
         if (!totalLength.isPresent() || !expMultiExpLength.isPresent()) {
             return Optional.empty();
         } else {
@@ -133,61 +132,94 @@ public class DebugGroup implements Group {
     }
 
     /**
-     * Retrieves number of group squarings including ones done in (multi-)exponentiation algorithms.
+     * Sets the currently used operation count storage bucket to the one with the given name.
+     * If a bucket with the given name does not exist, a new one is created.
+     * <p>
+     * All operations executed after setting a bucket will be counted within that bucket only.
+     * <p>
+     * The name of the default bucket is "default".
+     *
+     * @param name the name of the bucket to enable
      */
-    public long getNumSquaringsTotal() {
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumSquarings();
+    public void setBucket(String name) {
+        ((DebugGroupImplTotal) groupTotal.getImpl()).setBucket(name);
+        ((DebugGroupImplNoExpMultiExp) groupNoExpMultiExp.getImpl()).setBucket(name);
     }
 
     /**
-     * Retrieves number of group inversions including ones done in (multi-)exponentiation algorithms.
+     * Retrieves number of group squarings including ones done in (multi-)exponentiation algorithms
+     * from the bucket with the given name.
+     *
+     * @param name the name of the bucket to retrieve number of squarings from
      */
-    public long getNumInversionsTotal() {
+    public long getNumSquaringsTotal(String name) {
+        return ((DebugGroupImplTotal) groupTotal.getImpl()).getNum();
+    }
+
+    /**
+     * Retrieves number of group inversions including ones done in (multi-)exponentiation algorithms
+     * from the bucket with the given name.
+     *
+     * @param name the name of the bucket to retrieve number of squarings from
+     */
+    public long getNumInversionsTotal(String name) {
         return ((DebugGroupImpl) groupTotal.getImpl()).getNumInversions();
     }
 
     /**
-     * Retrieves number of group ops including ones done in (multi-)exponentiation algorithms.
+     * Retrieves number of group ops including ones done in (multi-)exponentiation algorithms
+     * from the bucket with the given name.
      * Does not include squarings.
+     *
+     * @param name the name of the bucket to retrieve number of squarings from
      */
-    public long getNumOpsTotal() {
+    public long getNumOpsTotal(String name) {
         return ((DebugGroupImpl) groupTotal.getImpl()).getNumOps();
     }
 
     /**
-     * Retrieves number of group squarings not including ones done in (multi-)exponentiation algorithms.
+     * Retrieves number of group squarings not including ones done in (multi-)exponentiation algorithms
+     * from the bucket with the given name.
+     *
+     * @param name the name of the bucket to retrieve number of squarings from
      */
-    public long getNumSquaringsNoExpMultiExp() {
-        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumSquarings();
+    public long getNumSquaringsNoExpMultiExp(String name) {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumSquarings();
     }
 
     /**
-     * Retrieves number of group inversions not including ones done in (multi-)exponentiation algorithms.
+     * Retrieves number of group inversions not including ones done in (multi-)exponentiation algorithms
+     * from the bucket with the given name.
+     *
+     * @param name the name of the bucket to retrieve number of squarings from
      */
-    public long getNumInversionsNoExpMultiExp() {
-        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumInversions();
+    public long getNumInversionsNoExpMultiExp(String name) {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumInversions();
     }
 
     /**
-     * Retrieves number of group ops not including ones done in (multi-)exponentiation algorithms.
+     * Retrieves number of group ops not including ones done in (multi-)exponentiation algorithms
+     * from the bucket with the given name.
      * Does not include squarings.
+     *
+     * @param name the name of the bucket to retrieve number of squarings from
      */
-    public long getNumOpsNoExpMultiExp() {
-        return((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumOps();
+    public long getNumOpsNoExpMultiExp(String name) {
+        return((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOps();
     }
 
     /**
      * Retrieves number of group exponentiations done.
      */
     public long getNumExps() {
-        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getNumExps();
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumExps();
     }
 
     /**
      * Retrieves number of terms of each multi-exponentiation done.
      */
     public List<Integer> getMultiExpTermNumbers() {
-        return ((DebugGroupImpl) groupExpMultiExp.getImpl()).getMultiExpTermNumbers();
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getMultiExpTermNumbers();
     }
 
     /**
@@ -203,7 +235,7 @@ public class DebugGroup implements Group {
      */
     public void resetCounters() {
         ((DebugGroupImpl) groupTotal.getImpl()).resetCounters();
-        ((DebugGroupImpl) groupExpMultiExp.getImpl()).resetCounters();
+        ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).resetCounters();
     }
 
     /**
@@ -248,7 +280,7 @@ public class DebugGroup implements Group {
      */
     public void setExponentiationWindowSize(int exponentiationWindowSize) {
         groupTotal.setExponentiationWindowSize(exponentiationWindowSize);
-        groupExpMultiExp.setExponentiationWindowSize(exponentiationWindowSize);
+        groupNoExpMultiExp.setExponentiationWindowSize(exponentiationWindowSize);
     }
 
     /**
@@ -266,7 +298,7 @@ public class DebugGroup implements Group {
      */
     public void setPrecomputationWindowSize(int precomputationWindowSize) {
         groupTotal.setPrecomputationWindowSize(precomputationWindowSize);
-        groupExpMultiExp.setPrecomputationWindowSize(precomputationWindowSize);
+        groupNoExpMultiExp.setPrecomputationWindowSize(precomputationWindowSize);
     }
 
     public MultiExpAlgorithm getSelectedMultiExpAlgorithm() {
@@ -275,7 +307,7 @@ public class DebugGroup implements Group {
 
     public void setSelectedMultiExpAlgorithm(MultiExpAlgorithm selectedMultiExpAlgorithm) {
         groupTotal.setSelectedMultiExpAlgorithm(selectedMultiExpAlgorithm);
-        groupExpMultiExp.setSelectedMultiExpAlgorithm(selectedMultiExpAlgorithm);
+        groupNoExpMultiExp.setSelectedMultiExpAlgorithm(selectedMultiExpAlgorithm);
     }
 
     public ExpAlgorithm getSelectedExpAlgorithm() {
@@ -284,7 +316,7 @@ public class DebugGroup implements Group {
 
     public void setSelectedExpAlgorithm(ExpAlgorithm selectedExpAlgorithm) {
         groupTotal.setSelectedExpAlgorithm(selectedExpAlgorithm);
-        groupExpMultiExp.setSelectedExpAlgorithm(selectedExpAlgorithm);
+        groupNoExpMultiExp.setSelectedExpAlgorithm(selectedExpAlgorithm);
     }
 
     @Override
@@ -293,12 +325,12 @@ public class DebugGroup implements Group {
         if (o == null || getClass() != o.getClass()) return false;
         DebugGroup other = (DebugGroup) o;
         return Objects.equals(groupTotal, other.groupTotal)
-                && Objects.equals(groupExpMultiExp, other.groupExpMultiExp);
+                && Objects.equals(groupNoExpMultiExp, other.groupNoExpMultiExp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupTotal, groupExpMultiExp);
+        return Objects.hash(groupTotal, groupNoExpMultiExp);
     }
 
     @Override

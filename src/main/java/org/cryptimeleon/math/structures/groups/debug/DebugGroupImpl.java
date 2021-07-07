@@ -17,7 +17,7 @@ import java.util.*;
  * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
  * number of terms in each multi-exponentiation.
  */
-public class DebugGroupImpl implements GroupImpl {
+abstract class DebugGroupImpl implements GroupImpl {
 
     /**
      * Name of this group. Group elements between {@code CountingGroupElementImpl} instances only allow for group
@@ -33,51 +33,6 @@ public class DebugGroupImpl implements GroupImpl {
     protected Zn zn;
 
     /**
-     * Whether to count exponentiations as a single unit. If set to true, group operations in those exponentiations
-     * will not be counted.
-     */
-    @Represented
-    protected Boolean enableExpCounting;
-
-    /**
-     * Whether to count multi-exponentiations as a single unit. If set to true, group operations in those
-     * multi-exponentiations will not be counted.
-     */
-    @Represented
-    protected Boolean enableMultiExpCounting;
-
-    /**
-     * Maps the name of each bucket to the actual {@code CountingBucket} object.
-     */
-    static HashMap<String, CountingBucket> countingBucketMap = new HashMap<>();
-
-    /**
-     * The default counting bucket used whenever no named bucket is selected.
-     */
-    static CountingBucket defaultBucket = new CountingBucket();
-
-    /**
-     * The currently used bucket.
-     */
-    static CountingBucket currentBucket = defaultBucket;
-
-    /**
-     * Sets the currently used operation count storage bucket to the one with the given name.
-     * If a bucket with the given name does not exist, a new one is created.
-     * <p>
-     * All operations executed after setting a bucket will be counted within that bucket only.
-     *
-     * @param name the name of the bucket to enable
-     */
-    public void setBucket(String name) {
-        if (!countingBucketMap.containsKey(name)) {
-            // if map does not contain bucket with that name, add new one
-            countingBucketMap.put(name, new CountingBucket());
-        }
-        currentBucket = countingBucketMap.get(name);
-    }
-
-    /**
      * Instantiates this group with the given name and group size and to not count (multi-)exponentiations
      * explicitly (instead only total group operations are counted).
      *
@@ -86,44 +41,12 @@ public class DebugGroupImpl implements GroupImpl {
      * @param n    the size of this group
      */
     public DebugGroupImpl(String name, BigInteger n) {
-        this(name, n, false, false);
-    }
-
-    /**
-     * Instantiates this group with the given name, group size, and counting configuration.
-     *
-     * @param name a unique name for this group. group operations are only compatible between groups of the same name
-     *             and n
-     * @param n    the size of this group
-     * @param enableExpCounting if {@code true}, exponentiations in G1, G2 and GT are counted as a single unit
-     *                          and group operations within exponentiations are not counted; otherwise the former is
-     *                          not done and group operations within exponentiations are added to the total count
-     * @param enableMultiExpCounting if {@code true}, number of terms in each multi-exponentiation is tracked and
-     *                               group operations within multi-exponentiations are not counted; otherwise
-     *                               the former is not done and group operations within multi-exponentiations
-     *                               are added to the total count
-     */
-    public DebugGroupImpl(String name, BigInteger n, boolean enableExpCounting, boolean enableMultiExpCounting) {
-        zn = new Zn(n);
         this.name = name;
-        this.enableExpCounting = enableExpCounting;
-        this.enableMultiExpCounting = enableMultiExpCounting;
-        numInversions = 0;
-        numOps = 0;
-        numSquarings = 0;
-        numExps = 0;
-        multiExpTermNumbers = new LinkedList<>();
-        numRetrievedRepresentations = 0;
+        this.zn = new Zn(n);
     }
 
     public DebugGroupImpl(Representation repr) {
         new ReprUtil(this).deserialize(repr);
-        numInversions = 0;
-        numOps = 0;
-        numSquarings = 0;
-        numExps = 0;
-        multiExpTermNumbers = new LinkedList<>();
-        numRetrievedRepresentations = 0;
     }
 
     @Override
@@ -163,7 +86,7 @@ public class DebugGroupImpl implements GroupImpl {
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return Objects.hash(name, zn);
     }
 
     @Override
@@ -172,14 +95,12 @@ public class DebugGroupImpl implements GroupImpl {
         if (other == null || this.getClass() != other.getClass()) return false;
         DebugGroupImpl that = (DebugGroupImpl) other;
         return Objects.equals(name, that.name)
-                && Objects.equals(zn, that.zn)
-                && Objects.equals(enableExpCounting, that.enableExpCounting)
-                && Objects.equals(enableMultiExpCounting, that.enableMultiExpCounting);
+                && Objects.equals(zn, that.zn);
     }
 
     @Override
     public String toString() {
-        return name;
+        return "DebugGroupImpl with name " + name + " and size " + zn.size();
     }
 
     @Override
@@ -197,35 +118,6 @@ public class DebugGroupImpl implements GroupImpl {
         return zn.hasPrimeSize();
     }
 
-    @Override
-    public boolean implementsOwnExp() {
-        return enableExpCounting;
-    }
-
-    @Override
-    public GroupElementImpl exp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
-        return base.pow(exponent); // this method already counts the exponentiation
-    }
-
-    @Override
-    public boolean implementsOwnMultiExp() {
-        return enableMultiExpCounting;
-    }
-
-    @Override
-    public GroupElementImpl multiexp(Multiexponentiation mexp) {
-        // This method is only used if enableMultiExpCounting is set to true; hence, we count
-        // the multi-exponentiation done.
-        DebugGroupElementImpl result = (DebugGroupElementImpl) mexp.getConstantFactor().orElse(getNeutralElement());
-        for (MultiExpTerm term : mexp.getTerms()) {
-            // Use methods where we can disable counting since we only want to count the multi-exponentiation here
-            result = (DebugGroupElementImpl) result
-                    .op(((DebugGroupElementImpl) term.getBase()).pow(term.getExponent(),false), false);
-        }
-        addMultiExpBaseNumber(mexp.getTerms().size());
-        return result;
-    }
-
     /**
      * Wraps a {@code ZnElement} in a {@code CountingGroupElementImpl} belonging to this group.
      */
@@ -237,4 +129,20 @@ public class DebugGroupImpl implements GroupImpl {
     public double estimateCostInvPerOp() {
         return 1.6;
     }
+
+    abstract void incrementNumOps();
+
+    abstract void incrementNumInversions();
+
+    abstract void incrementNumSquarings();
+
+    abstract void incrementNumExps();
+
+    /**
+     * Tracks the fact that a multi-exponentiation with the given number of terms was done.
+     * @param numTerms the number of terms (bases) in the multi-exponentiation
+     */
+    abstract void addMultiExpBaseNumber(int numTerms);
+
+    abstract void incrementNumRetrievedRepresentations();
 }
