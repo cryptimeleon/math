@@ -142,28 +142,28 @@ public class DebugGroup implements Group {
      * @param name the name of the bucket to enable
      */
     public void setBucket(String name) {
-        ((DebugGroupImplTotal) groupTotal.getImpl()).setBucket(name);
-        ((DebugGroupImplNoExpMultiExp) groupNoExpMultiExp.getImpl()).setBucket(name);
+        ((DebugGroupImpl) groupTotal.getImpl()).setBucket(name);
+        ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).setBucket(name);
     }
 
     /**
      * Retrieves number of group squarings including ones done in (multi-)exponentiation algorithms
      * from the bucket with the given name.
      *
-     * @param name the name of the bucket to retrieve number of squarings from
+     * @param bucketName the name of the bucket to retrieve number of squarings from
      */
-    public long getNumSquaringsTotal(String name) {
-        return ((DebugGroupImplTotal) groupTotal.getImpl()).getNum();
+    public long getNumSquaringsTotal(String bucketName) {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOps(bucketName);
     }
 
     /**
      * Retrieves number of group inversions including ones done in (multi-)exponentiation algorithms
      * from the bucket with the given name.
      *
-     * @param name the name of the bucket to retrieve number of squarings from
+     * @param bucketName the name of the bucket to retrieve number of inversions from
      */
-    public long getNumInversionsTotal(String name) {
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumInversions();
+    public long getNumInversionsTotal(String bucketName) {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumInversions(bucketName);
     }
 
     /**
@@ -171,30 +171,30 @@ public class DebugGroup implements Group {
      * from the bucket with the given name.
      * Does not include squarings.
      *
-     * @param name the name of the bucket to retrieve number of squarings from
+     * @param bucketName the name of the bucket to retrieve number of operations from
      */
-    public long getNumOpsTotal(String name) {
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOps();
+    public long getNumOpsTotal(String bucketName) {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOps(bucketName);
     }
 
     /**
      * Retrieves number of group squarings not including ones done in (multi-)exponentiation algorithms
      * from the bucket with the given name.
      *
-     * @param name the name of the bucket to retrieve number of squarings from
+     * @param bucketName the name of the bucket to retrieve number of squarings from
      */
-    public long getNumSquaringsNoExpMultiExp(String name) {
-        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumSquarings();
+    public long getNumSquaringsNoExpMultiExp(String bucketName) {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumSquarings(bucketName);
     }
 
     /**
      * Retrieves number of group inversions not including ones done in (multi-)exponentiation algorithms
      * from the bucket with the given name.
      *
-     * @param name the name of the bucket to retrieve number of squarings from
+     * @param bucketName the name of the bucket to retrieve number of inversions from
      */
-    public long getNumInversionsNoExpMultiExp(String name) {
-        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumInversions();
+    public long getNumInversionsNoExpMultiExp(String bucketName) {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumInversions(bucketName);
     }
 
     /**
@@ -202,32 +202,39 @@ public class DebugGroup implements Group {
      * from the bucket with the given name.
      * Does not include squarings.
      *
-     * @param name the name of the bucket to retrieve number of squarings from
+     * @param bucketName the name of the bucket to retrieve number of operations from
      */
-    public long getNumOpsNoExpMultiExp(String name) {
-        return((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOps();
+    public long getNumOpsNoExpMultiExp(String bucketName) {
+        return((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOps(bucketName);
     }
 
     /**
-     * Retrieves number of group exponentiations done.
+     * Retrieves number of group exponentiations done from the bucket with the given name.
+     *
+     * @param bucketName the name of the bucket to retrieve number of exponentiations from
      */
-    public long getNumExps() {
-        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumExps();
+    public long getNumExps(String bucketName) {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumExps(bucketName);
     }
 
     /**
-     * Retrieves number of terms of each multi-exponentiation done.
+     * Retrieves number of terms of each multi-exponentiation done from the bucket with the given name.
+     *
+     * @param bucketName the name of the bucket to retrieve multi-exponentiation term numbers from
      */
-    public List<Integer> getMultiExpTermNumbers() {
-        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getMultiExpTermNumbers();
+    public List<Integer> getMultiExpTermNumbers(String bucketName) {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getMultiExpTermNumbers(bucketName);
     }
 
     /**
-     * Retrieves number of retrieved representations of group elements for this group (via getRepresentation()).
+     * Retrieves number of retrieved representations of group elements for this group (via {@code getRepresentation()})
+     * from the bucket with the given name.
+     *
+     * @param bucketName the name of the bucket to retrieve number of retrieved representations from
      */
-    public long getNumRetrievedRepresentations() {
+    public long getNumRetrievedRepresentations(String bucketName) {
         // one of the groups suffices since we represent both elements
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentations();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentations(bucketName);
     }
 
     /**

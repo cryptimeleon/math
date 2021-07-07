@@ -130,6 +130,8 @@ abstract class DebugGroupImpl implements GroupImpl {
         return 1.6;
     }
 
+    abstract void setBucket(String name);
+
     abstract void incrementNumOps();
 
     abstract void incrementNumInversions();
@@ -145,4 +147,28 @@ abstract class DebugGroupImpl implements GroupImpl {
     abstract void addMultiExpBaseNumber(int numTerms);
 
     abstract void incrementNumRetrievedRepresentations();
+
+    abstract long getNumOps(String bucketName);
+
+    abstract long getNumInversions(String bucketName);
+
+    abstract long getNumSquarings(String bucketName);
+
+    abstract long getNumExps(String bucketName);
+
+    abstract List<Integer> getMultiExpTermNumbers(String bucketName);
+
+    abstract long getNumRetrievedRepresentations(String bucketName);
+
+    abstract long getNumOpsAllBuckets();
+
+    abstract long getNumInversionsAllBuckets();
+
+    abstract long getNumSquaringsAllBuckets();
+
+    abstract long getNumExpsAllBuckets();
+
+    abstract List<Integer> getMultiExpTermNumbersAllBuckets();
+
+    abstract long getNumRetrievedRepresentationsAllBuckets();
 }
