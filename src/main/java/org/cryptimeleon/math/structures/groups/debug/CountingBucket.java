@@ -53,7 +53,6 @@ public class CountingBucket {
         ++numOps;
     }
 
-
     public void incrementNumInversions() {
         ++numInversions;
     }
@@ -104,26 +103,6 @@ public class CountingBucket {
         return multiExpTermNumbers;
     }
 
-    public void resetOpsCounter() {
-        numOps = 0;
-    }
-
-    public void resetInversionsCounter() {
-        numInversions = 0;
-    }
-
-    public void resetSquaringsCounter() {
-        numSquarings = 0;
-    }
-
-    public void resetExpsCounter() { numExps = 0; }
-
-    public void resetMultiExpTermNumbers() { multiExpTermNumbers = new LinkedList<>(); }
-
-    public void resetRetrievedRepresentationsCounter() {
-        numRetrievedRepresentations = 0;
-    }
-
     /**
      * Resets all counters.
      */
@@ -134,5 +113,25 @@ public class CountingBucket {
         resetExpsCounter();
         resetMultiExpTermNumbers();
         resetRetrievedRepresentationsCounter();
+    }
+
+    protected void resetOpsCounter() {
+        numOps = 0;
+    }
+
+    protected void resetInversionsCounter() {
+        numInversions = 0;
+    }
+
+    protected void resetSquaringsCounter() {
+        numSquarings = 0;
+    }
+
+    protected void resetExpsCounter() { numExps = 0; }
+
+    protected void resetMultiExpTermNumbers() { multiExpTermNumbers = new LinkedList<>(); }
+
+    protected void resetRetrievedRepresentationsCounter() {
+        numRetrievedRepresentations = 0;
     }
 }

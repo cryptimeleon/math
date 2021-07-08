@@ -237,33 +237,137 @@ public class DebugGroup implements Group {
         return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentations(bucketName);
     }
 
-    /**
-     * Resets all counters.
+    /*
+    -------------- ALL BUCKETS GETTER METHODS BLOCK -----------------------------------------------
      */
-    public void resetCounters() {
-        ((DebugGroupImpl) groupTotal.getImpl()).resetCounters();
-        ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).resetCounters();
+
+    /**
+     * Retrieves number of group squarings including ones done in (multi-)exponentiation algorithms
+     * summed up across all buckets.
+     */
+    public long getNumSquaringsTotalAllBuckets() {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOpsAllBuckets();
     }
 
     /**
-     * Formats the count data for printing.
+     * Retrieves number of group inversions including ones done in (multi-)exponentiation algorithms
+     * summed up across all buckets.
+     */
+    public long getNumInversionsTotalAllBuckets() {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumInversionsAllBuckets();
+    }
+
+    /**
+     * Retrieves number of group ops including ones done in (multi-)exponentiation algorithms
+     * summed up across all buckets.
+     * Does not include squarings.
+     */
+    public long getNumOpsTotalAllBuckets() {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOpsAllBuckets();
+    }
+
+    /**
+     * Retrieves number of group squarings not including ones done in (multi-)exponentiation algorithms
+     * summed up across all buckets.
+     */
+    public long getNumSquaringsNoExpMultiExpAllBuckets() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumSquaringsAllBuckets();
+    }
+
+    /**
+     * Retrieves number of group inversions not including ones done in (multi-)exponentiation algorithms
+     * summed up across all buckets.
+     */
+    public long getNumInversionsNoExpMultiExpAllBuckets() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumInversionsAllBuckets();
+    }
+
+    /**
+     * Retrieves number of group ops not including ones done in (multi-)exponentiation algorithms
+     * summed up across all buckets.
+     * Does not include squarings.
+     */
+    public long getNumOpsNoExpMultiExpAllBuckets() {
+        return((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOpsAllBuckets();
+    }
+
+    /**
+     * Retrieves number of group exponentiations done summed up across all buckets.
+     */
+    public long getNumExpsAllBuckets() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumExpsAllBuckets();
+    }
+
+    /**
+     * Retrieves number of terms of each multi-exponentiation done across all buckets.
+     */
+    public List<Integer> getMultiExpTermNumbersAllBuckets() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getMultiExpTermNumbersAllBuckets();
+    }
+
+    /**
+     * Retrieves number of retrieved representations of group elements for this group (via {@code getRepresentation()})
+     * summed up across all buckets.
+     */
+    public long getNumRetrievedRepresentationsAllBuckets() {
+        // one of the groups suffices since we represent both elements
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentationsAllBuckets();
+    }
+
+    /**
+     * Resets all counters for the bucket with the given name.
+     */
+    public void resetCounters(String bucketName) {
+        ((DebugGroupImpl) groupTotal.getImpl()).resetCounters(bucketName);
+        ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).resetCounters(bucketName);
+    }
+
+    /**
+     * Resets counters for all buckets.
+     */
+    public void resetCountersAllBuckets() {
+        ((DebugGroupImpl) groupTotal.getImpl()).resetCountersAllBuckets();
+        ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).resetCountersAllBuckets();
+    }
+
+    /**
+     * Formats the count data of the bucket with the given name for printing.
+     *
+     * @param bucketName the name of the bucket whose data to format for printing
+     *
      * @return a string detailing the results of counting
      */
+    public String formatCounterData(String bucketName) {
+        long totalNumOps = getNumOpsTotal(bucketName);
+        long totalNumSqs = getNumSquaringsTotal(bucketName);
+        long totalNumInvs = getNumInversionsTotal(bucketName);
+        long totalNumOpsSqs = totalNumOps + totalNumSqs;
+        long expMultiExpNumOps = totalNumOps - getNumOpsNoExpMultiExp(bucketName);
+        long expMultiExpNumSqs = totalNumSqs - getNumSquaringsNoExpMultiExp(bucketName);
+        long expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExp(bucketName);
+        List<Integer> multiExpTerms = getMultiExpTermNumbers(bucketName);
+
+        String tab = "    ";
+        return String.format("%s\n", bucketName)
+                + String.format("%s(Costly) Operations: %d\n", tab, totalNumOpsSqs)
+                + String.format("%s%sNon-squarings: %d (%d of which happened during (multi-)exp)\n",
+                                tab, tab, totalNumSqs, expMultiExpNumSqs)
+                + String.format("%s%sSquarings: %d (%d of which happened during (multi-)exp)\n",
+                                tab, tab, totalNumSqs, expMultiExpNumSqs)
+                + String.format("%sInversions: %d (%d of which happened during (multi-)exp)\n",
+                                tab, totalNumInvs, expMultiExpNumInvs)
+                + String.format("%sExponentiations: %d\n", tab, getNumExps(bucketName))
+                + String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab, multiExpTerms)
+                + String.format("%sgetRepresentation() calls: %d\n", tab, getNumRetrievedRepresentations(bucketName));
+    }
+
+    /**
+     * Formats the count data of all buckets for printing.
+     *
+     * @return a string detailing results of counting
+     */
     public String formatCounterData() {
-        return "------- Operation data for " + toString() + " -------\n"
-                + "----- Total group operation data: -----\n"
-                + "    Number of Group Operations: " + getNumOpsTotal() + "\n"
-                + "    Number of Group Inversions: " + getNumInversionsTotal() + "\n"
-                + "    Number of Group Squarings: " + getNumSquaringsTotal() + "\n"
-                + "----- Group operation data without operations done in (multi-)exp algorithms: -----\n"
-                + "    Number of Group Operations: " + getNumOpsNoExpMultiExp() + "\n"
-                + "    Number of Group Inversions: " + getNumInversionsNoExpMultiExp() + "\n"
-                + "    Number of Group Squarings: " + getNumSquaringsNoExpMultiExp() + "\n"
-                + "----- Other data: -----\n"
-                + "    Number of exponentiations: " + getNumExps() + "\n"
-                + "    Number of terms in each multi-exponentiation: " + getMultiExpTermNumbers() + "\n"
-                + "    Number of retrieved representations (via getRepresentation()): "
-                + getNumRetrievedRepresentations() + "\n";
+
     }
 
     /**

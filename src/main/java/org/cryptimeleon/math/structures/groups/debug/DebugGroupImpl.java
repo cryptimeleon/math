@@ -129,46 +129,117 @@ abstract class DebugGroupImpl implements GroupImpl {
     public double estimateCostInvPerOp() {
         return 1.6;
     }
+    
+    void incrementNumOps() {
+        getCurrentBucket().incrementNumOps();
+        getAllBucketsBucket().incrementNumOps();
+    }
+    
+    void incrementNumInversions() {
+        getCurrentBucket().incrementNumInversions();
+        getAllBucketsBucket().incrementNumInversions();
+    }
+    
+    void incrementNumSquarings() {
+        getCurrentBucket().incrementNumSquarings();
+        getAllBucketsBucket().incrementNumSquarings();
+    }
+    
+    void incrementNumExps() {
+        getCurrentBucket().incrementNumExps();
+        getAllBucketsBucket().incrementNumExps();
+    }
+    
+    void addMultiExpBaseNumber(int numTerms) {
+        getCurrentBucket().addMultiExpBaseNumber(numTerms);
+        getAllBucketsBucket().addMultiExpBaseNumber(numTerms);
+    }
+    
+    void incrementNumRetrievedRepresentations() {
+        getCurrentBucket().incrementNumRetrievedRepresentations();
+        getAllBucketsBucket().incrementNumRetrievedRepresentations();
+    }
+    
+    long getNumOps(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumOps();
+    }
+    
+    long getNumInversions(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumInversions();
+    }
 
-    abstract void setBucket(String name);
+    long getNumSquarings(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumSquarings();
+    }
 
-    abstract void incrementNumOps();
+    long getNumExps(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumExps();
+    }
 
-    abstract void incrementNumInversions();
+    List<Integer> getMultiExpTermNumbers(String bucketName) {
+        return putBucketIfAbsent(bucketName).getMultiExpTermNumbers();
+    }
 
-    abstract void incrementNumSquarings();
+    long getNumRetrievedRepresentations(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumRetrievedRepresentations();
+    }
 
-    abstract void incrementNumExps();
+    long getNumOpsAllBuckets() {
+        return getAllBucketsBucket().getNumOps();
+    }
+
+    long getNumInversionsAllBuckets() {
+        return getAllBucketsBucket().getNumInversions();
+    }
+
+    long getNumSquaringsAllBuckets() {
+        return getAllBucketsBucket().getNumSquarings();
+    }
+
+    long getNumExpsAllBuckets() {
+        return getAllBucketsBucket().getNumExps();
+    }
+
+    List<Integer> getMultiExpTermNumbersAllBuckets() {
+        return getAllBucketsBucket().getMultiExpTermNumbers();
+    }
+
+    long getNumRetrievedRepresentationsAllBuckets() {
+        return getAllBucketsBucket().getNumRetrievedRepresentations();
+    }
+
+    void resetCounters(String bucketName) {
+        putBucketIfAbsent(bucketName).resetCounters();
+    }
+
+    void resetCountersAllBuckets() {
+        getAllBucketsBucket().resetCounters();
+        getBucketMap().forEach((name, bucket) -> bucket.resetCounters());
+    }
 
     /**
-     * Tracks the fact that a multi-exponentiation with the given number of terms was done.
-     * @param numTerms the number of terms (bases) in the multi-exponentiation
+     * Sets the currently used operation count storage bucket to the one with the given name.
+     * If a bucket with the given name does not exist, a new one is created.
+     * <p>
+     * All operations executed after setting a bucket will be counted within that bucket only.
+     * <p>
+     * The name of the default bucket is "default".
+     *
+     * @param name the name of the bucket to enable
      */
-    abstract void addMultiExpBaseNumber(int numTerms);
+    abstract void setBucket(String name);
 
-    abstract void incrementNumRetrievedRepresentations();
+    /**
+     * Retrieves the bucket with the given name from {@code countingBucketMap},
+     * creating a new one if it does not exist yet.
+     *
+     * @param name the name of the bucket to retrieve
+     */
+    abstract CountingBucket putBucketIfAbsent(String name);
 
-    abstract long getNumOps(String bucketName);
+    abstract CountingBucket getAllBucketsBucket();
 
-    abstract long getNumInversions(String bucketName);
+    abstract CountingBucket getCurrentBucket();
 
-    abstract long getNumSquarings(String bucketName);
-
-    abstract long getNumExps(String bucketName);
-
-    abstract List<Integer> getMultiExpTermNumbers(String bucketName);
-
-    abstract long getNumRetrievedRepresentations(String bucketName);
-
-    abstract long getNumOpsAllBuckets();
-
-    abstract long getNumInversionsAllBuckets();
-
-    abstract long getNumSquaringsAllBuckets();
-
-    abstract long getNumExpsAllBuckets();
-
-    abstract List<Integer> getMultiExpTermNumbersAllBuckets();
-
-    abstract long getNumRetrievedRepresentationsAllBuckets();
+    abstract Map<String, CountingBucket> getBucketMap();
 }

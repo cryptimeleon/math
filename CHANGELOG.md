@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- `DebugGroup` group operation counting data is now split up into buckets that allow, for example, to separately count operations done by different parties in an interactive protocol.
+- `DebugGroup` group operation counting data is now split up into buckets that allow, for example, to separately count operations done by different parties in an interactive protocol. Furthermore, counting is now done statically, i.e. the data in each bucket persists across `DebugGroup` instances.
 
 ## [2.1.0]
 
