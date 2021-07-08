@@ -110,20 +110,43 @@ public class DebugBilinearMap implements BilinearMap {
         return Objects.hash(totalBilMap, expMultiExpBilMap);
     }
 
-    /**
-     * Retrieves number of pairings computed in this bilinear group.
-     */
-    public long getNumPairings() {
-        // one of them suffices since both count
-        return ((DebugBilinearMapImpl) totalBilMap.getImpl()).getNumPairings();
+    public void setBucket(String name) {
+        ((DebugBilinearMapImpl) totalBilMap.getImpl()).setBucket(name);
+        ((DebugBilinearMapImpl) expMultiExpBilMap.getImpl()).setBucket(name);
     }
 
     /**
-     * Resets pairing counter.
+     * Retrieves number of pairings computed in this bilinear group from the bucket with the given name.
+     * @param bucketName the name of the bucket to obtain pairing numbers from
      */
-    public void resetNumPairings() {
-        ((DebugBilinearMapImpl) totalBilMap.getImpl()).resetNumPairings();
-        ((DebugBilinearMapImpl) expMultiExpBilMap.getImpl()).resetNumPairings();
+    public long getNumPairings(String bucketName) {
+        // one of them suffices since both count
+        return ((DebugBilinearMapImpl) totalBilMap.getImpl()).getNumPairings(bucketName);
+    }
+
+    /**
+     * Retrieves number of pairings computed in this bilinear group for all buckets.
+     */
+    public long getNumPairingsAllBuckets() {
+        // one of them suffices since both count
+        return ((DebugBilinearMapImpl) totalBilMap.getImpl()).getNumPairingsAllBuckets();
+    }
+
+    /**
+     * Resets pairing counter for the bucket with the given name.
+     * @param bucketName the name of the bucket to reset pairing counter for
+     */
+    public void resetNumPairings(String bucketName) {
+        ((DebugBilinearMapImpl) totalBilMap.getImpl()).resetNumPairings(bucketName);
+        ((DebugBilinearMapImpl) expMultiExpBilMap.getImpl()).resetNumPairings(bucketName);
+    }
+
+    /**
+     * Resets pairing counter for all buckets.
+     */
+    public void resetNumPairingsAllBuckets() {
+        ((DebugBilinearMapImpl) totalBilMap.getImpl()).resetNumPairingsAllBuckets();
+        ((DebugBilinearMapImpl) expMultiExpBilMap.getImpl()).resetNumPairingsAllBuckets();
     }
 
     @Override
@@ -136,10 +159,6 @@ public class DebugBilinearMap implements BilinearMap {
     }
 
     public String formatCounterData()  {
-        return "---------- Operation data for " + toString() + "----------\n"
-                + ((DebugGroup) getG1()).formatCounterData()
-                + ((isSymmetric()) ? "" : ((DebugGroup) getG2()).formatCounterData())
-                + ((DebugGroup) getGT()).formatCounterData()
-                + "------- Number of pairings: " + getNumPairings() + " -------";
+        return ""; //TODO: implement
     }
 }

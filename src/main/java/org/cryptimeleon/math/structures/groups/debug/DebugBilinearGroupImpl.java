@@ -10,6 +10,7 @@ import org.cryptimeleon.math.structures.groups.elliptic.BilinearMapImpl;
 import org.cryptimeleon.math.structures.groups.mappings.impl.GroupHomomorphismImpl;
 import org.cryptimeleon.math.structures.groups.mappings.impl.HashIntoGroupImpl;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
+import sun.security.util.Debug;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -46,59 +47,40 @@ public class DebugBilinearGroupImpl implements BilinearGroupImpl {
     protected BigInteger size;
 
     /**
-     * Whether to count exponentiations as a single unit. If set to true, group operations in those exponentiations
-     * will not be counted.
+     * Whether to count exponentiations and multi-exponentiations as a single unit.
+     * If set to true, group operations in those (multi-)exponentiations will not be counted.
+     * Instead (multi-)exponentiations will be counted as a single unit.
      */
     @Represented
-    protected Boolean enableExpCounting;
-
-    /**
-     * Whether to count multi-exponentiations as a single unit. If set to true, group operations in those
-     * multi-exponentiations will not be counted.
-     */
-    @Represented
-    protected Boolean enableMultiExpCounting;
+    protected Boolean enableExpMultiExpCounting;
 
     /**
      * The underlying bilinear map used for applying the pairing function and counting it.
      */
     DebugBilinearMapImpl bilinearMapImpl;
 
-    public DebugBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors,
-                                  boolean enableExpCounting, boolean enableMultiExpCounting) {
-        this.securityParameter = securityParameter;
+    public DebugBilinearGroupImpl(int groupSizeBits, BilinearGroup.Type pairingType,
+                                  boolean enableExpMultiExpCounting) {
+        this.securityParameter = groupSizeBits;
         this.pairingType = pairingType;
-        this.enableExpCounting = enableExpCounting;
-        this.enableMultiExpCounting = enableMultiExpCounting;
+        this.enableExpMultiExpCounting = enableExpMultiExpCounting;
 
-        ArrayList<BigInteger> primeFactors = new ArrayList<>();
-        for (int i = 0; i < numPrimeFactors; i++)
-            primeFactors.add(RandomGenerator.getRandomPrime(securityParameter));
-
-        this.size = primeFactors.stream().reduce(BigInteger.ONE, BigInteger::multiply);
+        // get a random prime of roughly groupSizeBits
+        this.size = RandomGenerator.getRandomPrime(groupSizeBits);
         init();
     }
 
-    public DebugBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors) {
-        this(securityParameter, pairingType, numPrimeFactors, false, false);
-    }
-
-    public DebugBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType) {
-        this(securityParameter, pairingType, 1);
-    }
-
-    public DebugBilinearGroupImpl(int securityParameter, BilinearGroup.Type pairingType, BigInteger size,
-                                  boolean enableExpCounting, boolean enableMultiExpCounting) {
-        this.securityParameter = securityParameter;
+    public DebugBilinearGroupImpl(BigInteger groupSize, BilinearGroup.Type pairingType,
+                                  boolean enableExpMultiExpCounting) {
+        this.securityParameter = groupSize.bitLength();
         this.pairingType = pairingType;
-        this.enableExpCounting = enableExpCounting;
-        this.enableMultiExpCounting = enableMultiExpCounting;
-        this.size = size;
+        this.enableExpMultiExpCounting = enableExpMultiExpCounting;
+        this.size = groupSize;
         init();
     }
 
     protected void init() {
-        bilinearMapImpl = new DebugBilinearMapImpl(pairingType, size, enableExpCounting, enableMultiExpCounting);
+        bilinearMapImpl = new DebugBilinearMapImpl(size, pairingType, enableExpMultiExpCounting);
     }
 
     public DebugBilinearGroupImpl(Representation repr) {
@@ -113,8 +95,7 @@ public class DebugBilinearGroupImpl implements BilinearGroupImpl {
         DebugBilinearGroupImpl that = (DebugBilinearGroupImpl) other;
         return Objects.equals(pairingType, that.pairingType)
                 && Objects.equals(size, that.size)
-                && Objects.equals(enableExpCounting, that.enableExpCounting)
-                && Objects.equals(enableMultiExpCounting, that.enableMultiExpCounting);
+                && Objects.equals(enableExpMultiExpCounting, that.enableExpMultiExpCounting);
     }
 
     @Override

@@ -44,15 +44,15 @@ public class DebugGroup implements Group {
      * Group operations only work between groups of the same name and size.
      *
      * @param name the name of the group
-     * @param n the desired size of the group
+     * @param size the desired size of the group
      */
-    public DebugGroup(String name, BigInteger n) {
-        groupTotal = new LazyGroup(new DebugGroupImplTotal(name, n));
-        groupNoExpMultiExp = new LazyGroup(new DebugGroupImplNoExpMultiExp(name, n));
+    public DebugGroup(String name, BigInteger size) {
+        groupTotal = new LazyGroup(new DebugGroupImplTotal(name, size));
+        groupNoExpMultiExp = new LazyGroup(new DebugGroupImplNoExpMultiExp(name, size));
     }
 
-    public DebugGroup(String name, long n) {
-        this(name, BigInteger.valueOf(n));
+    public DebugGroup(String name, long size) {
+        this(name, BigInteger.valueOf(size));
     }
 
     /**
@@ -337,7 +337,7 @@ public class DebugGroup implements Group {
      *
      * @return a string detailing the results of counting
      */
-    public String formatCounterData(String bucketName) {
+    protected String formatCounterData(String bucketName) {
         long totalNumOps = getNumOpsTotal(bucketName);
         long totalNumSqs = getNumSquaringsTotal(bucketName);
         long totalNumInvs = getNumInversionsTotal(bucketName);
@@ -362,7 +362,7 @@ public class DebugGroup implements Group {
     }
 
     /**
-     * Formats the count data of all buckets for printing.
+     * Formats the counter data of all buckets for printing.
      *
      * @param summaryOnly if true, only formats the summed up results across all buckets; otherwise, outputs results
      *                    of every bucket plus the summary

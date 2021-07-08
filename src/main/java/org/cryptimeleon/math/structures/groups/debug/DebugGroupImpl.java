@@ -129,90 +129,90 @@ abstract class DebugGroupImpl implements GroupImpl {
     public double estimateCostInvPerOp() {
         return 1.6;
     }
-    
-    void incrementNumOps() {
+
+    protected void incrementNumOps() {
         getCurrentBucket().incrementNumOps();
         getAllBucketsBucket().incrementNumOps();
     }
-    
-    void incrementNumInversions() {
+
+    protected void incrementNumInversions() {
         getCurrentBucket().incrementNumInversions();
         getAllBucketsBucket().incrementNumInversions();
     }
-    
-    void incrementNumSquarings() {
+
+    protected void incrementNumSquarings() {
         getCurrentBucket().incrementNumSquarings();
         getAllBucketsBucket().incrementNumSquarings();
     }
-    
-    void incrementNumExps() {
+
+    protected void incrementNumExps() {
         getCurrentBucket().incrementNumExps();
         getAllBucketsBucket().incrementNumExps();
     }
-    
-    void addMultiExpBaseNumber(int numTerms) {
+
+    protected void addMultiExpBaseNumber(int numTerms) {
         getCurrentBucket().addMultiExpBaseNumber(numTerms);
         getAllBucketsBucket().addMultiExpBaseNumber(numTerms);
     }
-    
-    void incrementNumRetrievedRepresentations() {
+
+    protected void incrementNumRetrievedRepresentations() {
         getCurrentBucket().incrementNumRetrievedRepresentations();
         getAllBucketsBucket().incrementNumRetrievedRepresentations();
     }
-    
-    long getNumOps(String bucketName) {
+
+    protected long getNumOps(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumOps();
     }
-    
-    long getNumInversions(String bucketName) {
+
+    protected long getNumInversions(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumInversions();
     }
 
-    long getNumSquarings(String bucketName) {
+    protected long getNumSquarings(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumSquarings();
     }
 
-    long getNumExps(String bucketName) {
+    protected long getNumExps(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumExps();
     }
 
-    List<Integer> getMultiExpTermNumbers(String bucketName) {
+    protected List<Integer> getMultiExpTermNumbers(String bucketName) {
         return putBucketIfAbsent(bucketName).getMultiExpTermNumbers();
     }
 
-    long getNumRetrievedRepresentations(String bucketName) {
+    protected long getNumRetrievedRepresentations(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumRetrievedRepresentations();
     }
 
-    long getNumOpsAllBuckets() {
+    protected long getNumOpsAllBuckets() {
         return getAllBucketsBucket().getNumOps();
     }
 
-    long getNumInversionsAllBuckets() {
+    protected long getNumInversionsAllBuckets() {
         return getAllBucketsBucket().getNumInversions();
     }
 
-    long getNumSquaringsAllBuckets() {
+    protected long getNumSquaringsAllBuckets() {
         return getAllBucketsBucket().getNumSquarings();
     }
 
-    long getNumExpsAllBuckets() {
+    protected long getNumExpsAllBuckets() {
         return getAllBucketsBucket().getNumExps();
     }
 
-    List<Integer> getMultiExpTermNumbersAllBuckets() {
+    protected List<Integer> getMultiExpTermNumbersAllBuckets() {
         return getAllBucketsBucket().getMultiExpTermNumbers();
     }
 
-    long getNumRetrievedRepresentationsAllBuckets() {
+    protected long getNumRetrievedRepresentationsAllBuckets() {
         return getAllBucketsBucket().getNumRetrievedRepresentations();
     }
 
-    void resetCounters(String bucketName) {
+    protected void resetCounters(String bucketName) {
         putBucketIfAbsent(bucketName).resetCounters();
     }
 
-    void resetCountersAllBuckets() {
+    protected void resetCountersAllBuckets() {
         getAllBucketsBucket().resetCounters();
         getBucketMap().forEach((name, bucket) -> bucket.resetCounters());
     }

@@ -74,50 +74,31 @@ public class DebugBilinearGroup implements BilinearGroup {
     protected DebugGroup gT;
 
     /**
-     * Initializes this bilinear group with the given security level, pairing type, and group order factoring
-     * into the given number of prime factors.
+     * Initializes this bilinear group with the given pairing type and group size of given bits.
      *
-     * @param securityParameter the security level in number of bits
+     * @param groupSizeBits the number of bits used to represent the size of this group
      * @param pairingType the type of pairing that should be offered by this bilinear group
-     * @param numPrimeFactors the number of prime factors the group order should have
      */
-    public DebugBilinearGroup(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors) {
-        this.securityParameter = securityParameter;
+    public DebugBilinearGroup(int groupSizeBits, BilinearGroup.Type pairingType) {
+        this.securityParameter = groupSizeBits;
         this.pairingType = pairingType;
-
-        ArrayList<BigInteger> primeFactors = new ArrayList<>();
-        for (int i = 0; i < numPrimeFactors; i++)
-            primeFactors.add(RandomGenerator.getRandomPrime(securityParameter));
-        
-        BigInteger size = primeFactors.stream().reduce(BigInteger.ONE, BigInteger::multiply);
         totalBilGroup = new LazyBilinearGroup(new DebugBilinearGroupImpl(
-                securityParameter, pairingType, size, false, false
+                securityParameter, pairingType, false
         ));
         expMultiExpBilGroup = new LazyBilinearGroup(new DebugBilinearGroupImpl(
-                securityParameter, pairingType, size, true, true
+                securityParameter, pairingType, true
         ));
         init();
     }
 
     /**
-     *
-     * Initializes this bilinear group with the given security level, pairing type and prime group order.
-     *
-     * @param securityParameter the security level in number of bits
+     * Initializes this prime order bilinear group with the given size and pairing type.
+     * @param groupSize the size of the group
      * @param pairingType the type of pairing that should be offered by this bilinear group
      */
-    public DebugBilinearGroup(int securityParameter, BilinearGroup.Type pairingType) {
-        this(securityParameter, pairingType, 1);
-    }
-
-    /**
-     *
-     * Initializes this prime order bilinear group of 128 bit size
-     *
-     * @param pairingType the type of pairing that should be offered by this bilinear group
-     */
-    public DebugBilinearGroup(BilinearGroup.Type pairingType) {
-        this(128, pairingType);
+    public DebugBilinearGroup(BigInteger groupSize, BilinearGroup.Type pairingType) {
+        this.securityParameter = groupSize.bitLength();
+        this.pairingType = pairingType;
     }
 
     public DebugBilinearGroup(Representation repr) {
@@ -219,28 +200,54 @@ public class DebugBilinearGroup implements BilinearGroup {
                 + " using groups of size " + g1.size();
     }
 
+    public void setBucket(String name) {
+        g1.setBucket(name);
+        g2.setBucket(name);
+        gT.setBucket(name);
+        bilMap.setBucket(name);
+    }
+
     /**
      * Returns the number of pairings computed in this bilinear group.
      */
-    public long getNumPairings() {
-        return bilMap.getNumPairings();
+    public long getNumPairings(String bucketName) {
+        return bilMap.getNumPairings(bucketName);
+    }
+
+    public long getNumPairingsAllBuckets() {
+        return bilMap.getNumPairingsAllBuckets();
     }
 
     /**
      * Resets pairing counter.
      */
-    public void resetNumPairings() {
-        bilMap.resetNumPairings();
+    public void resetNumPairings(String bucketName) {
+        bilMap.resetNumPairings(bucketName);
+    }
+
+    public void resetNumPairingsAllBuckets() {
+        bilMap.resetNumPairingsAllBuckets();
     }
 
     /**
-     * Resets all counters, including the ones in groups G1, G2, GT.
+     * Resets the counters inside the bucket with the given name to, including the ones in groups G1, G2, GT
+     * as well as the pairing counter.
      */
-    public void resetCounters() {
-        resetNumPairings();
-        g1.resetCounters();
-        g2.resetCounters();
-        gT.resetCounters();
+    public void resetCounters(String bucketName) {
+        g1.resetCounters(bucketName);
+        g2.resetCounters(bucketName);
+        gT.resetCounters(bucketName);
+        resetNumPairings(bucketName);
+    }
+
+    /**
+     * Resets counters for all buckets.
+     */
+    public void resetCountersAllBuckets() {
+        g1.resetCountersAllBuckets();
+        g2.resetCountersAllBuckets();
+        gT.resetCountersAllBuckets();
+        resetNumPairingsAllBuckets();
     }
 
     /**

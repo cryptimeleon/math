@@ -20,22 +20,17 @@ public class DebugGroupImplNoExpMultiExp extends DebugGroupImpl {
     /**
      * Maps the name of each bucket to the actual {@code CountingBucket} object.
      */
-    static HashMap<String, CountingBucket> countingBucketMap;
-
-    /**
-     * The default counting bucket used whenever no named bucket is selected.
-     */
-    static CountingBucket defaultBucket;
+    protected static HashMap<String, CountingBucket> countingBucketMap;
 
     /**
      * Tracks operation data across all other buckets, including default and all named buckets.
      */
-    static CountingBucket allBucketsBucket;
+    protected static CountingBucket allBucketsBucket;
 
     /**
      * The currently used bucket.
      */
-    static CountingBucket currentBucket;
+    protected static CountingBucket currentBucket;
 
     // Initialization block for static variables
     static {
@@ -84,27 +79,27 @@ public class DebugGroupImplNoExpMultiExp extends DebugGroupImpl {
     }
 
     @Override
-    public void setBucket(String name) {
+    protected void setBucket(String name) {
         currentBucket = putBucketIfAbsent(name);
     }
 
     @Override
-    CountingBucket putBucketIfAbsent(String name) {
+    protected CountingBucket putBucketIfAbsent(String name) {
         return countingBucketMap.computeIfAbsent(name, kName -> new CountingBucket());
     }
 
     @Override
-    CountingBucket getAllBucketsBucket() {
+    protected CountingBucket getAllBucketsBucket() {
         return allBucketsBucket;
     }
 
     @Override
-    CountingBucket getCurrentBucket() {
+    protected CountingBucket getCurrentBucket() {
         return currentBucket;
     }
 
     @Override
-    Map<String, CountingBucket> getBucketMap() {
+    protected Map<String, CountingBucket> getBucketMap() {
         return countingBucketMap;
     }
 }
