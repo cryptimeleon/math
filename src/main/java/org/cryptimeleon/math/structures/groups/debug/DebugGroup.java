@@ -351,7 +351,7 @@ public class DebugGroup implements Group {
         return String.format("%s\n", bucketName)
                 + String.format("%s(Costly) Operations: %d\n", tab, totalNumOpsSqs)
                 + String.format("%s%sNon-squarings: %d (%d of which happened during (multi-)exp)\n",
-                                tab, tab, totalNumSqs, expMultiExpNumSqs)
+                                tab, tab, totalNumSqs, expMultiExpNumOps)
                 + String.format("%s%sSquarings: %d (%d of which happened during (multi-)exp)\n",
                                 tab, tab, totalNumSqs, expMultiExpNumSqs)
                 + String.format("%sInversions: %d (%d of which happened during (multi-)exp)\n",
@@ -364,10 +364,52 @@ public class DebugGroup implements Group {
     /**
      * Formats the count data of all buckets for printing.
      *
+     * @param summaryOnly if true, only formats the summed up results across all buckets; otherwise, outputs results
+     *                    of every bucket plus the summary
+     *
+     * @return a string detailing results of counting
+     */
+    public String formatCounterData(boolean summaryOnly) {
+        StringBuilder result = new StringBuilder();
+        if (!summaryOnly) {
+            for (String bucketName : ((DebugGroupImpl) groupTotal.getImpl()).getBucketMap().keySet()) {
+                result.append(formatCounterData(bucketName));
+            }
+        }
+
+        long totalNumOps = getNumOpsTotalAllBuckets();
+        long totalNumSqs = getNumSquaringsTotalAllBuckets();
+        long totalNumInvs = getNumInversionsTotalAllBuckets();
+        long totalNumOpsSqs = totalNumOps + totalNumSqs;
+        long expMultiExpNumOps = totalNumOps - getNumOpsNoExpMultiExpAllBuckets();
+        long expMultiExpNumSqs = totalNumSqs - getNumSquaringsNoExpMultiExpAllBuckets();
+        long expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExpAllBuckets();
+        List<Integer> multiExpTerms = getMultiExpTermNumbersAllBuckets();
+
+        String tab = "    ";
+        result.append("Combined results of all buckets\n")
+                .append(String.format("%s(Costly) Operations: %d\n", tab, totalNumOpsSqs))
+                .append(String.format("%s%sNon-squarings: %d (%d of which happened during (multi-)exp)\n",
+                                      tab, tab, totalNumSqs, expMultiExpNumOps))
+                .append(String.format("%s%sSquarings: %d (%d of which happened during (multi-)exp)\n",
+                                      tab, tab, totalNumSqs, expMultiExpNumSqs))
+                .append(String.format("%sInversions: %d (%d of which happened during (multi-)exp)\n",
+                                      tab, totalNumInvs, expMultiExpNumInvs))
+                .append(String.format("%sExponentiations: %d\n", tab, getNumExpsAllBuckets()))
+                .append(String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab, multiExpTerms))
+                .append(String.format("%sgetRepresentation() calls: %d\n",
+                                      tab, getNumRetrievedRepresentationsAllBuckets()));
+
+        return result.toString();
+    }
+
+    /**
+     * Formats the count data of all buckets for printing.
+     *
      * @return a string detailing results of counting
      */
     public String formatCounterData() {
-
+        return formatCounterData(false);
     }
 
     /**

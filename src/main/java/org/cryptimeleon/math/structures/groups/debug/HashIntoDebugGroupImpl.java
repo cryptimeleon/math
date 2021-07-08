@@ -1,6 +1,8 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.serialization.Representation;
+import org.cryptimeleon.math.serialization.annotations.ReprUtil;
+import org.cryptimeleon.math.serialization.annotations.Represented;
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.groups.mappings.impl.HashIntoGroupImpl;
 import org.cryptimeleon.math.structures.rings.zn.HashIntoZn;
@@ -11,6 +13,7 @@ import java.util.Objects;
  * Allows hashing a byte array to a {@link DebugGroupImpl} via {@link HashIntoZn}.
  */
 public class HashIntoDebugGroupImpl implements HashIntoGroupImpl {
+    @Represented
     protected DebugGroupImpl group;
     protected HashIntoZn hash;
 
@@ -20,12 +23,13 @@ public class HashIntoDebugGroupImpl implements HashIntoGroupImpl {
     }
 
     public HashIntoDebugGroupImpl(Representation repr) {
-        this(new DebugGroupImpl(repr));
+        new ReprUtil(this).deserialize(repr);
+        hash = new HashIntoZn(group.size());
     }
 
     @Override
     public Representation getRepresentation() {
-        return group.getRepresentation();
+        return ReprUtil.serialize(this);
     }
 
     @Override
