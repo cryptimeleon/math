@@ -14,10 +14,10 @@ import java.math.BigInteger;
 import java.util.*;
 
 /**
- * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
+ * Zn-based group that supports counting group operationsinversionssquarings and exponentiations as well as
  * number of terms in each multi-exponentiation.
  */
-abstract class DebugGroupImpl implements GroupImpl {
+public abstract class DebugGroupImpl implements GroupImpl {
 
     /**
      * Name of this group. Group elements between {@code CountingGroupElementImpl} instances only allow for group
@@ -130,104 +130,136 @@ abstract class DebugGroupImpl implements GroupImpl {
         return 1.6;
     }
 
-    protected void incrementNumOps() {
+    void incrementNumOps() {
         getCurrentBucket().incrementNumOps();
         getAllBucketsBucket().incrementNumOps();
     }
 
-    protected void incrementNumInversions() {
+    void incrementNumInversions() {
         getCurrentBucket().incrementNumInversions();
         getAllBucketsBucket().incrementNumInversions();
     }
 
-    protected void incrementNumSquarings() {
+    void incrementNumSquarings() {
         getCurrentBucket().incrementNumSquarings();
         getAllBucketsBucket().incrementNumSquarings();
     }
 
-    protected void incrementNumExps() {
+    void incrementNumExps() {
         getCurrentBucket().incrementNumExps();
         getAllBucketsBucket().incrementNumExps();
     }
 
-    protected void addMultiExpBaseNumber(int numTerms) {
+    void addMultiExpBaseNumber(int numTerms) {
         getCurrentBucket().addMultiExpBaseNumber(numTerms);
         getAllBucketsBucket().addMultiExpBaseNumber(numTerms);
     }
 
-    protected void incrementNumRetrievedRepresentations() {
+    void incrementNumRetrievedRepresentations() {
         getCurrentBucket().incrementNumRetrievedRepresentations();
         getAllBucketsBucket().incrementNumRetrievedRepresentations();
     }
 
-    protected long getNumOps(String bucketName) {
+    long getNumOps(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumOps();
     }
 
-    protected long getNumInversions(String bucketName) {
+    long getNumInversions(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumInversions();
     }
 
-    protected long getNumSquarings(String bucketName) {
+    long getNumSquarings(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumSquarings();
     }
 
-    protected long getNumExps(String bucketName) {
+    long getNumExps(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumExps();
     }
 
-    protected List<Integer> getMultiExpTermNumbers(String bucketName) {
+    List<Integer> getMultiExpTermNumbers(String bucketName) {
         return putBucketIfAbsent(bucketName).getMultiExpTermNumbers();
     }
 
-    protected long getNumRetrievedRepresentations(String bucketName) {
+    long getNumRetrievedRepresentations(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumRetrievedRepresentations();
     }
 
-    protected long getNumOpsAllBuckets() {
+    long getNumOpsDefault() {
+        return getDefaultBucket().getNumOps();
+    }
+
+    long getNumInversionsDefault() {
+        return getDefaultBucket().getNumInversions();
+    }
+
+    long getNumSquaringsDefault() {
+        return getDefaultBucket().getNumSquarings();
+    }
+
+    long getNumExpsDefault() {
+        return getDefaultBucket().getNumExps();
+    }
+
+    List<Integer> getMultiExpTermNumbersDefault() {
+        return getDefaultBucket().getMultiExpTermNumbers();
+    }
+
+    long getNumRetrievedRepresentationsDefault() {
+        return getDefaultBucket().getNumRetrievedRepresentations();
+    }
+
+    long getNumOpsAllBuckets() {
         return getAllBucketsBucket().getNumOps();
     }
 
-    protected long getNumInversionsAllBuckets() {
+    long getNumInversionsAllBuckets() {
         return getAllBucketsBucket().getNumInversions();
     }
 
-    protected long getNumSquaringsAllBuckets() {
+    long getNumSquaringsAllBuckets() {
         return getAllBucketsBucket().getNumSquarings();
     }
 
-    protected long getNumExpsAllBuckets() {
+    long getNumExpsAllBuckets() {
         return getAllBucketsBucket().getNumExps();
     }
 
-    protected List<Integer> getMultiExpTermNumbersAllBuckets() {
+    List<Integer> getMultiExpTermNumbersAllBuckets() {
         return getAllBucketsBucket().getMultiExpTermNumbers();
     }
 
-    protected long getNumRetrievedRepresentationsAllBuckets() {
+    long getNumRetrievedRepresentationsAllBuckets() {
         return getAllBucketsBucket().getNumRetrievedRepresentations();
     }
 
-    protected void resetCounters(String bucketName) {
+    void resetCounters(String bucketName) {
         putBucketIfAbsent(bucketName).resetCounters();
     }
 
-    protected void resetCountersAllBuckets() {
+    void resetCountersDefault() {
+        getDefaultBucket().resetCounters();
+    }
+
+    void resetCountersAllBuckets() {
         getAllBucketsBucket().resetCounters();
         getBucketMap().forEach((name, bucket) -> bucket.resetCounters());
     }
 
     /**
      * Sets the currently used operation count storage bucket to the one with the given name.
-     * If a bucket with the given name does not exist, a new one is created.
+     * If a bucket with the given name does not exista new one is created.
      * <p>
      * All operations executed after setting a bucket will be counted within that bucket only.
-     * <p>
-     * The name of the default bucket is "default".
      *
      * @param name the name of the bucket to enable
      */
     abstract void setBucket(String name);
+
+
+    /**
+     * Sets the currently used operation count storage bucket to the default one.
+     */
+    abstract void setDefaultBucket();
 
     /**
      * Retrieves the bucket with the given name from {@code countingBucketMap},
@@ -240,6 +272,8 @@ abstract class DebugGroupImpl implements GroupImpl {
     abstract CountingBucket getAllBucketsBucket();
 
     abstract CountingBucket getCurrentBucket();
+
+    abstract CountingBucket getDefaultBucket();
 
     abstract Map<String, CountingBucket> getBucketMap();
 }

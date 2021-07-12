@@ -10,10 +10,8 @@ import org.cryptimeleon.math.structures.groups.elliptic.BilinearMapImpl;
 import org.cryptimeleon.math.structures.groups.mappings.impl.GroupHomomorphismImpl;
 import org.cryptimeleon.math.structures.groups.mappings.impl.HashIntoGroupImpl;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
-import sun.security.util.Debug;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**

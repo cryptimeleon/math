@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
@@ -30,14 +31,20 @@ public class DebugGroup implements Group {
      * Tracks total numbers, meaning that group operations done in (multi-)exp algorithms are also tracked.
      */
     @Represented
-    LazyGroup groupTotal;
+    protected LazyGroup groupTotal;
 
     /**
      * Does not track group operations done in (multi-)exp algorithms, but instead tracks number of exponentiations
      * and multi-exponentiation data.
      */
     @Represented
-    LazyGroup groupNoExpMultiExp;
+    protected LazyGroup groupNoExpMultiExp;
+
+    /**
+     * Determines which namespace's buckets this group is using.
+     */
+    @Represented
+    protected CountingNamespace countingNamespace;
 
     /**
      * Initializes the counting group with a given name and size.
@@ -47,8 +54,30 @@ public class DebugGroup implements Group {
      * @param size the desired size of the group
      */
     public DebugGroup(String name, BigInteger size) {
-        groupTotal = new LazyGroup(new DebugGroupImplTotal(name, size));
-        groupNoExpMultiExp = new LazyGroup(new DebugGroupImplNoExpMultiExp(name, size));
+        this(name, size, CountingNamespace.NO_BILGROUP);
+    }
+
+    // For DebugBilinearGroup
+    DebugGroup(String name, BigInteger size, CountingNamespace cntNamespace) {
+        countingNamespace = cntNamespace;
+        switch (countingNamespace) {
+            case G1:
+                groupTotal = new LazyGroup(new DebugGroupImplG1Total(name, size));
+                groupNoExpMultiExp = new LazyGroup(new DebugGroupImplG1NoExpMultiExp(name, size));
+                break;
+            case G2:
+                groupTotal = new LazyGroup(new DebugGroupImplG2Total(name, size));
+                groupNoExpMultiExp = new LazyGroup(new DebugGroupImplG2NoExpMultiExp(name, size));
+                break;
+            case GT:
+                groupTotal = new LazyGroup(new DebugGroupImplGTTotal(name, size));
+                groupNoExpMultiExp = new LazyGroup(new DebugGroupImplGTNoExpMultiExp(name, size));
+                break;
+            default:
+                groupTotal = new LazyGroup(new DebugGroupImplTotal(name, size));
+                groupNoExpMultiExp = new LazyGroup(new DebugGroupImplNoExpMultiExp(name, size));
+                break;
+        }
     }
 
     public DebugGroup(String name, long size) {
@@ -63,6 +92,7 @@ public class DebugGroup implements Group {
     public DebugGroup(LazyGroup groupTotal, LazyGroup groupExpMultiExp) {
         this.groupTotal = groupTotal;
         this.groupNoExpMultiExp = groupExpMultiExp;
+        this.countingNamespace = CountingNamespace.NO_BILGROUP;
     }
 
     public DebugGroup(Representation repr) {
@@ -205,7 +235,7 @@ public class DebugGroup implements Group {
      * @param bucketName the name of the bucket to retrieve number of operations from
      */
     public long getNumOpsNoExpMultiExp(String bucketName) {
-        return((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOps(bucketName);
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOps(bucketName);
     }
 
     /**
@@ -235,6 +265,83 @@ public class DebugGroup implements Group {
     public long getNumRetrievedRepresentations(String bucketName) {
         // one of the groups suffices since we represent both elements
         return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentations(bucketName);
+    }
+
+    /*
+    -------------- DEFAULT BUCKET GETTER METHODS BLOCK --------------------------------------------
+     */
+
+    /**
+     * Retrieves number of group squarings including ones done in (multi-)exponentiation algorithms
+     * from the default bucket.
+     */
+    public long getNumSquaringsTotalDefault() {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOpsDefault();
+    }
+
+    /**
+     * Retrieves number of group inversions including ones done in (multi-)exponentiation algorithms
+     * from the default bucket.
+     */
+    public long getNumInversionsTotalDefault() {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumInversionsDefault();
+    }
+
+    /**
+     * Retrieves number of group ops including ones done in (multi-)exponentiation algorithms
+     * from the default bucket.
+     * Does not include squarings.
+     */
+    public long getNumOpsTotalDefault() {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOpsDefault();
+    }
+
+    /**
+     * Retrieves number of group squarings not including ones done in (multi-)exponentiation algorithms
+     * from the default bucket.
+     */
+    public long getNumSquaringsNoExpMultiExpDefault() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumSquaringsDefault();
+    }
+
+    /**
+     * Retrieves number of group inversions not including ones done in (multi-)exponentiation algorithms
+     * from the default bucket.
+     */
+    public long getNumInversionsNoExpMultiExpDefault() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumInversionsDefault();
+    }
+
+    /**
+     * Retrieves number of group ops not including ones done in (multi-)exponentiation algorithms
+     * from the default bucket.
+     * Does not include squarings.
+     */
+    public long getNumOpsNoExpMultiExpDefault() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOpsDefault();
+    }
+
+    /**
+     * Retrieves number of group exponentiations done from the default bucket.
+     */
+    public long getNumExpsDefault() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumExpsDefault();
+    }
+
+    /**
+     * Retrieves number of terms of each multi-exponentiation done from the default bucket.
+     */
+    public List<Integer> getMultiExpTermNumbersDefault() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getMultiExpTermNumbersDefault();
+    }
+
+    /**
+     * Retrieves number of retrieved representations of group elements for this group (via {@code getRepresentation()})
+     * from the default bucket.
+     */
+    public long getNumRetrievedRepresentationsDefault() {
+        // one of the groups suffices since we represent both elements
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentationsDefault();
     }
 
     /*
@@ -288,7 +395,7 @@ public class DebugGroup implements Group {
      * Does not include squarings.
      */
     public long getNumOpsNoExpMultiExpAllBuckets() {
-        return((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOpsAllBuckets();
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOpsAllBuckets();
     }
 
     /**
@@ -323,6 +430,14 @@ public class DebugGroup implements Group {
     }
 
     /**
+     * Resets all counters for the default bucket.
+     */
+    public void resetCountersDefault() {
+        ((DebugGroupImpl) groupTotal.getImpl()).resetCountersDefault();
+        ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).resetCountersDefault();
+    }
+
+    /**
      * Resets counters for all buckets.
      */
     public void resetCountersAllBuckets() {
@@ -334,10 +449,14 @@ public class DebugGroup implements Group {
      * Formats the count data of the bucket with the given name for printing.
      *
      * @param bucketName the name of the bucket whose data to format for printing
+     * @param printName if true, the name of the bucket is prepended to the data and an additional level of
+     *                  indentation is added; otherwise, these things are not done
+     * @param addAdditionalTab if true, an additional level of indentation is added.
+     *                         Useful for the bilinear map printing.
      *
      * @return a string detailing the results of counting
      */
-    protected String formatCounterData(String bucketName) {
+    String formatCounterData(String bucketName, boolean printName, boolean addAdditionalTab) {
         long totalNumOps = getNumOpsTotal(bucketName);
         long totalNumSqs = getNumSquaringsTotal(bucketName);
         long totalNumInvs = getNumInversionsTotal(bucketName);
@@ -347,18 +466,62 @@ public class DebugGroup implements Group {
         long expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExp(bucketName);
         List<Integer> multiExpTerms = getMultiExpTermNumbers(bucketName);
 
-        String tab = "    ";
-        return String.format("%s\n", bucketName)
+        String tab = "";
+        String tab2 = "    ";
+        String result = "";
+        if (printName) {
+            tab = "    ";
+            result += String.format("%s\n", bucketName);
+        }
+        if (addAdditionalTab) {
+            tab += "    ";
+        }
+
+        return result
                 + String.format("%s(Costly) Operations: %d\n", tab, totalNumOpsSqs)
                 + String.format("%s%sNon-squarings: %d (%d of which happened during (multi-)exp)\n",
-                                tab, tab, totalNumSqs, expMultiExpNumOps)
+                                tab, tab2, totalNumSqs, expMultiExpNumOps)
                 + String.format("%s%sSquarings: %d (%d of which happened during (multi-)exp)\n",
-                                tab, tab, totalNumSqs, expMultiExpNumSqs)
+                                tab, tab2, totalNumSqs, expMultiExpNumSqs)
                 + String.format("%sInversions: %d (%d of which happened during (multi-)exp)\n",
                                 tab, totalNumInvs, expMultiExpNumInvs)
                 + String.format("%sExponentiations: %d\n", tab, getNumExps(bucketName))
                 + String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab, multiExpTerms)
                 + String.format("%sgetRepresentation() calls: %d\n", tab, getNumRetrievedRepresentations(bucketName));
+    }
+
+    String formatCounterDataAllBuckets(boolean printName, boolean addAdditionalTab) {
+        long totalNumOps = getNumOpsTotalAllBuckets();
+        long totalNumSqs = getNumSquaringsTotalAllBuckets();
+        long totalNumInvs = getNumInversionsTotalAllBuckets();
+        long totalNumOpsSqs = totalNumOps + totalNumSqs;
+        long expMultiExpNumOps = totalNumOps - getNumOpsNoExpMultiExpAllBuckets();
+        long expMultiExpNumSqs = totalNumSqs - getNumSquaringsNoExpMultiExpAllBuckets();
+        long expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExpAllBuckets();
+        List<Integer> multiExpTerms = getMultiExpTermNumbersAllBuckets();
+
+        String tab = "";
+        String tab2 = "    ";
+        String result = "";
+        if (printName) {
+            tab = "    ";
+            result += "Combined results of all buckets\n";
+        }
+        if (addAdditionalTab) {
+            tab += "    ";
+        }
+        return result +
+                String.format("%s(Costly) Operations: %d\n", tab, totalNumOpsSqs) +
+                String.format("%s%sNon-squarings: %d (%d of which happened during (multi-)exp)\n",
+                        tab, tab2, totalNumSqs, expMultiExpNumOps) +
+                String.format("%s%sSquarings: %d (%d of which happened during (multi-)exp)\n",
+                        tab, tab2, totalNumSqs, expMultiExpNumSqs) +
+                String.format("%sInversions: %d (%d of which happened during (multi-)exp)\n",
+                        tab, totalNumInvs, expMultiExpNumInvs) +
+                String.format("%sExponentiations: %d\n", tab, getNumExpsAllBuckets()) +
+                String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab, multiExpTerms) +
+                String.format("%sgetRepresentation() calls: %d\n",
+                        tab, getNumRetrievedRepresentationsAllBuckets());
     }
 
     /**
@@ -372,35 +535,12 @@ public class DebugGroup implements Group {
     public String formatCounterData(boolean summaryOnly) {
         StringBuilder result = new StringBuilder();
         if (!summaryOnly) {
+            // assume both have same buckets
             for (String bucketName : ((DebugGroupImpl) groupTotal.getImpl()).getBucketMap().keySet()) {
-                result.append(formatCounterData(bucketName));
+                result.append(formatCounterData(bucketName, true, false));
             }
         }
-
-        long totalNumOps = getNumOpsTotalAllBuckets();
-        long totalNumSqs = getNumSquaringsTotalAllBuckets();
-        long totalNumInvs = getNumInversionsTotalAllBuckets();
-        long totalNumOpsSqs = totalNumOps + totalNumSqs;
-        long expMultiExpNumOps = totalNumOps - getNumOpsNoExpMultiExpAllBuckets();
-        long expMultiExpNumSqs = totalNumSqs - getNumSquaringsNoExpMultiExpAllBuckets();
-        long expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExpAllBuckets();
-        List<Integer> multiExpTerms = getMultiExpTermNumbersAllBuckets();
-
-        String tab = "    ";
-        result.append("Combined results of all buckets\n")
-                .append(String.format("%s(Costly) Operations: %d\n", tab, totalNumOpsSqs))
-                .append(String.format("%s%sNon-squarings: %d (%d of which happened during (multi-)exp)\n",
-                                      tab, tab, totalNumSqs, expMultiExpNumOps))
-                .append(String.format("%s%sSquarings: %d (%d of which happened during (multi-)exp)\n",
-                                      tab, tab, totalNumSqs, expMultiExpNumSqs))
-                .append(String.format("%sInversions: %d (%d of which happened during (multi-)exp)\n",
-                                      tab, totalNumInvs, expMultiExpNumInvs))
-                .append(String.format("%sExponentiations: %d\n", tab, getNumExpsAllBuckets()))
-                .append(String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab, multiExpTerms))
-                .append(String.format("%sgetRepresentation() calls: %d\n",
-                                      tab, getNumRetrievedRepresentationsAllBuckets()));
-
-        return result.toString();
+        return result.append(formatCounterDataAllBuckets(true, false)).toString();
     }
 
     /**

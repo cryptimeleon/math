@@ -1,22 +1,12 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
 import org.cryptimeleon.math.serialization.Representation;
-import org.cryptimeleon.math.structures.groups.GroupElementImpl;
-import org.cryptimeleon.math.structures.groups.exp.MultiExpTerm;
-import org.cryptimeleon.math.structures.groups.exp.Multiexponentiation;
-import org.cryptimeleon.math.structures.groups.exp.SmallExponentPrecomputation;
 
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-/**
- * {@link DebugGroupImpl} implementation that counts operations not done inside (multi-)exponentiations
- * and counts (multi-)exponentiations as their own unit.
- */
-public class DebugGroupImplNoExpMultiExp extends DebugGroupImpl {
-
+class DebugGroupImplG1NoExpMultiExp extends DebugGroupImplNoExpMultiExp {
     /**
      * Maps the name of each bucket to the actual {@code CountingBucket} object.
      */
@@ -45,42 +35,12 @@ public class DebugGroupImplNoExpMultiExp extends DebugGroupImpl {
         currentBucket = defaultBucket;
     }
 
-    public DebugGroupImplNoExpMultiExp(String name, BigInteger n) {
+    public DebugGroupImplG1NoExpMultiExp(String name, BigInteger n) {
         super(name, n);
     }
 
-    public DebugGroupImplNoExpMultiExp(Representation repr) {
+    public DebugGroupImplG1NoExpMultiExp(Representation repr) {
         super(repr);
-    }
-
-    @Override
-    public GroupElementImpl exp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
-        // this method counts the exponentiation only
-        return base.pow(exponent);
-    }
-
-    @Override
-    public GroupElementImpl multiexp(Multiexponentiation mexp) {
-        // This method is only used if enableMultiExpCounting is set to true; hence, we count
-        // the multi-exponentiation done.
-        DebugGroupElementImpl result = (DebugGroupElementImpl) mexp.getConstantFactor().orElse(getNeutralElement());
-        for (MultiExpTerm term : mexp.getTerms()) {
-            // Use methods where we can disable counting since we only want to count the multi-exponentiation here
-            result = (DebugGroupElementImpl) result
-                    .op(((DebugGroupElementImpl) term.getBase()).pow(term.getExponent(), false), false);
-        }
-        addMultiExpBaseNumber(mexp.getTerms().size());
-        return result;
-    }
-
-    @Override
-    public boolean implementsOwnExp() {
-        return true;
-    }
-
-    @Override
-    public boolean implementsOwnMultiExp() {
-        return true;
     }
 
     /**

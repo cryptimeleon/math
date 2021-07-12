@@ -8,31 +8,36 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@link DebugGroupImpl} implementation that counts operation including those done inside (multi-)exponentiations.
+ * {@link DebugGroupImpl} implementation that counts operations including those done inside (multi-)exponentiations.
  */
 public class DebugGroupImplTotal extends DebugGroupImpl {
 
     /**
      * Maps the name of each bucket to the actual {@code CountingBucket} object.
      */
-    protected static HashMap<String, CountingBucket> countingBucketMap;
+    protected HashMap<String, CountingBucket> countingBucketMap;
 
     /**
      * Tracks operation data across all other buckets, including default and all named buckets.
      */
-    protected static CountingBucket allBucketsBucket;
+    protected CountingBucket allBucketsBucket;
+
+    /**
+     * The default bucket.
+     */
+    protected CountingBucket defaultBucket;
 
     /**
      * The currently used bucket.
      */
-    protected static CountingBucket currentBucket;
+    protected CountingBucket currentBucket;
 
-    // Initialization block for static variables
-    static {
+    // Initialization block for variables
+    {
         countingBucketMap = new HashMap<>();
-        countingBucketMap.put("default", new CountingBucket());
+        defaultBucket = new CountingBucket();
         allBucketsBucket = new CountingBucket();
-        currentBucket = countingBucketMap.get("default");
+        currentBucket = defaultBucket;
     }
 
     public DebugGroupImplTotal(String name, BigInteger n) {
@@ -53,28 +58,48 @@ public class DebugGroupImplTotal extends DebugGroupImpl {
         return false;
     }
 
-    @Override
-    protected void setBucket(String name) {
+    /**
+     * Sets the currently used operation count storage bucket to the one with the given name.
+     * If a bucket with the given name does not exist, a new one is created.
+     * <p>
+     * All operations executed after setting a bucket will be counted within that bucket only.
+     *
+     * @param name the name of the bucket to enable
+     */
+    void setBucket(String name) {
         currentBucket = putBucketIfAbsent(name);
     }
 
-    @Override
-    protected CountingBucket putBucketIfAbsent(String name) {
+    /**
+     * Sets the currently used operation count storage bucket to the default one.
+     */
+    void setDefaultBucket() {
+        currentBucket = defaultBucket;
+    }
+
+    /**
+     * Retrieves the bucket with the given name from {@code countingBucketMap},
+     * creating a new one if it does not exist yet.
+     *
+     * @param name the name of the bucket to retrieve
+     */
+    CountingBucket putBucketIfAbsent(String name) {
         return countingBucketMap.computeIfAbsent(name, kName -> new CountingBucket());
     }
 
-    @Override
-    protected CountingBucket getAllBucketsBucket() {
+    CountingBucket getAllBucketsBucket() {
         return allBucketsBucket;
     }
 
-    @Override
-    protected CountingBucket getCurrentBucket() {
+    CountingBucket getCurrentBucket() {
         return currentBucket;
     }
 
-    @Override
-    protected Map<String, CountingBucket> getBucketMap() {
+    CountingBucket getDefaultBucket() {
+        return defaultBucket;
+    }
+
+    Map<String, CountingBucket> getBucketMap() {
         return countingBucketMap;
     }
 }

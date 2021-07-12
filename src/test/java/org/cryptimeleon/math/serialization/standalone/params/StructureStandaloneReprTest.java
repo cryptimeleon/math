@@ -5,6 +5,7 @@ import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.cartesian.ProductGroup;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl;
+import org.cryptimeleon.math.structures.groups.debug.DebugGroupImplNoExpMultiExp;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBasicBilinearGroup;
@@ -73,7 +74,7 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
     }
 
     public void testLazyAndBasicGroup() {
-        BilinearGroupImpl bilGroupImpl = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3);
+        BilinearGroupImpl bilGroupImpl = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3, false);
 
         testBilinearGroup(new LazyBilinearGroup(bilGroupImpl));
         testBilinearGroup(new BasicBilinearGroup(bilGroupImpl));
@@ -81,7 +82,8 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
 
     public void testDebugGroup() {
         testBilinearGroup(new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_1));
-        testBilinearGroupImpl(new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1));
+        testBilinearGroupImpl(new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1, false));
+        test(new DebugGroupImplNoExpMultiExp("DGNEME", BigInteger.valueOf(1001)));
     }
 
     public void testExtensionField() {

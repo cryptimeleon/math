@@ -76,7 +76,7 @@ public class DebugBilinearGroup implements BilinearGroup {
     /**
      * Initializes this bilinear group with the given pairing type and group size of given bits.
      *
-     * @param groupSizeBits the number of bits used to represent the size of this group
+     * @param groupSizeBits the number of bits used to represent the intended size of this group
      * @param pairingType the type of pairing that should be offered by this bilinear group
      */
     public DebugBilinearGroup(int groupSizeBits, BilinearGroup.Type pairingType) {
@@ -201,6 +201,7 @@ public class DebugBilinearGroup implements BilinearGroup {
     }
 
     public void setBucket(String name) {
+        // not really necessary to do this for all groups since the bucket is static
         g1.setBucket(name);
         g2.setBucket(name);
         gT.setBucket(name);
@@ -214,6 +215,10 @@ public class DebugBilinearGroup implements BilinearGroup {
         return bilMap.getNumPairings(bucketName);
     }
 
+    public long getNumPairingsDefault() {
+        return bilMap.getNumPairingsDefault();
+    }
+
     public long getNumPairingsAllBuckets() {
         return bilMap.getNumPairingsAllBuckets();
     }
@@ -223,6 +228,10 @@ public class DebugBilinearGroup implements BilinearGroup {
      */
     public void resetNumPairings(String bucketName) {
         bilMap.resetNumPairings(bucketName);
+    }
+
+    public void resetNumPairingsDefault() {
+        bilMap.resetNumPairingsDefault();
     }
 
     public void resetNumPairingsAllBuckets() {
@@ -240,6 +249,13 @@ public class DebugBilinearGroup implements BilinearGroup {
         resetNumPairings(bucketName);
     }
 
+    public void resetCountersDefault() {
+        g1.resetCountersDefault();
+        g2.resetCountersDefault();
+        gT.resetCountersDefault();
+        resetNumPairingsDefault();
+    }
+
     /**
      * Resets counters for all buckets.
      */
@@ -251,10 +267,15 @@ public class DebugBilinearGroup implements BilinearGroup {
     }
 
     /**
-     * Returns a string with all count data formatted for printing.
+     * Formats the counter data of all buckets for printing.
+     *
+     * @param summaryOnly if true, only formats the summed up results across all buckets; otherwise, outputs results
+     *                    of every bucket plus the summary
+     *
+     * @return a string detailing results of counting
      */
-    public String formatCounterData() {
-        return bilMap.formatCounterData();
+    public String formatCounterData(boolean summaryOnly) {
+        return bilMap.formatCounterData(summaryOnly);
     }
 
     /**

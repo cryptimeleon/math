@@ -38,20 +38,51 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
      */
     protected BilinearGroup.Type pairingType;
 
+    private static class PairingCounter {
+        private long count;
+
+        public PairingCounter() {
+            this.count = 0L;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PairingCounter that = (PairingCounter) o;
+            return count == that.count;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(count);
+        }
+
+        public void incNumPairings() {
+            ++count;
+        }
+
+        public long getNumPairings() {
+            return count;
+        }
+    }
+
     /**
      * Maps bucket names to the number of pairings stored within that bucket.
      */
-    protected static HashMap<String, Long> numPairingsMap = new HashMap<>();
+    protected static HashMap<String, PairingCounter> numPairingsMap;
 
-    protected static String currentBucketName;
+    protected static PairingCounter defaultBucket;
 
-    protected static long allBucketsNumPairings;
+    protected static PairingCounter currentBucket;
+
+    protected static PairingCounter allBucketsNumPairings;
 
     static {
         numPairingsMap = new HashMap<>();
-        numPairingsMap.put("default", 0L);
-        currentBucketName = "default";
-        allBucketsNumPairings = 0L;
+        defaultBucket = new PairingCounter();
+        currentBucket = defaultBucket;
+        allBucketsNumPairings = new PairingCounter();
     }
 
     /**
@@ -73,19 +104,19 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
         this.zn = new Zn(groupSize);
         this.pairingType = type;
         if (enableExpMultiExpCounting) {
-            g1 = new DebugGroupImplNoExpMultiExp("G1", groupSize);
+            g1 = new DebugGroupImplG1NoExpMultiExp("G1", groupSize);
             if (type == BilinearGroup.Type.TYPE_1)
                 g2 = g1;
             else
-                g2 = new DebugGroupImplNoExpMultiExp("G2", groupSize);
-            gt = new DebugGroupImplNoExpMultiExp("GT", groupSize);
+                g2 = new DebugGroupImplG2NoExpMultiExp("G2", groupSize);
+            gt = new DebugGroupImplGTNoExpMultiExp("GT", groupSize);
         } else {
-            g1 = new DebugGroupImplTotal("G1", groupSize);
+            g1 = new DebugGroupImplG1Total("G1", groupSize);
             if (type == BilinearGroup.Type.TYPE_1)
                 g2 = g1;
             else
-                g2 = new DebugGroupImplTotal("G2", groupSize);
-            gt = new DebugGroupImplTotal("GT", groupSize);
+                g2 = new DebugGroupImplG2Total("G2", groupSize);
+            gt = new DebugGroupImplGTTotal("GT", groupSize);
         }
     }
 
@@ -133,42 +164,57 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
         return Objects.hash(size, pairingType);
     }
 
-    protected void setBucket(String name) {
+    protected static void setBucket(String name) {
         putBucketIfAbsent(name);
     }
 
-    protected Long putBucketIfAbsent(String name) {
-        return numPairingsMap.computeIfAbsent(name, kName -> 0L);
+    protected static void setDefaultBucket() {
+        currentBucket = defaultBucket;
+    }
+
+    protected static PairingCounter putBucketIfAbsent(String name) {
+        return numPairingsMap.computeIfAbsent(name, kName -> new PairingCounter());
+    }
+
+    protected static HashMap<String, PairingCounter> getBucketMap() {
+        return numPairingsMap;
     }
 
     /**
      * Retrieves number of pairings computed in this bilinear group for the bucket with the given name.
      */
-    protected long getNumPairings(String bucketName) {
-        return putBucketIfAbsent(bucketName);
+    protected static long getNumPairings(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumPairings();
     }
 
-    protected long getNumPairingsAllBuckets() {
-        return allBucketsNumPairings;
+    protected static long getNumPairingsDefault() {
+        return defaultBucket.getNumPairings();
+    }
+
+    protected static long getNumPairingsAllBuckets() {
+        return allBucketsNumPairings.getNumPairings();
     }
 
     /**
      * Resets pairing counter.
      */
-    protected void resetNumPairings(String bucketName) {
-        numPairingsMap.put(bucketName, 0L);
+    protected static void resetNumPairings(String bucketName) {
+        numPairingsMap.put(bucketName, new PairingCounter());
     }
 
-    protected void resetNumPairingsAllBuckets() {
-        allBucketsNumPairings = 0L;
-        numPairingsMap.replaceAll((name, numPairings) -> 0L);
+    protected static void resetNumPairingsDefault() {
+        defaultBucket = new PairingCounter();
+    }
+
+    protected static void resetNumPairingsAllBuckets() {
+        allBucketsNumPairings = new PairingCounter();
+        numPairingsMap.replaceAll((name, numPairings) -> new PairingCounter());
     }
 
     /**
      * Increments the pairing counter for the current bucket.
      */
-    protected void incrementNumPairings() {
-        Long currentNum = putBucketIfAbsent(currentBucketName);
-        numPairingsMap.replace(currentBucketName, currentNum+1);
+    protected static void incrementNumPairings() {
+        currentBucket.incNumPairings();
     }
 }

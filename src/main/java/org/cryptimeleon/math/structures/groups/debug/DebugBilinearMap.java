@@ -1,5 +1,6 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
@@ -12,7 +13,9 @@ import org.cryptimeleon.math.structures.groups.lazy.LazyGroupElement;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A {@link BilinearMap} implementing a fast, but insecure pairing over {@link Zn}.
@@ -115,6 +118,11 @@ public class DebugBilinearMap implements BilinearMap {
         ((DebugBilinearMapImpl) expMultiExpBilMap.getImpl()).setBucket(name);
     }
 
+    public void setDefaultBucket() {
+        ((DebugBilinearMapImpl) totalBilMap.getImpl()).setDefaultBucket();
+        ((DebugBilinearMapImpl) expMultiExpBilMap.getImpl()).setDefaultBucket();
+    }
+
     /**
      * Retrieves number of pairings computed in this bilinear group from the bucket with the given name.
      * @param bucketName the name of the bucket to obtain pairing numbers from
@@ -122,6 +130,10 @@ public class DebugBilinearMap implements BilinearMap {
     public long getNumPairings(String bucketName) {
         // one of them suffices since both count
         return ((DebugBilinearMapImpl) totalBilMap.getImpl()).getNumPairings(bucketName);
+    }
+
+    public long getNumPairingsDefault() {
+        return ((DebugBilinearMapImpl) totalBilMap.getImpl()).getNumPairingsDefault();
     }
 
     /**
@@ -141,6 +153,11 @@ public class DebugBilinearMap implements BilinearMap {
         ((DebugBilinearMapImpl) expMultiExpBilMap.getImpl()).resetNumPairings(bucketName);
     }
 
+    public void resetNumPairingsDefault() {
+        ((DebugBilinearMapImpl) totalBilMap.getImpl()).resetNumPairingsDefault();
+        ((DebugBilinearMapImpl) expMultiExpBilMap.getImpl()).resetNumPairingsDefault();
+    }
+
     /**
      * Resets pairing counter for all buckets.
      */
@@ -158,7 +175,49 @@ public class DebugBilinearMap implements BilinearMap {
         }
     }
 
-    public String formatCounterData()  {
-        return ""; //TODO: implement
+    /**
+     * Formats the count data of the bucket with the given name for printing.
+     *
+     * @param bucketName the name of the bucket whose data to format for printing
+     *
+     * @return a string detailing the results of counting
+     */
+    String formatCounterData(String bucketName) {
+        String tab = "    ";
+        return String.format("%s\n", bucketName)
+                + String.format("%sPairings: %d\n", tab, getNumPairings(bucketName))
+                + "G1\n"
+                + ((DebugGroup) getG1()).formatCounterData(bucketName, false, true)
+                + "G2\n"
+                + ((DebugGroup) getG2()).formatCounterData(bucketName, false, true)
+                + "GT\n"
+                + ((DebugGroup) getGT()).formatCounterData(bucketName, false, true);
+    }
+
+    String formatCounterDataAllBuckets() {
+        String tab = "    ";
+        return "Combined results of all buckets\n"
+                + String.format("%sPairings: %d\n", tab, getNumPairingsAllBuckets())
+                + "G1\n"
+                + ((DebugGroup) getG1()).formatCounterDataAllBuckets(false, true)
+                + "G2\n"
+                + ((DebugGroup) getG2()).formatCounterDataAllBuckets(false, true)
+                + "GT\n"
+                + ((DebugGroup) getGT()).formatCounterDataAllBuckets(false, true);
+    }
+
+    public String formatCounterData(boolean summaryOnly)  {
+        StringBuilder result = new StringBuilder();
+        if (!summaryOnly) {
+            // Find the union of all bucket names
+            Set<String> bucketNameSet = DebugBilinearMapImpl.getBucketMap().keySet();
+            bucketNameSet.addAll(DebugGroupImplTotal.getBucketMap().keySet());
+            bucketNameSet.addAll(DebugGroupImplNoExpMultiExp.getBucketMap().keySet());
+
+            for (String bucketName : bucketNameSet) {
+                result.append(formatCounterData(bucketName));
+            }
+        }
+        return result.append(formatCounterDataAllBuckets()).toString();
     }
 }
