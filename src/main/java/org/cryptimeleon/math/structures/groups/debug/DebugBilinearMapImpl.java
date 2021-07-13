@@ -1,5 +1,8 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
+import org.cryptimeleon.math.serialization.Representation;
+import org.cryptimeleon.math.serialization.annotations.ReprUtil;
+import org.cryptimeleon.math.serialization.annotations.Represented;
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearMapImpl;
@@ -106,14 +109,16 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
         if (enableExpMultiExpCounting) {
             g1 = new DebugGroupImplG1NoExpMultiExp("G1", groupSize);
             if (type == BilinearGroup.Type.TYPE_1)
-                g2 = g1;
+                // name is G1 to make equals compatible between elements, but need to use G2 class to allow
+                //  separate counting
+                g2 = new DebugGroupImplG2NoExpMultiExp("G1", groupSize);
             else
                 g2 = new DebugGroupImplG2NoExpMultiExp("G2", groupSize);
             gt = new DebugGroupImplGTNoExpMultiExp("GT", groupSize);
         } else {
             g1 = new DebugGroupImplG1Total("G1", groupSize);
             if (type == BilinearGroup.Type.TYPE_1)
-                g2 = g1;
+                g2 = new DebugGroupImplG2Total("G1", groupSize);
             else
                 g2 = new DebugGroupImplG2Total("G2", groupSize);
             gt = new DebugGroupImplGTTotal("GT", groupSize);

@@ -1,5 +1,6 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
+import org.cryptimeleon.math.serialization.Representable;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
@@ -35,18 +36,13 @@ import java.util.Set;
  */
 public class DebugBilinearMap implements BilinearMap {
 
-    @Represented
     LazyBilinearMap bilMapTotal;
-    @Represented
+
     LazyBilinearMap bilMapNoExpMultiExp;
 
     public DebugBilinearMap(LazyBilinearMap bilMapTotal, LazyBilinearMap bilMapNoExpMultiExp) {
         this.bilMapTotal = bilMapTotal;
         this.bilMapNoExpMultiExp = bilMapNoExpMultiExp;
-    }
-
-    public DebugBilinearMap(Representation repr) {
-        ReprUtil.deserialize(this, repr);
     }
 
     @Override
