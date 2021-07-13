@@ -24,7 +24,7 @@ public class CountingTest {
     @Test
     public void testNullInstantiation() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
-        String bucketName = getClass().getName() + "testNullInstantiation";
+        String bucketName = getClass().getName() + "#testNullInstantiation";
         bilGroup.setBucket(bucketName);
         assertEquals(0, debugGroup.getNumRetrievedRepresentations(bucketName));
         assertEquals(0, debugGroup.getNumExps(bucketName));
@@ -40,7 +40,7 @@ public class CountingTest {
     @Test
     public void testBasicOperationCounting() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
-        String bucketName = getClass().getName() + "testBasicOperationCounting";
+        String bucketName = getClass().getName() + "#testBasicOperationCounting";
         bilGroup.setBucket(bucketName);
         GroupElement elem = debugGroup.getUniformlyRandomNonNeutral();
         GroupElement elem2 = debugGroup.getUniformlyRandomNonNeutral();
@@ -58,7 +58,7 @@ public class CountingTest {
     @Test
     public void testPowCounting() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
-        String bucketName = getClass().getName() +"testPowCounting";
+        String bucketName = getClass().getName() +"#testPowCounting";
         bilGroup.setBucket(bucketName);
         GroupElement elem = debugGroup.getUniformlyRandomNonNeutral();
         elem.pow(10).computeSync();
@@ -71,7 +71,7 @@ public class CountingTest {
     @Test
     public void testRepresentationCounting() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
-        String bucketName = getClass().getName() + "testRepresentationCounting";
+        String bucketName = getClass().getName() + "#testRepresentationCounting";
         bilGroup.setBucket(bucketName);
         GroupElement elem = debugGroup.getUniformlyRandomNonNeutral();
         elem.getRepresentation();
@@ -81,7 +81,7 @@ public class CountingTest {
 
     @Test
     public void testPairingCounting() {
-        String bucketName = getClass().getName() + "testPairingCounting";
+        String bucketName = getClass().getName() + "#testPairingCounting";
         bilGroup.setBucket(bucketName);
         DebugGroup groupG1 = (DebugGroup) bilGroup.getG1();
         DebugGroup groupG2 = (DebugGroup) bilGroup.getG2();
@@ -106,7 +106,7 @@ public class CountingTest {
     @Test
     public void testMultiExpCounting() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
-        String bucketName = getClass().getName() + "testMultiExpCounting";
+        String bucketName = getClass().getName() + "#testMultiExpCounting";
         bilGroup.setBucket(bucketName);
         GroupElement elem1, elem2, elem3;
         do {
@@ -128,7 +128,7 @@ public class CountingTest {
 
     @Test
     public void testComputeWorksSynchronously() {
-        String bucketName = getClass().getName() + "testComputeWorksSynchronously";
+        String bucketName = getClass().getName() + "#testComputeWorksSynchronously";
         bilGroup.setBucket(bucketName);
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
         GroupElement elem = debugGroup.getUniformlyRandomNonNeutral();
@@ -138,7 +138,7 @@ public class CountingTest {
 
     @Test
     public void testResetCounters() {
-        String bucketName = getClass().getName() + "testResetCounters";
+        String bucketName = getClass().getName() + "#testResetCounters";
         bilGroup.setBucket(bucketName);
         DebugGroup groupG1 = (DebugGroup) bilGroup.getG1();
         DebugGroup groupG2 = (DebugGroup) bilGroup.getG2();
@@ -173,7 +173,7 @@ public class CountingTest {
 
     @Test
     public void testCountingHomomorphism() {
-        String bucketName = getClass().getName() + "testCountingHomomorphism";
+        String bucketName = getClass().getName() + "#testCountingHomomorphism";
         bilGroup.setBucket(bucketName);
         DebugGroup groupG1 = (DebugGroup) bilGroup.getG1();
         DebugGroup groupG2 = (DebugGroup) bilGroup.getG2();

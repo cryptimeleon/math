@@ -12,10 +12,7 @@ import org.cryptimeleon.math.structures.groups.lazy.LazyGroupElement;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
@@ -453,7 +450,16 @@ public class DebugGroup implements Group {
      * @return a string detailing the results of counting
      */
     public String formatCounterData(String bucketName) {
-        return formatCounterData(bucketName, true, false);
+        return formatCounterData(bucketName, false, false);
+    }
+
+    /**
+     * Formats the count data of the default bucket for printing.
+     *
+     * @return a string detailing the results of counting
+     */
+    public String formatCounterDataDefault() {
+        return formatCounterData("", false, true);
     }
 
     /**
@@ -467,14 +473,17 @@ public class DebugGroup implements Group {
     public String formatCounterData(boolean summaryOnly) {
         StringBuilder result = new StringBuilder();
         if (!summaryOnly) {
+            // Default bucket
+            result.append(formatCounterData("", false, true));
             // Union of buckets
-            Set<String> bucketNames = ((DebugGroupImpl) groupTotal.getImpl()).getBucketMap().keySet();
+            Set<String> bucketNames = new HashSet<>();
+            bucketNames.addAll(((DebugGroupImpl) groupTotal.getImpl()).getBucketMap().keySet());
             bucketNames.addAll(((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getBucketMap().keySet());
             for (String bucketName : bucketNames) {
-                result.append(formatCounterData(bucketName, true, false));
+                result.append(formatCounterData(bucketName, false, false));
             }
         }
-        return result.append(formatCounterDataAllBuckets(true, false)).toString();
+        return result.append(formatCounterDataAllBuckets(false)).toString();
     }
 
     /**
@@ -490,48 +499,77 @@ public class DebugGroup implements Group {
      * Formats the count data of the bucket with the given name for printing.
      *
      * @param bucketName the name of the bucket whose data to format for printing
-     * @param printName if true, the name of the bucket is prepended to the data and an additional level of
-     *                  indentation is added; otherwise, these things are not done
-     * @param addAdditionalTab if true, an additional level of indentation is added.
-     *                         Useful for the bilinear map printing.
+     * @param formatForBilGroup if true; output will be formatted more appropriately for being printed as part of
+     *                          {@link DebugBilinearGroup} output, meaning that two levels of indentation is
+     *                          added and the prefix indicating the bucket name is left out.
+     *                          If false, these things are not done.
+     * @param isDefault if true, the data for the default bucket will be printed; overrides the {@code bucketName}
+     *                  argument if true. If false, method will use provided bucket name instead.
      *
      * @return a string detailing the results of counting
      */
-    String formatCounterData(String bucketName, boolean printName, boolean addAdditionalTab) {
-        long totalNumOps = getNumOpsTotal(bucketName);
-        long totalNumSqs = getNumSquaringsTotal(bucketName);
-        long totalNumInvs = getNumInversionsTotal(bucketName);
-        long totalNumOpsSqs = totalNumOps + totalNumSqs;
-        long expMultiExpNumOps = totalNumOps - getNumOpsNoExpMultiExp(bucketName);
-        long expMultiExpNumSqs = totalNumSqs - getNumSquaringsNoExpMultiExp(bucketName);
-        long expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExp(bucketName);
-        List<Integer> multiExpTerms = getMultiExpTermNumbers(bucketName);
+    String formatCounterData(String bucketName, boolean formatForBilGroup, boolean isDefault) {
+        long totalNumOps, totalNumSqs, totalNumInvs, totalNumOpsSqs;
+        long expMultiExpNumOps, expMultiExpNumSqs, expMultiExpNumInvs, numRetrievedReprs, numExps;
+        List<Integer> multiExpTerms;
+        if (isDefault) {
+            bucketName = "Default";
+            totalNumOps = getNumOpsTotalDefault();
+            totalNumSqs = getNumSquaringsTotalDefault();
+            totalNumInvs = getNumInversionsTotalDefault();
+            totalNumOpsSqs = totalNumOps + totalNumSqs;
+            expMultiExpNumOps = totalNumOps - getNumOpsNoExpMultiExpDefault();
+            expMultiExpNumSqs = totalNumSqs - getNumSquaringsNoExpMultiExpDefault();
+            expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExpDefault();
+            multiExpTerms = getMultiExpTermNumbersDefault();
+            numRetrievedReprs = getNumRetrievedRepresentationsDefault();
+            numExps = getNumExpsDefault();
+        } else {
+            totalNumOps = getNumOpsTotal(bucketName);
+            totalNumSqs = getNumSquaringsTotal(bucketName);
+            totalNumInvs = getNumInversionsTotal(bucketName);
+            totalNumOpsSqs = totalNumOps + totalNumSqs;
+            expMultiExpNumOps = totalNumOps - getNumOpsNoExpMultiExp(bucketName);
+            expMultiExpNumSqs = totalNumSqs - getNumSquaringsNoExpMultiExp(bucketName);
+            expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExp(bucketName);
+            multiExpTerms = getMultiExpTermNumbers(bucketName);
+            numRetrievedReprs = getNumRetrievedRepresentations(bucketName);
+            numExps = getNumExps(bucketName);
+        }
 
-        String tab = "";
+        StringBuilder tab = new StringBuilder();
         String tab2 = "    ";
         String result = "";
-        if (printName) {
-            tab = "    ";
-            result += String.format("%s\n", bucketName);
+        if (formatForBilGroup) {
+            tab.append("    " + "    ");
+        } else {
+            tab.append("    ");
+            result += bucketName + "\n";
         }
-        if (addAdditionalTab) {
-            tab += "    ";
-        }
-
         return result
-                + String.format("%s(Costly) Operations: %d\n", tab, totalNumOpsSqs)
-                + String.format("%s%sNon-squarings: %d (%d of which happened during (multi-)exp)\n",
-                                tab, tab2, totalNumSqs, expMultiExpNumOps)
+                + String.format("%s(Costly) Operations: %d\n", tab.toString(), totalNumOpsSqs)
+                + String.format("%s%sGroup operations (not squarings): %d (%d of which happened during (multi-)exp)\n",
+                tab.toString(), tab2, totalNumOps, expMultiExpNumOps)
                 + String.format("%s%sSquarings: %d (%d of which happened during (multi-)exp)\n",
-                                tab, tab2, totalNumSqs, expMultiExpNumSqs)
+                tab.toString(), tab2, totalNumSqs, expMultiExpNumSqs)
                 + String.format("%sInversions: %d (%d of which happened during (multi-)exp)\n",
-                                tab, totalNumInvs, expMultiExpNumInvs)
-                + String.format("%sExponentiations: %d\n", tab, getNumExps(bucketName))
-                + String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab, multiExpTerms)
-                + String.format("%sgetRepresentation() calls: %d\n", tab, getNumRetrievedRepresentations(bucketName));
+                tab.toString(), totalNumInvs, expMultiExpNumInvs)
+                + String.format("%sExponentiations: %d\n", tab.toString(), numExps)
+                + String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab.toString(), multiExpTerms)
+                + String.format("%sgetRepresentation() calls: %d\n", tab.toString(), numRetrievedReprs);
     }
 
-    String formatCounterDataAllBuckets(boolean printName, boolean addAdditionalTab) {
+    /**
+     * Formats the count data of all buckets summed up for printing.
+     *
+     * @param formatForBilGroup if true; output will be formatted more appropriately for being printed as part of
+     *                          {@link DebugBilinearGroup} output, meaning that two levels of indentation is
+     *                          added and the prefix indicating the bucket name is left out.
+     *                          If false, these things are not done.
+     *
+     * @return a string detailing the results of counting
+     */
+    String formatCounterDataAllBuckets(boolean formatForBilGroup) {
         long totalNumOps = getNumOpsTotalAllBuckets();
         long totalNumSqs = getNumSquaringsTotalAllBuckets();
         long totalNumInvs = getNumInversionsTotalAllBuckets();
@@ -541,30 +579,28 @@ public class DebugGroup implements Group {
         long expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExpAllBuckets();
         List<Integer> multiExpTerms = getMultiExpTermNumbersAllBuckets();
 
-        String tab = "";
+        StringBuilder tab = new StringBuilder();
         String tab2 = "    ";
         String result = "";
-        if (printName) {
-            tab = "    ";
+        if (formatForBilGroup) {
+            tab.append("    " + "    ");
+        } else {
+            tab.append("    ");
             result += "Combined results of all buckets\n";
         }
-        if (addAdditionalTab) {
-            tab += "    ";
-        }
-        return result +
-                String.format("%s(Costly) Operations: %d\n", tab, totalNumOpsSqs) +
-                String.format("%s%sNon-squarings: %d (%d of which happened during (multi-)exp)\n",
-                        tab, tab2, totalNumSqs, expMultiExpNumOps) +
-                String.format("%s%sSquarings: %d (%d of which happened during (multi-)exp)\n",
-                        tab, tab2, totalNumSqs, expMultiExpNumSqs) +
-                String.format("%sInversions: %d (%d of which happened during (multi-)exp)\n",
-                        tab, totalNumInvs, expMultiExpNumInvs) +
-                String.format("%sExponentiations: %d\n", tab, getNumExpsAllBuckets()) +
-                String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab, multiExpTerms) +
-                String.format("%sgetRepresentation() calls: %d\n",
-                        tab, getNumRetrievedRepresentationsAllBuckets());
+        return result
+                + String.format("%s(Costly) Operations: %d\n", tab.toString(), totalNumOpsSqs)
+                + String.format("%s%sGroup operations (not squarings): %d (%d of which happened during (multi-)exp)\n",
+                        tab.toString(), tab2, totalNumOps, expMultiExpNumOps)
+                + String.format("%s%sSquarings: %d (%d of which happened during (multi-)exp)\n",
+                        tab.toString(), tab2, totalNumSqs, expMultiExpNumSqs)
+                + String.format("%sInversions: %d (%d of which happened during (multi-)exp)\n",
+                        tab.toString(), totalNumInvs, expMultiExpNumInvs)
+                + String.format("%sExponentiations: %d\n", tab.toString(), getNumExpsAllBuckets())
+                + String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab.toString(), multiExpTerms)
+                + String.format("%sgetRepresentation() calls: %d\n",
+                        tab.toString(), getNumRetrievedRepresentationsAllBuckets());
     }
-
     /**
      * Returns the window size used for the non-cached precomputations computed during the exponentiation algorithm.
      */

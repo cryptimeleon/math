@@ -12,6 +12,8 @@ import org.cryptimeleon.math.structures.groups.lazy.LazyGroupElement;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -185,19 +187,56 @@ public class DebugBilinearMap implements BilinearMap {
         String tab = "    ";
         return String.format("%s\n", bucketName)
                 + String.format("%sPairings: %d\n", tab, getNumPairings(bucketName))
-                + "G1\n"
-                + ((DebugGroup) getG1()).formatCounterData(bucketName, false, true)
-                + "G2\n"
-                + ((DebugGroup) getG2()).formatCounterData(bucketName, false, true)
-                + "GT\n"
-                + ((DebugGroup) getGT()).formatCounterData(bucketName, false, true);
+                + tab + "G1\n"
+                + ((DebugGroup) getG1()).formatCounterData(bucketName, true, false)
+                + tab + "G2\n"
+                + ((DebugGroup) getG2()).formatCounterData(bucketName, true, false)
+                + tab + "GT\n"
+                + ((DebugGroup) getGT()).formatCounterData(bucketName, true, false);
     }
 
+    /**
+     * Formats the count data of the default bucket for printing.
+     *
+     * @return a string detailing the results of counting
+     */
+    public String formatCounterDataDefault() {
+        String tab = "    ";
+        return "Default\n"
+                + String.format("%sPairings: %d\n", tab, getNumPairingsDefault())
+                + tab + "G1\n"
+                + ((DebugGroup) getG1()).formatCounterData("", true, true)
+                + tab + "G2\n"
+                + ((DebugGroup) getG2()).formatCounterData("", true, true)
+                + tab + "GT\n"
+                + ((DebugGroup) getGT()).formatCounterData("", true, true);
+    }
+
+    /**
+     * Formats the count data of all buckets for printing.
+     *
+     * @return a string detailing results of counting
+     */
+    public String formatCounterData() {
+        return formatCounterData(false);
+    }
+
+    /**
+     * Formats the counter data of all buckets for printing.
+     *
+     * @param summaryOnly if true, only formats the summed up results across all buckets; otherwise, outputs results
+     *                    of every bucket plus the summary
+     *
+     * @return a string detailing results of counting
+     */
     public String formatCounterData(boolean summaryOnly)  {
         StringBuilder result = new StringBuilder();
         if (!summaryOnly) {
+            result.append(formatCounterDataDefault());
+
             // Find the union of all bucket names
-            Set<String> bucketNameSet = ((DebugBilinearMapImpl) bilMapTotal.getImpl()).getBucketMap().keySet();
+            Set<String> bucketNameSet = new HashSet<>();
+            bucketNameSet.addAll(((DebugBilinearMapImpl) bilMapTotal.getImpl()).getBucketMap().keySet());
             bucketNameSet.addAll(((DebugBilinearMapImpl) bilMapNoExpMultiExp.getImpl()).getBucketMap().keySet());
             bucketNameSet.addAll(((DebugBilinearMapImpl) bilMapNoExpMultiExp.getImpl()).g1.getBucketMap().keySet());
             bucketNameSet.addAll(((DebugBilinearMapImpl) bilMapTotal.getImpl()).g1.getBucketMap().keySet());
@@ -217,11 +256,11 @@ public class DebugBilinearMap implements BilinearMap {
         String tab = "    ";
         return "Combined results of all buckets\n"
                 + String.format("%sPairings: %d\n", tab, getNumPairingsAllBuckets())
-                + "G1\n"
-                + ((DebugGroup) getG1()).formatCounterDataAllBuckets(false, true)
-                + "G2\n"
-                + ((DebugGroup) getG2()).formatCounterDataAllBuckets(false, true)
-                + "GT\n"
-                + ((DebugGroup) getGT()).formatCounterDataAllBuckets(false, true);
+                + tab + "G1\n"
+                + ((DebugGroup) getG1()).formatCounterDataAllBuckets(true)
+                + tab + "G2\n"
+                + ((DebugGroup) getG2()).formatCounterDataAllBuckets(true)
+                + tab + "GT\n"
+                + ((DebugGroup) getGT()).formatCounterDataAllBuckets(true);
     }
 }

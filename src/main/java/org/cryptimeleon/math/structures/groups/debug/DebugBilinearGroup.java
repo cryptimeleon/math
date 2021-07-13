@@ -277,6 +277,24 @@ public class DebugBilinearGroup implements BilinearGroup {
     }
 
     /**
+     * Formats the count data of the default bucket for printing.
+     *
+     * @return a string detailing the results of counting
+     */
+    public String formatCounterDataDefault() {
+        return bilMap.formatCounterDataDefault();
+    }
+
+    /**
+     * Formats the count data of all buckets for printing.
+     *
+     * @return a string detailing results of counting
+     */
+    public String formatCounterData() {
+        return formatCounterData(false);
+    }
+
+    /**
      * Formats the counter data of all buckets for printing.
      *
      * @param summaryOnly if true, only formats the summed up results across all buckets; otherwise, outputs results
