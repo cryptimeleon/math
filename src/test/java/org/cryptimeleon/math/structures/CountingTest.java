@@ -25,7 +25,7 @@ public class CountingTest {
     public void testNullInstantiation() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
         String bucketName = getClass().getName() + "testNullInstantiation";
-        debugGroup.setBucket(bucketName);
+        bilGroup.setBucket(bucketName);
         assertEquals(0, debugGroup.getNumRetrievedRepresentations(bucketName));
         assertEquals(0, debugGroup.getNumExps(bucketName));
         assertEquals(0, debugGroup.getNumOpsTotal(bucketName));
@@ -41,40 +41,42 @@ public class CountingTest {
     public void testBasicOperationCounting() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
         String bucketName = getClass().getName() + "testBasicOperationCounting";
-        debugGroup.setBucket(bucketName);
+        bilGroup.setBucket(bucketName);
         GroupElement elem = debugGroup.getUniformlyRandomNonNeutral();
         GroupElement elem2 = debugGroup.getUniformlyRandomNonNeutral();
         elem.op(elem).inv().computeSync();
         elem.op(elem2).computeSync();
 
-        assertEquals(1, debugGroup.getNumOpsNoExpMultiExp());
-        assertEquals(1, debugGroup.getNumOpsTotal());
-        assertEquals(1, debugGroup.getNumInversionsNoExpMultiExp());
-        assertEquals(1, debugGroup.getNumInversionsTotal());
-        assertEquals(1, debugGroup.getNumSquaringsNoExpMultiExp());
-        assertEquals(1, debugGroup.getNumSquaringsTotal());
+        assertEquals(1, debugGroup.getNumOpsNoExpMultiExp(bucketName));
+        assertEquals(1, debugGroup.getNumOpsTotal(bucketName));
+        assertEquals(1, debugGroup.getNumInversionsNoExpMultiExp(bucketName));
+        assertEquals(1, debugGroup.getNumInversionsTotal(bucketName));
+        assertEquals(1, debugGroup.getNumSquaringsNoExpMultiExp(bucketName));
+        assertEquals(1, debugGroup.getNumSquaringsTotal(bucketName));
     }
 
     @Test
     public void testPowCounting() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
         String bucketName = getClass().getName() +"testPowCounting";
+        bilGroup.setBucket(bucketName);
         GroupElement elem = debugGroup.getUniformlyRandomNonNeutral();
         elem.pow(10).computeSync();
         // tested with WNAF exponentiation algorithm
-        assertEquals(8, debugGroup.getNumOpsTotal());
-        assertEquals(2, debugGroup.getNumSquaringsTotal());
-        assertEquals(1, debugGroup.getNumExps());
+        assertEquals(8, debugGroup.getNumOpsTotal(bucketName));
+        assertEquals(2, debugGroup.getNumSquaringsTotal(bucketName));
+        assertEquals(1, debugGroup.getNumExps(bucketName));
     }
 
     @Test
     public void testRepresentationCounting() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
         String bucketName = getClass().getName() + "testRepresentationCounting";
+        bilGroup.setBucket(bucketName);
         GroupElement elem = debugGroup.getUniformlyRandomNonNeutral();
         elem.getRepresentation();
         elem.getRepresentation();
-        assertEquals(2, debugGroup.getNumRetrievedRepresentations());
+        assertEquals(2, debugGroup.getNumRetrievedRepresentations(bucketName));
     }
 
     @Test
@@ -87,24 +89,25 @@ public class CountingTest {
         GroupElement elemG1 = groupG1.getUniformlyRandomNonNeutral();
         GroupElement elemG2 = groupG2.getUniformlyRandomNonNeutral();
         bilGroup.getBilinearMap().apply(elemG1, elemG2).computeSync();
-        assertEquals(1, bilGroup.getNumPairings());
+        assertEquals(1, bilGroup.getNumPairings(bucketName));
         // don't do unnecessary exponentiations in any of the groups
-        assertEquals(0, groupG1.getNumExps());
-        assertEquals(0, groupG2.getNumExps());
-        assertEquals(0, groupGT.getNumExps());
+        assertEquals(0, groupG1.getNumExps(bucketName));
+        assertEquals(0, groupG2.getNumExps(bucketName));
+        assertEquals(0, groupGT.getNumExps(bucketName));
 
         bilGroup.getBilinearMap().apply(elemG1, elemG2, BigInteger.TEN).computeSync();
-        assertEquals(2, bilGroup.getNumPairings());
+        assertEquals(2, bilGroup.getNumPairings(bucketName));
         // exp is done in GT currently (tested with WNAF exponentiation algorithm)
-        assertEquals(8, groupGT.getNumOpsTotal());
-        assertEquals(2, groupGT.getNumSquaringsTotal());
-        assertEquals(1, groupGT.getNumExps());
+        assertEquals(8, groupGT.getNumOpsTotal(bucketName));
+        assertEquals(2, groupGT.getNumSquaringsTotal(bucketName));
+        assertEquals(1, groupGT.getNumExps(bucketName));
     }
 
     @Test
     public void testMultiExpCounting() {
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
         String bucketName = getClass().getName() + "testMultiExpCounting";
+        bilGroup.setBucket(bucketName);
         GroupElement elem1, elem2, elem3;
         do {
             elem1 = debugGroup.getUniformlyRandomNonNeutral();
@@ -116,28 +119,28 @@ public class CountingTest {
 
         // will be computed as (G1_5 * G2_5 * G3_5)^2 where Gi_5 = elemi^5 is precomputed (WNAF multiexp)
         elem1.pow(10).op(elem2.pow(10)).op(elem3.pow(10)).computeSync();
-        System.out.println(debugGroup.formatCounterData());
-        assertArrayEquals(new Integer[] {3}, debugGroup.getMultiExpTermNumbers().toArray(new Integer[1]));
+        assertArrayEquals(new Integer[] {3}, debugGroup.getMultiExpTermNumbers(bucketName).toArray(new Integer[1]));
         // 8 ops per element for precomputation
-        assertEquals(24, debugGroup.getNumOpsTotal());
+        assertEquals(24, debugGroup.getNumOpsTotal(bucketName));
         // 1 squaring per element for precomputation plus one for multi-exponentiation
-        assertEquals(4, debugGroup.getNumSquaringsTotal());
+        assertEquals(4, debugGroup.getNumSquaringsTotal(bucketName));
     }
 
     @Test
     public void testComputeWorksSynchronously() {
         String bucketName = getClass().getName() + "testComputeWorksSynchronously";
+        bilGroup.setBucket(bucketName);
         DebugGroup debugGroup = (DebugGroup) bilGroup.getG1();
         GroupElement elem = debugGroup.getUniformlyRandomNonNeutral();
         elem.op(elem).inv().compute(); // compute is implemented synchronously for the counting group
-        assertEquals(1, debugGroup.getNumSquaringsNoExpMultiExp()); // would be 0 if asynchronous
+        assertEquals(1, debugGroup.getNumSquaringsNoExpMultiExp(bucketName)); // would be 0 if asynchronous
     }
 
     @Test
     public void testResetCounters() {
         String bucketName = getClass().getName() + "testResetCounters";
+        bilGroup.setBucket(bucketName);
         DebugGroup groupG1 = (DebugGroup) bilGroup.getG1();
-        groupG1.setBucket(bucketName);
         DebugGroup groupG2 = (DebugGroup) bilGroup.getG2();
         GroupElement elem1 = groupG1.getUniformlyRandomNonNeutral();
         GroupElement elem2 = groupG1.getUniformlyRandomNonNeutral();
@@ -153,26 +156,26 @@ public class CountingTest {
 
         elem1.getRepresentation();
 
-        bilGroup.resetCounters();
+        bilGroup.resetCounters(bucketName);
 
-        assertEquals(0, groupG1.getNumRetrievedRepresentations());
-        assertEquals(0, groupG1.getNumExps());
-        assertEquals(0, groupG1.getNumOpsTotal());
-        assertEquals(0, groupG1.getNumSquaringsTotal());
-        assertEquals(0, groupG1.getNumInversionsTotal());
-        assertEquals(0, groupG1.getNumOpsNoExpMultiExp());
-        assertEquals(0, groupG1.getNumSquaringsNoExpMultiExp());
-        assertEquals(0, groupG1.getNumInversionsNoExpMultiExp());
-        assertArrayEquals(new Integer[] {}, groupG1.getMultiExpTermNumbers().toArray(new Integer[] {}));
+        assertEquals(0, groupG1.getNumRetrievedRepresentations(bucketName));
+        assertEquals(0, groupG1.getNumExps(bucketName));
+        assertEquals(0, groupG1.getNumOpsTotal(bucketName));
+        assertEquals(0, groupG1.getNumSquaringsTotal(bucketName));
+        assertEquals(0, groupG1.getNumInversionsTotal(bucketName));
+        assertEquals(0, groupG1.getNumOpsNoExpMultiExp(bucketName));
+        assertEquals(0, groupG1.getNumSquaringsNoExpMultiExp(bucketName));
+        assertEquals(0, groupG1.getNumInversionsNoExpMultiExp(bucketName));
+        assertArrayEquals(new Integer[] {}, groupG1.getMultiExpTermNumbers(bucketName).toArray(new Integer[] {}));
 
-        assertEquals(0, bilGroup.getNumPairings());
+        assertEquals(0, bilGroup.getNumPairings(bucketName));
     }
 
     @Test
     public void testCountingHomomorphism() {
         String bucketName = getClass().getName() + "testCountingHomomorphism";
+        bilGroup.setBucket(bucketName);
         DebugGroup groupG1 = (DebugGroup) bilGroup.getG1();
-        groupG1.setBucket(bucketName);
         DebugGroup groupG2 = (DebugGroup) bilGroup.getG2();
 
         GroupElement elemG1;

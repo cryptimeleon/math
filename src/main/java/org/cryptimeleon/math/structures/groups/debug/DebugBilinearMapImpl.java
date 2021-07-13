@@ -164,49 +164,49 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
         return Objects.hash(size, pairingType);
     }
 
-    protected static void setBucket(String name) {
-        putBucketIfAbsent(name);
+    protected void setBucket(String name) {
+        currentBucket = putBucketIfAbsent(name);
     }
 
-    protected static void setDefaultBucket() {
+    protected void setDefaultBucket() {
         currentBucket = defaultBucket;
     }
 
-    protected static PairingCounter putBucketIfAbsent(String name) {
+    protected PairingCounter putBucketIfAbsent(String name) {
         return numPairingsMap.computeIfAbsent(name, kName -> new PairingCounter());
     }
 
-    protected static HashMap<String, PairingCounter> getBucketMap() {
+    protected HashMap<String, PairingCounter> getBucketMap() {
         return numPairingsMap;
     }
 
     /**
      * Retrieves number of pairings computed in this bilinear group for the bucket with the given name.
      */
-    protected static long getNumPairings(String bucketName) {
+    protected long getNumPairings(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumPairings();
     }
 
-    protected static long getNumPairingsDefault() {
+    protected long getNumPairingsDefault() {
         return defaultBucket.getNumPairings();
     }
 
-    protected static long getNumPairingsAllBuckets() {
+    protected long getNumPairingsAllBuckets() {
         return allBucketsNumPairings.getNumPairings();
     }
 
     /**
      * Resets pairing counter.
      */
-    protected static void resetNumPairings(String bucketName) {
+    protected void resetNumPairings(String bucketName) {
         numPairingsMap.put(bucketName, new PairingCounter());
     }
 
-    protected static void resetNumPairingsDefault() {
+    protected void resetNumPairingsDefault() {
         defaultBucket = new PairingCounter();
     }
 
-    protected static void resetNumPairingsAllBuckets() {
+    protected void resetNumPairingsAllBuckets() {
         allBucketsNumPairings = new PairingCounter();
         numPairingsMap.replaceAll((name, numPairings) -> new PairingCounter());
     }
@@ -214,7 +214,7 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
     /**
      * Increments the pairing counter for the current bucket.
      */
-    protected static void incrementNumPairings() {
+    protected void incrementNumPairings() {
         currentBucket.incNumPairings();
     }
 }

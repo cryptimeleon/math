@@ -83,7 +83,6 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
     public void testDebugGroup() {
         testBilinearGroup(new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_1));
         testBilinearGroupImpl(new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1, false));
-        test(new DebugGroupImplNoExpMultiExp("DGNEME", BigInteger.valueOf(1001)));
     }
 
     public void testExtensionField() {

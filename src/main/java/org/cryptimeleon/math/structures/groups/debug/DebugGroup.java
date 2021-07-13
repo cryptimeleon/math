@@ -183,7 +183,7 @@ public class DebugGroup implements Group {
      * @param bucketName the name of the bucket to retrieve number of squarings from
      */
     public long getNumSquaringsTotal(String bucketName) {
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOps(bucketName);
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumSquarings(bucketName);
     }
 
     /**
@@ -449,6 +449,47 @@ public class DebugGroup implements Group {
      * Formats the count data of the bucket with the given name for printing.
      *
      * @param bucketName the name of the bucket whose data to format for printing
+     *
+     * @return a string detailing the results of counting
+     */
+    public String formatCounterData(String bucketName) {
+        return formatCounterData(bucketName, true, false);
+    }
+
+    /**
+     * Formats the counter data of all buckets for printing.
+     *
+     * @param summaryOnly if true, only formats the summed up results across all buckets; otherwise, outputs results
+     *                    of every bucket plus the summary
+     *
+     * @return a string detailing results of counting
+     */
+    public String formatCounterData(boolean summaryOnly) {
+        StringBuilder result = new StringBuilder();
+        if (!summaryOnly) {
+            // Union of buckets
+            Set<String> bucketNames = ((DebugGroupImpl) groupTotal.getImpl()).getBucketMap().keySet();
+            bucketNames.addAll(((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getBucketMap().keySet());
+            for (String bucketName : bucketNames) {
+                result.append(formatCounterData(bucketName, true, false));
+            }
+        }
+        return result.append(formatCounterDataAllBuckets(true, false)).toString();
+    }
+
+    /**
+     * Formats the count data of all buckets for printing.
+     *
+     * @return a string detailing results of counting
+     */
+    public String formatCounterData() {
+        return formatCounterData(false);
+    }
+
+    /**
+     * Formats the count data of the bucket with the given name for printing.
+     *
+     * @param bucketName the name of the bucket whose data to format for printing
      * @param printName if true, the name of the bucket is prepended to the data and an additional level of
      *                  indentation is added; otherwise, these things are not done
      * @param addAdditionalTab if true, an additional level of indentation is added.
@@ -522,34 +563,6 @@ public class DebugGroup implements Group {
                 String.format("%sMulti-exponentiations (number of terms in each): %s\n", tab, multiExpTerms) +
                 String.format("%sgetRepresentation() calls: %d\n",
                         tab, getNumRetrievedRepresentationsAllBuckets());
-    }
-
-    /**
-     * Formats the counter data of all buckets for printing.
-     *
-     * @param summaryOnly if true, only formats the summed up results across all buckets; otherwise, outputs results
-     *                    of every bucket plus the summary
-     *
-     * @return a string detailing results of counting
-     */
-    public String formatCounterData(boolean summaryOnly) {
-        StringBuilder result = new StringBuilder();
-        if (!summaryOnly) {
-            // assume both have same buckets
-            for (String bucketName : ((DebugGroupImpl) groupTotal.getImpl()).getBucketMap().keySet()) {
-                result.append(formatCounterData(bucketName, true, false));
-            }
-        }
-        return result.append(formatCounterDataAllBuckets(true, false)).toString();
-    }
-
-    /**
-     * Formats the count data of all buckets for printing.
-     *
-     * @return a string detailing results of counting
-     */
-    public String formatCounterData() {
-        return formatCounterData(false);
     }
 
     /**

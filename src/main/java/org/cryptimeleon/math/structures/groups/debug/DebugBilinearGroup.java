@@ -201,7 +201,6 @@ public class DebugBilinearGroup implements BilinearGroup {
     }
 
     public void setBucket(String name) {
-        // not really necessary to do this for all groups since the bucket is static
         g1.setBucket(name);
         g2.setBucket(name);
         gT.setBucket(name);
@@ -264,6 +263,17 @@ public class DebugBilinearGroup implements BilinearGroup {
         g2.resetCountersAllBuckets();
         gT.resetCountersAllBuckets();
         resetNumPairingsAllBuckets();
+    }
+
+    /**
+     * Formats the count data of the bucket with the given name for printing.
+     *
+     * @param bucketName the name of the bucket whose data to format for printing
+     *
+     * @return a string detailing the results of counting
+     */
+    public String formatCounterData(String bucketName) {
+        return bilMap.formatCounterData(bucketName);
     }
 
     /**
