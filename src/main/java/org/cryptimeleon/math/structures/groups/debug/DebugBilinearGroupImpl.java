@@ -57,17 +57,6 @@ public class DebugBilinearGroupImpl implements BilinearGroupImpl {
      */
     DebugBilinearMapImpl bilinearMapImpl;
 
-    public DebugBilinearGroupImpl(int groupSizeBits, BilinearGroup.Type pairingType,
-                                  boolean enableExpMultiExpCounting) {
-        this.securityParameter = groupSizeBits;
-        this.pairingType = pairingType;
-        this.enableExpMultiExpCounting = enableExpMultiExpCounting;
-
-        // get a random prime of roughly groupSizeBits
-        this.size = RandomGenerator.getRandomPrime(groupSizeBits);
-        init();
-    }
-
     public DebugBilinearGroupImpl(BigInteger groupSize, BilinearGroup.Type pairingType,
                                   boolean enableExpMultiExpCounting) {
         this.securityParameter = groupSize.bitLength();
@@ -162,5 +151,12 @@ public class DebugBilinearGroupImpl implements BilinearGroupImpl {
     @Override
     public BilinearGroup.Type getPairingType() {
         return pairingType;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()
+                + String.format("(securityParameter=%s, pairingType=%s, size=%s, separateExpMultiExpCounting=%s",
+                                securityParameter, pairingType, size, enableExpMultiExpCounting);
     }
 }

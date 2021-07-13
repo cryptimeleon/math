@@ -169,11 +169,7 @@ public class DebugBilinearMap implements BilinearMap {
 
     @Override
     public String toString() {
-        if (isSymmetric()) {
-            return "Symmetric " +  this.getClass().getSimpleName() + "(" + bilMapTotal + ";" + bilMapNoExpMultiExp + ")";
-        } else {
-            return "Asymmetric " +  this.getClass().getSimpleName() + "(" + bilMapTotal + ";" + bilMapNoExpMultiExp + ")";
-        }
+        return bilMapTotal.toString();
     }
 
     /**

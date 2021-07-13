@@ -100,7 +100,7 @@ public abstract class DebugGroupImpl implements GroupImpl {
 
     @Override
     public String toString() {
-        return "DebugGroupImpl with name " + name + " and size " + zn.size();
+        return getClass().getSimpleName() + String.format("(name=%s, Zn=%s)", name, zn);
     }
 
     @Override

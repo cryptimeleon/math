@@ -74,24 +74,6 @@ public class DebugBilinearGroup implements BilinearGroup {
     protected DebugGroup gT;
 
     /**
-     * Initializes this bilinear group with the given pairing type and group size of given bits.
-     *
-     * @param groupSizeBits the number of bits used to represent the intended size of this group
-     * @param pairingType the type of pairing that should be offered by this bilinear group
-     */
-    public DebugBilinearGroup(int groupSizeBits, BilinearGroup.Type pairingType) {
-        this.securityParameter = groupSizeBits;
-        this.pairingType = pairingType;
-        totalBilGroup = new LazyBilinearGroup(new DebugBilinearGroupImpl(
-                securityParameter, pairingType, false
-        ));
-        expMultiExpBilGroup = new LazyBilinearGroup(new DebugBilinearGroupImpl(
-                securityParameter, pairingType, true
-        ));
-        init();
-    }
-
-    /**
      * Initializes this prime order bilinear group with the given size and pairing type.
      * @param groupSize the size of the group
      * @param pairingType the type of pairing that should be offered by this bilinear group
@@ -99,6 +81,13 @@ public class DebugBilinearGroup implements BilinearGroup {
     public DebugBilinearGroup(BigInteger groupSize, BilinearGroup.Type pairingType) {
         this.securityParameter = groupSize.bitLength();
         this.pairingType = pairingType;
+        totalBilGroup = new LazyBilinearGroup(new DebugBilinearGroupImpl(
+                groupSize, pairingType, false
+        ));
+        expMultiExpBilGroup = new LazyBilinearGroup(new DebugBilinearGroupImpl(
+                groupSize, pairingType, true
+        ));
+        init();
     }
 
     public DebugBilinearGroup(Representation repr) {

@@ -141,8 +141,7 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
 
     @Override
     public String toString() {
-        return String.format("DebugPairing over groups G1=(%s) G2=(%s) GT=(%s) with pairing type %s",
-                g1, g2, gt, pairingType);
+        return getClass().getSimpleName() + String.format("(Zn=%s, pairingType=%s)", zn, pairingType);
     }
 
     @Override

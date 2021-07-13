@@ -1,5 +1,6 @@
 package org.cryptimeleon.math.serialization.standalone.params;
 
+import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.serialization.standalone.StandaloneReprSubTest;
 import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
 import org.cryptimeleon.math.structures.groups.cartesian.ProductGroup;
@@ -74,15 +75,18 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
     }
 
     public void testLazyAndBasicGroup() {
-        BilinearGroupImpl bilGroupImpl = new DebugBilinearGroupImpl(60, BilinearGroup.Type.TYPE_3, false);
+        BilinearGroupImpl bilGroupImpl = new DebugBilinearGroupImpl(RandomGenerator.getRandomPrime(128),
+                BilinearGroup.Type.TYPE_3, false);
 
         testBilinearGroup(new LazyBilinearGroup(bilGroupImpl));
         testBilinearGroup(new BasicBilinearGroup(bilGroupImpl));
     }
 
     public void testDebugGroup() {
-        testBilinearGroup(new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_1));
-        testBilinearGroupImpl(new DebugBilinearGroupImpl(128, BilinearGroup.Type.TYPE_1, false));
+        testBilinearGroup(new DebugBilinearGroup(RandomGenerator.getRandomPrime(128),
+                BilinearGroup.Type.TYPE_1));
+        testBilinearGroupImpl(new DebugBilinearGroupImpl(RandomGenerator.getRandomPrime(128),
+                BilinearGroup.Type.TYPE_1, false));
     }
 
     public void testExtensionField() {

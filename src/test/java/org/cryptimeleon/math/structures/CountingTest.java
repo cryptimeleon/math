@@ -1,5 +1,6 @@
 package org.cryptimeleon.math.structures;
 
+import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.structures.groups.GroupElement;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;;
 import org.cryptimeleon.math.structures.groups.debug.DebugGroup;
@@ -8,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,7 +20,7 @@ public class CountingTest {
 
     @Before
     public void setUp() {
-        bilGroup = new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_2);
+        bilGroup = new DebugBilinearGroup(RandomGenerator.getRandomPrime(128), BilinearGroup.Type.TYPE_2);
     }
 
     @Test
