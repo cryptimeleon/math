@@ -15,25 +15,25 @@ public class DebugGroupImplTotal extends DebugGroupImpl {
     /**
      * Maps the name of each bucket to the actual {@code CountingBucket} object.
      */
-    protected HashMap<String, CountingBucket> countingBucketMap;
+    protected static HashMap<String, CountingBucket> countingBucketMap;
 
     /**
      * Tracks operation data across all other buckets, including default and all named buckets.
      */
-    protected CountingBucket allBucketsBucket;
+    protected static CountingBucket allBucketsBucket;
 
     /**
      * The default bucket.
      */
-    protected CountingBucket defaultBucket;
+    protected static CountingBucket defaultBucket;
 
     /**
      * The currently used bucket.
      */
-    protected CountingBucket currentBucket;
+    protected static CountingBucket currentBucket;
 
     // Initialization block for variables
-    {
+    static {
         countingBucketMap = new HashMap<>();
         defaultBucket = new CountingBucket();
         allBucketsBucket = new CountingBucket();
