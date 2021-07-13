@@ -11,16 +11,13 @@ import org.cryptimeleon.math.structures.groups.exp.SmallExponentPrecomputation;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
- * Zn-based group that supports counting group operations, inversions, squarings and exponentiations as well as
+ * Zn-based group that supports counting group operationsinversionssquarings and exponentiations as well as
  * number of terms in each multi-exponentiation.
  */
-public class DebugGroupImpl implements GroupImpl {
+public abstract class DebugGroupImpl implements GroupImpl {
 
     /**
      * Name of this group. Group elements between {@code CountingGroupElementImpl} instances only allow for group
@@ -36,50 +33,6 @@ public class DebugGroupImpl implements GroupImpl {
     protected Zn zn;
 
     /**
-     * Whether to count exponentiations as a single unit. If set to true, group operations in those exponentiations
-     * will not be counted.
-     */
-    @Represented
-    protected Boolean enableExpCounting;
-
-    /**
-     * Whether to count multi-exponentiations as a single unit. If set to true, group operations in those
-     * multi-exponentiations will not be counted.
-     */
-    @Represented
-    protected Boolean enableMultiExpCounting;
-
-    /**
-     * The counted number of inversions.
-     */
-    protected long numInversions;
-
-    /**
-     * The counted number of operations. Squarings are not considered in the group operation counter.
-     */
-    protected long numOps;
-
-    /**
-     * The counted number of squarings.
-     */
-    protected long numSquarings;
-
-    /**
-     * The counted number of exponentiations.
-     */
-    protected long numExps;
-
-    /**
-     * Number of retrieved representations for elements of this group.
-     */
-    protected long numRetrievedRepresentations;
-
-    /**
-     * Contains number of terms for each multi-exponentiation performed.
-     */
-    protected List<Integer> multiExpTermNumbers;
-
-    /**
      * Instantiates this group with the given name and group size and to not count (multi-)exponentiations
      * explicitly (instead only total group operations are counted).
      *
@@ -88,44 +41,12 @@ public class DebugGroupImpl implements GroupImpl {
      * @param n    the size of this group
      */
     public DebugGroupImpl(String name, BigInteger n) {
-        this(name, n, false, false);
-    }
-
-    /**
-     * Instantiates this group with the given name, group size, and counting configuration.
-     *
-     * @param name a unique name for this group. group operations are only compatible between groups of the same name
-     *             and n
-     * @param n    the size of this group
-     * @param enableExpCounting if {@code true}, exponentiations in G1, G2 and GT are counted as a single unit
-     *                          and group operations within exponentiations are not counted; otherwise the former is
-     *                          not done and group operations within exponentiations are added to the total count
-     * @param enableMultiExpCounting if {@code true}, number of terms in each multi-exponentiation is tracked and
-     *                               group operations within multi-exponentiations are not counted; otherwise
-     *                               the former is not done and group operations within multi-exponentiations
-     *                               are added to the total count
-     */
-    public DebugGroupImpl(String name, BigInteger n, boolean enableExpCounting, boolean enableMultiExpCounting) {
-        zn = new Zn(n);
         this.name = name;
-        this.enableExpCounting = enableExpCounting;
-        this.enableMultiExpCounting = enableMultiExpCounting;
-        numInversions = 0;
-        numOps = 0;
-        numSquarings = 0;
-        numExps = 0;
-        multiExpTermNumbers = new LinkedList<>();
-        numRetrievedRepresentations = 0;
+        this.zn = new Zn(n);
     }
 
     public DebugGroupImpl(Representation repr) {
         new ReprUtil(this).deserialize(repr);
-        numInversions = 0;
-        numOps = 0;
-        numSquarings = 0;
-        numExps = 0;
-        multiExpTermNumbers = new LinkedList<>();
-        numRetrievedRepresentations = 0;
     }
 
     @Override
@@ -165,23 +86,22 @@ public class DebugGroupImpl implements GroupImpl {
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return Objects.hash(name, zn);
     }
 
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (other == null || this.getClass() != other.getClass()) return false;
+        // this is usually wrong, but we need to allow equals between the G1 and G2 classes to pass for type 1 pairings
+        if (!(other instanceof DebugGroupImpl)) return false;
         DebugGroupImpl that = (DebugGroupImpl) other;
         return Objects.equals(name, that.name)
-                && Objects.equals(zn, that.zn)
-                && Objects.equals(enableExpCounting, that.enableExpCounting)
-                && Objects.equals(enableMultiExpCounting, that.enableMultiExpCounting);
+                && Objects.equals(zn, that.zn);
     }
 
     @Override
     public String toString() {
-        return name;
+        return getClass().getSimpleName() + String.format("(name=%s, Zn=%s)", name, zn);
     }
 
     @Override
@@ -199,35 +119,6 @@ public class DebugGroupImpl implements GroupImpl {
         return zn.hasPrimeSize();
     }
 
-    @Override
-    public boolean implementsOwnExp() {
-        return enableExpCounting;
-    }
-
-    @Override
-    public GroupElementImpl exp(GroupElementImpl base, BigInteger exponent, SmallExponentPrecomputation precomputation) {
-        return base.pow(exponent); // this method already counts the exponentiation
-    }
-
-    @Override
-    public boolean implementsOwnMultiExp() {
-        return enableMultiExpCounting;
-    }
-
-    @Override
-    public GroupElementImpl multiexp(Multiexponentiation mexp) {
-        // This method is only used if enableMultiExpCounting is set to true; hence, we count
-        // the multi-exponentiation done.
-        DebugGroupElementImpl result = (DebugGroupElementImpl) mexp.getConstantFactor().orElse(getNeutralElement());
-        for (MultiExpTerm term : mexp.getTerms()) {
-            // Use methods where we can disable counting since we only want to count the multi-exponentiation here
-            result = (DebugGroupElementImpl) result
-                    .op(((DebugGroupElementImpl) term.getBase()).pow(term.getExponent(),false), false);
-        }
-        addMultiExpBaseNumber(mexp.getTerms().size());
-        return result;
-    }
-
     /**
      * Wraps a {@code ZnElement} in a {@code CountingGroupElementImpl} belonging to this group.
      */
@@ -240,84 +131,150 @@ public class DebugGroupImpl implements GroupImpl {
         return 1.6;
     }
 
-    protected void incrementNumOps() {
-        ++numOps;
+    void incrementNumOps() {
+        getCurrentBucket().incrementNumOps();
+        getAllBucketsBucket().incrementNumOps();
     }
 
-    protected void incrementNumInversions() {
-        ++numInversions;
+    void incrementNumInversions() {
+        getCurrentBucket().incrementNumInversions();
+        getAllBucketsBucket().incrementNumInversions();
     }
 
-    protected void incrementNumSquarings() {
-        ++numSquarings;
+    void incrementNumSquarings() {
+        getCurrentBucket().incrementNumSquarings();
+        getAllBucketsBucket().incrementNumSquarings();
     }
 
-    protected void incrementNumExps() {
-        ++numExps;
+    void incrementNumExps() {
+        getCurrentBucket().incrementNumExps();
+        getAllBucketsBucket().incrementNumExps();
+    }
+
+    void addMultiExpBaseNumber(int numTerms) {
+        getCurrentBucket().addMultiExpBaseNumber(numTerms);
+        getAllBucketsBucket().addMultiExpBaseNumber(numTerms);
+    }
+
+    void incrementNumRetrievedRepresentations() {
+        getCurrentBucket().incrementNumRetrievedRepresentations();
+        getAllBucketsBucket().incrementNumRetrievedRepresentations();
+    }
+
+    long getNumOps(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumOps();
+    }
+
+    long getNumInversions(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumInversions();
+    }
+
+    long getNumSquarings(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumSquarings();
+    }
+
+    long getNumExps(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumExps();
+    }
+
+    List<Integer> getMultiExpTermNumbers(String bucketName) {
+        return putBucketIfAbsent(bucketName).getMultiExpTermNumbers();
+    }
+
+    long getNumRetrievedRepresentations(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumRetrievedRepresentations();
+    }
+
+    long getNumOpsDefault() {
+        return getDefaultBucket().getNumOps();
+    }
+
+    long getNumInversionsDefault() {
+        return getDefaultBucket().getNumInversions();
+    }
+
+    long getNumSquaringsDefault() {
+        return getDefaultBucket().getNumSquarings();
+    }
+
+    long getNumExpsDefault() {
+        return getDefaultBucket().getNumExps();
+    }
+
+    List<Integer> getMultiExpTermNumbersDefault() {
+        return getDefaultBucket().getMultiExpTermNumbers();
+    }
+
+    long getNumRetrievedRepresentationsDefault() {
+        return getDefaultBucket().getNumRetrievedRepresentations();
+    }
+
+    long getNumOpsAllBuckets() {
+        return getAllBucketsBucket().getNumOps();
+    }
+
+    long getNumInversionsAllBuckets() {
+        return getAllBucketsBucket().getNumInversions();
+    }
+
+    long getNumSquaringsAllBuckets() {
+        return getAllBucketsBucket().getNumSquarings();
+    }
+
+    long getNumExpsAllBuckets() {
+        return getAllBucketsBucket().getNumExps();
+    }
+
+    List<Integer> getMultiExpTermNumbersAllBuckets() {
+        return getAllBucketsBucket().getMultiExpTermNumbers();
+    }
+
+    long getNumRetrievedRepresentationsAllBuckets() {
+        return getAllBucketsBucket().getNumRetrievedRepresentations();
+    }
+
+    void resetCounters(String bucketName) {
+        putBucketIfAbsent(bucketName).resetCounters();
+    }
+
+    void resetCountersDefault() {
+        getDefaultBucket().resetCounters();
+    }
+
+    void resetCountersAllBuckets() {
+        getAllBucketsBucket().resetCounters();
+        getBucketMap().forEach((name, bucket) -> bucket.resetCounters());
     }
 
     /**
-     * Tracks the fact that a multi-exponentiation with the given number of terms was done.
-     * @param numTerms the number of terms (bases) in the multi-exponentiation
+     * Sets the currently used operation count storage bucket to the one with the given name.
+     * If a bucket with the given name does not exista new one is created.
+     * <p>
+     * All operations executed after setting a bucket will be counted within that bucket only.
+     *
+     * @param name the name of the bucket to enable
      */
-    protected void addMultiExpBaseNumber(int numTerms) {
-        if (numTerms > 1) {
-            multiExpTermNumbers.add(numTerms);
-        }
-    }
+    abstract void setBucket(String name);
 
-    protected void incrementNumRetrievedRepresentations() {
-        ++numRetrievedRepresentations;
-    }
 
-    public long getNumInversions() {
-        return numInversions;
-    }
+    /**
+     * Sets the currently used operation count storage bucket to the default one.
+     */
+    abstract void setDefaultBucket();
 
-    public long getNumOps() {
-        return numOps;
-    }
+    /**
+     * Retrieves the bucket with the given name from {@code countingBucketMap},
+     * creating a new one if it does not exist yet.
+     *
+     * @param name the name of the bucket to retrieve
+     */
+    abstract CountingBucket putBucketIfAbsent(String name);
 
-    public long getNumSquarings() {
-        return numSquarings;
-    }
+    abstract CountingBucket getAllBucketsBucket();
 
-    public long getNumExps() { return numExps; }
+    abstract CountingBucket getCurrentBucket();
 
-    public List<Integer> getMultiExpTermNumbers() {
-        return multiExpTermNumbers;
-    }
+    abstract CountingBucket getDefaultBucket();
 
-    public long getNumRetrievedRepresentations() {
-        return numRetrievedRepresentations;
-    }
-
-    public void resetOpsCounter() {
-        numOps = 0;
-    }
-
-    public void resetInvsCounter() {
-        numInversions = 0;
-    }
-
-    public void resetSquaringsCounter() {
-        numSquarings = 0;
-    }
-
-    public void resetExpsCounter() { numExps = 0; }
-
-    public void resetMultiExpTermNumbers() { multiExpTermNumbers = new LinkedList<>(); }
-
-    public void resetRetrievedRepresentationsCounter() {
-        numRetrievedRepresentations = 0;
-    }
-
-    public void resetCounters() {
-        resetOpsCounter();
-        resetInvsCounter();
-        resetSquaringsCounter();
-        resetExpsCounter();
-        resetMultiExpTermNumbers();
-        resetRetrievedRepresentationsCounter();
-    }
+    abstract Map<String, CountingBucket> getBucketMap();
 }

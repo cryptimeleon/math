@@ -1,11 +1,15 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
+import org.cryptimeleon.math.serialization.Representation;
+import org.cryptimeleon.math.serialization.annotations.ReprUtil;
+import org.cryptimeleon.math.serialization.annotations.Represented;
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearMapImpl;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -37,36 +41,88 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
      */
     protected BilinearGroup.Type pairingType;
 
+    private static class PairingCounter {
+        private long count;
+
+        public PairingCounter() {
+            this.count = 0L;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PairingCounter that = (PairingCounter) o;
+            return count == that.count;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(count);
+        }
+
+        public void incNumPairings() {
+            ++count;
+        }
+
+        public long getNumPairings() {
+            return count;
+        }
+    }
+
     /**
-     * The counted number of pairings.
+     * Maps bucket names to the number of pairings stored within that bucket.
      */
-    protected long numPairings;
+    protected static HashMap<String, PairingCounter> numPairingsMap;
+
+    protected static PairingCounter defaultBucket;
+
+    protected static PairingCounter currentBucket;
+
+    protected static PairingCounter allBucketsNumPairings;
+
+    static {
+        numPairingsMap = new HashMap<>();
+        defaultBucket = new PairingCounter();
+        currentBucket = defaultBucket;
+        allBucketsNumPairings = new PairingCounter();
+    }
 
     /**
      * Instantiates this bilinear map with the given pairing type, group size, and counting configuration.
      *
-     * @param type type of the pairing
      * @param groupSize size of g1, g2, and gt (number of group elements)
-     * @param enableExpCounting if {@code true}, exponentiations in G1, G2 and GT are counted as a single unit
-     *                          and group operations within exponentiations are not counted; otherwise the former is
-     *                          not done and group operations within exponentiations are added to the total count
-     * @param enableMultiExpCounting if {@code true}, number of terms in each multi-exponentiation is tracked and
-     *                               group operations within multi-exponentiations are not counted; otherwise
-     *                               the former is not done and group operations within multi-exponentiations
-     *                               are added to the total count
+     * @param type type of the pairing
+     * @param enableExpMultiExpCounting if {@code true}, number of terms in each multi-exponentiation is tracked and
+     *                                  group operations within multi-exponentiations are not counted; otherwise
+     *                                  the former is not done and group operations within multi-exponentiations
+     *                                  are added to the total count.
+     *                                  Furthermore, if {@code true}, exponentiations in G1, G2 and GT are counted
+     *                                  as a single unit and group operations within exponentiations are not counted;
+     *                                  otherwise the former is not done and group operations within exponentiations are
+     *                                  added to the total count
      */
-    public DebugBilinearMapImpl(BilinearGroup.Type type, BigInteger groupSize, boolean enableExpCounting,
-                                boolean enableMultiExpCounting) {
+    public DebugBilinearMapImpl(BigInteger groupSize, BilinearGroup.Type type, boolean enableExpMultiExpCounting) {
         this.size = groupSize;
         this.zn = new Zn(groupSize);
         this.pairingType = type;
-        g1 = new DebugGroupImpl("G1", groupSize, enableExpCounting, enableMultiExpCounting);
-        if (type == BilinearGroup.Type.TYPE_1)
-            g2 = g1;
-        else
-            g2 = new DebugGroupImpl("G2", groupSize, enableExpCounting, enableMultiExpCounting);
-        gt = new DebugGroupImpl("GT", groupSize, enableExpCounting, enableMultiExpCounting);
-        numPairings = 0;
+        if (enableExpMultiExpCounting) {
+            g1 = new DebugGroupImplG1NoExpMultiExp("G1", groupSize);
+            if (type == BilinearGroup.Type.TYPE_1)
+                // name is G1 to make equals compatible between elements, but need to use G2 class to allow
+                //  separate counting
+                g2 = new DebugGroupImplG2NoExpMultiExp("G1", groupSize);
+            else
+                g2 = new DebugGroupImplG2NoExpMultiExp("G2", groupSize);
+            gt = new DebugGroupImplGTNoExpMultiExp("GT", groupSize);
+        } else {
+            g1 = new DebugGroupImplG1Total("G1", groupSize);
+            if (type == BilinearGroup.Type.TYPE_1)
+                g2 = new DebugGroupImplG2Total("G1", groupSize);
+            else
+                g2 = new DebugGroupImplG2Total("G2", groupSize);
+            gt = new DebugGroupImplGTTotal("GT", groupSize);
+        }
     }
 
     @Override
@@ -90,7 +146,7 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
 
     @Override
     public String toString() {
-        return "DebugPairing";
+        return getClass().getSimpleName() + String.format("(Zn=%s, pairingType=%s)", zn, pairingType);
     }
 
     @Override
@@ -112,24 +168,57 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
         return Objects.hash(size, pairingType);
     }
 
+    protected void setBucket(String name) {
+        currentBucket = putBucketIfAbsent(name);
+    }
+
+    protected void setDefaultBucket() {
+        currentBucket = defaultBucket;
+    }
+
+    protected PairingCounter putBucketIfAbsent(String name) {
+        return numPairingsMap.computeIfAbsent(name, kName -> new PairingCounter());
+    }
+
+    protected HashMap<String, PairingCounter> getBucketMap() {
+        return numPairingsMap;
+    }
+
     /**
-     * Retrieves number of pairings computed in this bilinear group.
+     * Retrieves number of pairings computed in this bilinear group for the bucket with the given name.
      */
-    public long getNumPairings() {
-        return numPairings;
+    protected long getNumPairings(String bucketName) {
+        return putBucketIfAbsent(bucketName).getNumPairings();
+    }
+
+    protected long getNumPairingsDefault() {
+        return defaultBucket.getNumPairings();
+    }
+
+    protected long getNumPairingsAllBuckets() {
+        return allBucketsNumPairings.getNumPairings();
     }
 
     /**
      * Resets pairing counter.
      */
-    public void resetNumPairings() {
-        numPairings = 0;
+    protected void resetNumPairings(String bucketName) {
+        numPairingsMap.put(bucketName, new PairingCounter());
+    }
+
+    protected void resetNumPairingsDefault() {
+        defaultBucket = new PairingCounter();
+    }
+
+    protected void resetNumPairingsAllBuckets() {
+        allBucketsNumPairings = new PairingCounter();
+        numPairingsMap.replaceAll((name, numPairings) -> new PairingCounter());
     }
 
     /**
-     * Increments the pairing counter.
+     * Increments the pairing counter for the current bucket.
      */
     protected void incrementNumPairings() {
-        ++numPairings;
+        currentBucket.incNumPairings();
     }
 }

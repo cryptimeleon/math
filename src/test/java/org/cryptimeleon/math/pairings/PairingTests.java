@@ -1,5 +1,6 @@
 package org.cryptimeleon.math.pairings;
 
+import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.structures.groups.GroupElement;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
@@ -87,11 +88,11 @@ public class PairingTests {
     public static Collection<BilinearMap[]> data() {
         // Counting curves
         BilinearGroup countingGroup1 =
-                new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_1);
+                new DebugBilinearGroup(RandomGenerator.getRandomPrime(128), BilinearGroup.Type.TYPE_1);
         BilinearGroup countingGroup2 =
-                new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_2);
+                new DebugBilinearGroup(RandomGenerator.getRandomPrime(128), BilinearGroup.Type.TYPE_2);
         BilinearGroup countingGroup3 =
-                new DebugBilinearGroup(128, BilinearGroup.Type.TYPE_3);
+                new DebugBilinearGroup(RandomGenerator.getRandomPrime(128), BilinearGroup.Type.TYPE_3);
 
         // Supersingular curve groups
         BilinearGroup supsingGroup = new SupersingularBasicBilinearGroup(80);

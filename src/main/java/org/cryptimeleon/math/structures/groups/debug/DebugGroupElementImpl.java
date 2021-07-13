@@ -97,6 +97,7 @@ public class DebugGroupElementImpl implements GroupElementImpl {
 
     @Override
     public GroupElementImpl pow(BigInteger k) {
+        // Only the NoExpMultiExp mode will call this method so we just always count here
         return this.pow(k, true);
     }
 
