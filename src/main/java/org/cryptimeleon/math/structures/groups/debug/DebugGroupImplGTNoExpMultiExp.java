@@ -6,7 +6,12 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-class DebugGroupImplGTNoExpMultiExp extends DebugGroupImplNoExpMultiExp {
+/**
+ * {@link DebugGroupImpl} implementation that counts operations not done inside (multi-)exponentiations
+ * and counts (multi-)exponentiations as their own unit.
+ * Used exclusively to represent GT in {@link DebugBilinearGroup} to allow for separate counting from G1 and G2.
+ */
+public class DebugGroupImplGTNoExpMultiExp extends DebugGroupImplNoExpMultiExp {
     /**
      * Maps the name of each bucket to the actual {@code CountingBucket} object.
      */

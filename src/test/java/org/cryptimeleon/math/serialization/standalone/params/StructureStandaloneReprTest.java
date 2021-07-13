@@ -3,10 +3,12 @@ package org.cryptimeleon.math.serialization.standalone.params;
 import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.serialization.standalone.StandaloneReprSubTest;
 import org.cryptimeleon.math.structures.groups.basic.BasicBilinearGroup;
+import org.cryptimeleon.math.structures.groups.basic.BasicGroup;
 import org.cryptimeleon.math.structures.groups.cartesian.ProductGroup;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroup;
 import org.cryptimeleon.math.structures.groups.debug.DebugBilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.debug.DebugGroupImplNoExpMultiExp;
+import org.cryptimeleon.math.structures.groups.debug.DebugGroupImplTotal;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroupImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.type1.supersingular.SupersingularBasicBilinearGroup;
@@ -87,6 +89,10 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
                 BilinearGroup.Type.TYPE_1));
         testBilinearGroupImpl(new DebugBilinearGroupImpl(RandomGenerator.getRandomPrime(128),
                 BilinearGroup.Type.TYPE_1, false));
+        testBilinearGroupImpl(new DebugBilinearGroupImpl(RandomGenerator.getRandomPrime(128),
+                BilinearGroup.Type.TYPE_1, true));
+        test(new BasicGroup(new DebugGroupImplTotal("DGIT", RandomGenerator.getRandomPrime(128))));
+        test(new BasicGroup(new DebugGroupImplNoExpMultiExp("DGINEME", RandomGenerator.getRandomPrime(128))));
     }
 
     public void testExtensionField() {

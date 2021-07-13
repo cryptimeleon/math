@@ -92,7 +92,8 @@ public abstract class DebugGroupImpl implements GroupImpl {
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (other == null || this.getClass() != other.getClass()) return false;
+        // this is usually wrong, but we need to allow equals between the G1 and G2 classes to pass for type 1 pairings
+        if (!(other instanceof DebugGroupImpl)) return false;
         DebugGroupImpl that = (DebugGroupImpl) other;
         return Objects.equals(name, that.name)
                 && Objects.equals(zn, that.zn);

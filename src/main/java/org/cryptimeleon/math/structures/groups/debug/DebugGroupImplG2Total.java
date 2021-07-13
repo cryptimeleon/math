@@ -6,7 +6,11 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-class DebugGroupImplG2Total extends DebugGroupImplTotal {
+/**
+ * {@link DebugGroupImpl} implementation that counts operations including those done inside (multi-)exponentiations.
+ * Used exclusively to represent G2 in {@link DebugBilinearGroup} to allow for separate counting from G1 and GT.
+ */
+public class DebugGroupImplG2Total extends DebugGroupImplTotal {
 
     /**
      * Maps the name of each bucket to the actual {@code CountingBucket} object.
