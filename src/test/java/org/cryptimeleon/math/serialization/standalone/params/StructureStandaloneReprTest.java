@@ -91,8 +91,8 @@ public class StructureStandaloneReprTest extends StandaloneReprSubTest {
                 BilinearGroup.Type.TYPE_1, false));
         testBilinearGroupImpl(new DebugBilinearGroupImpl(RandomGenerator.getRandomPrime(128),
                 BilinearGroup.Type.TYPE_1, true));
-        test(new BasicGroup(new DebugGroupImplTotal("DGIT", RandomGenerator.getRandomPrime(128))));
-        test(new BasicGroup(new DebugGroupImplNoExpMultiExp("DGINEME", RandomGenerator.getRandomPrime(128))));
+        test(new DebugGroupImplTotal("DGIT", RandomGenerator.getRandomPrime(128)));
+        test(new DebugGroupImplNoExpMultiExp("DGINEME", RandomGenerator.getRandomPrime(128)));
     }
 
     public void testExtensionField() {
