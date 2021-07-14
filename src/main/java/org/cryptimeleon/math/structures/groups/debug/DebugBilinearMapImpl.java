@@ -212,6 +212,7 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
     }
 
     protected void resetNumPairingsAllBuckets() {
+        resetNumPairingsDefault();
         numPairingsMap.replaceAll((name, numPairings) -> new PairingCounter());
     }
 

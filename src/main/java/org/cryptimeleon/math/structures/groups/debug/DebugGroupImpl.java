@@ -242,7 +242,7 @@ public abstract class DebugGroupImpl implements GroupImpl {
     }
 
     void resetCountersAllBuckets() {
-        getAllBucketsBucket().resetCounters();
+        resetCountersDefault();
         getBucketMap().forEach((name, bucket) -> bucket.resetCounters());
     }
 
