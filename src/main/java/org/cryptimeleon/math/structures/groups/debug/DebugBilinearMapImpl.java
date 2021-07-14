@@ -79,13 +79,10 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
 
     protected static PairingCounter currentBucket;
 
-    protected static PairingCounter allBucketsNumPairings;
-
     static {
         numPairingsMap = new HashMap<>();
         defaultBucket = new PairingCounter();
         currentBucket = defaultBucket;
-        allBucketsNumPairings = new PairingCounter();
     }
 
     /**
@@ -196,7 +193,11 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
     }
 
     protected long getNumPairingsAllBuckets() {
-        return allBucketsNumPairings.getNumPairings();
+        long sum = 0;
+        for (PairingCounter pc : numPairingsMap.values()) {
+            sum += pc.getNumPairings();
+        }
+        return sum;
     }
 
     /**
@@ -211,7 +212,6 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
     }
 
     protected void resetNumPairingsAllBuckets() {
-        allBucketsNumPairings = new PairingCounter();
         numPairingsMap.replaceAll((name, numPairings) -> new PairingCounter());
     }
 

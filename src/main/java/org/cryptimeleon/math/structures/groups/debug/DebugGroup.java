@@ -273,7 +273,7 @@ public class DebugGroup implements Group {
      * from the default bucket.
      */
     public long getNumSquaringsTotalDefault() {
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOpsDefault();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumSquaringsDefault();
     }
 
     /**
@@ -350,7 +350,7 @@ public class DebugGroup implements Group {
      * summed up across all buckets.
      */
     public long getNumSquaringsTotalAllBuckets() {
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOpsAllBuckets();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumSquaringsAllBuckets();
     }
 
     /**

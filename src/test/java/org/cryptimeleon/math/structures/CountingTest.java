@@ -186,4 +186,75 @@ public class CountingTest {
         elemG1 = bilGroup.getHomomorphismG2toG1().apply(elemG2);
         assertEquals(elemG1.getStructure(), groupG1);
     }
+
+    @Test
+    public void testAllBuckets() {
+        bilGroup.resetCountersAllBuckets();
+        String bucketName1 = getClass().getName() + "#testAllBuckets(1)";
+        String bucketName2 = getClass().getName() + "#testAllBuckets(2)";
+        DebugGroup groupG1 = (DebugGroup) bilGroup.getG1();
+        DebugGroup groupG2 = (DebugGroup) bilGroup.getG2();
+        DebugGroup groupGT = (DebugGroup) bilGroup.getGT();
+
+        bilGroup.setBucket(bucketName1);
+        GroupElement elem1 = groupG1.getUniformlyRandomNonNeutral();
+        GroupElement elem2 = groupG1.getUniformlyRandomNonNeutral();
+        GroupElement elem3 = groupG1.getUniformlyRandomNonNeutral();
+
+        elem1.pow(10).op(elem2.pow(10)).op(elem3.pow(10)).computeSync();
+
+        GroupElement elemG1 = groupG1.getUniformlyRandomNonNeutral();
+        GroupElement elemG2 = groupG2.getUniformlyRandomNonNeutral();
+        bilGroup.getBilinearMap().apply(elemG1, elemG2, BigInteger.TEN).computeSync();
+
+        elem1.op(elem2).inv().computeSync();
+
+        elem1.getRepresentation();
+        bilGroup.setBucket(bucketName2);
+        elem1 = groupG1.getUniformlyRandomNonNeutral();
+        elem2 = groupG1.getUniformlyRandomNonNeutral();
+        elem3 = groupG1.getUniformlyRandomNonNeutral();
+
+        elem1.pow(10).op(elem2.pow(10)).op(elem3.pow(10)).computeSync();
+
+        elemG1 = groupG1.getUniformlyRandomNonNeutral();
+        elemG2 = groupG2.getUniformlyRandomNonNeutral();
+        bilGroup.getBilinearMap().apply(elemG1, elemG2, BigInteger.TEN).computeSync();
+
+        elem1.op(elem2).inv().computeSync();
+
+        elem1.getRepresentation();
+
+        assertEquals(2, groupG1.getNumRetrievedRepresentationsAllBuckets());
+        assertEquals(0, groupG1.getNumExpsAllBuckets());
+        assertEquals(50, groupG1.getNumOpsTotalAllBuckets());
+        assertEquals(8, groupG1.getNumSquaringsTotalAllBuckets());
+        assertEquals(2, groupG1.getNumInversionsTotalAllBuckets());
+        assertEquals(2, groupG1.getNumOpsNoExpMultiExpAllBuckets());
+        assertEquals(0, groupG1.getNumSquaringsNoExpMultiExpAllBuckets());
+        assertEquals(2, groupG1.getNumInversionsNoExpMultiExpAllBuckets());
+        assertArrayEquals(new Integer[] {3, 3}, groupG1.getMultiExpTermNumbersAllBuckets().toArray(new Integer[] {}));
+
+        assertEquals(0, groupG2.getNumRetrievedRepresentationsAllBuckets());
+        assertEquals(0, groupG2.getNumExpsAllBuckets());
+        assertEquals(0, groupG2.getNumOpsTotalAllBuckets());
+        assertEquals(0, groupG2.getNumSquaringsTotalAllBuckets());
+        assertEquals(0, groupG2.getNumInversionsTotalAllBuckets());
+        assertEquals(0, groupG2.getNumOpsNoExpMultiExpAllBuckets());
+        assertEquals(0, groupG2.getNumSquaringsNoExpMultiExpAllBuckets());
+        assertEquals(0, groupG2.getNumInversionsNoExpMultiExpAllBuckets());
+        assertArrayEquals(new Integer[] {}, groupG2.getMultiExpTermNumbersAllBuckets().toArray(new Integer[] {}));
+
+        assertEquals(0, groupGT.getNumRetrievedRepresentationsAllBuckets());
+        assertEquals(2, groupGT.getNumExpsAllBuckets());
+        assertEquals(16, groupGT.getNumOpsTotalAllBuckets());
+        assertEquals(4, groupGT.getNumSquaringsTotalAllBuckets());
+        assertEquals(0, groupGT.getNumInversionsTotalAllBuckets());
+        assertEquals(0, groupGT.getNumOpsNoExpMultiExpAllBuckets());
+        assertEquals(0, groupGT.getNumSquaringsNoExpMultiExpAllBuckets());
+        assertEquals(0, groupGT.getNumInversionsNoExpMultiExpAllBuckets());
+        assertArrayEquals(new Integer[] {}, groupGT.getMultiExpTermNumbersAllBuckets().toArray(new Integer[] {}));
+
+        assertEquals(2, bilGroup.getNumPairingsAllBuckets());
+    }
 }

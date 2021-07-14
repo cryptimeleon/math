@@ -134,4 +134,9 @@ public class CountingBucket {
     protected void resetRetrievedRepresentationsCounter() {
         numRetrievedRepresentations = 0;
     }
+
+    protected boolean isEmpty() {
+        return numOps == 0 && numInversions == 0 && numSquarings == 0 && numExps == 0 && multiExpTermNumbers.isEmpty()
+                && numRetrievedRepresentations == 0;
+    }
 }

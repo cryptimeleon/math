@@ -18,11 +18,6 @@ public class DebugGroupImplGTTotal extends DebugGroupImplTotal {
     protected static HashMap<String, CountingBucket> countingBucketMap;
 
     /**
-     * Tracks operation data across all other buckets, including default and all named buckets.
-     */
-    protected static CountingBucket allBucketsBucket;
-
-    /**
      * The default bucket.
      */
     protected static CountingBucket defaultBucket;
@@ -36,7 +31,6 @@ public class DebugGroupImplGTTotal extends DebugGroupImplTotal {
     static {
         countingBucketMap = new HashMap<>();
         defaultBucket = new CountingBucket();
-        allBucketsBucket = new CountingBucket();
         currentBucket = defaultBucket;
     }
 
@@ -85,10 +79,6 @@ public class DebugGroupImplGTTotal extends DebugGroupImplTotal {
      */
     CountingBucket putBucketIfAbsent(String name) {
         return countingBucketMap.computeIfAbsent(name, kName -> new CountingBucket());
-    }
-
-    CountingBucket getAllBucketsBucket() {
-        return allBucketsBucket;
     }
 
     CountingBucket getCurrentBucket() {

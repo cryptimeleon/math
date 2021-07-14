@@ -246,6 +246,25 @@ public abstract class DebugGroupImpl implements GroupImpl {
         getBucketMap().forEach((name, bucket) -> bucket.resetCounters());
     }
 
+    CountingBucket getAllBucketsBucket() {
+        CountingBucket allBucketsBucket = new CountingBucket();
+        allBucketsBucket.numExps += getNumExpsDefault();
+        allBucketsBucket.numInversions += getNumInversionsDefault();
+        allBucketsBucket.numOps += getNumOpsDefault();
+        allBucketsBucket.numSquarings += getNumSquaringsDefault();
+        allBucketsBucket.numRetrievedRepresentations += getNumRetrievedRepresentationsDefault();
+        allBucketsBucket.multiExpTermNumbers.addAll(getMultiExpTermNumbersDefault());
+        for (String bucketName : getBucketMap().keySet()) {
+            allBucketsBucket.numExps += getNumExps(bucketName);
+            allBucketsBucket.numInversions += getNumInversions(bucketName);
+            allBucketsBucket.numOps += getNumOps(bucketName);
+            allBucketsBucket.numSquarings += getNumSquarings(bucketName);
+            allBucketsBucket.numRetrievedRepresentations += getNumRetrievedRepresentations(bucketName);
+            allBucketsBucket.multiExpTermNumbers.addAll(getMultiExpTermNumbers(bucketName));
+        }
+        return allBucketsBucket;
+    }
+
     /**
      * Sets the currently used operation count storage bucket to the one with the given name.
      * If a bucket with the given name does not exista new one is created.
@@ -269,8 +288,6 @@ public abstract class DebugGroupImpl implements GroupImpl {
      * @param name the name of the bucket to retrieve
      */
     abstract CountingBucket putBucketIfAbsent(String name);
-
-    abstract CountingBucket getAllBucketsBucket();
 
     abstract CountingBucket getCurrentBucket();
 
