@@ -5,6 +5,7 @@ import org.cryptimeleon.math.serialization.Representation;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link DebugGroupImpl} implementation that counts operations not done inside (multi-)exponentiations
@@ -15,21 +16,21 @@ public class DebugGroupImplGTNoExpMultiExp extends DebugGroupImplNoExpMultiExp {
     /**
      * Maps the name of each bucket to the actual {@code CountingBucket} object.
      */
-    protected static HashMap<String, CountingBucket> countingBucketMap;
+    private static final ConcurrentHashMap<String, CountingBucket> countingBucketMap;
 
     /**
      * The default bucket.
      */
-    protected static CountingBucket defaultBucket;
+    private static final CountingBucket defaultBucket;
 
     /**
      * The currently used bucket.
      */
-    protected static CountingBucket currentBucket;
+    private static CountingBucket currentBucket;
 
     // Initialization block for variables
     static {
-        countingBucketMap = new HashMap<>();
+        countingBucketMap = new ConcurrentHashMap<>();
         defaultBucket = new CountingBucket();
         currentBucket = defaultBucket;
     }

@@ -248,19 +248,19 @@ public abstract class DebugGroupImpl implements GroupImpl {
 
     CountingBucket getAllBucketsBucket() {
         CountingBucket allBucketsBucket = new CountingBucket();
-        allBucketsBucket.numExps += getNumExpsDefault();
-        allBucketsBucket.numInversions += getNumInversionsDefault();
-        allBucketsBucket.numOps += getNumOpsDefault();
-        allBucketsBucket.numSquarings += getNumSquaringsDefault();
-        allBucketsBucket.numRetrievedRepresentations += getNumRetrievedRepresentationsDefault();
-        allBucketsBucket.multiExpTermNumbers.addAll(getMultiExpTermNumbersDefault());
+        allBucketsBucket.numExps.addAndGet(getNumExpsDefault());
+        allBucketsBucket.numInversions.addAndGet(getNumInversionsDefault());
+        allBucketsBucket.numOps.addAndGet(getNumOpsDefault());
+        allBucketsBucket.numSquarings.addAndGet(getNumSquaringsDefault());
+        allBucketsBucket.numRetrievedRepresentations.addAndGet(getNumRetrievedRepresentationsDefault());
+        allBucketsBucket.addAllMultiExpBaseNumbers(getMultiExpTermNumbersDefault());
         for (String bucketName : getBucketMap().keySet()) {
-            allBucketsBucket.numExps += getNumExps(bucketName);
-            allBucketsBucket.numInversions += getNumInversions(bucketName);
-            allBucketsBucket.numOps += getNumOps(bucketName);
-            allBucketsBucket.numSquarings += getNumSquarings(bucketName);
-            allBucketsBucket.numRetrievedRepresentations += getNumRetrievedRepresentations(bucketName);
-            allBucketsBucket.multiExpTermNumbers.addAll(getMultiExpTermNumbers(bucketName));
+            allBucketsBucket.numExps.addAndGet(getNumExps(bucketName));
+            allBucketsBucket.numInversions.addAndGet(getNumInversions(bucketName));
+            allBucketsBucket.numOps.addAndGet(getNumOps(bucketName));
+            allBucketsBucket.numSquarings.addAndGet(getNumSquarings(bucketName));
+            allBucketsBucket.numRetrievedRepresentations.addAndGet(getNumRetrievedRepresentations(bucketName));
+            allBucketsBucket.addAllMultiExpBaseNumbers(getMultiExpTermNumbers(bucketName));
         }
         return allBucketsBucket;
     }
