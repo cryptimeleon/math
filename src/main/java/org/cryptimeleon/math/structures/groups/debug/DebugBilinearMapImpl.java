@@ -11,6 +11,11 @@ import org.cryptimeleon.math.structures.rings.zn.Zn;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * A {@link BilinearMapImpl} implementing a fast, but insecure pairing over {@link Zn}.
@@ -42,10 +47,10 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
     protected BilinearGroup.Type pairingType;
 
     private static class PairingCounter {
-        private long count;
+        private final AtomicLong count;
 
         public PairingCounter() {
-            this.count = 0L;
+            this.count = new AtomicLong(0);
         }
 
         @Override
@@ -53,7 +58,7 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             PairingCounter that = (PairingCounter) o;
-            return count == that.count;
+            return count.equals(that.count);
         }
 
         @Override
@@ -62,25 +67,25 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
         }
 
         public void incNumPairings() {
-            ++count;
+            count.incrementAndGet();
         }
 
         public long getNumPairings() {
-            return count;
+            return count.get();
         }
     }
 
     /**
      * Maps bucket names to the number of pairings stored within that bucket.
      */
-    protected static HashMap<String, PairingCounter> numPairingsMap;
+    private static final ConcurrentHashMap<String, PairingCounter> numPairingsMap;
 
-    protected static PairingCounter defaultBucket;
+    private static final PairingCounter defaultBucket;
 
-    protected static PairingCounter currentBucket;
+    private static volatile PairingCounter currentBucket;
 
     static {
-        numPairingsMap = new HashMap<>();
+        numPairingsMap = new ConcurrentHashMap<>();
         defaultBucket = new PairingCounter();
         currentBucket = defaultBucket;
     }
@@ -165,53 +170,50 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
         return Objects.hash(size, pairingType);
     }
 
-    protected void setBucket(String name) {
+    void setBucket(String name) {
         currentBucket = putBucketIfAbsent(name);
     }
 
-    protected void setDefaultBucket() {
+    void setDefaultBucket() {
         currentBucket = defaultBucket;
     }
 
-    protected PairingCounter putBucketIfAbsent(String name) {
+    PairingCounter putBucketIfAbsent(String name) {
         return numPairingsMap.computeIfAbsent(name, kName -> new PairingCounter());
     }
 
-    protected HashMap<String, PairingCounter> getBucketMap() {
+    ConcurrentHashMap<String, PairingCounter> getBucketMap() {
         return numPairingsMap;
     }
 
     /**
      * Retrieves number of pairings computed in this bilinear group for the bucket with the given name.
      */
-    protected long getNumPairings(String bucketName) {
+    long getNumPairings(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumPairings();
     }
 
-    protected long getNumPairingsDefault() {
+    long getNumPairingsDefault() {
         return defaultBucket.getNumPairings();
     }
 
-    protected long getNumPairingsAllBuckets() {
-        long sum = 0;
-        for (PairingCounter pc : numPairingsMap.values()) {
-            sum += pc.getNumPairings();
-        }
-        return sum;
+    long getNumPairingsAllBuckets() {
+        return getBucketMap().reduceValuesToLong(Long.MAX_VALUE, pc -> pc.count.get(), 0L, Long::sum)
+                + getNumPairingsDefault();
     }
 
     /**
      * Resets pairing counter.
      */
-    protected void resetNumPairings(String bucketName) {
-        numPairingsMap.put(bucketName, new PairingCounter());
+    void resetNumPairings(String bucketName) {
+        putBucketIfAbsent(bucketName).count.set(0);
     }
 
-    protected void resetNumPairingsDefault() {
-        defaultBucket = new PairingCounter();
+    void resetNumPairingsDefault() {
+        defaultBucket.count.set(0);
     }
 
-    protected void resetNumPairingsAllBuckets() {
+    void resetNumPairingsAllBuckets() {
         resetNumPairingsDefault();
         numPairingsMap.replaceAll((name, numPairings) -> new PairingCounter());
     }

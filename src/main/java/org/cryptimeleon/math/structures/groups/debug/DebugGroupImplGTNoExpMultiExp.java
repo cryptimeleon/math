@@ -26,7 +26,7 @@ public class DebugGroupImplGTNoExpMultiExp extends DebugGroupImplNoExpMultiExp {
     /**
      * The currently used bucket.
      */
-    private static CountingBucket currentBucket;
+    private static volatile CountingBucket currentBucket;
 
     // Initialization block for variables
     static {
