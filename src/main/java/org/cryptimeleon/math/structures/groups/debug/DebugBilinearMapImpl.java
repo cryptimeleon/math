@@ -1,21 +1,14 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
-import org.cryptimeleon.math.serialization.Representation;
-import org.cryptimeleon.math.serialization.annotations.ReprUtil;
-import org.cryptimeleon.math.serialization.annotations.Represented;
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearGroup;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearMapImpl;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * A {@link BilinearMapImpl} implementing a fast, but insecure pairing over {@link Zn}.
@@ -187,34 +180,48 @@ public class DebugBilinearMapImpl implements BilinearMapImpl {
     }
 
     /**
-     * Retrieves number of pairings computed in this bilinear group for the bucket with the given name.
+     * Retrieves number of pairings computed in this bilinear group from the bucket with the given name.
      */
     long getNumPairings(String bucketName) {
         return putBucketIfAbsent(bucketName).getNumPairings();
     }
 
-    long getNumPairingsDefault() {
+    /**
+     * Retrieves number of pairings computed in this bilinear group from the default bucket.
+     */
+    long getNumPairings() {
         return defaultBucket.getNumPairings();
     }
 
+    /**
+     * Sums up pairings across all buckets, including default bucket.
+     */
     long getNumPairingsAllBuckets() {
         return getBucketMap().reduceValuesToLong(Long.MAX_VALUE, pc -> pc.count.get(), 0L, Long::sum)
-                + getNumPairingsDefault();
+                + getNumPairings();
     }
 
     /**
-     * Resets pairing counter.
+     * Resets pairing counter of bucket with given name.
+     *
+     * @param bucketName name of bucket which pairing counter to reset
      */
     void resetNumPairings(String bucketName) {
         putBucketIfAbsent(bucketName).count.set(0);
     }
 
-    void resetNumPairingsDefault() {
+    /**
+     * Resets pairing counter of default bucket.
+     */
+    void resetNumPairings() {
         defaultBucket.count.set(0);
     }
 
+    /**
+     * Resets pairing counter of all buckets, including default bucket.
+     */
     void resetNumPairingsAllBuckets() {
-        resetNumPairingsDefault();
+        resetNumPairings();
         numPairingsMap.replaceAll((name, numPairings) -> new PairingCounter());
     }
 

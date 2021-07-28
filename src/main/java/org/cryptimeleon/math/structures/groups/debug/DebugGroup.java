@@ -163,8 +163,6 @@ public class DebugGroup implements Group {
      * If a bucket with the given name does not exist, a new one is created.
      * <p>
      * All operations executed after setting a bucket will be counted within that bucket only.
-     * <p>
-     * The name of the default bucket is "default".
      *
      * @param name the name of the bucket to enable
      */
@@ -272,16 +270,16 @@ public class DebugGroup implements Group {
      * Retrieves number of group squarings including ones done in (multi-)exponentiation algorithms
      * from the default bucket.
      */
-    public long getNumSquaringsTotalDefault() {
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumSquaringsDefault();
+    public long getNumSquaringsTotal() {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumSquarings();
     }
 
     /**
      * Retrieves number of group inversions including ones done in (multi-)exponentiation algorithms
      * from the default bucket.
      */
-    public long getNumInversionsTotalDefault() {
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumInversionsDefault();
+    public long getNumInversionsTotal() {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumInversions();
     }
 
     /**
@@ -289,24 +287,24 @@ public class DebugGroup implements Group {
      * from the default bucket.
      * Does not include squarings.
      */
-    public long getNumOpsTotalDefault() {
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOpsDefault();
+    public long getNumOpsTotal() {
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumOps();
     }
 
     /**
      * Retrieves number of group squarings not including ones done in (multi-)exponentiation algorithms
      * from the default bucket.
      */
-    public long getNumSquaringsNoExpMultiExpDefault() {
-        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumSquaringsDefault();
+    public long getNumSquaringsNoExpMultiExp() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumSquarings();
     }
 
     /**
      * Retrieves number of group inversions not including ones done in (multi-)exponentiation algorithms
      * from the default bucket.
      */
-    public long getNumInversionsNoExpMultiExpDefault() {
-        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumInversionsDefault();
+    public long getNumInversionsNoExpMultiExp() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumInversions();
     }
 
     /**
@@ -314,31 +312,31 @@ public class DebugGroup implements Group {
      * from the default bucket.
      * Does not include squarings.
      */
-    public long getNumOpsNoExpMultiExpDefault() {
-        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOpsDefault();
+    public long getNumOpsNoExpMultiExp() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumOps();
     }
 
     /**
      * Retrieves number of group exponentiations done from the default bucket.
      */
-    public long getNumExpsDefault() {
-        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumExpsDefault();
+    public long getNumExps() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getNumExps();
     }
 
     /**
      * Retrieves number of terms of each multi-exponentiation done from the default bucket.
      */
-    public List<Integer> getMultiExpTermNumbersDefault() {
-        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getMultiExpTermNumbersDefault();
+    public List<Integer> getMultiExpTermNumbers() {
+        return ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).getMultiExpTermNumbers();
     }
 
     /**
      * Retrieves number of retrieved representations of group elements for this group (via {@code getRepresentation()})
      * from the default bucket.
      */
-    public long getNumRetrievedRepresentationsDefault() {
+    public long getNumRetrievedRepresentations() {
         // one of the groups suffices since we represent both elements
-        return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentationsDefault();
+        return ((DebugGroupImpl) groupTotal.getImpl()).getNumRetrievedRepresentations();
     }
 
     /*
@@ -429,9 +427,9 @@ public class DebugGroup implements Group {
     /**
      * Resets all counters for the default bucket.
      */
-    public void resetCountersDefault() {
-        ((DebugGroupImpl) groupTotal.getImpl()).resetCountersDefault();
-        ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).resetCountersDefault();
+    public void resetCounters() {
+        ((DebugGroupImpl) groupTotal.getImpl()).resetCounters();
+        ((DebugGroupImpl) groupNoExpMultiExp.getImpl()).resetCounters();
     }
 
     /**
@@ -458,7 +456,7 @@ public class DebugGroup implements Group {
      *
      * @return a string detailing the results of counting
      */
-    public String formatCounterDataDefault() {
+    public String formatCounterData() {
         return formatCounterData("", false, true);
     }
 
@@ -470,7 +468,7 @@ public class DebugGroup implements Group {
      *
      * @return a string detailing results of counting
      */
-    public String formatCounterData(boolean summaryOnly) {
+    public String formatCounterDataAllBuckets(boolean summaryOnly) {
         StringBuilder result = new StringBuilder();
         if (!summaryOnly) {
             // Default bucket
@@ -491,8 +489,8 @@ public class DebugGroup implements Group {
      *
      * @return a string detailing results of counting
      */
-    public String formatCounterData() {
-        return formatCounterData(false);
+    public String formatCounterDataAllBuckets() {
+        return formatCounterDataAllBuckets(false);
     }
 
     /**
@@ -514,16 +512,16 @@ public class DebugGroup implements Group {
         List<Integer> multiExpTerms;
         if (isDefault) {
             bucketName = "Default";
-            totalNumOps = getNumOpsTotalDefault();
-            totalNumSqs = getNumSquaringsTotalDefault();
-            totalNumInvs = getNumInversionsTotalDefault();
+            totalNumOps = getNumOpsTotal();
+            totalNumSqs = getNumSquaringsTotal();
+            totalNumInvs = getNumInversionsTotal();
             totalNumOpsSqs = totalNumOps + totalNumSqs;
-            expMultiExpNumOps = totalNumOps - getNumOpsNoExpMultiExpDefault();
-            expMultiExpNumSqs = totalNumSqs - getNumSquaringsNoExpMultiExpDefault();
-            expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExpDefault();
-            multiExpTerms = getMultiExpTermNumbersDefault();
-            numRetrievedReprs = getNumRetrievedRepresentationsDefault();
-            numExps = getNumExpsDefault();
+            expMultiExpNumOps = totalNumOps - getNumOpsNoExpMultiExp();
+            expMultiExpNumSqs = totalNumSqs - getNumSquaringsNoExpMultiExp();
+            expMultiExpNumInvs = totalNumInvs - getNumInversionsNoExpMultiExp();
+            multiExpTerms = getMultiExpTermNumbers();
+            numRetrievedReprs = getNumRetrievedRepresentations();
+            numExps = getNumExps();
         } else {
             totalNumOps = getNumOpsTotal(bucketName);
             totalNumSqs = getNumSquaringsTotal(bucketName);
@@ -569,7 +567,7 @@ public class DebugGroup implements Group {
      *
      * @return a string detailing the results of counting
      */
-    String formatCounterDataAllBuckets(boolean formatForBilGroup) {
+    String formatCounterDataAllBucketsOnly(boolean formatForBilGroup) {
         long totalNumOps = getNumOpsTotalAllBuckets();
         long totalNumSqs = getNumSquaringsTotalAllBuckets();
         long totalNumInvs = getNumInversionsTotalAllBuckets();

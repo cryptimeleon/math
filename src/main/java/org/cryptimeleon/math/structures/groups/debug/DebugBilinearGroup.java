@@ -1,6 +1,5 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
-import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
@@ -15,7 +14,6 @@ import org.cryptimeleon.math.structures.groups.mappings.GroupHomomorphism;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -189,6 +187,16 @@ public class DebugBilinearGroup implements BilinearGroup {
                 + " using groups of size " + g1.size();
     }
 
+    /**
+     * Sets the currently used operation count storage bucket to the one with the given name.
+     * If a bucket with the given name does not exist, a new one is created.
+     * <p>
+     * The bucket is activated across G1, G2, and GT, as well as the pairing counter.
+     * <p>
+     * All operations executed after setting a bucket will be counted within that bucket only.
+     *
+     * @param name the name of the bucket to enable
+     */
     public void setBucket(String name) {
         g1.setBucket(name);
         g2.setBucket(name);
@@ -197,37 +205,49 @@ public class DebugBilinearGroup implements BilinearGroup {
     }
 
     /**
-     * Returns the number of pairings computed in this bilinear group.
+     * Returns the number of pairings computed in this bilinear group from the bucket with the given name.
      */
     public long getNumPairings(String bucketName) {
         return bilMap.getNumPairings(bucketName);
     }
 
-    public long getNumPairingsDefault() {
-        return bilMap.getNumPairingsDefault();
+    /**
+     * Returns the number of pairings computed in this bilinear group from the default bucket
+     */
+    public long getNumPairings() {
+        return bilMap.getNumPairings();
     }
 
+    /**
+     * Sums up the pairings across all buckets, including the default bucket.
+     */
     public long getNumPairingsAllBuckets() {
         return bilMap.getNumPairingsAllBuckets();
     }
 
     /**
-     * Resets pairing counter.
+     * Resets pairing counter of the bucket with the given name.
      */
     public void resetNumPairings(String bucketName) {
         bilMap.resetNumPairings(bucketName);
     }
 
-    public void resetNumPairingsDefault() {
-        bilMap.resetNumPairingsDefault();
+    /**
+     * Resets pairing counter of the default bucket.
+     */
+    public void resetNumPairings() {
+        bilMap.resetNumPairings();
     }
 
+    /**
+     * Resets pairing counter of all buckets, including the default bucket.
+     */
     public void resetNumPairingsAllBuckets() {
         bilMap.resetNumPairingsAllBuckets();
     }
 
     /**
-     * Resets the counters inside the bucket with the given name to, including the ones in groups G1, G2, GT
+     * Resets the counters of the bucket with the given name, including the ones in groups G1, G2, GT
      * as well as the pairing counter.
      */
     public void resetCounters(String bucketName) {
@@ -237,15 +257,19 @@ public class DebugBilinearGroup implements BilinearGroup {
         resetNumPairings(bucketName);
     }
 
-    public void resetCountersDefault() {
-        g1.resetCountersDefault();
-        g2.resetCountersDefault();
-        gT.resetCountersDefault();
-        resetNumPairingsDefault();
+    /**
+     * Resets the counters of the default bucket, including the ones in groups G1, G2, GT
+     * as well as the pairing counter.
+     */
+    public void resetCounters() {
+        g1.resetCounters();
+        g2.resetCounters();
+        gT.resetCounters();
+        resetNumPairings();
     }
 
     /**
-     * Resets counters for all buckets.
+     * Resets counters of all buckets.
      */
     public void resetCountersAllBuckets() {
         g1.resetCountersAllBuckets();
@@ -270,8 +294,8 @@ public class DebugBilinearGroup implements BilinearGroup {
      *
      * @return a string detailing the results of counting
      */
-    public String formatCounterDataDefault() {
-        return bilMap.formatCounterDataDefault();
+    public String formatCounterData() {
+        return bilMap.formatCounterData();
     }
 
     /**
@@ -279,8 +303,8 @@ public class DebugBilinearGroup implements BilinearGroup {
      *
      * @return a string detailing results of counting
      */
-    public String formatCounterData() {
-        return formatCounterData(false);
+    public String formatCounterDataAllBuckets() {
+        return formatCounterDataAllBuckets(false);
     }
 
     /**
@@ -291,8 +315,8 @@ public class DebugBilinearGroup implements BilinearGroup {
      *
      * @return a string detailing results of counting
      */
-    public String formatCounterData(boolean summaryOnly) {
-        return bilMap.formatCounterData(summaryOnly);
+    public String formatCounterDataAllBuckets(boolean summaryOnly) {
+        return bilMap.formatCounterDataAllBuckets(summaryOnly);
     }
 
     /**

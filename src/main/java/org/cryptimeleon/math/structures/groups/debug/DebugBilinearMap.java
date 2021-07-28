@@ -1,9 +1,5 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
-import org.cryptimeleon.math.serialization.Representable;
-import org.cryptimeleon.math.serialization.Representation;
-import org.cryptimeleon.math.serialization.annotations.ReprUtil;
-import org.cryptimeleon.math.serialization.annotations.Represented;
 import org.cryptimeleon.math.structures.groups.Group;
 import org.cryptimeleon.math.structures.groups.GroupElement;
 import org.cryptimeleon.math.structures.groups.elliptic.BilinearMap;
@@ -13,7 +9,6 @@ import org.cryptimeleon.math.structures.groups.lazy.LazyGroupElement;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -109,11 +104,22 @@ public class DebugBilinearMap implements BilinearMap {
         return Objects.hash(bilMapTotal, bilMapNoExpMultiExp);
     }
 
+    /**
+     * Sets the currently used operation count storage bucket to the one with the given name.
+     * If a bucket with the given name does not exist, a new one is created.
+     * <p>
+     * All operations executed after setting a bucket will be counted within that bucket only.
+     *
+     * @param name the name of the bucket to enable
+     */
     public void setBucket(String name) {
         ((DebugBilinearMapImpl) bilMapTotal.getImpl()).setBucket(name);
         ((DebugBilinearMapImpl) bilMapNoExpMultiExp.getImpl()).setBucket(name);
     }
 
+    /**
+     * Activates the default bucket.
+     */
     public void setDefaultBucket() {
         ((DebugBilinearMapImpl) bilMapTotal.getImpl()).setDefaultBucket();
         ((DebugBilinearMapImpl) bilMapNoExpMultiExp.getImpl()).setDefaultBucket();
@@ -128,13 +134,16 @@ public class DebugBilinearMap implements BilinearMap {
         return ((DebugBilinearMapImpl) bilMapTotal.getImpl()).getNumPairings(bucketName)  / 2;
     }
 
-    public long getNumPairingsDefault() {
+    /**
+     * Retrieves number of parings computed in this bilinear group from the default bucket.
+     */
+    public long getNumPairings() {
         // both count, so we need to halve the result
-        return ((DebugBilinearMapImpl) bilMapTotal.getImpl()).getNumPairingsDefault()  / 2;
+        return ((DebugBilinearMapImpl) bilMapTotal.getImpl()).getNumPairings()  / 2;
     }
 
     /**
-     * Retrieves number of pairings computed in this bilinear group for all buckets.
+     * Sums up pairings across all buckets, including default bucket.
      */
     public long getNumPairingsAllBuckets() {
         // both count, so we need to halve the result
@@ -150,9 +159,12 @@ public class DebugBilinearMap implements BilinearMap {
         ((DebugBilinearMapImpl) bilMapNoExpMultiExp.getImpl()).resetNumPairings(bucketName);
     }
 
-    public void resetNumPairingsDefault() {
-        ((DebugBilinearMapImpl) bilMapTotal.getImpl()).resetNumPairingsDefault();
-        ((DebugBilinearMapImpl) bilMapNoExpMultiExp.getImpl()).resetNumPairingsDefault();
+    /**
+     * Resets pairing counter for the default bucket.
+     */
+    public void resetNumPairings() {
+        ((DebugBilinearMapImpl) bilMapTotal.getImpl()).resetNumPairings();
+        ((DebugBilinearMapImpl) bilMapNoExpMultiExp.getImpl()).resetNumPairings();
     }
 
     /**
@@ -192,10 +204,10 @@ public class DebugBilinearMap implements BilinearMap {
      *
      * @return a string detailing the results of counting
      */
-    public String formatCounterDataDefault() {
+    public String formatCounterData() {
         String tab = "    ";
         return "Default\n"
-                + String.format("%sPairings: %d\n", tab, getNumPairingsDefault())
+                + String.format("%sPairings: %d\n", tab, getNumPairings())
                 + tab + "G1\n"
                 + ((DebugGroup) getG1()).formatCounterData("", true, true)
                 + tab + "G2\n"
@@ -208,23 +220,29 @@ public class DebugBilinearMap implements BilinearMap {
      * Formats the count data of all buckets for printing.
      *
      * @return a string detailing results of counting
+     * 
+     * @see this#formatCounterDataAllBuckets(boolean)
      */
-    public String formatCounterData() {
-        return formatCounterData(false);
+    public String formatCounterDataAllBuckets() {
+        return formatCounterDataAllBuckets(false);
     }
 
     /**
      * Formats the counter data of all buckets for printing.
+     * <p>
+     * The summed up results are added at the end.
      *
      * @param summaryOnly if true, only formats the summed up results across all buckets; otherwise, outputs results
      *                    of every bucket plus the summary
      *
      * @return a string detailing results of counting
+     *
+     * @see this#formatCounterDataAllBuckets() 
      */
-    public String formatCounterData(boolean summaryOnly)  {
+    public String formatCounterDataAllBuckets(boolean summaryOnly)  {
         StringBuilder result = new StringBuilder();
         if (!summaryOnly) {
-            result.append(formatCounterDataDefault());
+            result.append(formatCounterData());
 
             // Find the union of all bucket names
             Set<String> bucketNameSet = new HashSet<>();
@@ -241,10 +259,10 @@ public class DebugBilinearMap implements BilinearMap {
                 result.append(formatCounterData(bucketName));
             }
         }
-        return result.append(formatCounterDataAllBuckets()).toString();
+        return result.append(formatCounterDataAllBucketsOnly()).toString();
     }
 
-    String formatCounterDataAllBuckets() {
+    String formatCounterDataAllBucketsOnly() {
         String tab = "    ";
         return "Combined results of all buckets\n"
                 + String.format("%sPairings: %d\n", tab, getNumPairingsAllBuckets())

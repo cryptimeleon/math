@@ -5,9 +5,6 @@ import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
 import org.cryptimeleon.math.structures.groups.GroupElementImpl;
 import org.cryptimeleon.math.structures.groups.GroupImpl;
-import org.cryptimeleon.math.structures.groups.exp.MultiExpTerm;
-import org.cryptimeleon.math.structures.groups.exp.Multiexponentiation;
-import org.cryptimeleon.math.structures.groups.exp.SmallExponentPrecomputation;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
@@ -185,27 +182,27 @@ public abstract class DebugGroupImpl implements GroupImpl {
         return putBucketIfAbsent(bucketName).getNumRetrievedRepresentations();
     }
 
-    long getNumOpsDefault() {
+    long getNumOps() {
         return getDefaultBucket().getNumOps();
     }
 
-    long getNumInversionsDefault() {
+    long getNumInversions() {
         return getDefaultBucket().getNumInversions();
     }
 
-    long getNumSquaringsDefault() {
+    long getNumSquarings() {
         return getDefaultBucket().getNumSquarings();
     }
 
-    long getNumExpsDefault() {
+    long getNumExps() {
         return getDefaultBucket().getNumExps();
     }
 
-    List<Integer> getMultiExpTermNumbersDefault() {
+    List<Integer> getMultiExpTermNumbers() {
         return getDefaultBucket().getMultiExpTermNumbers();
     }
 
-    long getNumRetrievedRepresentationsDefault() {
+    long getNumRetrievedRepresentations() {
         return getDefaultBucket().getNumRetrievedRepresentations();
     }
 
@@ -237,23 +234,23 @@ public abstract class DebugGroupImpl implements GroupImpl {
         putBucketIfAbsent(bucketName).resetCounters();
     }
 
-    void resetCountersDefault() {
+    void resetCounters() {
         getDefaultBucket().resetCounters();
     }
 
     void resetCountersAllBuckets() {
-        resetCountersDefault();
+        resetCounters();
         getBucketMap().forEach((name, bucket) -> bucket.resetCounters());
     }
 
     CountingBucket getAllBucketsBucket() {
         CountingBucket allBucketsBucket = new CountingBucket();
-        allBucketsBucket.numExps.addAndGet(getNumExpsDefault());
-        allBucketsBucket.numInversions.addAndGet(getNumInversionsDefault());
-        allBucketsBucket.numOps.addAndGet(getNumOpsDefault());
-        allBucketsBucket.numSquarings.addAndGet(getNumSquaringsDefault());
-        allBucketsBucket.numRetrievedRepresentations.addAndGet(getNumRetrievedRepresentationsDefault());
-        allBucketsBucket.addAllMultiExpBaseNumbers(getMultiExpTermNumbersDefault());
+        allBucketsBucket.numExps.addAndGet(getNumExps());
+        allBucketsBucket.numInversions.addAndGet(getNumInversions());
+        allBucketsBucket.numOps.addAndGet(getNumOps());
+        allBucketsBucket.numSquarings.addAndGet(getNumSquarings());
+        allBucketsBucket.numRetrievedRepresentations.addAndGet(getNumRetrievedRepresentations());
+        allBucketsBucket.addAllMultiExpBaseNumbers(getMultiExpTermNumbers());
         for (String bucketName : getBucketMap().keySet()) {
             allBucketsBucket.numExps.addAndGet(getNumExps(bucketName));
             allBucketsBucket.numInversions.addAndGet(getNumInversions(bucketName));
