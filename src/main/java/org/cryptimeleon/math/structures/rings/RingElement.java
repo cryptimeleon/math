@@ -211,6 +211,8 @@ public interface RingElement extends Element {
     /**
      * Interprets this element as an integer.
      * <p>
+     * Result will be between 0 and the ring's characteristic.
+     * <p>
      * Formally, this method shall return the inverse of {@link Ring#getElement(BigInteger)}, i.e.
      * {@code x.getStructure().getElement(x.asInteger()).equals(x)} (if {@code asInteger()} doesn't throw an exception).
      *

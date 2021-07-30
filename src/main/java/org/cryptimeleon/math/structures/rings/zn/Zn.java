@@ -42,7 +42,7 @@ public class Zn implements Ring {
     protected Boolean nIsPrime = null;
 
     /**
-     * Maximum value (over all elements elem) of {@code elem.getInteger().toByteArray().length;}.
+     * Maximum value (over all elements elem) of {@code elem.asInteger().toByteArray().length;}.
      * The value is exactly the number of bytes needed to represent n.
      */
     protected final int maxByteLength;
@@ -291,13 +291,6 @@ public class Zn implements Ring {
         @Override
         public Representation getRepresentation() {
             return new BigIntegerRepresentation(v);
-        }
-
-        /**
-         * Returns the unique integer representative for this element in \([0,n)\).
-         */
-        public BigInteger getInteger() {
-            return v;
         }
 
         @Override
