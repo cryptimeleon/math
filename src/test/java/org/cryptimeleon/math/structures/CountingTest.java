@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -256,5 +255,86 @@ public class CountingTest {
         assertArrayEquals(new Integer[] {}, groupGT.getMultiExpTermNumbersAllBuckets().toArray(new Integer[] {}));
 
         assertEquals(2, bilGroup.getNumPairingsAllBuckets());
+    }
+
+    @Test
+    public void testStaticCounting() {
+        // test that both groups contain same numbers
+        DebugGroup debug1 = new DebugGroup("DG1", 1_000_000);
+        DebugGroup debug2 = new DebugGroup("DG2", 1_000_000);
+        String bucketName = "#testStaticCounting";
+        debug1.setBucket(bucketName);
+        debug2.setBucket(bucketName);
+
+        GroupElement elem1 = debug1.getUniformlyRandomNonNeutral();
+        GroupElement elem2 = debug2.getUniformlyRandomNonNeutral();
+
+        elem1.op(elem1).compute();
+        elem2.op(elem2).compute();
+
+        assertEquals(2, debug1.getNumSquaringsTotal(bucketName));
+        assertEquals(2, debug2.getNumSquaringsTotal(bucketName));
+    }
+
+    @Test
+    public void testSeparateBuckets() {
+        String bucketName1 = getClass().getName() + "#testSeparateBuckets(1)";
+        String bucketName2 = getClass().getName() + "#testSeparateBuckets(2)";
+        DebugGroup debug1 = new DebugGroup("DG1", 1_000_000);
+        GroupElement elem1 = debug1.getUniformlyRandomNonNeutral();
+
+        debug1.setBucket(bucketName1);
+        elem1.op(elem1).compute();
+
+        debug1.setBucket(bucketName2);
+        elem1.op(elem1).compute();
+
+        assertEquals(1, debug1.getNumSquaringsTotal(bucketName1));
+        assertEquals(1, debug1.getNumSquaringsTotal(bucketName2));
+    }
+
+    @Test
+    public void testStaticPairingCounting() {
+        String bucketName = getClass().getName() + "#testStaticPairingCounting";
+        DebugBilinearGroup bilGroup1 = new DebugBilinearGroup(
+                RandomGenerator.getRandomPrime(128), BilinearGroup.Type.TYPE_2
+        );
+        DebugGroup groupG1 = (DebugGroup) bilGroup.getG1();
+        DebugGroup groupG2 = (DebugGroup) bilGroup.getG2();
+        GroupElement elemG1 = groupG1.getUniformlyRandomNonNeutral();
+        GroupElement elemG2 = groupG2.getUniformlyRandomNonNeutral();
+
+        DebugGroup groupG11 = (DebugGroup) bilGroup1.getG1();
+        DebugGroup groupG21 = (DebugGroup) bilGroup1.getG2();
+        GroupElement elemG11 = groupG11.getUniformlyRandomNonNeutral();
+        GroupElement elemG21 = groupG21.getUniformlyRandomNonNeutral();
+
+        bilGroup.setBucket(bucketName);
+        bilGroup1.setBucket(bucketName);
+
+        bilGroup.getBilinearMap().apply(elemG1, elemG2).computeSync();
+        bilGroup1.getBilinearMap().apply(elemG11, elemG21).computeSync();
+
+        assertEquals(2, bilGroup.getNumPairings(bucketName));
+        assertEquals(2, bilGroup1.getNumPairings(bucketName));
+    }
+
+    @Test
+    public void testSeparateBucketsPairingCounting() {
+        String bucketName1 = getClass().getName() + "#testSeparateBucketsPairingCounting(1)";
+        String bucketName2 = getClass().getName() + "#testSeparateBucketsPairingCounting(2)";
+        DebugGroup groupG1 = (DebugGroup) bilGroup.getG1();
+        DebugGroup groupG2 = (DebugGroup) bilGroup.getG2();
+        GroupElement elemG1 = groupG1.getUniformlyRandomNonNeutral();
+        GroupElement elemG2 = groupG2.getUniformlyRandomNonNeutral();
+
+        bilGroup.setBucket(bucketName1);
+        bilGroup.getBilinearMap().apply(elemG1, elemG2).computeSync();
+
+        bilGroup.setBucket(bucketName2);
+        bilGroup.getBilinearMap().apply(elemG1, elemG2).computeSync();
+
+        assertEquals(1, bilGroup.getNumPairings(bucketName1));
+        assertEquals(1, bilGroup.getNumPairings(bucketName2));
     }
 }
