@@ -95,7 +95,7 @@ public class GroupImplTests {
             assertTrue("Lagrange", a.pow(size).isNeutralElement());
             assertTrue("Lagrange inversion", a.pow(size.subtract(BigInteger.ONE)).equals(a.inv()));
 
-            BigInteger r = new Zn(groupImpl.size()).getUniformlyRandomElement().getInteger();
+            BigInteger r = new Zn(groupImpl.size()).getUniformlyRandomElement().asInteger();
             if (size.isProbablePrime(100)) {
                 // If commutative: (ab)^r b^{-r} = a^r
                 assertTrue(a.op(b).pow(r).op(b.pow(r.negate())).equals(a.pow(r)));

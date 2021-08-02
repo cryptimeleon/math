@@ -99,6 +99,6 @@ public class LagrangeUtils {
                 field.createZnElement(i),
                 S.parallelStream().map(field::createZnElement).collect(Collectors.toSet()),
                 field.createZnElement(x)
-        ).getInteger();
+        ).asInteger();
     }
 }

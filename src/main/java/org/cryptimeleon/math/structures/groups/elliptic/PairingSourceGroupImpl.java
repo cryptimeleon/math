@@ -207,7 +207,7 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
     @Override
     public PairingSourceGroupElement getUniformlyRandomElement() throws UnsupportedOperationException {
         Zp zp = new Zp(this.size());
-        return (PairingSourceGroupElement) this.getGenerator().pow(zp.getUniformlyRandomElement().getInteger());
+        return (PairingSourceGroupElement) this.getGenerator().pow(zp.getUniformlyRandomElement().asInteger());
     }
 
     @Override

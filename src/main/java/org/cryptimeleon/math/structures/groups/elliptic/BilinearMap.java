@@ -71,7 +71,7 @@ public interface BilinearMap extends BiFunction<GroupElement, GroupElement, Grou
      * @param exponent the exponent to apply to the result of the pairing
      */
     default GroupElement apply(GroupElement g1, GroupElement g2, Zn.ZnElement exponent) {
-        return apply(g1, g2, exponent.getInteger());
+        return apply(g1, g2, exponent.asInteger());
     }
 
     /**
