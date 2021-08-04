@@ -14,6 +14,7 @@ import org.cryptimeleon.math.structures.rings.Ring;
 import org.cryptimeleon.math.structures.rings.RingElement;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -418,10 +419,10 @@ public class Zn implements Ring {
     }
 
     /**
-     * For all {@code k < floor((n.bitLength()-1)/8)}, this is an injective map {@code byte^k -> Zn}.
+     * For all {@code k < floor((n.bitLength()-2)/8)}, this is an injective map {@code byte^k -> Zn}.
      * <p>
-     * Note that there may be collisions between {@code injectiveValueOf(bytes1)} and {@code injectiveValueOf(bytes2)}
-     * if {@code bytes1.length != bytes2.length}.
+     * Accommodates leading zeros by adding an extra most significant 1 bit.
+     * This does lead to n having to be one bit longer than otherwise necessary.
      *
      * @param bytes the bytes to map injectively into Zn.
      * @return the resulting Zn element
@@ -430,16 +431,19 @@ public class Zn implements Ring {
     public ZnElement injectiveValueOf(byte[] bytes) throws IllegalArgumentException {
         // any integer represented by a BITstring of length at most n.bitLength()-1 is is strictly smaller than n.
         // That's what we can handle.
-        if (bytes.length > (n.bitLength() - 1) / 8)
+        if (bytes.length > (n.bitLength() - 2) / 8)
             throw new IllegalArgumentException("Too many bytes to map injectively to Zn " +
-                    "(allowed are byte arrays of length " + (n.bitLength() - 1) / 8 + ")");
+                    "(allowed are byte arrays of length " + (n.bitLength() - 2) / 8 + ")");
 
-        // Normalize to make the most significant byte 0 (includes the sign bit).
-        // This ensures that the resulting BigInteger number is nonnegative.
+        // Add a one at the beginning to make sure that any leading zero bytes are not cut off
+        //  (which would lead to e.g. [0,0,1] and [0,1] being mapped to same result)
         byte[] normalized = new byte[bytes.length + 1];
+        normalized[0] = 1;
         System.arraycopy(bytes, 0, normalized, 1, bytes.length);
+        System.out.println(Arrays.toString(normalized));
 
-        BigInteger result = new BigInteger(normalized);
+        // Ensure the result is positive
+        BigInteger result = new BigInteger(1, normalized);
         if (result.compareTo(n) > 0 || result.signum() < 0)
             throw new RuntimeException("This should not happen");
         return createZnElement(result);
