@@ -446,7 +446,6 @@ public class Zn implements Ring {
         byte[] normalized = new byte[bytes.length + 1];
         normalized[0] = 1;
         System.arraycopy(bytes, 0, normalized, 1, bytes.length);
-        System.out.println(Arrays.toString(normalized));
 
         // Ensure the result is positive
         BigInteger result = new BigInteger(1, normalized);
