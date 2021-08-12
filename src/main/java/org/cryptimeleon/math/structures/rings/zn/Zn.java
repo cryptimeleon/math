@@ -419,7 +419,12 @@ public class Zn implements Ring {
     }
 
     /**
-     * For all {@code k < floor((n.bitLength()-2)/8)}, this is an injective map {@code byte^k -> Zn}.
+     * For all {@code k < floor((n.bitLength()-2)/8)}, this is an injective map mapping
+     * k bytes to {@code this#ZnElement}.
+     * <p>
+     * For example, to map a single byte, n needs to be at least 512, as then {@code n.bitLength()} is equals to 10,
+     * so {@code floor((n.bitLength()-2)/8)} is equal to 1.
+     * Once we go below 512 (9 bits), no bytes can be mapped since then {@code floor((n.bitLength()-2)/8)} is equal to 0.
      * <p>
      * Accommodates leading zeros by adding an extra most significant 1 bit.
      * This does lead to n having to be one bit longer than otherwise necessary.
@@ -429,8 +434,9 @@ public class Zn implements Ring {
      * @throws IllegalArgumentException if the byte array is too long
      */
     public ZnElement injectiveValueOf(byte[] bytes) throws IllegalArgumentException {
-        // any integer represented by a BITstring of length at most n.bitLength()-1 is is strictly smaller than n.
-        // That's what we can handle.
+        // any integer represented by a bit string of length at most n.bitLength()-1 is is strictly smaller than n.
+        // since we are adding an extra 1 bit to the front, we actually need to subtract another bit
+        // thats what we can then handle here
         if (bytes.length > (n.bitLength() - 2) / 8)
             throw new IllegalArgumentException("Too many bytes to map injectively to Zn " +
                     "(allowed are byte arrays of length " + (n.bitLength() - 2) / 8 + ")");
