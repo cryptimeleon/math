@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Reduce collisions for `Zn#injectiveValueOf`
+
 ### Added
 - Add lazy and naive wrappers around `Secp256k1` curve, and make curve implementation package-private
+
 
 ## [2.1.0]
 
