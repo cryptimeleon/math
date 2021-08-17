@@ -131,39 +131,16 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
     }
 
     /**
-     * Tests if (x,y) is on curve that defines this group. Does not check subgroup membership.
-     *
-     * @param x - x-coordinate of point that shall be checked
-     * @param y - y-coordinate of point that shall be checked
-     * @return true if p fulfills equation of this group
-     */
-    public boolean isOnCurve(FieldElement x, FieldElement y) {
-        // FieldElement x,y;
-        //
-        // x = p.getX();
-        // y = p.getY();
-
-        /*
-         * check y^2+a_1 xy + a_3 y = x^3+a_2 x^2 + a_4 x + a_6
-         *
-         * rewritten as
-         *
-         * ((a_1 x + a_3)y + y)y = x ( x ( x+a_2 )+a_4)+a_6
-         */
-        return x.mul(getA1()).add(getA3()).mul(y).add(y).mul(y).equals(x.add(getA2()).mul(x).add(getA4()).mul(x).add(getA6()));
-    }
-
-    /**
      * Tests if (x,y) is a member of this (sub)group.
      * <p>
-     * This function first checks of (x,y) defines a point on the curve that defines this group. Then a subgroup membership test is performed by multiplication either with the group order or with the cofactor. If both are large, this is an expensive
-     * operation.
+     * Does NOT check whether point is on the curve. This needs to be done separately before.
      * <p>
-     * For cryptographic protocols where x and y are inputs to the algorithm, a subgroup membership test is mandatory to avoid small subgroup attacks, twist attacks,...
+     * For cryptographic protocols where x and y are inputs to the algorithm,
+     * a subgroup membership test is mandatory to avoid small subgroup attacks, twist attacks, etc.
      *
-     * @param x - x-coordinate of point to be checked
-     * @param y - y-coordinate of point to be checked
-     * @return true if (x,y) is on curve
+     * @param x x-coordinate of point to be checked
+     * @param y y-coordinate of point to be checked
+     * @return true if (x,y) is member of this (sub)group, false otherwise
      */
     public boolean isMember(FieldElement x, FieldElement y) {
         //Ensure there is only one subgroup of size this.size()
@@ -171,12 +148,18 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
             throw new IllegalArgumentException("Require cofactor coprime to order of subgroup.");
         }
 
-        //Check if point is on curve
-        if (!isOnCurve(x, y))
-            return false;
-
-        //Check subgroup membership
-        return this.getElement(x, y).pow(this.size()).isNeutralElement();
+        // Check subgroup membership by exponentiating with subgroup order
+        // Need custom exponentiation since pow() could have special handling for size() parameter
+        //   e.g. hardcoded 1 (since it may assume membership in group already)
+        PairingSourceGroupElement elem = getElement(x, y);
+        BigInteger size = this.size();
+        GroupElementImpl result = getNeutralElement();
+        for (int i = size.bitLength() - 1; i >= 0; i--) {
+            result = result.op(result);
+            if (size.testBit(i))
+                result = result.op(elem);
+        }
+        return result.isNeutralElement();
     }
 
     public Field getFieldOfDefinition() {
@@ -210,6 +193,15 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
         return (PairingSourceGroupElement) this.getGenerator().pow(zp.getUniformlyRandomElement().asInteger());
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Checks that the deserialized point is on the curve and in this (sub)group.
+     * If not, a {@link IllegalArgumentException} is thrown.
+     *
+     * @throws IllegalArgumentException if the deserialized point is either not on the curve or not member of this
+     *                                  (sub)group.
+     */
     @Override
     public PairingSourceGroupElement restoreElement(Representation repr) {
         ObjectRepresentation or = (ObjectRepresentation) repr;
@@ -218,7 +210,14 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
         FieldElement z = getFieldOfDefinition().restoreElement(or.get("z"));
         if (z.isZero())
             return (PairingSourceGroupElement) getNeutralElement();
-
+        // Check that point is on this curve
+        if (!isOnCurve(x, y)) {
+            throw new IllegalArgumentException("Point is not on the curve underlying this group");
+        }
+        // Check that point is in this group
+        if (!isMember(x, y)) {
+            throw new IllegalArgumentException("Element specified by given representation is not member of this group");
+        }
         return getElement(x, y);
     }
 
