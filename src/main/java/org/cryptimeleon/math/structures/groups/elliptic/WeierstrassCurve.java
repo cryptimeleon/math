@@ -56,6 +56,30 @@ public interface WeierstrassCurve extends EllipticCurve {
      */
     EllipticCurvePoint getElement(FieldElement x, FieldElement y);
 
+    /**
+     * Checks whether the given point is on this curve.
+     * 
+     * @param x the x-coordinate of the point to check
+     * @param y the y-coordinate of the point to check
+     * @return true if the point is on this curve, false otherwise
+     */
+    default boolean isOnCurve(FieldElement x, FieldElement y) {
+        // FieldElement x,y;
+        //
+        // x = p.getX();
+        // y = p.getY();
+
+        /*
+         * check y^2+a_1 xy + a_3 y = x^3+a_2 x^2 + a_4 x + a_6
+         *
+         * rewritten as
+         *
+         * ((a_1 x + a_3)y + y)y = x ( x ( x+a_2 )+a_4)+a_6
+         */
+        return x.mul(getA1()).add(getA3()).mul(y).add(y).mul(y)
+                .equals(x.add(getA2()).mul(x).add(getA4()).mul(x).add(getA6()));
+    }
+
     default boolean isShortForm() {
         return getA3().isZero() && getA2().isZero() && getA1().isZero();
     }

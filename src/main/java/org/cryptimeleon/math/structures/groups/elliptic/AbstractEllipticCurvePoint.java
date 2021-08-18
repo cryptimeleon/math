@@ -17,10 +17,24 @@ public abstract class AbstractEllipticCurvePoint implements EllipticCurvePoint {
         this.z = z;
     }
 
+    /**
+     * Deserializes a curve element.
+     *
+     * @throws IllegalArgumentException if the point is not on the curve.
+     */
     public AbstractEllipticCurvePoint(WeierstrassCurve curve, Representation repr) {
-        this(curve, curve.getFieldOfDefinition().restoreElement(repr.obj().get("x")),
-                curve.getFieldOfDefinition().restoreElement(repr.obj().get("y")),
-                curve.getFieldOfDefinition().restoreElement(repr.obj().get("z")));
+        // first we have to instantiate the point so we can normalize
+        FieldElement x = curve.getFieldOfDefinition().restoreElement(repr.obj().get("x"));
+        FieldElement y = curve.getFieldOfDefinition().restoreElement(repr.obj().get("y"));
+        FieldElement z = curve.getFieldOfDefinition().restoreElement(repr.obj().get("z"));
+        // check whether z is zero (neutral element) first so we can potentially save curve check
+        if (!z.isZero() && !curve.isOnCurve(x, y)) {
+            throw new IllegalArgumentException("Point cannot be deserialized as it is not on the given curve");
+        }
+        this.structure = curve;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public Field getFieldOfDefinition() {
