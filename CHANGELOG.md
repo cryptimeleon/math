@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2021-06-23
 
 ### Added
+- New indifferentiable hash functions to G1 and G2 for Barreto-Naehrig bilinear groups
 - Additional operator overload methods added to `ExponentExpr`
 - `BasicBilinearGroup` wrappers for the implemented bilinear groups
 - Convenience methods for the vector classes

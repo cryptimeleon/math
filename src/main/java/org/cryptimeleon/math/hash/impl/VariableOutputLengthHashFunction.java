@@ -7,6 +7,7 @@ import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /**
  * A hash function with variable output length.
@@ -53,7 +54,7 @@ public class VariableOutputLengthHashFunction implements HashFunction, Standalon
      * Initializes this instance using a specific base hash function and output length.
      *
      * @param hashFunction the base hash function
-     * @param outputLength thedesired output length of this hash function in number of bytes
+     * @param outputLength the desired output length of this hash function in number of bytes
      */
     public VariableOutputLengthHashFunction(HashFunction hashFunction, int outputLength) {
         innerFunction = hashFunction;
@@ -85,7 +86,6 @@ public class VariableOutputLengthHashFunction implements HashFunction, Standalon
         //  given a collision (x,x'), either innerFunction(0||x) = innerFunction(0||x')
         //  or innerFunction(1 || innerFunction(0||x)) = innerFunction(1 || innerFunction(0||x')).
         //  We have found a collision in both cases.
-
         byte[] result = new byte[outputLength];
         int bytesFilled = 0;
         byte[] y = innerFunction.hash(prependInt(0, x));
@@ -121,11 +121,7 @@ public class VariableOutputLengthHashFunction implements HashFunction, Standalon
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((innerFunction == null) ? 0 : innerFunction.hashCode());
-        result = prime * result + outputLength;
-        return result;
+        return Objects.hash(innerFunction, outputLength);
     }
 
     @Override
@@ -136,15 +132,8 @@ public class VariableOutputLengthHashFunction implements HashFunction, Standalon
             return false;
         if (getClass() != obj.getClass())
             return false;
-        VariableOutputLengthHashFunction other = (VariableOutputLengthHashFunction) obj;
-        if (innerFunction == null) {
-            if (other.innerFunction != null)
-                return false;
-        } else if (!innerFunction.equals(other.innerFunction))
-            return false;
-        if (outputLength != other.outputLength)
-            return false;
-        return true;
+        VariableOutputLengthHashFunction that = (VariableOutputLengthHashFunction) obj;
+        return Objects.equals(innerFunction, that.innerFunction) &&
+                Objects.equals(outputLength, that.outputLength);
     }
-
 }

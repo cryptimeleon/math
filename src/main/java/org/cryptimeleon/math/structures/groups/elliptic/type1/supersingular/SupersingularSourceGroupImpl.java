@@ -81,7 +81,7 @@ class SupersingularSourceGroupImpl extends PairingSourceGroupImpl {
         }
 
         /*now we need to map the point (x,y) on the curve to our subgroup and return it*/
-        return (SupersingularSourceGroupElementImpl) cofactorMultiplication(x, y);
+        return (SupersingularSourceGroupElementImpl) multiplyByCofactor(x, y);
     }
 
     @Override
