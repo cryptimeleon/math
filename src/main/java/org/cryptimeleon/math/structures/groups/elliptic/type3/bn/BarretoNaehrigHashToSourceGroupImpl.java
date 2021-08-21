@@ -125,7 +125,7 @@ class BarretoNaehrigHashToSourceGroupImpl implements HashIntoGroupImpl {
         // i = [(alpha - 1) * beta mod 3] + 1
         Zn z3 = new Zn(BigInteger.valueOf(3));
         int i = z3.createZnElement(BigInteger.valueOf((alpha - 1) * beta))
-                .getInteger()
+                .asInteger()
                 .add(BigInteger.ONE)
                 .intValueExact();
         // y = chi_q(r3^2 * t) * sqrt{x_i^3 + b}
