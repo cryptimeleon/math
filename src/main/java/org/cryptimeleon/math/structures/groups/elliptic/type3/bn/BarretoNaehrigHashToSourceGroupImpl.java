@@ -2,6 +2,7 @@ package org.cryptimeleon.math.structures.groups.elliptic.type3.bn;
 
 import org.cryptimeleon.math.hash.HashFunction;
 import org.cryptimeleon.math.hash.impl.VariableOutputLengthHashFunction;
+import org.cryptimeleon.math.misc.BigIntegerTools;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
@@ -124,10 +125,10 @@ class BarretoNaehrigHashToSourceGroupImpl implements HashIntoGroupImpl {
         int beta = chi(r2.square().mul(x2.pow(3).add(b)));
         // i = [(alpha - 1) * beta mod 3] + 1
         Zn z3 = new Zn(BigInteger.valueOf(3));
-        int i = z3.createZnElement(BigInteger.valueOf((alpha - 1) * beta))
+        int i = BigIntegerTools.getExactInt(
+                z3.createZnElement(BigInteger.valueOf((alpha - 1) * beta))
                 .asInteger()
-                .add(BigInteger.ONE)
-                .intValueExact();
+                .add(BigInteger.ONE));
         // y = chi_q(r3^2 * t) * sqrt{x_i^3 + b}
         FieldElement y;
         if (i == 1) {
