@@ -1,6 +1,5 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
-import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
@@ -15,7 +14,6 @@ import org.cryptimeleon.math.structures.groups.mappings.GroupHomomorphism;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -74,50 +72,20 @@ public class DebugBilinearGroup implements BilinearGroup {
     protected DebugGroup gT;
 
     /**
-     * Initializes this bilinear group with the given security level, pairing type, and group order factoring
-     * into the given number of prime factors.
-     *
-     * @param securityParameter the security level in number of bits
+     * Initializes this prime order bilinear group with the given size and pairing type.
+     * @param groupSize the size of the group
      * @param pairingType the type of pairing that should be offered by this bilinear group
-     * @param numPrimeFactors the number of prime factors the group order should have
      */
-    public DebugBilinearGroup(int securityParameter, BilinearGroup.Type pairingType, int numPrimeFactors) {
-        this.securityParameter = securityParameter;
+    public DebugBilinearGroup(BigInteger groupSize, BilinearGroup.Type pairingType) {
+        this.securityParameter = groupSize.bitLength();
         this.pairingType = pairingType;
-
-        ArrayList<BigInteger> primeFactors = new ArrayList<>();
-        for (int i = 0; i < numPrimeFactors; i++)
-            primeFactors.add(RandomGenerator.getRandomPrime(securityParameter));
-        
-        BigInteger size = primeFactors.stream().reduce(BigInteger.ONE, BigInteger::multiply);
         totalBilGroup = new LazyBilinearGroup(new DebugBilinearGroupImpl(
-                securityParameter, pairingType, size, false, false
+                groupSize, pairingType, false
         ));
         expMultiExpBilGroup = new LazyBilinearGroup(new DebugBilinearGroupImpl(
-                securityParameter, pairingType, size, true, true
+                groupSize, pairingType, true
         ));
         init();
-    }
-
-    /**
-     *
-     * Initializes this bilinear group with the given security level, pairing type and prime group order.
-     *
-     * @param securityParameter the security level in number of bits
-     * @param pairingType the type of pairing that should be offered by this bilinear group
-     */
-    public DebugBilinearGroup(int securityParameter, BilinearGroup.Type pairingType) {
-        this(securityParameter, pairingType, 1);
-    }
-
-    /**
-     *
-     * Initializes this prime order bilinear group of 128 bit size
-     *
-     * @param pairingType the type of pairing that should be offered by this bilinear group
-     */
-    public DebugBilinearGroup(BilinearGroup.Type pairingType) {
-        this(128, pairingType);
     }
 
     public DebugBilinearGroup(Representation repr) {
@@ -220,34 +188,135 @@ public class DebugBilinearGroup implements BilinearGroup {
     }
 
     /**
-     * Returns the number of pairings computed in this bilinear group.
+     * Sets the currently used operation count storage bucket to the one with the given name.
+     * If a bucket with the given name does not exist, a new one is created.
+     * <p>
+     * The bucket is activated across G1, G2, and GT, as well as the pairing counter.
+     * <p>
+     * All operations executed after setting a bucket will be counted within that bucket only.
+     *
+     * @param name the name of the bucket to enable
+     */
+    public void setBucket(String name) {
+        g1.setBucket(name);
+        g2.setBucket(name);
+        gT.setBucket(name);
+        bilMap.setBucket(name);
+    }
+
+    /**
+     * Returns the number of pairings computed in this bilinear group from the bucket with the given name.
+     */
+    public long getNumPairings(String bucketName) {
+        return bilMap.getNumPairings(bucketName);
+    }
+
+    /**
+     * Returns the number of pairings computed in this bilinear group from the default bucket
      */
     public long getNumPairings() {
         return bilMap.getNumPairings();
     }
 
     /**
-     * Resets pairing counter.
+     * Sums up the pairings across all buckets, including the default bucket.
+     */
+    public long getNumPairingsAllBuckets() {
+        return bilMap.getNumPairingsAllBuckets();
+    }
+
+    /**
+     * Resets pairing counter of the bucket with the given name.
+     */
+    public void resetNumPairings(String bucketName) {
+        bilMap.resetNumPairings(bucketName);
+    }
+
+    /**
+     * Resets pairing counter of the default bucket.
      */
     public void resetNumPairings() {
         bilMap.resetNumPairings();
     }
 
     /**
-     * Resets all counters, including the ones in groups G1, G2, GT.
+     * Resets pairing counter of all buckets, including the default bucket.
      */
-    public void resetCounters() {
-        resetNumPairings();
-        g1.resetCounters();
-        g2.resetCounters();
-        gT.resetCounters();
+    public void resetNumPairingsAllBuckets() {
+        bilMap.resetNumPairingsAllBuckets();
     }
 
     /**
-     * Returns a string with all count data formatted for printing.
+     * Resets the counters of the bucket with the given name, including the ones in groups G1, G2, GT
+     * as well as the pairing counter.
+     */
+    public void resetCounters(String bucketName) {
+        g1.resetCounters(bucketName);
+        g2.resetCounters(bucketName);
+        gT.resetCounters(bucketName);
+        resetNumPairings(bucketName);
+    }
+
+    /**
+     * Resets the counters of the default bucket, including the ones in groups G1, G2, GT
+     * as well as the pairing counter.
+     */
+    public void resetCounters() {
+        g1.resetCounters();
+        g2.resetCounters();
+        gT.resetCounters();
+        resetNumPairings();
+    }
+
+    /**
+     * Resets counters of all buckets.
+     */
+    public void resetCountersAllBuckets() {
+        g1.resetCountersAllBuckets();
+        g2.resetCountersAllBuckets();
+        gT.resetCountersAllBuckets();
+        resetNumPairingsAllBuckets();
+    }
+
+    /**
+     * Formats the count data of the bucket with the given name for printing.
+     *
+     * @param bucketName the name of the bucket whose data to format for printing
+     *
+     * @return a string detailing the results of counting
+     */
+    public String formatCounterData(String bucketName) {
+        return bilMap.formatCounterData(bucketName);
+    }
+
+    /**
+     * Formats the count data of the default bucket for printing.
+     *
+     * @return a string detailing the results of counting
      */
     public String formatCounterData() {
         return bilMap.formatCounterData();
+    }
+
+    /**
+     * Formats the count data of all buckets for printing.
+     *
+     * @return a string detailing results of counting
+     */
+    public String formatCounterDataAllBuckets() {
+        return formatCounterDataAllBuckets(false);
+    }
+
+    /**
+     * Formats the counter data of all buckets for printing.
+     *
+     * @param summaryOnly if true, only formats the summed up results across all buckets; otherwise, outputs results
+     *                    of every bucket plus the summary
+     *
+     * @return a string detailing results of counting
+     */
+    public String formatCounterDataAllBuckets(boolean summaryOnly) {
+        return bilMap.formatCounterDataAllBuckets(summaryOnly);
     }
 
     /**
