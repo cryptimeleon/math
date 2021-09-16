@@ -134,8 +134,13 @@ public abstract class LazyGroupElement implements GroupElement {
             //Note on concurrency: potentially multiple threads may (probably very rarely) reach this stage. But that's fine, both would just compute the same value.
             futureConcreteValue = new CompletableFuture<>(); //set up Future for other threads to wait on if they need the value we're going to compute
             computationState = ComputationState.IN_PROGRESS; //mark computation IN_PROGRESS. Because computationState is volatile, if any thread reads this state, the futureConcreteValue is also already set.
-            computeConcreteValue(); //actually compute the value of this LazyGroupElement. Goal for this call is to run setConcreteValue().
-            // This may block for some time if it depends on some value that's also already IN_PROGRESS (but there is no way this results in a deadlock because of the non-cyclic nature of these computations).
+            try {
+                computeConcreteValue(); //actually compute the value of this LazyGroupElement. Goal for this call is to run setConcreteValue().
+                // This may block for some time if it depends on some value that's also already IN_PROGRESS (but there is no way this results in a deadlock because of the non-cyclic nature of these computations).
+            } catch (Exception e) {
+                futureConcreteValue.completeExceptionally(e); //if something goes wrong unexpectedly, pass the exception to all waiting parties.
+                throw e;
+            }
             futureConcreteValue.complete(this); //wake up anyone waiting for us to finish.
         }
 
