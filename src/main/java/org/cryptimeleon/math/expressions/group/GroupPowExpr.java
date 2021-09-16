@@ -2,6 +2,7 @@ package org.cryptimeleon.math.expressions.group;
 
 import org.cryptimeleon.math.expressions.Expression;
 import org.cryptimeleon.math.expressions.Substitution;
+import org.cryptimeleon.math.expressions.exponent.ExponentEmptyExpr;
 import org.cryptimeleon.math.expressions.exponent.ExponentExpr;
 import org.cryptimeleon.math.expressions.exponent.ExponentSumExpr;
 import org.cryptimeleon.math.structures.groups.GroupElement;
@@ -74,10 +75,16 @@ public class GroupPowExpr extends AbstractGroupElementExpression {
 
         if (baseHasVariables) { //hence exponent doesn't
             GroupOpExpr baseLinear = base.linearize();
-            return new GroupOpExpr(baseLinear.getLhs().pow(exponent), baseLinear.getRhs().pow(exponent));
+            if (baseLinear.getLhs() instanceof GroupEmptyExpr) //base is linear already, hence this PowExpr is linear
+                return new GroupOpExpr(new GroupEmptyExpr(base.getGroup()), this);
+            else //split base into linear and constant part
+                return new GroupOpExpr(baseLinear.getLhs().pow(exponent), baseLinear.getRhs().pow(exponent));
         } else { //exponent has variables, base doesn't.
             ExponentSumExpr exponentLinear = exponent.linearize();
-            return new GroupOpExpr(base.pow(exponentLinear.getLhs()), base.pow(exponentLinear.getRhs()));
+            if (exponentLinear.getLhs() instanceof ExponentEmptyExpr) //exponent is linear already, hence this PowExpr is linear
+                return new GroupOpExpr(new GroupEmptyExpr(base.getGroup()), this);
+            else //split exponent into linear and constant part
+                return new GroupOpExpr(base.pow(exponentLinear.getLhs()), base.pow(exponentLinear.getRhs()));
         }
     }
 

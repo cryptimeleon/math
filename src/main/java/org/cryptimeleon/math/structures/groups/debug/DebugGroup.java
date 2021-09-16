@@ -481,7 +481,7 @@ public class DebugGroup implements Group {
                 result.append(formatCounterData(bucketName, false, false));
             }
         }
-        return result.append(formatCounterDataAllBuckets(false)).toString();
+        return result.append(formatCounterDataAllBucketsOnly(false)).toString();
     }
 
     /**

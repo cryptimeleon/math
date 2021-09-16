@@ -73,10 +73,16 @@ public class PairingExpr extends AbstractGroupElementExpression {
 
         if (lhsHasVariables) { //hence rhs doesn't
             GroupOpExpr lhsLinearized = lhs.linearize();
-            return new GroupOpExpr(new PairingExpr(map, lhsLinearized.getLhs(), rhs), new PairingExpr(map, lhsLinearized.getRhs(), rhs));
+            if (lhsLinearized.getLhs() instanceof GroupEmptyExpr) //lhs is already linearized, so this PairingExpr is already linear
+                return new GroupOpExpr(new GroupEmptyExpr(map.getGT()), this);
+            else
+                return new GroupOpExpr(new PairingExpr(map, lhsLinearized.getLhs(), rhs), new PairingExpr(map, lhsLinearized.getRhs(), rhs));
         } else { //lhs is constant, rhs isn't
             GroupOpExpr rhsLinearized = rhs.linearize();
-            return new GroupOpExpr(new PairingExpr(map, lhs, rhsLinearized.getLhs()), new PairingExpr(map, lhs, rhsLinearized.getRhs()));
+            if (rhsLinearized.getLhs() instanceof GroupEmptyExpr) //rhs is already linearized, so this PairingExpr is already linear
+                return new GroupOpExpr(new GroupEmptyExpr(map.getGT()), this);
+            else
+                return new GroupOpExpr(new PairingExpr(map, lhs, rhsLinearized.getLhs()), new PairingExpr(map, lhs, rhsLinearized.getRhs()));
         }
     }
 
