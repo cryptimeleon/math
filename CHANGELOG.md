@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `DebugGroup` group operation counting data is now split up into buckets that allow, for example, to separately count operations done by different parties in an interactive protocol. Furthermore, counting is now done statically, i.e. the data in each bucket persists across `DebugGroup` instances.
+- Reduce collisions for `Zn#injectiveValueOf`
+
+### Added
+- Add lazy and naive wrappers around `Secp256k1` curve, and make curve implementation package-private
 
 ## [2.1.0]
 
@@ -20,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2021-06-23
 
 ### Added
+- New indifferentiable hash functions to G1 and G2 for Barreto-Naehrig bilinear groups
 - Additional operator overload methods added to `ExponentExpr`
 - `BasicBilinearGroup` wrappers for the implemented bilinear groups
 - Convenience methods for the vector classes

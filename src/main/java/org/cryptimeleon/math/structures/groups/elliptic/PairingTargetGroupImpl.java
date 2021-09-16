@@ -86,7 +86,7 @@ public abstract class PairingTargetGroupImpl implements GroupImpl, Representable
          * exponentiation,
          *  at least unless we use structure of cofactor*/
         return (PairingTargetGroupElementImpl) this.getGenerator().pow(
-                (new Zp(this.size()).getUniformlyRandomElement()).getInteger());
+                (new Zp(this.size()).getUniformlyRandomElement()).asInteger());
     }
 
     @Override

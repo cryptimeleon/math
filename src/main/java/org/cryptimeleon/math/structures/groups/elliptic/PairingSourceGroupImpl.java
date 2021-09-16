@@ -156,13 +156,15 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
     /**
      * Tests if (x,y) is a member of this (sub)group.
      * <p>
-     * This function first checks of (x,y) defines a point on the curve that defines this group. Then a subgroup membership test is performed by multiplication either with the group order or with the cofactor. If both are large, this is an expensive
-     * operation.
+     * This function first checks of (x,y) defines a point on the curve that defines this group.
+     * Then a subgroup membership test is performed by multiplication either with the group order or with the cofactor.
+     * If both are large, this is an expensive operation.
      * <p>
-     * For cryptographic protocols where x and y are inputs to the algorithm, a subgroup membership test is mandatory to avoid small subgroup attacks, twist attacks,...
+     * For cryptographic protocols where x and y are inputs to the algorithm, a subgroup membership test is mandatory
+     * to avoid small subgroup attacks, twist attacks,...
      *
-     * @param x - x-coordinate of point to be checked
-     * @param y - y-coordinate of point to be checked
+     * @param x x-coordinate of point to be checked
+     * @param y y-coordinate of point to be checked
      * @return true if (x,y) is on curve
      */
     public boolean isMember(FieldElement x, FieldElement y) {
@@ -207,7 +209,7 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
     @Override
     public PairingSourceGroupElement getUniformlyRandomElement() throws UnsupportedOperationException {
         Zp zp = new Zp(this.size());
-        return (PairingSourceGroupElement) this.getGenerator().pow(zp.getUniformlyRandomElement().getInteger());
+        return (PairingSourceGroupElement) this.getGenerator().pow(zp.getUniformlyRandomElement().asInteger());
     }
 
     @Override
@@ -240,14 +242,25 @@ public abstract class PairingSourceGroupImpl implements WeierstrassCurve {
      * @param y second coordinate of the point to map
      * @return a point in this subgroup
      */
-    protected PairingSourceGroupElement cofactorMultiplication(FieldElement x, FieldElement y) {
+    public PairingSourceGroupElement multiplyByCofactor(FieldElement x, FieldElement y) {
         PairingSourceGroupElement elem = getElement(x, y);
+        return multiplyByCofactor(elem);
+    }
 
+    /**
+     * Maps a point (x,y) on the curve into the subgroup represented by this object.
+     * Note that pow() on a PairingSourceGroupElement does not work if pow() depends on
+     * the group size (which it may, e.g., to first reduce the exponent mod size()).
+     *
+     * @param element the curve element to map to the subgroup
+     * @return a point in this subgroup
+     */
+    public PairingSourceGroupElement multiplyByCofactor(GroupElementImpl element) {
         GroupElementImpl result = getNeutralElement();
         for (int i = cofactor.bitLength() - 1; i >= 0; i--) {
             result = result.op(result);
             if (cofactor.testBit(i))
-                result = result.op(elem);
+                result = result.op(element);
         }
         return (PairingSourceGroupElement) result;
     }

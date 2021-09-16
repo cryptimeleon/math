@@ -87,7 +87,7 @@ public class PairingExpr extends AbstractGroupElementExpression {
         }
         else {
             BigInteger groupSize = getGroupOrderIfKnown();
-            BigInteger exponentVal = groupSize == null ? exponent.evaluate() : exponent.evaluate(new Zn(groupSize)).getInteger();
+            BigInteger exponentVal = groupSize == null ? exponent.evaluate() : exponent.evaluate(new Zn(groupSize)).asInteger();
             return new GroupOpExpr(evaluate().pow(exponentVal).expr(), new GroupEmptyExpr(map.getGT()));
         }
     }

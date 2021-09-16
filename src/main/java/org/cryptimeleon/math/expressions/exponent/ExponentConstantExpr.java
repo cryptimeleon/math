@@ -21,7 +21,7 @@ public class ExponentConstantExpr implements ExponentExpr {
     }
 
     public ExponentConstantExpr(Zn.ZnElement exponent) {
-        this.exponent = exponent.getInteger();
+        this.exponent = exponent.asInteger();
     }
 
     public ExponentConstantExpr(long exponent) {
