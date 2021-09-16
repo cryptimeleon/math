@@ -88,11 +88,11 @@ public class PairingTests {
     public static Collection<BilinearMap[]> data() {
         // Counting curves
         BilinearGroup countingGroup1 =
-                new DebugBilinearGroup(RandomGenerator.getRandomPrime(128), BilinearGroup.Type.TYPE_1);
+                new DebugBilinearGroup(BilinearGroup.Type.TYPE_1);
         BilinearGroup countingGroup2 =
-                new DebugBilinearGroup(RandomGenerator.getRandomPrime(128), BilinearGroup.Type.TYPE_2);
+                new DebugBilinearGroup(BilinearGroup.Type.TYPE_2);
         BilinearGroup countingGroup3 =
-                new DebugBilinearGroup(RandomGenerator.getRandomPrime(128), BilinearGroup.Type.TYPE_3);
+                new DebugBilinearGroup(BilinearGroup.Type.TYPE_3);
 
         // Supersingular curve groups
         BilinearGroup supsingGroup = new SupersingularBasicBilinearGroup(80);

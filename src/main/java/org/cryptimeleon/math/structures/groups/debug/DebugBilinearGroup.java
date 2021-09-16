@@ -1,5 +1,6 @@
 package org.cryptimeleon.math.structures.groups.debug;
 
+import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.annotations.ReprUtil;
 import org.cryptimeleon.math.serialization.annotations.Represented;
@@ -86,6 +87,14 @@ public class DebugBilinearGroup implements BilinearGroup {
                 groupSize, pairingType, true
         ));
         init();
+    }
+
+    /**
+     * Initializes this prime order bilinear group with a random 256 bit size and the given pairing type.
+     * @param pairingType the type of pairing that should be offered by this bilinear group
+     */
+    public DebugBilinearGroup(BilinearGroup.Type pairingType) {
+        this(RandomGenerator.getRandomPrime(256), pairingType);
     }
 
     public DebugBilinearGroup(Representation repr) {
