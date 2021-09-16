@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add lazy and naive wrappers around `Secp256k1` curve, and make curve implementation package-private
 
+### Fixed
+- Fixed [issue](https://github.com/cryptimeleon/math/pull/134) where exceptions during group computations could hang up the whole applications without surfacing the exception.
 
 ## [2.1.0]
 
