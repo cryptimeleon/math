@@ -6,7 +6,8 @@ import org.cryptimeleon.math.serialization.RepresentableRepresentation;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.structures.groups.GroupImpl;
 import org.cryptimeleon.math.structures.groups.basic.BasicGroup;
-import org.cryptimeleon.math.structures.groups.debug.DebugGroupImpl;
+import org.cryptimeleon.math.structures.groups.debug.DebugGroupImplNoExpMultiExp;
+import org.cryptimeleon.math.structures.groups.debug.DebugGroupImplTotal;
 import org.cryptimeleon.math.structures.groups.lazy.LazyGroup;
 import org.cryptimeleon.math.structures.rings.zn.Zn;
 import org.junit.Test;
@@ -138,7 +139,7 @@ public class GroupTests {
             assertTrue("Lagrange", a.pow(size).isNeutralElement());
             assertEquals("Lagrange inversion", a.pow(size.subtract(BigInteger.ONE)), a.inv());
 
-            BigInteger r = new Zn(group.size()).getUniformlyRandomElement().getInteger();
+            BigInteger r = new Zn(group.size()).getUniformlyRandomElement().asInteger();
             if (size.isProbablePrime(100)) {
                 // If commutative: (ab)^r b^{-r} = a^r
                 assertEquals(a.op(b).pow(r).op(b.pow(r.negate())), a.pow(r));
@@ -215,15 +216,21 @@ public class GroupTests {
     @Parameters(name = "Test: {0}")
     public static Collection<TestParams[]> data() {
         // Some setup
-        GroupImpl debugGroupImpl = new DebugGroupImpl(
+        GroupImpl debugGroupImplNoExpMultiExp = new DebugGroupImplNoExpMultiExp(
                 "testGroupImpl", BigInteger.probablePrime(128, new Random())
         );
-        BasicGroup basicGroup = new BasicGroup(debugGroupImpl);
-        LazyGroup lazyGroup = new LazyGroup(debugGroupImpl);
+        GroupImpl debugGroupImplTotal = new DebugGroupImplTotal(
+                "testGroupImpl", BigInteger.probablePrime(128, new Random())
+        );
+        BasicGroup basicGroupNEME = new BasicGroup(debugGroupImplNoExpMultiExp);
+        LazyGroup lazyGroupNEME = new LazyGroup(debugGroupImplNoExpMultiExp);
+        BasicGroup basicGroupTotal = new BasicGroup(debugGroupImplTotal);
+        LazyGroup lazyGroupTotal = new LazyGroup(debugGroupImplTotal);
 
         // Collect parameters
         TestParams[][] params = new TestParams[][]{
-                {new TestParams(basicGroup)}, {new TestParams(lazyGroup)}
+                {new TestParams(basicGroupNEME)}, {new TestParams(basicGroupTotal)},
+                {new TestParams(lazyGroupNEME)}, {new TestParams(lazyGroupTotal)}
         };
         return Arrays.asList(params);
     }

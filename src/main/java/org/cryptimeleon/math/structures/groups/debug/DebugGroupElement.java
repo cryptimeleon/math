@@ -54,7 +54,7 @@ public class DebugGroupElement implements GroupElement {
         ObjectRepresentation objRepr = repr.obj();
         this.group = group;
         elemTotal = (LazyGroupElement) group.groupTotal.restoreElement(objRepr.get("elemTotal"));
-        elemExpMultiExp = (LazyGroupElement) group.groupExpMultiExp.restoreElement(objRepr.get("elemExpMultiExp"));
+        elemExpMultiExp = (LazyGroupElement) group.groupNoExpMultiExp.restoreElement(objRepr.get("elemExpMultiExp"));
     }
 
     @Override

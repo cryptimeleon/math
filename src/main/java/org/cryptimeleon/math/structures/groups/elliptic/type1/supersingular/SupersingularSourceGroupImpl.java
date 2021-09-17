@@ -81,7 +81,7 @@ class SupersingularSourceGroupImpl extends PairingSourceGroupImpl {
         }
 
         /*now we need to map the point (x,y) on the curve to our subgroup and return it*/
-        return (SupersingularSourceGroupElementImpl) cofactorMultiplication(x, y);
+        return (SupersingularSourceGroupElementImpl) multiplyByCofactor(x, y);
     }
 
     @Override
@@ -105,7 +105,7 @@ class SupersingularSourceGroupImpl extends PairingSourceGroupImpl {
     @Override
     public SupersingularSourceGroupElementImpl getUniformlyRandomElement() throws UnsupportedOperationException {
         if (getSize().compareTo(getCofactor()) < 0 && generator != null) { //cheaper to just do rndInt*generator as the steps below include cofactor multiplcation
-            return (SupersingularSourceGroupElementImpl) getGenerator().pow(new Zn(getSize()).getUniformlyRandomElement().getInteger());
+            return (SupersingularSourceGroupElementImpl) getGenerator().pow(new Zn(getSize()).getUniformlyRandomElement().asInteger());
         } else {
             return mapToPoint((ExtensionFieldElement) getFieldOfDefinition().getUniformlyRandomElement());
         }

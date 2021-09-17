@@ -7,7 +7,7 @@ plugins {
 group = 'org.cryptimeleon'
 archivesBaseName = project.name
 boolean isRelease = project.hasProperty("release")
-version = '2.1.0'  + (isRelease ? "" : "-SNAPSHOT")
+version = '3.0.0'  + (isRelease ? "" : "-SNAPSHOT")
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -31,12 +31,12 @@ dependencies {
             'junit:junit:4.12'
     )
     testImplementation(
-            'org.junit.jupiter:junit-jupiter-api:5.1.0',
-            'org.junit.jupiter:junit-jupiter-params:5.1.0'
+            'org.junit.jupiter:junit-jupiter-api:5.7.2',
+            'org.junit.jupiter:junit-jupiter-params:5.7.2'
     )
     testRuntimeOnly(
-            'org.junit.jupiter:junit-jupiter-engine:5.1.0',
-            'org.junit.vintage:junit-vintage-engine:5.1.0'
+            'org.junit.jupiter:junit-jupiter-engine:5.7.2',
+            'org.junit.vintage:junit-vintage-engine:5.7.2'
     )
 }
 
