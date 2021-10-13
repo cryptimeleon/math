@@ -1,6 +1,8 @@
 package org.cryptimeleon.math.structures.rings.cartesian;
 
 import org.cryptimeleon.math.expressions.exponent.ExponentConstantExpr;
+import org.cryptimeleon.math.hash.ByteAccumulator;
+import org.cryptimeleon.math.hash.UniqueByteRepresentable;
 import org.cryptimeleon.math.serialization.ListRepresentation;
 import org.cryptimeleon.math.serialization.Representable;
 import org.cryptimeleon.math.serialization.Representation;
@@ -17,7 +19,7 @@ import java.util.stream.Stream;
 /**
  * A vector of ring elements supporting element-wise ring operations with other ring element vectors.
  */
-public class RingElementVector extends Vector<RingElement> implements Representable {
+public class RingElementVector extends Vector<RingElement> implements Representable, UniqueByteRepresentable {
 
     public RingElementVector(RingElement... values) {
         super(values);
@@ -68,7 +70,7 @@ public class RingElementVector extends Vector<RingElement> implements Representa
     }
 
     public RingElementVector pow(Vector<?> exponents) {
-        return zip(exponents, (g,x) ->
+        return zip(exponents, (g, x) ->
                         x instanceof Long ? g.pow((Long) x)
                                 : g.pow((BigInteger) x),
                 RingElementVector::new);
@@ -147,5 +149,13 @@ public class RingElementVector extends Vector<RingElement> implements Representa
 
     public ExponentExpressionVector asExponentExpr() {
         return map(v -> new ExponentConstantExpr(v.asInteger()), ExponentExpressionVector::new);
+    }
+
+    @Override
+    public ByteAccumulator updateAccumulator(ByteAccumulator accumulator) {
+        for (RingElement e : this.values) {
+            accumulator.escapeAndSeparate(e.getUniqueByteRepresentation());
+        }
+        return accumulator;
     }
 }
