@@ -329,7 +329,7 @@ public class Vector<X> {
     public Vector<X> concatenate(Vector<? extends X> secondPart) {
         ArrayList<X> result = new ArrayList<>(values.size() + secondPart.values.size());
         result.addAll(values);
-        result.add((X) secondPart.values);
+        result.addAll(secondPart.values);
 
         return instantiateWithSafeArray(result);
     }
