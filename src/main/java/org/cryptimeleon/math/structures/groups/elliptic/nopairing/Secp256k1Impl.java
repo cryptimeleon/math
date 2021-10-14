@@ -24,7 +24,7 @@ import java.util.Optional;
  * The curve is defined in Weierstrass short form \(y^2 = x^3 + b\) over a field \(\mathbb{F}_p\).
  * Specific parameters are taken from <a href="https://www.secg.org/sec2-v2.pdf">here</a>.
  */
-class Secp256k1Impl implements WeierstrassCurve {
+public class Secp256k1Impl implements WeierstrassCurve {
     /**
      * The prime used to instantiate the field \(\mathbb{F}_p\).
      */
