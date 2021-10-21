@@ -58,6 +58,7 @@ import java.util.stream.Stream;
  * For more information, consult the <a href="https://upbcuk.github.io/docs/representations.html">documentation</a>.
  */
 public class ReprUtil {
+    static final String[] primitiveTypes = new String[] {"byte", "short", "int", "long", "float", "double", "boolean", "char"};
     static Pattern methodCallSeparator = Pattern.compile("::");
     /**
      * Maps representation restorer identifiers to the corresponding {@code RepresentationRestorer} instances.
@@ -438,6 +439,9 @@ public class ReprUtil {
             );
         }
 
+        if (Arrays.asList(primitiveTypes).contains(type.getTypeName()))
+            throw new IllegalArgumentException("Cannot handle primitive type "+type.getTypeName()+". Use object wrapper types instead (like Integer or Boolean)");
+
         throw new IllegalArgumentException("Don't know how to handle type " + type.getTypeName()
                 + " using restorer String \"" + restorerString + "\"");
     }
@@ -451,7 +455,6 @@ public class ReprUtil {
     protected static RepresentationHandler getHandlerWithoutRestorerString(Type type) {
         // For generic type we need to extract the raw type. Only for StandaloneRepresentable though, as stuff
         // like list and map handling can handle generic types by themselves.
-        // TODO: What about DependentRepresentations?
         Type rawType = type;
         if (type instanceof ParameterizedType) {
             rawType = ((ParameterizedType) type).getRawType();
@@ -478,8 +481,11 @@ public class ReprUtil {
             return new MapRepresentationHandler(getHandlerWithoutRestorerString(keyType), getHandlerWithoutRestorerString(valueType), type);
         }
 
+        if (Arrays.asList(primitiveTypes).contains(type.getTypeName()))
+            throw new IllegalArgumentException("Cannot handle primitive type "+type.getTypeName()+". Use object wrapper types instead (like Integer or Boolean)");
+
         throw new IllegalArgumentException("Don't know how to handle type " + type.getTypeName()
-                + " using empty restorer String (you can add one within the @Represented annotation)");
+                + " using empty restorer String (you can add one within the @Represented annotation to manually specify how to recreate this type)");
     }
 
     /**
