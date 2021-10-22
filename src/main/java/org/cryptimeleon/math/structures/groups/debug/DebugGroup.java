@@ -616,7 +616,7 @@ public class DebugGroup implements Group {
      * of the exponentiation algorithm, we do not recommend setting this too high as the cost of computing the
      * whole window quickly exceeds its performance benefits during the actual exponentiation.
      * <p>
-     * If you want to change the number of cached precomputations, use {@link this#setPrecomputationWindowSize(int)}.
+     * If you want to change the number of cached precomputations, use {@link #setPrecomputationWindowSize(int)}.
      */
     public void setExponentiationWindowSize(int exponentiationWindowSize) {
         groupTotal.setExponentiationWindowSize(exponentiationWindowSize);
