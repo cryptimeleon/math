@@ -67,7 +67,7 @@ To add the newest Math version as a dependency, add this to your project's POM:
 <dependency>
     <groupId>org.cryptimeleon</groupId>
     <artifactId>math</artifactId>
-    <version>3.0.1</version>
+    <version>3.+.+</version>
 </dependency>
 ```
 
@@ -75,7 +75,7 @@ To add the newest Math version as a dependency, add this to your project's POM:
 
 Math is published via Maven Central.
 Therefore, you need to add `mavenCentral()` to the `repositories` section of your project's `build.gradle` file.
-Then, add `implementation group: 'org.cryptimeleon', name: 'math', version: '3.0.1'` to the `dependencies` section of your `build.gradle` file.
+Then, add `implementation group: 'org.cryptimeleon', name: 'math', version: '3.+.+'` to the `dependencies` section of your `build.gradle` file.
 
 For example:
 
@@ -85,7 +85,7 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'org.cryptimeleon', name: 'math', version: '3.0.1'
+    implementation group: 'org.cryptimeleon', name: 'math', version: '3.+.+'
 }
 ```
 
