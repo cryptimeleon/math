@@ -67,7 +67,7 @@ To add the newest Math version as a dependency, add this to your project's POM:
 <dependency>
     <groupId>org.cryptimeleon</groupId>
     <artifactId>math</artifactId>
-    <version>3.+</version>
+    <version>[3.0,)</version>
 </dependency>
 ```
 
