@@ -63,7 +63,7 @@ public class RandomGenerator {
     }
 
     /**
-     * Generates a random integer k with \(0 \leq k < 2^{\text{bitlength}}-1\).
+     * Generates a random integer k with \(0 \leq k &lt; 2^{\text{bitlength}}-1\).
      */
     public static BigInteger getRandomNumberOfBitlength(int bitlength) {
         return impl.getRandomNumberOfBitlength(bitlength);
