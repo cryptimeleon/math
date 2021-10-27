@@ -225,7 +225,7 @@ public class AnnotatedUbrUtil {
             if (key1.length > key2.length)
                 return 1;
             //Arrays of same length are tie-broken by their first unequal byte
-            for (int j = 0; j < o1.length; j++) {
+            for (int j = 0; j < key1.length; j++) {
                 if (key1[j] < key2[j])
                     return -1;
                 if (key1[j] > key2[j])
