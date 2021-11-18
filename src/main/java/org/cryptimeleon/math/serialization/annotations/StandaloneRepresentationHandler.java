@@ -5,6 +5,7 @@ import org.cryptimeleon.math.serialization.*;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
+import java.util.UUID;
 import java.util.function.Function;
 
 /**
@@ -17,7 +18,7 @@ class StandaloneRepresentationHandler implements RepresentationHandler {
     // that's not null is already set (and int is auto-initialized with 0)
     private static final Class<?>[] supportedTypes = new Class[] {
             StandaloneRepresentable.class, BigInteger.class, Integer.class, String.class, Boolean.class,
-            byte[].class, Enum.class
+            byte[].class, UUID.class, Enum.class
     };
     /**
      * Type of the represented object.
@@ -79,6 +80,10 @@ class StandaloneRepresentationHandler implements RepresentationHandler {
             return repr.bytes().get();
         }
 
+        if (type.isAssignableFrom(UUID.class) && repr instanceof StringRepresentation) {
+            return UUID.fromString(repr.str().get());
+        }
+
         throw new IllegalArgumentException("Don't know how to recreate " + type.getName() + " from a "
                 + repr.getClass().getName());
     }
@@ -127,6 +132,11 @@ class StandaloneRepresentationHandler implements RepresentationHandler {
         if (value instanceof byte[]) {
             byte[] bytes = (byte[]) value;
             return new ByteArrayRepresentation(bytes);
+        }
+
+        if (value instanceof UUID) {
+            UUID uuid = (UUID) value;
+            return new StringRepresentation(uuid.toString());
         }
 
         throw new IllegalArgumentException("Do not know how to handle object of type " + value.getClass().getName()
