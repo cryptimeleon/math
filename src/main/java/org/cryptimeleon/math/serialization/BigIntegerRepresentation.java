@@ -21,10 +21,6 @@ public class BigIntegerRepresentation extends Representation {
         this.n = n;
     }
 
-    public BigIntegerRepresentation(int n) {
-        this.n = BigInteger.valueOf(n);
-    }
-
     public BigIntegerRepresentation(long n) {
         this.n = BigInteger.valueOf(n);
     }
