@@ -1,6 +1,7 @@
 package org.cryptimeleon.math.serialization.annotations;
 
 
+import org.cryptimeleon.math.random.RandomGenerator;
 import org.cryptimeleon.math.serialization.Representation;
 import org.cryptimeleon.math.serialization.StandaloneRepresentable;
 import org.cryptimeleon.math.structures.rings.Ring;
@@ -21,8 +22,19 @@ public class ReprUtilTest {
     Zp.ZpElement zpelem;
     @Represented
     Foo foo;
+    @Represented
+    byte[] smallNumbers;
+    @Represented
+    Integer boringOldInteger;
+    @Represented
+    Long longNUmber;
+    @Represented
+    BigInteger reeeaaallyLongNumber;
+    @Represented
+    UUID veryUniqueNumber;
 
-    public static class Foo implements StandaloneRepresentable {
+
+    public static class Foo implements StandaloneRepresentable { //for testing restoration nof zpelem with a complicated restorer string
         @Represented
         Zp zp;
 
@@ -65,27 +77,47 @@ public class ReprUtilTest {
         }
     }
 
-    @Test
-    public void testNestedMap() {
+    private void populate() {
         Ring ring  = new Zn(BigInteger.TEN);
 
-        HashMap<Map<String, RingElement>, List<String>> nestedMapOriginal = new HashMap<>();
+        nestedMap = new HashMap<>();
         Map<String, RingElement> inner = new HashMap<>();
         inner.put("testInner", ring.getUniformlyRandomElement());
-        nestedMap = nestedMapOriginal;
-
-        nestedMapOriginal.put(inner, Arrays.asList("testOuter", "testOuter2"));
+        nestedMap.put(inner, Arrays.asList("testOuter", "testOuter2"));
 
         foo = new Foo(new Zp(BigInteger.valueOf(3)));
         zpelem = Zp.valueOf(2, 3);
 
-        Representation repr = ReprUtil.serialize(this);
-        nestedMap = null;
-        zpelem = null;
-        foo = null;
-        new ReprUtil(this).register(ring, "R").deserialize(repr);
+        smallNumbers = RandomGenerator.getRandomBytes(3);
+        boringOldInteger = 23;
+        longNUmber = Long.MAX_VALUE;
+        reeeaaallyLongNumber = BigInteger.TEN.pow(100);
+        veryUniqueNumber = UUID.randomUUID();
+    }
 
-        assertEquals(nestedMapOriginal, nestedMap);
-        assertEquals(Zp.valueOf(2,3), zpelem);
+    @Test
+    public void testRestoration() {
+        Ring ring  = new Zn(BigInteger.TEN);
+
+        Representation repr = ReprUtil.serialize(this);
+        ReprUtilTest deserialized = new ReprUtilTest();
+        new ReprUtil(deserialized).register(ring, "R").deserialize(repr);
+
+        assertEquals(deserialized, this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReprUtilTest that = (ReprUtilTest) o;
+        return Objects.equals(nestedMap, that.nestedMap) && Objects.equals(zpelem, that.zpelem) && Objects.equals(foo, that.foo) && Arrays.equals(smallNumbers, that.smallNumbers) && Objects.equals(boringOldInteger, that.boringOldInteger) && Objects.equals(longNUmber, that.longNUmber) && Objects.equals(reeeaaallyLongNumber, that.reeeaaallyLongNumber) && Objects.equals(veryUniqueNumber, that.veryUniqueNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(nestedMap, zpelem, foo, boringOldInteger, longNUmber, reeeaaallyLongNumber, veryUniqueNumber);
+        result = 31 * result + Arrays.hashCode(smallNumbers);
+        return result;
     }
 }
