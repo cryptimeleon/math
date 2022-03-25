@@ -16,8 +16,8 @@ class StandaloneRepresentationHandler implements RepresentationHandler {
 
     // it may be temping to add int.class etc. here, but it doesn't work because the ReprUtil assumes that everything
     // that's not null is already set (and int is auto-initialized with 0)
-    private static final Class<?>[] supportedTypes = new Class[] {
-            StandaloneRepresentable.class, BigInteger.class, Integer.class, String.class, Boolean.class,
+    private static final Class<?>[] supportedTypes = new Class[]{
+            StandaloneRepresentable.class, BigInteger.class, Integer.class, Long.class, String.class, Boolean.class,
             byte[].class, UUID.class, Enum.class
     };
     /**
@@ -66,6 +66,10 @@ class StandaloneRepresentationHandler implements RepresentationHandler {
 
         if (type.isAssignableFrom(Integer.class) && repr instanceof BigIntegerRepresentation) {
             return BigIntegerTools.getExactInt(repr.bigInt().get());
+        }
+
+        if (type.isAssignableFrom(Long.class) && repr instanceof BigIntegerRepresentation) {
+            return BigIntegerTools.getExactLong(repr.bigInt().get());
         }
 
         if (type.isAssignableFrom(String.class) && repr instanceof StringRepresentation) {
@@ -117,6 +121,11 @@ class StandaloneRepresentationHandler implements RepresentationHandler {
         if (value instanceof Integer) {
             Integer integer = (Integer) value;
             return new BigIntegerRepresentation(integer);
+        }
+
+        if (value instanceof Long) {
+            Long longValue = (Long) value;
+            return new BigIntegerRepresentation(longValue);
         }
 
         if (value instanceof String) {
