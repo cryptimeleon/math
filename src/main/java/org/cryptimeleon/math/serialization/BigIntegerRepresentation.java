@@ -25,6 +25,10 @@ public class BigIntegerRepresentation extends Representation {
         this.n = BigInteger.valueOf(n);
     }
 
+    public BigIntegerRepresentation(long n) {
+        this.n = BigInteger.valueOf(n);
+    }
+
     /**
      * Retrieves the represented {@code BigInteger}.
      */
